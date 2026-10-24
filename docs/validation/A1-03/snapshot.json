@@ -1,0 +1,18 @@
+[
+  {
+    "path": "src/core/download/integrity.ts",
+    "sha256": "bb2f4893f436b81b818af289680b88352554a91a8a464ce296cf17054ccac225"
+  },
+  {
+    "path": "src/core/task/machine.ts",
+    "sha256": "654a01dfbb30b4ef531e2d6664a8be220fad8101da885f36ca1ff764065f9ef0"
+  },
+  {
+    "path": "src/core/task/scheduling.ts",
+    "sha256": "4dad9ea59a545b58a91c3299599e32d22f7a12900aeee1860a90818d17a4841d"
+  },
+  {
+    "path": "tests/task.test.ts",
+    "sha256": "4979aab0974765cc6ea405ded51f72f472b4bf40f8810bff5cd72f5f238db758"
+  }
+]

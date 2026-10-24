@@ -1,0 +1,86 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ handshake only accepts strict request DTO and safe version integers (2.2868ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.7289ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.4505ms)
+✔ sender requires exact URL, same contents and main frame (0.2732ms)
+✔ response rejects mismatched request identity and injected capabilities (0.2788ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.2018ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (8.6786ms)
+✔ isolation priority is pack, explicit override, then global default (1.7253ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (1.6095ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.5762ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.5312ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.5553ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.6181ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (3.9686ms)
+✔ execution verifies before commit and never repeats terminal effects (0.6833ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.2783ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.2332ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.183ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.2559ms)
+✔ shared transfers obey demand from all installers independently (1.1898ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (2.926ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (4.124ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.6061ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (0.7737ms)
+✔ server-only input cannot provide a client or main class (0.2869ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (0.7197ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.3075ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (1.9479ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (2.1825ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.6052ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.7023ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (0.986ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (16.2197ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 197.5447
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    download       |        |          |         |
+ℹ     integrity.js  | 100.00 |   100.00 |  100.00 |
+ℹ    path           |        |          |         |
+ℹ     layout.js     | 100.00 |    94.92 |  100.00 |
+ℹ    task           |        |          |         |
+ℹ     machine.js    | 100.00 |   100.00 |  100.00 |
+ℹ     scheduling.js | 100.00 |   100.00 |  100.00 |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.14 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    98.85 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BY2mAzAN.css    1.44 kB │ gzip:  0.69 kB
+dist/renderer/assets/index-BzFODMfZ.js   222.15 kB │ gzip: 70.01 kB
+
+✓ built in 158ms
+
+  dist\main\index.cjs  7.7kb
+
+Done in 16ms
+
+  dist\preload\index.cjs  3.5kb
+
+Done in 8ms
