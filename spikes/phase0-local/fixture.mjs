@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 
 /** Creates a unique disposable root; only this new tree can be cleaned. */
-export async function fixture() {
-  const root = await mkdtemp(path.join(tmpdir(), 'oucl-phase0-'));
+export async function fixture(parent = tmpdir()) {
+  const root = await mkdtemp(path.join(parent, 'oucl-phase0-'));
   return { root, cleanup: () => clean(root, root) };
 }
 

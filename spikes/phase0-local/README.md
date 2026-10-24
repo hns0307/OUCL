@@ -4,12 +4,14 @@
 
 复用本机Node 24.21.0及其内置SQLite 3.53.4，零第三方依赖、零新增下载体积。内置SQLite的同步调用仅在独立实验进程执行；正式服务必须另行放入worker，并验证Electron所带Node版本的接口兼容性，不以此选定生产数据库绑定。
 
-在仓库根执行 `pnpm test:spikes`（包含storage、trust、recovery三个测试文件）；真实官方信任链单独执行 `node spikes/phase0-local/live-trust.mjs`。本地测试不访问真实网络，真实采集不下载游戏可执行文件，仅请求官方清单、1.21.1版本描述、资源索引及一个小资源对象。
+在仓库根执行 `pnpm test:spikes`（包含storage、trust、recovery、cross-volume、lease五个测试文件）；真实官方信任链单独执行 `node spikes/phase0-local/live-trust.mjs`。本地测试不访问真实网络，真实采集不下载游戏可执行文件，仅请求官方清单、1.21.1版本描述、资源索引及一个小资源对象。
 
 S-06a杀死本实验创建的SQLite写进程，验证WAL/完整性与未提交事务恢复；S-07/S-10在PREPARED、staged、APPLYING、入口替换、JSON提交、COMMITTED六个边界杀进程并恢复。未知schema、损坏DB、已提交入口摘要不符必须停写。磁盘满只注入rename前错误，未对真实磁盘耗尽做测试。
 
 GC仅验证纯计划：索引丢失不丢权威引用；实例、隐藏依赖、会话、操作及备份保留对象；派生视图不成为永久GC根。没有生产GC或崩溃日志schema实现。S-07的目录联接检查仅为静态安全及不跟随清理，不证明TOCTOU防护或断电持久性。
 
 恢复增量：`recovery.mjs`仅为共享实验实现；`recovery.test.mjs`验证20次回滚重放、20次已提交重放、3个恢复自身被杀边界、12轮双调用争用、外部连接写锁、状态矛盾及5类证据缺失/损坏。写入前BEGIN IMMEDIATE成功才接触实例入口；SQLITE_BUSY/LOCKED返回busy。终态按入口摘要验证，缺日志不新建空库，不把不明状态改成ready。读取与路径校验仅覆盖静态场景，不声称抵抗恶意并发替换。
+
+跨卷增量在OS临时目录与仓库本目录`.runs/`下建立唯一假数据根，以stat.dev确认不同卷；同卷环境明确SKIP，不伪造跨卷结果。验证实际跨卷rename失败，以及跨卷复制→目标卷暂存→摘要校验/flush→同卷rename→JSON提交的六个中断恢复点。目录占用实验采用realpath后的排他创建标记，仅验证合作进程互斥、别名、空/过期/外来标记保护；不自动按PID/时间回收，不批准该标记为生产租约格式，不声称防恶意竞态或分布式锁。
 
 假文件在OS临时目录下新建唯一 `oucl-phase0-*` 根；清理逐级lstat，只删除本次根，不跟随链接。报告由测试运行器及live-trust脚本输出到results。S-08旧版真实启动留作独立兼容实验，未把未实测样本写成支持。

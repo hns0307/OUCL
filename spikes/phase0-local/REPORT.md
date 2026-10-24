@@ -4,7 +4,7 @@
 
 ## 实际结果
 
-- 首轮`pnpm test:spikes`为18项，17 PASS、0 FAIL、1 SKIP。2026-10-24继续操作后的最新完整运行是36项，**35 PASS、0 FAIL、1 SKIP**；最终逐用例证据见[tests.tap](results/tests.tap)。
+- 首轮`pnpm test:spikes`为18项，17 PASS、0 FAIL、1 SKIP；恢复增量为36项、35 PASS。2026-10-24跨卷/目录占用增量后的最新完整运行是49项，**48 PASS、0 FAIL、1 SKIP**；最终逐用例证据见[tests.tap](results/tests.tap)。
 - `node spikes/phase0-local/live-trust.mjs`：PASS，4个官方HTTPS响应；见[live-trust.json](results/live-trust.json)。根manifest通过固定官方HTTPS取得，不存在更上层摘要，不伪称其有签名；version、assetIndex与小资源逐级核对上游摘要，已提供size时一并核对。
 - 运行环境Node 24.21.0，内置SQLite 3.53.4；Electron骨架所带Node为24.22.0，但尚未在Electron worker中验证SQLite，不能把本实验当生产绑定兼容结论。
 
@@ -36,4 +36,25 @@ S-09原PowerShell实验17 PASS / 14 SKIP保留原报告，本次Node接口的1�
 
 新增18项恢复测试：20次回滚重放、20次提交重放；3个恢复自身持久化边界被SIGKILL后再恢复；12轮双恢复调用竞争与后续重放；另一SQLite连接持写锁的busy分支；矛盾状态、非法JSON、缺日志，以及缺行/缺表/坏DB/缺备份/缺入口。全部通过，详情包含在完整tests.tap；不把12轮双调用说成多进程长期并发压力，不把独立SQLite连接锁测试说成生产目录租约验证。
 
-依旧未验证：真实断电/磁盘耗尽、跨卷恢复、生产存储schema、恶意TOCTOU、跨进程目录租约、完整GC/迁移、S-08旧版游戏及文件软链接权限。G0整体技术验收仍未完成。下个最小实验可补跨卷staging与目录租约；正式业务仍需具体增量启动。
+该恢复增量结束时尚未验证跨卷恢复与跨进程目录占用，后续进展见下一节；真实断电/磁盘耗尽、生产存储schema、恶意TOCTOU、完整GC/迁移、S-08旧版游戏及文件软链接权限仍无通过证据。G0整体技术验收未完成，正式业务仍需具体增量启动。
+
+## 2026-10-24 再次继续：跨卷暂存与目录占用
+
+用户要求“继续操作”，沿用阶段0及后续git commit授权。本增量新增13项测试，全部通过，不增加依赖、IPC或正式业务文件。完整测试现在48 PASS / 0 FAIL / 1 SKIP。
+
+| 场景 | 实测结果与证据范围 |
+| --- | --- |
+| 真跨卷rename | 本机C→D，以stat.dev核实卷不同，rename返回EXDEV；源文件不移动，目标入口不生成 |
+| 跨卷目标暂存 | 跨卷复制至目标卷staged，验证期望摘要、flush，再同卷rename替换入口；没有声称跨卷rename原子性 |
+| 六个跨卷中断点 | PREPARED、复制完成、APPLYING、入口替换、JSON提交、COMMITTED各杀死实验子进程，再重复恢复；每次为完整旧/新入口，源文件与另一实例哨兵保持不变 |
+| 错误副本 | 源内容与预期摘要不符时，子进程拒绝STAGED_HASH_MISMATCH；目标旧入口与JSON不变，源证据保留，日志可恢复 |
+| 两个实际进程争用 | 同一目录的wx排他创建只允许一个进程获得标记；正常释放后其他请求能获取 |
+| 占用进程崩溃/空标记 | 终止实验自己创建的持有进程后，后来者仍busy；人为构造的空标记同样停止，不按PID/年龄猜测回收 |
+| 外来标记 | token改变后原持有者不能删除新标记；未误删未知占用 |
+| 目录别名 | junction别名通过realpath归一到相同根，不能绕过占用；释放后可由别名获取并从真实根释放 |
+
+目录标记仅为spike内合作进程占用实验，不是生产目录租约实现；release的读标记/校验token/unlink不能据此证明抗恶意TOCTOU。异常进程退出后仍停止等待是安全边界，自动回收及UI处置未实现。跨卷测试没有实际搬迁玩家目录，也没有建立生产迁移界面。
+
+复现`pnpm test:spikes`；若OS临时目录与仓库同卷，8项跨卷场景会额外SKIP，Windows junction不可用也会失败或跳过其平台场景，不把别机结果当本机证据。本机本轮13项均有实际PASS；`.runs/`本次假数据清理无失败，目录本身受gitignore保护。源码与测试脚本摘要见[recovery-snapshot.json](results/recovery-snapshot.json)。
+
+剩余最小候选：在已装Electron运行时的独立worker中核验SQLite接口与退出恢复，避免仅以外部Node实验推断生产兼容。该工作仍属于阶段0；文件软链接、旧版实机、硬件故障及生产级竞态防护不因此通过。

@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 const worker = fileURLToPath(new URL('./storage-worker.mjs', import.meta.url));
 
 /** Kills only the child created here after its explicit boundary acknowledgement. */
-export async function killAt(mode, root, boundary) {
-  const child = fork(worker, [mode, root, boundary], { stdio: ['ignore', 'ignore', 'pipe', 'ipc'] });
+export async function killAt(mode, root, boundary, extraArgs = []) {
+  const child = fork(worker, [mode, root, boundary, ...extraArgs], { stdio: ['ignore', 'ignore', 'pipe', 'ipc'] });
   let stderr = '';
   child.stderr.on('data', chunk => { stderr += chunk.toString(); });
   const ended = once(child, 'exit');

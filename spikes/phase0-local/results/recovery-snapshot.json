@@ -1,16 +1,32 @@
 {
-  "recordedAtUtc": "2026-10-24T11:15:55.1108917+00:00",
+  "recordedAtUtc": "2026-10-24T11:27:18.4596129+00:00",
   "nodeVersion": "v24.21.0",
   "fullTestCounts": {
-    "skip": 1,
-    "total": 36,
     "fail": 0,
-    "pass": 35
+    "total": 49,
+    "pass": 48,
+    "skip": 1
   },
   "files": [
     {
+      "path": "cross-volume.test.mjs",
+      "sha256": "3B28EB34389B53173DC128306ECE3C788E3DE6D5AF867E5C75FE264CB91B85DE"
+    },
+    {
       "path": "fixture.mjs",
-      "sha256": "1A2FC069E103FE1F39A2614B5B2AD1922DC6EA2CDB88156FF7B905E79C2828FF"
+      "sha256": "2C7F733F8D96AAA4BDE58807F25670FDADCD3B966A8A424AC7F95852421556D1"
+    },
+    {
+      "path": "lease-worker.mjs",
+      "sha256": "8E0945DB3441BD333ED0D0B986CDB766D6727313AFFBAEB3E8538FBA772A2BDD"
+    },
+    {
+      "path": "lease.mjs",
+      "sha256": "46931046AF0D862DFEDF7F0E4A54D296104DF3DDD1A40AC1C7499F1B59CEE0CE"
+    },
+    {
+      "path": "lease.test.mjs",
+      "sha256": "DDDFFEF9B0C495219C48D263A40482BBD0818635E2A7410ECE5D41783A7D4945"
     },
     {
       "path": "live-trust.mjs",
@@ -18,7 +34,7 @@
     },
     {
       "path": "process-fixture.mjs",
-      "sha256": "5F6151FE0A9D70957FFAA32A2DD3A89A08FD1C21A35AACA5FF0B3FF30B0D656F"
+      "sha256": "1BB6E0B07FB8111F0C5C36A17C046BE25E038D2AA248EB10A6205B4C5CDFCA91"
     },
     {
       "path": "recovery.mjs",
@@ -30,7 +46,7 @@
     },
     {
       "path": "storage-worker.mjs",
-      "sha256": "79B73A0134CB28CE2DC84D1F2E445CF0051485E01853B4727D4670E0450A7A45"
+      "sha256": "D008CD4149A7EB00A1CF6A7B7A73ED049E71F011876BB6C505F8EB818A97773B"
     },
     {
       "path": "storage.test.mjs",
