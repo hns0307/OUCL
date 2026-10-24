@@ -2,6 +2,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import type { Execution } from '../../core/task/machine.js';
 import type { StoredTask, TaskKind } from '../storage/tasks.js';
 import { parseExecution } from '../storage/tasks.js';
+import type { IndexedObject } from '../storage/object-index.js';
 
 export type WorkerCode = 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'UNSAFE_PATH' | 'STORAGE_IO'
   | 'WORKER_FAILED' | 'INVALID_MESSAGE' | 'QUEUE_FULL' | 'CANCELLED' | 'TIMEOUT' | 'FILE_TOO_LARGE';
@@ -20,12 +21,15 @@ export class WorkerError extends Error {
 export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'get'; ownerId: string; taskId: string }
   | { kind: 'update'; ownerId: string; taskId: string; expectedRevision: number; execution: Execution }
+  | { kind: 'object:lookup'; sourceKey: string }
+  | { kind: 'object:remember'; sourceKey: string; object: IndexedObject }
+  | { kind: 'object:clear' }
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult };
@@ -40,7 +44,12 @@ function requireMessage(condition: unknown): asserts condition { if (!condition)
 export function parseStorageRequest(value: unknown): StorageRequest {
   requireMessage(object(value) && exact(value, ['version', 'id', 'command']) && value.version === 1 && uuid(value.id) && object(value.command));
   const command = value.command;
-  if (command.kind === 'close') requireMessage(exact(command, ['kind']));
+  if (command.kind === 'close' || command.kind === 'object:clear') requireMessage(exact(command, ['kind']));
+  else if (command.kind === 'object:lookup' || command.kind === 'object:remember') {
+    requireMessage(typeof command.sourceKey === 'string' && /^[a-f0-9]{64}$/.test(command.sourceKey)
+      && exact(command, command.kind === 'object:lookup' ? ['kind', 'sourceKey'] : ['kind', 'sourceKey', 'object']));
+    if (command.kind === 'object:remember') parseIndexed(command.object);
+  }
   else {
     requireMessage(uuid(command.ownerId));
     if (command.kind === 'accept') requireMessage(exact(command, ['kind', 'ownerId', 'requestId', 'taskKind', 'payloadDigest'])
@@ -61,6 +70,12 @@ function parseTask(value: unknown): StoredTask {
   return { taskId: value.taskId, ownerId: value.ownerId, kind: value.kind as TaskKind, execution: parseExecution(value.execution) };
 }
 
+function parseIndexed(value: unknown): IndexedObject {
+  requireMessage(object(value) && exact(value, ['digest', 'size']) && typeof value.digest === 'string'
+    && /^[a-f0-9]{64}$/.test(value.digest) && integer(value.size));
+  return { digest: value.digest, size: value.size };
+}
+
 /** Validates every worker response before it can update application state. */
 export function parseReply(value: unknown): WorkerReply {
   requireMessage(object(value) && value.version === 1);
@@ -72,8 +87,10 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage(exact(value, value.task === undefined ? ['version', 'kind', 'id', 'ok'] : ['version', 'kind', 'id', 'ok', 'task']));
-      return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }) };
+      requireMessage(!(value.task !== undefined && value.object !== undefined)
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object'])]));
+      return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
+        ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

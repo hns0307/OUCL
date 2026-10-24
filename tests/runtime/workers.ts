@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { mkdir, open, rm } from 'node:fs/promises';
+import { mkdir, open, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -7,6 +7,7 @@ import { setInterval, clearInterval, setTimeout, clearTimeout } from 'node:timer
 import { StorageClient } from '../../src/services/workers/storage-client.js';
 import { HashPool } from '../../src/services/workers/hash-pool.js';
 import { controlTask } from '../../src/core/task/machine.js';
+import { ObjectStore } from '../../src/services/objects/store.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -15,6 +16,7 @@ const deadline = setTimeout(() => { app.exit(1); }, 30000);
 
 void app.whenReady().then(async () => {
   let client: StorageClient | undefined;
+  let objects: ObjectStore | undefined;
   const pool = new HashPool(entry, 2);
   try {
     const storeDirectory = path.join(root, 'metadata'); await mkdir(storeDirectory);
@@ -44,14 +46,32 @@ void app.whenReady().then(async () => {
     assert.ok(ticks > 0); assert.ok(progressEvents > 0);
     const controller = new AbortController();
     await assert.rejects(pool.hash(file, { maximumBytes: result.size, signal: controller.signal, onProgress: () => { controller.abort(); } }), { code: 'CANCELLED' });
-    await rm(file); await pool.close();
+    await rm(file);
+    client = await StorageClient.open(entry, storeDirectory);
+    const objectsDirectory = path.join(root, 'store'); await mkdir(objectsDirectory);
+    objects = await ObjectStore.open(objectsDirectory, client, pool);
+    const fixture = Buffer.from('runtime object fixture');
+    const expected = { algorithm: 'sha1' as const, digest: createHash('sha1').update(fixture).digest('hex'), size: fixture.length, provenanceId: 'fixture:a' };
+    const anchor = { kind: 'mojang-version' as const, algorithm: 'sha1' as const, digest: 'a'.repeat(40) };
+    const stagedA = await objects.createStaging(); const stagedB = await objects.createStaging();
+    await writeFile(stagedA.file, fixture); await writeFile(stagedB.file, fixture);
+    const objectA = await objects.commit(stagedA.id, expected, anchor);
+    const objectB = await objects.commit(stagedB.id, { ...expected, provenanceId: 'fixture:b' }, anchor);
+    assert.equal(objectA.digest, objectB.digest); assert.notEqual(objectA.sourceKey, objectB.sourceKey);
+    await client.clear(); assert.equal(await objects.lookup(expected, anchor), undefined);
+    assert.equal(await objects.rebuildIndex(), 2);
+    assert.equal((await objects.lookup(expected, anchor))?.digest, objectA.digest);
+    assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
+    await objects.close(); objects = undefined;
+    await client.close(); client = undefined; await pool.close();
     console.log('OUCL_WORKERS_RESULT:' + JSON.stringify({ status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       builtWorkerUsed: true, storageAcceptanceIdempotent: true, interruptedTaskProtected: true, hashBytes: result.size,
       hashElapsedMs, hashMatched: true, parentEventLoopTicks: ticks,
-      progressEvents, cancellationJoined: true, fileHandleReleased: true }));
+      progressEvents, cancellationJoined: true, fileHandleReleased: true, objectDeduplicated: true, provenanceSeparated: true,
+      objectIndexRebuilt: true, durableTaskPreserved: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
-    await pool.close(); await client?.close().catch(() => {});
+    await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});
     console.log('OUCL_WORKERS_RESULT:' + JSON.stringify({ status: 'FAIL', code: error instanceof Error && 'code' in error ? error.code : 'RUNTIME_ASSERTION' }));
     clearTimeout(deadline); app.exit(1);
   }

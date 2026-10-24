@@ -4,9 +4,11 @@ import type { Execution } from '../../core/task/machine.js';
 import type { StoredTask, TaskKind } from '../storage/tasks.js';
 import { parseReply, parseStorageRequest, WorkerError } from './protocol.js';
 import type { StorageCommand } from './protocol.js';
+import type { IndexedObject } from '../storage/object-index.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject };
 
 interface Pending {
-  resolve: (task: StoredTask | undefined) => void;
+  resolve: (data: StorageData) => void;
   reject: (error: WorkerError) => void;
   timer: ReturnType<typeof setTimeout>;
 }
@@ -65,11 +67,11 @@ export class StorageClient {
       const pending = this.pending.get(reply.id);
       if (!pending) return;
       this.pending.delete(reply.id); clearTimeout(pending.timer);
-      if (reply.ok) pending.resolve(reply.task); else pending.reject(new WorkerError(reply.code));
+      if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
-  private request(command: StorageCommand, shuttingDown = false): Promise<StoredTask | undefined> {
+  private request(command: StorageCommand, shuttingDown = false): Promise<StorageData> {
     if (this.stopped || this.closing && !shuttingDown) return Promise.reject(new WorkerError('WORKER_FAILED'));
     if (this.pending.size >= 32 && !shuttingDown) return Promise.reject(new WorkerError('QUEUE_FULL'));
     const request = parseStorageRequest({ version: 1, id: randomUUID(), command });
@@ -86,18 +88,25 @@ export class StorageClient {
 
   /** Durable idempotent acceptance; retry with the same business requestId after an unknown outcome. */
   async accept(ownerId: string, requestId: string, taskKind: TaskKind, payloadDigest: string): Promise<StoredTask> {
-    const task = await this.request({ kind: 'accept', ownerId, requestId, taskKind, payloadDigest });
+    const { task } = await this.request({ kind: 'accept', ownerId, requestId, taskKind, payloadDigest });
     if (!task) throw new WorkerError('INVALID_MESSAGE'); return task;
   }
 
   /** Queries only the stable owner's task, including after a caller timeout. */
-  get(ownerId: string, taskId: string): Promise<StoredTask | undefined> { return this.request({ kind: 'get', ownerId, taskId }); }
+  async get(ownerId: string, taskId: string): Promise<StoredTask | undefined> { return (await this.request({ kind: 'get', ownerId, taskId })).task; }
 
   /** Saves a transition before its effects run outside the storage worker. */
   async update(ownerId: string, taskId: string, expectedRevision: number, execution: Execution): Promise<StoredTask> {
-    const task = await this.request({ kind: 'update', ownerId, taskId, expectedRevision, execution });
+    const { task } = await this.request({ kind: 'update', ownerId, taskId, expectedRevision, execution });
     if (!task) throw new WorkerError('INVALID_MESSAGE'); return task;
   }
+
+  /** Gets a disposable object hint, never a trust decision. */
+  async lookup(sourceKey: string): Promise<IndexedObject | undefined> { return (await this.request({ kind: 'object:lookup', sourceKey })).object; }
+  /** Saves a search hint after authoritative object/provenance verification. */
+  async remember(sourceKey: string, object: IndexedObject): Promise<void> { await this.request({ kind: 'object:remember', sourceKey, object }); }
+  /** Resets only the independent search cache for a provenance-based rebuild. */
+  async clear(): Promise<void> { await this.request({ kind: 'object:clear' }); }
 
   /** Drains earlier requests, closes the database, releases its own lease and waits for thread exit. */
   async close(): Promise<void> {

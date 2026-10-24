@@ -14,3 +14,5 @@ StorageClient最多32个未完成请求，另保留一个close控制位。默认
 HashPool默认并发2、最多4，最多32个等待任务；worker堆上限64MiB，256KiB流块，单次任务期限120s。排队取消不启动线程；执行中取消终止且等exit后才reject(CANCELLED)。close取消全部并join。进度最多10Hz，终态附最终字节数/摘要。哈希超量、输入变化、不明worker消息或崩溃不返回成功。
 
 存储worker堆上限128MiB，SQLite同步能力始终留在线程内。Node/Electron具体兼容及响应证据见A1-04c报告；主事件循环心跳不是UI FPS测试。后续受控解压、对象仓库、实例物化、任务调度和实际IPC装配完成前，不标A1-04整体或简易启动器完成。
+
+A1-04b补充：私有存储消息现包含object:lookup/sourceKey、object:remember/sourceKey/object(digest,size)、object:clear。成功响应可带object或task之一，严格拒绝两者同时出现。索引单独保存在objects-index.sqlite，规则见[OBJECT_STORE](OBJECT_STORE.md)，不是任意SQL/路径接口。test:workers-runtime目前将新增对象证据写入A1-04b，A1-04c旧报告保留历史。

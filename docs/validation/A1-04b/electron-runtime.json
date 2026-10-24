@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "builtWorkerUsed": true,
+  "storageAcceptanceIdempotent": true,
+  "interruptedTaskProtected": true,
+  "hashBytes": 67108864,
+  "hashElapsedMs": 143,
+  "hashMatched": true,
+  "parentEventLoopTicks": 10,
+  "progressEvents": 1,
+  "cancellationJoined": true,
+  "fileHandleReleased": true,
+  "objectDeduplicated": true,
+  "provenanceSeparated": true,
+  "objectIndexRebuilt": true,
+  "durableTaskPreserved": true,
+  "exitCode": 0,
+  "timestamp": "2026-10-24T13:29:00.916Z"
+}

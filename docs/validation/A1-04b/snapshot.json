@@ -1,0 +1,38 @@
+[
+  {
+    "path": "src/services/objects/provenance.ts",
+    "sha256": "f260f4147cddc19cf01a5a54d4b3f9708371958d41539e858ce18e0e16ba309c"
+  },
+  {
+    "path": "src/services/objects/store.ts",
+    "sha256": "2a064f3546e3ace76a0626145b88f5acc543fa4455352ff0dd9d62b01057fb65"
+  },
+  {
+    "path": "src/services/storage/object-index.ts",
+    "sha256": "2bf164e134018e154d9a7bdee70d45c21b426a66e701260c51a9e30ed6a95dc4"
+  },
+  {
+    "path": "src/services/workers/protocol.ts",
+    "sha256": "cf263e2521505ad631f85d97f16d7507bea84f10ba102d95e75d12de1b8a8d27"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "1c7e750e70173ab44228c0891984c66887660eaa0f8c4d9c24cb8216f2d50634"
+  },
+  {
+    "path": "src/services/workers/storage-client.ts",
+    "sha256": "df11ac40113a97c4560ca1a1ad7098d418102c3af4668c6c0ce2c3cc85bb64fd"
+  },
+  {
+    "path": "tests/objects.test.ts",
+    "sha256": "6d8c709f41a1e783568bf22394ea0c5a8680844ab047cda98cfc9c0ac56c90d2"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "a8fe1223adb23042b68dbd4eae16db34acca0e3ec616e561ed482752f506aa6c"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "ccedc5ab55cfd2fad2e58ca29f8bd63ad22c7fac03320e98af6b424a06f89f7b"
+  }
+]

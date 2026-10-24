@@ -6,6 +6,7 @@ import { RecordStore } from '../storage/records.js';
 import { guardDirectory, StorageError } from '../storage/files.js';
 import { parseStorageRequest, WorkerError } from './protocol.js';
 import type { WorkerCode, WorkerReply } from './protocol.js';
+import { ObjectIndex } from '../storage/object-index.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -15,22 +16,30 @@ const code = (error: unknown): WorkerCode => error instanceof StorageError || er
 async function storage(directory: string): Promise<void> {
   const store = await RecordStore.open(directory);
   try { await store.recover(); } catch (error) { await store.close(); throw error; }
+  let index: ObjectIndex | undefined;
   let tail = Promise.resolve();
   let closing = false;
   port!.on('message', (input: unknown) => {
     tail = tail.then(async () => {
       let request;
       try { request = parseStorageRequest(input); }
-      catch { send({ version: 1, kind: 'startup-failed', code: 'INVALID_MESSAGE' }); await store.close(); port!.close(); return; }
+      catch { send({ version: 1, kind: 'startup-failed', code: 'INVALID_MESSAGE' }); index?.close(); await store.close(); port!.close(); return; }
       if (closing) return;
       try {
         const command = request.command;
         let task;
+        let object;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
-        else { closing = true; await store.close(); }
-        send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }) });
+        else if (command.kind === 'object:lookup' || command.kind === 'object:remember' || command.kind === 'object:clear') {
+          await guardDirectory(directory);
+          index ??= await ObjectIndex.open(directory);
+          if (command.kind === 'object:lookup') object = index.lookup(command.sourceKey);
+          else if (command.kind === 'object:remember') index.remember(command.sourceKey, command.object);
+          else index.clear();
+        } else { closing = true; index?.close(); await store.close(); }
+        send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });
