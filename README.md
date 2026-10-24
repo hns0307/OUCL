@@ -1,6 +1,6 @@
 # OUCL
 
-面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，已获用户明确批准持续实施。已交付版本/路径/任务策略、存储/对象/worker基础、目录选择和真实官方版本浏览；游戏文件下载及实际启动仍未完成。源码界面可登记固定游戏数据位置并浏览已校验目录，旧便携目录仍为此前空骨架。阶段0技术缺项与后续支持声明按实测保留。
+面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，已获用户明确批准持续实施。已有基础策略、存储/对象/worker、目录选择、官方版本浏览，以及真实制品传输/续传验证；界面安装和实际启动仍未完成。旧便携目录仍为此前空骨架，阶段0技术缺项与支持声明按实测保留。
 
 ## 开始工作
 
@@ -18,6 +18,8 @@ pnpm start
 ```
 
 本地风险实验：`pnpm test:spikes`；当前源码窗口验收：`pnpm smoke`；正式worker验证：`pnpm test:workers-runtime`；依赖检查：`pnpm audit --audit-level=high`、`pnpm audit:licenses`。受限工具环境可能阻止临时文件rename/junction或网络，实际结果与解决方式见报告，不关闭应用sandbox来让测试通过。
+
+`pnpm test`后可运行`node scripts/verify-download.mjs`验证真实官方客户端下载、取消/重开续传和对象复用；它使用临时目录并清理，不启动游戏。证据见[A1-05传输报告](docs/validation/A1-05-transfer/REPORT.md)。
 
 `pnpm package:dir`生成新的`release/OUCL-0.0.0-win32-x64/OUCL.exe`便携目录，已存在同名目录则拒绝覆盖。`pnpm smoke:package`验证真实包默认入口。它是未签名工程预览，无安装器及游戏功能。
 

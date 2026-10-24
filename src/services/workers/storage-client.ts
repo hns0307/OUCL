@@ -8,7 +8,8 @@ import type { IndexedObject } from '../storage/object-index.js';
 import type { Installation } from '../storage/installation.js';
 import type { RecordEnvelope } from '../storage/records.js';
 import type { CatalogCache } from '../storage/catalog-cache.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache> };
+import type { TransferRecord } from '../download/types.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -71,7 +72,8 @@ export class StorageClient {
       if (!pending) return;
       this.pending.delete(reply.id); clearTimeout(pending.timer);
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
-        ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
+        ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -125,6 +127,10 @@ export class StorageClient {
     const result = (await this.request({ kind: 'catalog:set', expectedRevision, data })).catalog;
     if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
   }
+  /** Reads authoritative transfer identity and its fsynced prefix, never a disposable search hint. */
+  async getTransfer(key: string): Promise<TransferRecord | undefined> { return (await this.request({ kind: 'transfer:get', key })).transfer; }
+  /** Persists a revision-checked transfer checkpoint in SQLite before acknowledging it to the downloader. */
+  async saveTransfer(expectedRevision: number, record: TransferRecord): Promise<void> { await this.request({ kind: 'transfer:set', expectedRevision, record }); }
 
   /** Drains earlier requests, closes the database, releases its own lease and waits for thread exit. */
   async close(): Promise<void> {

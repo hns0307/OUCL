@@ -9,6 +9,7 @@ import type { WorkerCode, WorkerReply } from './protocol.js';
 import { ObjectIndex } from '../storage/object-index.js';
 import { parseInstallation } from '../storage/installation.js';
 import { parseCatalogCache } from '../storage/catalog-cache.js';
+import { TransferDatabase } from '../storage/transfer-db.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -19,13 +20,14 @@ async function storage(directory: string): Promise<void> {
   const store = await RecordStore.open(directory);
   try { await store.recover(); } catch (error) { await store.close(); throw error; }
   let index: ObjectIndex | undefined;
+  let transfers: TransferDatabase | undefined;
   let tail = Promise.resolve();
   let closing = false;
   port!.on('message', (input: unknown) => {
     tail = tail.then(async () => {
       let request;
       try { request = parseStorageRequest(input); }
-      catch { send({ version: 1, kind: 'startup-failed', code: 'INVALID_MESSAGE' }); index?.close(); await store.close(); port!.close(); return; }
+      catch { send({ version: 1, kind: 'startup-failed', code: 'INVALID_MESSAGE' }); transfers?.close(); index?.close(); await store.close(); port!.close(); return; }
       if (closing) return;
       try {
         const command = request.command;
@@ -33,6 +35,7 @@ async function storage(directory: string): Promise<void> {
         let object;
         let installation;
         let catalog;
+        let transfer;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
@@ -40,15 +43,20 @@ async function storage(directory: string): Promise<void> {
         else if (command.kind === 'installation:set') installation = await store.write('installation', 0, command.data, parseInstallation);
         else if (command.kind === 'catalog:get') catalog = await store.read('catalog', parseCatalogCache);
         else if (command.kind === 'catalog:set') catalog = await store.write('catalog', command.expectedRevision, command.data, parseCatalogCache);
+        else if (command.kind === 'transfer:get' || command.kind === 'transfer:set') {
+          await guardDirectory(directory); transfers ??= await TransferDatabase.open(directory, store);
+          if (command.kind === 'transfer:get') transfer = transfers.get(command.key);
+          else transfers.set(command.expectedRevision, command.record);
+        }
         else if (command.kind === 'object:lookup' || command.kind === 'object:remember' || command.kind === 'object:clear') {
           await guardDirectory(directory);
           index ??= await ObjectIndex.open(directory);
           if (command.kind === 'object:lookup') object = index.lookup(command.sourceKey);
           else if (command.kind === 'object:remember') index.remember(command.sourceKey, command.object);
           else index.clear();
-        } else { closing = true; index?.close(); await store.close(); }
+        } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
-          ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }) });
+          ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

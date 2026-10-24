@@ -1,11 +1,11 @@
 # services
 
-storage为已获批阶段1A的私有元数据仓库基础：异步JSON提交、SQLite权威操作日志/任务/幂等受理和保守恢复。同步SQLite模块必须由后台worker独占，当前未被主进程入口导入。具体约定见docs/contracts/STORAGE_RECORDS.md；实例文件事务与执行器接入仍在进行中。
+storage为阶段1A私有元数据仓库：异步JSON提交、SQLite权威操作日志/任务/幂等受理与独立续传库。同步SQLite留在后台worker，普通入口经StorageClient装配目录/目录缓存服务；实例文件事务仍在进行中。
 
-workers提供StorageClient和有界HashPool，正式worker产物已在Electron运行时验证。存储请求超时仅表示结果未知；哈希取消等线程退出后结束。当前均未装配到普通应用入口，解压和业务IPC仍待实现，详见docs/contracts/WORKERS.md。
+workers提供StorageClient和有界HashPool，正式产物已在Electron验证。存储超时仅表示结果未知，哈希取消等线程退出后结束；解压、安装与进程契约仍待实现。
 
 objects提供固定SHA256本体、独立来源证明、去重提交和索引重建，已接存储/哈希worker并通过Electron验证。来源认证仍由元数据服务负责，不能只凭本地摘要或索引相信内容；未知/损坏证据保留，不自动覆盖或GC。详见docs/contracts/OBJECT_STORE.md。
 
 roots经主进程注入的系统选择器登记固定数据目录，持久化走StorageClient固定installation schema，只向UI返回UUID/标签/可用状态。该服务已装配正式入口；玩家数据/实例与实际下载未接入。
 
-已批准的主进程IO编排层。本轮不实现下载、账户、实例或启动服务；平台能力经适配器注入。
+catalog负责官方目录/描述信任链和版本化缓存，已接versions:catalog与正式界面。download提供单物理HttpTransfer、权威前缀checkpoint与ArtifactTransfer对象提交，真实官方制品续传已验证；共享消费者及安装/任务UI尚未接入。详见docs/contracts/DOWNLOAD_TRANSFER.md。

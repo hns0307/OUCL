@@ -1,0 +1,58 @@
+[
+  {
+    "path": "src/services/download/types.ts",
+    "sha256": "40c130186b5b55301701c927d28aedd75482b11ab15eea642a0d327b1f7cb6d9"
+  },
+  {
+    "path": "src/services/download/http.ts",
+    "sha256": "c2cd3d93e763b6544ad4141ae35bbd5ec92814c16fb12a26f59545daa88f2f97"
+  },
+  {
+    "path": "src/services/download/artifact-transfer.ts",
+    "sha256": "ca507f776497af1e2f083d9e1619081f8ac40ef7108bbed2afbbea2e1d6e3291"
+  },
+  {
+    "path": "src/services/storage/transfer-db.ts",
+    "sha256": "80141ff81b5670606de464ab5a93622a14aed07d6e96cb4e76e556f8fd66902f"
+  },
+  {
+    "path": "src/services/objects/store.ts",
+    "sha256": "92ec6b928ffd47c3648ccfacb7c2517a391447977fe74acef844b0f624afa15e"
+  },
+  {
+    "path": "src/services/workers/protocol.ts",
+    "sha256": "54039d8106a4ae5ce5f4200d093e5b6170778c7ffa24033efe5e4d0f7b22f3b5"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "468aeab6cbe62c523e52d06d570dceaf942a94dd4c3be1ca0fe9e1a14cd06d3c"
+  },
+  {
+    "path": "src/services/workers/storage-client.ts",
+    "sha256": "1f933d8c9b50d774920d1ace678cd5a040b39f2e2796902eca3971215b215d7c"
+  },
+  {
+    "path": "tests/download-http.test.ts",
+    "sha256": "0a3ba3606caea0d39418ef05b3e290c6a19f60a17414201a654d3b2f686f2207"
+  },
+  {
+    "path": "tests/download-journal.test.ts",
+    "sha256": "e35d74f4cf6f8727bf6b2ab30094a5db031421b9b3b2a1f355451d7f867c668e"
+  },
+  {
+    "path": "tests/download-artifact.test.ts",
+    "sha256": "602fa31939721d70301eff1471be8fd00b78bb789821fb29937c657810513d8b"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "59ae71306aa77f3fb35992f30d22cd1468b1d27fe2bbb689484aa624013a6a56"
+  },
+  {
+    "path": "scripts/verify-download.mjs",
+    "sha256": "d4d45e33974bcf7c7db18ea0c74c7a0d1ade9822a12efa023b4e4e923e2800b3"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "0080791bd6c551b8165780647424b9736865e9cd3cb258c19b003c98a02e4783"
+  }
+]

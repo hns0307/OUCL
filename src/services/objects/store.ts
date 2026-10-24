@@ -83,6 +83,14 @@ export class ObjectStore {
       return { id, file };
     });
   }
+  /** Resolves only a known durable staging UUID; unknown or linked entries never become writable targets. */
+  resumeStaging(id: string): Promise<string> {
+    return this.serial(async () => {
+      const file = this.staging(id); await guardDirectory(path.dirname(file));
+      if (!await exists(file)) throw new ObjectError('NEEDS_RECOVERY');
+      return file;
+    });
+  }
   private async verify(file: string, expected: ExpectedArtifact, digest?: string): Promise<HashResult> {
     const bytes = await this.hasher.hash(file, { maximumBytes: 64 * 1024 ** 3 });
     const result = verifyArtifact(expected, bytes);

@@ -8,6 +8,9 @@ import { StorageClient } from '../../src/services/workers/storage-client.js';
 import { HashPool } from '../../src/services/workers/hash-pool.js';
 import { controlTask } from '../../src/core/task/machine.js';
 import { ObjectStore } from '../../src/services/objects/store.js';
+import { ArtifactTransfer } from '../../src/services/download/artifact-transfer.js';
+import { HttpTransfer } from '../../src/services/download/http.js';
+import { sourceKey } from '../../src/services/objects/provenance.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -62,13 +65,36 @@ void app.whenReady().then(async () => {
     assert.equal(await objects.rebuildIndex(), 2);
     assert.equal((await objects.lookup(expected, anchor))?.digest, objectA.digest);
     assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
+    const transferSpec = { url: 'https://piston-data.mojang.com/objects/runtime-fixture/client.jar',
+      expected: { ...expected, provenanceId: 'fixture:download' }, anchor };
+    let transferRequests = 0; const halfway = Math.floor(fixture.length / 2);
+    const transferHttp = new HttpTransfer(async (_url, options) => {
+      transferRequests++;
+      if (transferRequests === 1) return new Response(new ReadableStream<Uint8Array>({ start(controller) {
+        controller.enqueue(fixture.subarray(0, halfway)); controller.enqueue(fixture.subarray(halfway)); controller.close();
+      } }), { headers: { 'content-length': String(fixture.length), etag: '"runtime-v1"' } });
+      assert.equal(new Headers(options?.headers).get('range'), `bytes=${halfway}-`);
+      return new Response(fixture.subarray(halfway), { status: 206, headers: { 'content-length': String(fixture.length - halfway),
+        'content-range': `bytes ${halfway}-${fixture.length - 1}/${fixture.length}`, etag: '"runtime-v1"' } });
+    });
+    const stopTransfer = new AbortController();
+    await assert.rejects(new ArtifactTransfer(transferHttp, client, objects).run(transferSpec,
+      { signal: stopTransfer.signal, onProgress: () => { stopTransfer.abort(); } }), { code: 'CANCELLED' });
+    await objects.close(); objects = undefined; await client.close(); client = undefined;
+    client = await StorageClient.open(entry, storeDirectory); objects = await ObjectStore.open(objectsDirectory, client, pool);
+    const physical = new ArtifactTransfer(transferHttp, client, objects);
+    const transferred = await physical.run(transferSpec);
+    assert.equal(transferred.digest, objectA.digest);
+    assert.equal((await client.getTransfer(sourceKey(transferSpec.expected, anchor)))?.state, 'committed');
+    await physical.run(transferSpec); assert.equal(transferRequests, 2);
     await objects.close(); objects = undefined;
     await client.close(); client = undefined; await pool.close();
     console.log('OUCL_WORKERS_RESULT:' + JSON.stringify({ status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       builtWorkerUsed: true, storageAcceptanceIdempotent: true, interruptedTaskProtected: true, hashBytes: result.size,
       hashElapsedMs, hashMatched: true, parentEventLoopTicks: ticks,
       progressEvents, cancellationJoined: true, fileHandleReleased: true, objectDeduplicated: true, provenanceSeparated: true,
-      objectIndexRebuilt: true, durableTaskPreserved: true }));
+      objectIndexRebuilt: true, durableTaskPreserved: true, artifactTransferVerified: true,
+      transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});
