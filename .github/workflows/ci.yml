@@ -15,5 +15,6 @@ jobs:
       - run: pnpm check
       - run: pnpm test:spikes
       - run: pnpm test:electron-sqlite
+      - run: pnpm test:workers-runtime
       - run: pnpm audit --audit-level=high
       - run: pnpm audit:licenses

@@ -13,6 +13,7 @@
     "test": "node scripts/test.mjs",
     "test:spikes": "node --test spikes/phase0-local/storage.test.mjs spikes/phase0-local/trust.test.mjs spikes/phase0-local/recovery.test.mjs spikes/phase0-local/cross-volume.test.mjs spikes/phase0-local/lease.test.mjs",
     "test:electron-sqlite": "node spikes/electron-sqlite/run.mjs",
+    "test:workers-runtime": "pnpm build && node scripts/worker-runtime.mjs",
     "build": "node scripts/build.mjs",
     "start": "node scripts/start.mjs",
     "smoke": "node scripts/smoke.mjs",

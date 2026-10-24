@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "builtWorkerUsed": true,
+  "storageAcceptanceIdempotent": true,
+  "interruptedTaskProtected": true,
+  "hashBytes": 67108864,
+  "hashElapsedMs": 156,
+  "hashMatched": true,
+  "parentEventLoopTicks": 12,
+  "progressEvents": 2,
+  "cancellationJoined": true,
+  "fileHandleReleased": true,
+  "exitCode": 0,
+  "timestamp": "2026-10-24T13:19:31.402Z"
+}

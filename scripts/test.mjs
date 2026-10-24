@@ -10,8 +10,9 @@ async function typescriptFiles(directory) {
   return groups.flat();
 }
 const sources = await typescriptFiles('src');
-const tests = (await typescriptFiles('tests')).filter(file => file.endsWith('.test.ts'));
-await build({ entryPoints: [...sources, ...tests], bundle: false, platform: 'node', format: 'esm', target: 'node24', outbase: '.', outdir: '.test-build' });
+const testSources = await typescriptFiles('tests');
+const tests = testSources.filter(file => file.endsWith('.test.ts'));
+await build({ entryPoints: [...sources, ...testSources], bundle: false, platform: 'node', format: 'esm', target: 'node24', outbase: '.', outdir: '.test-build' });
 const child = spawn(process.execPath, ['--test', '--experimental-test-coverage', '--test-coverage-include=**/src/core/**/*.js',
   '--test-coverage-lines=85', '--test-coverage-branches=85', '--test-coverage-functions=85',
   ...tests.map(file => path.join('.test-build', file.replace(/\.ts$/, '.js')))], { stdio: 'inherit' });

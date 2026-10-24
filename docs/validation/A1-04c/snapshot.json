@@ -1,0 +1,42 @@
+[
+  {
+    "path": "src/services/workers/protocol.ts",
+    "sha256": "e7cab53fd5cf06c5e49427cbf9e76c298563d19b2ed5958f4854ca1bc51bb906"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "0165ffc065e5fc7f16556e14eb7f979716e5f09d7d6f1cb7839e413c51a85920"
+  },
+  {
+    "path": "src/services/workers/storage-client.ts",
+    "sha256": "3abb6e15bc328bf58273cff0e3dfcae781df9befb86a62f756eb49b18f9c4c2b"
+  },
+  {
+    "path": "src/services/workers/hash-pool.ts",
+    "sha256": "cd466c2799b3fb0317ee88c5f4734e9acb18fd44109f1486e9937cd05a883a7e"
+  },
+  {
+    "path": "tests/workers.test.ts",
+    "sha256": "f6d7630a466c2c3b2d93cb6715036ef407fd4e17f5c851ac5226992b675120e3"
+  },
+  {
+    "path": "tests/fixtures/worker.ts",
+    "sha256": "cd00d60891e9109457bfb4c40ccb17ebc064912ae55e4641d8baf4d746ee667e"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "b35e285acf1b693da78426de8eac0f2e61317f41388dc4d1bd87318723cecdb4"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "e2dbd169cd432b7dd2b939a8086f987be15b4809082b30203cc5fda11d27a402"
+  },
+  {
+    "path": "scripts/build.mjs",
+    "sha256": "ea0f4569a7f48f5d0596b7e3997659f38406c8c377291dbbc839bce714854a90"
+  },
+  {
+    "path": "scripts/test.mjs",
+    "sha256": "cea8df064ee41cb4b01aa6e01b6f7751b4bace53eccb87be07f9f814dfe5ff20"
+  }
+]
