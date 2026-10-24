@@ -215,3 +215,15 @@ A1-04a–d是原A1-04的拆分，父任务只有四项都验收通过才完成�
 | 实际范围 | C→D真实跨卷rename拒绝；六个目标卷提交中断点恢复；错误摘要拒绝；两进程排他创建、崩溃后停止、空/外来标记保护、junction别名一致 |
 | 边界 | 假文件实验，不改变正式存储schema、IPC或业务，不声称生产TOCTOU/自动租约回收；G0整体验收仍未完成 |
 | 下一最小实验 | 已安装Electron独立worker中的SQLite兼容与退出恢复验证；不自动启动1A业务 |
+
+## 13. 2026-10-24 Electron worker SQLite兼容验证
+
+| 字段 | 记录 |
+| --- | --- |
+| 授权 / 范围 | 沿用已批准阶段0，补齐S-06a的实际Electron运行时证据；未增加1A业务授权 |
+| 执行人 / 验收人 | Codex / 用户待验收 |
+| 交付 | spikes/electron-sqlite独立实验、test:electron-sqlite脚本及CI步骤，无正式服务实现 |
+| 证据 | [运行时实测报告](../../spikes/electron-sqlite/REPORT.md)、[JSON](../../spikes/electron-sqlite/results/latest.json) |
+| 结果 | Electron45 / Node24.22 / SQLite3.53.4的worker中未提交事务终止后正确回滚，integrity_check=ok；20万行实验期间主循环9次心跳，退出0 |
+| 当前目标阻塞 | 简易下载/启动目标所需1A持久授权变更被自动审批拒绝；已发问题面板，请用户直接确认。未将目标上下文伪记为批准 |
+| 门禁 | G0整体技术验收仍有缺项，正式下载/启动尚未实现；确认业务范围后按依赖增量推进，不扩大到后续阶段 |

@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "sqlite": "3.53.4",
+  "abruptWorkerTermination": true,
+  "committedRowPreserved": true,
+  "pendingRowRolledBack": true,
+  "integrity": "ok",
+  "workloadRows": 200000,
+  "workloadMs": 133,
+  "mainEventLoopHeartbeats": 9,
+  "workerThreadId": 3,
+  "timestamp": "2026-10-24T11:31:49.131Z",
+  "exitCode": 0
+}

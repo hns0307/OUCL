@@ -14,5 +14,6 @@ jobs:
       - run: pnpm exec install-electron
       - run: pnpm check
       - run: pnpm test:spikes
+      - run: pnpm test:electron-sqlite
       - run: pnpm audit --audit-level=high
       - run: pnpm audit:licenses

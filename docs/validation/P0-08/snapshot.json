@@ -1,5 +1,5 @@
 {
-  "recordedAtUtc": "2026-10-24T11:27:18.4166901+00:00",
+  "recordedAtUtc": "2026-10-24T11:34:08.1999770+00:00",
   "files": [
     {
       "path": "src\\core\\README.md",
@@ -87,7 +87,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "3ECBEB68AFFAD454AD74BC8D9D22E248B517FE43F9548B76C18EEBE1CA4B6D28"
+      "sha256": "ABDAAF724973E11548AE833690C03F0561DDC2D7D35C2199C2198DE7C2897B36"
     },
     {
       "path": "pnpm-lock.yaml",

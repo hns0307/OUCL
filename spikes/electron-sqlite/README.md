@@ -1,0 +1,7 @@
+# Electron内置SQLite独立worker验证（阶段0）
+
+复用已批准安装的Electron与Node内置SQLite，不新增第三方依赖，不在src中引用。执行`pnpm test:electron-sqlite`，测试创建唯一假数据目录、启动独立Electron测试主进程，不创建UI窗口，退出后清理临时配置和SQLite文件。
+
+验证：Electron所带Node能在worker_threads中加载node:sqlite；worker在WAL事务未提交时被terminate后，新的worker只读到已提交记录且integrity_check=ok；独立worker同步写入20万条假任务元数据期间，Electron主事件循环的5ms心跳仍在发生。心跳不等于渲染FPS或生产下载性能，不证明断电持久性、凭证加密、所有平台或生产DB绑定均可用。
+
+机器可读结果在results/latest.json。仅验证已安装版本，不自动升级Electron，不将该实验结果当成新增业务授权或阶段0整体验收通过。
