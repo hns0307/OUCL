@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-10-24T12:52:39.6871857+00:00",
+  "files": [
+    {
+      "path": "src\\core\\path\\layout.ts",
+      "sha256": "B2A801A4F7EDAC7CE486144432D4B00F75E77E87BF1D0A1EC0E735435A5EF622"
+    },
+    {
+      "path": "tests\\layout.test.ts",
+      "sha256": "A20FBDD507F27824AE13234481E1C36E1AE1A73152BFF41A8FCFCCD6FE959F3E"
+    }
+  ]
+}

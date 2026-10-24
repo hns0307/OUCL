@@ -1,0 +1,73 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ handshake only accepts strict request DTO and safe version integers (2.2228ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.7475ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.6334ms)
+✔ sender requires exact URL, same contents and main frame (0.2651ms)
+✔ response rejects mismatched request identity and injected capabilities (0.2837ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.2565ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (12.2126ms)
+✔ isolation priority is pack, explicit override, then global default (1.9128ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (1.4951ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.6985ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.5988ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.5469ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.5911ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (4.2541ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.9199ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (2.0138ms)
+✔ server-only input cannot provide a client or main class (0.3213ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (1.2921ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.6676ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (2.1432ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (3.8306ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (1.7052ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.51ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (0.8712ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (24.9872ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 209.4176
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    path           |        |          |         |
+ℹ     layout.js     | 100.00 |    94.92 |  100.00 |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.14 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    98.28 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BY2mAzAN.css    1.44 kB │ gzip:  0.69 kB
+dist/renderer/assets/index-BzFODMfZ.js   222.15 kB │ gzip: 70.01 kB
+
+✓ built in 141ms
+
+  dist\main\index.cjs  7.7kb
+
+Done in 10ms
+
+  dist\preload\index.cjs  3.5kb
+
+Done in 8ms
