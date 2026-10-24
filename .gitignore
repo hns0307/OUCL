@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.test-build/
+.pnpm-store/
+*.tsbuildinfo
+coverage/
+release/
+_tmp_*

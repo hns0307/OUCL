@@ -1,0 +1,44 @@
+{
+  "recordedAtUtc": "2026-10-24T11:15:55.1108917+00:00",
+  "nodeVersion": "v24.21.0",
+  "fullTestCounts": {
+    "skip": 1,
+    "total": 36,
+    "fail": 0,
+    "pass": 35
+  },
+  "files": [
+    {
+      "path": "fixture.mjs",
+      "sha256": "1A2FC069E103FE1F39A2614B5B2AD1922DC6EA2CDB88156FF7B905E79C2828FF"
+    },
+    {
+      "path": "live-trust.mjs",
+      "sha256": "32382154D09EE81254FE21DAA31A5840EE3E9BF2C73BF0CF2F73A91760DF1809"
+    },
+    {
+      "path": "process-fixture.mjs",
+      "sha256": "5F6151FE0A9D70957FFAA32A2DD3A89A08FD1C21A35AACA5FF0B3FF30B0D656F"
+    },
+    {
+      "path": "recovery.mjs",
+      "sha256": "B2CF38E11B0B8839891176EAFD5C851F4CF2D47C4D7E531B1DB729C3D2227CD8"
+    },
+    {
+      "path": "recovery.test.mjs",
+      "sha256": "8B9CA1320A431D323DEC018D1EFE3D021FAB389123F04ADB05ED853B13A3634F"
+    },
+    {
+      "path": "storage-worker.mjs",
+      "sha256": "79B73A0134CB28CE2DC84D1F2E445CF0051485E01853B4727D4670E0450A7A45"
+    },
+    {
+      "path": "storage.test.mjs",
+      "sha256": "B68909D500CB1BE9432BE5EDDAB09FD96B0440874555ECAB2F543344F51BCCCA"
+    },
+    {
+      "path": "trust.test.mjs",
+      "sha256": "963D5FFA21992EB7452EB5DD07A26BBF51E2E08C190F96FE883CA206EAFF49C6"
+    }
+  ]
+}

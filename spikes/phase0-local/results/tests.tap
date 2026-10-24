@@ -1,0 +1,226 @@
+TAP version 13
+# Subtest: S-10 regression: repeating rollback keeps the same valid terminal state
+ok 1 - S-10 regression: repeating rollback keeps the same valid terminal state
+  ---
+  duration_ms: 143.997
+  type: 'test'
+  ...
+# Subtest: S-10: repeating committed recovery preserves the new revision
+ok 2 - S-10: repeating committed recovery preserves the new revision
+  ---
+  duration_ms: 143.7846
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 1 and journal COMMITTED stop without replacing entry
+ok 3 - S-10: contradictory revision 1 and journal COMMITTED stop without replacing entry
+  ---
+  duration_ms: 32.8239
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 2 and journal ROLLED_BACK stop without replacing entry
+ok 4 - S-10: contradictory revision 2 and journal ROLLED_BACK stop without replacing entry
+  ---
+  duration_ms: 36.8809
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 2 and journal PREPARED stop without replacing entry
+ok 5 - S-10: contradictory revision 2 and journal PREPARED stop without replacing entry
+  ---
+  duration_ms: 30.3699
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 1 and journal UNKNOWN stop without replacing entry
+ok 6 - S-10: contradictory revision 1 and journal UNKNOWN stop without replacing entry
+  ---
+  duration_ms: 32.1006
+  type: 'test'
+  ...
+# Subtest: S-10: a missing journal never creates an empty database
+ok 7 - S-10: a missing journal never creates an empty database
+  ---
+  duration_ms: 25.1591
+  type: 'test'
+  ...
+# Subtest: S-10: malformed metadata is retained and classified, not guessed
+ok 8 - S-10: malformed metadata is retained and classified, not guessed
+  ---
+  duration_ms: 46.1463
+  type: 'test'
+  ...
+# Subtest: S-06a/S-10: writer contention reports busy before any filesystem replacement
+ok 9 - S-06a/S-10: writer contention reports busy before any filesystem replacement
+  ---
+  duration_ms: 88.1479
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: recovery killed at recovery-staged can itself be recovered
+ok 10 - S-07/S-10: recovery killed at recovery-staged can itself be recovered
+  ---
+  duration_ms: 137.5898
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: recovery killed at recovery-entry-replaced can itself be recovered
+ok 11 - S-07/S-10: recovery killed at recovery-entry-replaced can itself be recovered
+  ---
+  duration_ms: 331.7012
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: recovery killed at recovery-log-updated can itself be recovered
+ok 12 - S-07/S-10: recovery killed at recovery-log-updated can itself be recovered
+  ---
+  duration_ms: 118.8495
+  type: 'test'
+  ...
+# Subtest: S-06a/S-10: twelve competing recovery pairs serialize writes and replay safely
+ok 13 - S-06a/S-10: twelve competing recovery pairs serialize writes and replay safely
+  ---
+  duration_ms: 1035.5492
+  type: 'test'
+  ...
+# Subtest: S-10: missing-row preserves evidence and requires manual recovery
+ok 14 - S-10: missing-row preserves evidence and requires manual recovery
+  ---
+  duration_ms: 22.6654
+  type: 'test'
+  ...
+# Subtest: S-10: missing-table preserves evidence and requires manual recovery
+ok 15 - S-10: missing-table preserves evidence and requires manual recovery
+  ---
+  duration_ms: 24.8355
+  type: 'test'
+  ...
+# Subtest: S-10: corrupt-db preserves evidence and requires manual recovery
+ok 16 - S-10: corrupt-db preserves evidence and requires manual recovery
+  ---
+  duration_ms: 15.7502
+  type: 'test'
+  ...
+# Subtest: S-10: missing-backup preserves evidence and requires manual recovery
+ok 17 - S-10: missing-backup preserves evidence and requires manual recovery
+  ---
+  duration_ms: 16.7434
+  type: 'test'
+  ...
+# Subtest: S-10: missing-entry preserves evidence and requires manual recovery
+ok 18 - S-10: missing-entry preserves evidence and requires manual recovery
+  ---
+  duration_ms: 18.0009
+  type: 'test'
+  ...
+# Subtest: S-06a: killed transaction keeps committed row and rolls back pending row
+ok 19 - S-06a: killed transaction keeps committed row and rolls back pending row
+  ---
+  duration_ms: 93.8422
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at prepared restores complete old or new revision
+ok 20 - S-07/S-10: killed at prepared restores complete old or new revision
+  ---
+  duration_ms: 109.6831
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at staged restores complete old or new revision
+ok 21 - S-07/S-10: killed at staged restores complete old or new revision
+  ---
+  duration_ms: 116.2693
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at applying restores complete old or new revision
+ok 22 - S-07/S-10: killed at applying restores complete old or new revision
+  ---
+  duration_ms: 132.2977
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at entry-replaced restores complete old or new revision
+ok 23 - S-07/S-10: killed at entry-replaced restores complete old or new revision
+  ---
+  duration_ms: 178.293
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at json-committed restores complete old or new revision
+ok 24 - S-07/S-10: killed at json-committed restores complete old or new revision
+  ---
+  duration_ms: 138.2902
+  type: 'test'
+  ...
+# Subtest: S-07/S-10: killed at committed restores complete old or new revision
+ok 25 - S-07/S-10: killed at committed restores complete old or new revision
+  ---
+  duration_ms: 298.6592
+  type: 'test'
+  ...
+# Subtest: S-07: injected pre-rename disk error preserves valid old JSON
+ok 26 - S-07: injected pre-rename disk error preserves valid old JSON
+  ---
+  duration_ms: 8.7285
+  type: 'test'
+  ...
+# Subtest: S-06a: corrupt database is rejected without replacing evidence
+ok 27 - S-06a: corrupt database is rejected without replacing evidence
+  ---
+  duration_ms: 5.7822
+  type: 'test'
+  ...
+# Subtest: S-10: unknown schema and changed committed entry stop recovery
+ok 28 - S-10: unknown schema and changed committed entry stop recovery
+  ---
+  duration_ms: 34.3623
+  type: 'test'
+  ...
+# Subtest: S-07: Windows reserved, absolute, traversal, alternate stream and ambiguous names rejected
+ok 29 - S-07: Windows reserved, absolute, traversal, alternate stream and ambiguous names rejected
+  ---
+  duration_ms: 0.7079
+  type: 'test'
+  ...
+# Subtest: S-10: index loss retains instance/hidden/session/operation/backup references
+ok 30 - S-10: index loss retains instance/hidden/session/operation/backup references
+  ---
+  duration_ms: 0.1904
+  type: 'test'
+  ...
+# Subtest: S-10: expired derived views do not permanently root objects; new lease retains them
+ok 31 - S-10: expired derived views do not permanently root objects; new lease retains them
+  ---
+  duration_ms: 0.085
+  type: 'test'
+  ...
+# Subtest: S-07: junction cleanup removes entry without traversing target
+ok 32 - S-07: junction cleanup removes entry without traversing target
+  ---
+  duration_ms: 7.6625
+  type: 'test'
+  ...
+# Subtest: S-09 Node adapter: real file symlink update/private write/delete preserves other instance
+ok 33 - S-09 Node adapter: real file symlink update/private write/delete preserves other instance # SKIP Real Node file symlink permission unavailable; no system permission changes
+  ---
+  duration_ms: 4.9552
+  type: 'test'
+  ...
+# Subtest: S-05: official metadata -> index -> object checks each available digest
+ok 34 - S-05: official metadata -> index -> object checks each available digest
+  ---
+  duration_ms: 1.2526
+  type: 'test'
+  ...
+# Subtest: S-05: mirror replacement cannot replace authoritative expected hash
+ok 35 - S-05: mirror replacement cannot replace authoritative expected hash
+  ---
+  duration_ms: 0.466
+  type: 'test'
+  ...
+# Subtest: S-05: stale bytes fail against new trusted metadata and wrong size fails
+ok 36 - S-05: stale bytes fail against new trusted metadata and wrong size fails
+  ---
+  duration_ms: 0.2062
+  type: 'test'
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 2380.4878

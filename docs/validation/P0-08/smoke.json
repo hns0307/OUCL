@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-10-24T11:01:48.344Z",
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "contextIsolation": true,
+  "sandbox": true,
+  "nodeIntegration": false,
+  "bridgeMethods": [
+    "handshake"
+  ],
+  "rendererHasNoNode": true,
+  "handshake": "PASS",
+  "businessCapabilities": [],
+  "popupDenied": true,
+  "packagedPayload": false
+}

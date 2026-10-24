@@ -1,0 +1,147 @@
+TAP version 13
+# Subtest: S-10 regression: repeating rollback keeps the same valid terminal state
+not ok 1 - S-10 regression: repeating rollback keeps the same valid terminal state
+  ---
+  duration_ms: 35.5177
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:22:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'needsRecovery'
+    - 'rolledBack'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'rolledBack'
+  actual: 'needsRecovery'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:25:57)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: S-10: repeating committed recovery preserves the new revision
+ok 2 - S-10: repeating committed recovery preserves the new revision
+  ---
+  duration_ms: 86.7534
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 1 and journal COMMITTED stop without replacing entry
+not ok 3 - S-10: contradictory revision 1 and journal COMMITTED stop without replacing entry
+  ---
+  duration_ms: 24.0091
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:36:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'rolledBack'
+    - 'needsRecovery'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'needsRecovery'
+  actual: 'rolledBack'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:39:12)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: S-10: contradictory revision 2 and journal ROLLED_BACK stop without replacing entry
+ok 4 - S-10: contradictory revision 2 and journal ROLLED_BACK stop without replacing entry
+  ---
+  duration_ms: 23.2968
+  type: 'test'
+  ...
+# Subtest: S-10: contradictory revision 2 and journal PREPARED stop without replacing entry
+not ok 5 - S-10: contradictory revision 2 and journal PREPARED stop without replacing entry
+  ---
+  duration_ms: 17.3737
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:36:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'committed'
+    - 'needsRecovery'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'needsRecovery'
+  actual: 'committed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:39:12)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: S-10: contradictory revision 1 and journal UNKNOWN stop without replacing entry
+ok 6 - S-10: contradictory revision 1 and journal UNKNOWN stop without replacing entry
+  ---
+  duration_ms: 21.0185
+  type: 'test'
+  ...
+# Subtest: S-10: a missing journal never creates an empty database
+not ok 7 - S-10: a missing journal never creates an empty database
+  ---
+  duration_ms: 15.2169
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:46:1'
+  failureType: 'testCodeFailure'
+  error: 'no such table: operation'
+  code: 'ERR_SQLITE_ERROR'
+  stack: |-
+    recover (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.mjs:12:26)
+    async TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:48:16)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: S-10: malformed metadata is retained and classified, not guessed
+not ok 8 - S-10: malformed metadata is retained and classified, not guessed
+  ---
+  duration_ms: 23.7216
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:53:1'
+  failureType: 'testCodeFailure'
+  error: "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    recover (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.mjs:8:25)
+    async TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:57:18)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: S-06a/S-10: writer contention reports busy before any filesystem replacement
+not ok 9 - S-06a/S-10: writer contention reports busy before any filesystem replacement
+  ---
+  duration_ms: 25.0893
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\spikes\\phase0-local\\recovery.test.mjs:63:1'
+  failureType: 'testCodeFailure'
+  error: 'database is locked'
+  code: 'ERR_SQLITE_ERROR'
+  stack: |-
+    recover (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.mjs:17:50)
+    async TestContext.<anonymous> (file:///D:/MC_start/OUCL/spikes/phase0-local/recovery.test.mjs:68:18)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 3
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 352.6903

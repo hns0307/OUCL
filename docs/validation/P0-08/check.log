@@ -1,0 +1,37 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ handshake only accepts strict request DTO and safe version integers (1.0796ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.0256ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.2403ms)
+✔ sender requires exact URL, same contents and main frame (0.8366ms)
+✔ response rejects mismatched request identity and injected capabilities (0.4563ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.1593ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 87.5889
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BY2mAzAN.css    1.44 kB │ gzip:  0.69 kB
+dist/renderer/assets/index-BzFODMfZ.js   222.15 kB │ gzip: 70.01 kB
+
+✓ built in 137ms
+
+  dist\main\index.cjs  7.7kb
+
+Done in 8ms
+
+  dist\preload\index.cjs  3.5kb
+
+Done in 6ms

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-10-24T10:39:30.130Z",
+  "status": "PASS",
+  "records": [
+    {
+      "url": "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
+      "sha1": "f09921bbfd54646ce1ddbe92caf6a8dce4502a9a",
+      "size": 278138,
+      "expectedSha1": null
+    },
+    {
+      "url": "https://piston-meta.mojang.com/v1/packages/1757c8b1fbfc6b638504e1f6cceb05893f7389d5/1.21.1.json",
+      "sha1": "1757c8b1fbfc6b638504e1f6cceb05893f7389d5",
+      "size": 38408,
+      "expectedSha1": "1757c8b1fbfc6b638504e1f6cceb05893f7389d5"
+    },
+    {
+      "url": "https://piston-meta.mojang.com/v1/packages/e61ea955de95de1f99d36616a8b46147e9f6f5d7/17.json",
+      "sha1": "e61ea955de95de1f99d36616a8b46147e9f6f5d7",
+      "size": 449557,
+      "expectedSha1": "e61ea955de95de1f99d36616a8b46147e9f6f5d7"
+    },
+    {
+      "url": "https://resources.download.minecraft.net/5f/5ff04807c356f1beed0b86ccf659b44b9983e3fa",
+      "sha1": "5ff04807c356f1beed0b86ccf659b44b9983e3fa",
+      "size": 781,
+      "expectedSha1": "5ff04807c356f1beed0b86ccf659b44b9983e3fa"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+import type { MessageKey } from '../locales/messages.js';
+
+export const CONTRACT_VERSION = 1 as const;
+export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
+export const HANDSHAKE_TIMEOUT_MS = 3000;
+export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export type ErrorCategory = 'system' | 'minecraft' | 'network' | 'biz' | 'validation' | 'auth' | 'permission' | 'disk' | 'cancelled';
+export type HandshakeErrorCode = 'INVALID_ARGUMENT' | 'UNSUPPORTED_CONTRACT' | 'INVALID_SENDER' | 'TIMEOUT' | 'UNAVAILABLE';
+
+export interface AppError {
+  category: ErrorCategory;
+  code: HandshakeErrorCode;
+  messageKey: MessageKey;
+  retryable: boolean;
+  traceId: string;
+}
+export interface HandshakeRequest {
+  contractVersion: 1;
+  requestId: string;
+  payload: { supportedVersions: number[] };
+}
+export interface HandshakeData {
+  selectedVersion: 1;
+  capabilities: string[];
+  sessionId: string;
+}
+export type HandshakeResult = { contractVersion: 1; requestId: string; ok: true; data: HandshakeData }
+  | { contractVersion: 1; requestId: string; ok: false; error: AppError };
+export interface LauncherBridge { handshake(): Promise<HandshakeResult> }
+
+/** Accepts a plain DTO with exact keys, excluding arrays and null. */
+export function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
+}
+
+/** Rejects unknown fields, unsupported envelope versions and invalid version lists. */
+export function isHandshakeRequest(value: unknown): value is HandshakeRequest {
+  if (!exactObject(value, ['contractVersion', 'requestId', 'payload'])) return false;
+  if (value.contractVersion !== CONTRACT_VERSION || typeof value.requestId !== 'string' || !UUID_PATTERN.test(value.requestId)) return false;
+  const payload = value.payload;
+  return exactObject(payload, ['supportedVersions']) && Array.isArray(payload.supportedVersions)
+    && payload.supportedVersions.length >= 1 && payload.supportedVersions.length <= 4
+    && payload.supportedVersions.every((item: unknown) => typeof item === 'number' && Number.isSafeInteger(item) && item > 0);
+}
+
+/** Validates the only response DTO exposed by the empty application. */
+export function isHandshakeResult(value: unknown, requestId: string): value is HandshakeResult {
+  if (!exactObject(value, value && typeof value === 'object' && 'ok' in value && value.ok === true
+    ? ['contractVersion', 'requestId', 'ok', 'data'] : ['contractVersion', 'requestId', 'ok', 'error'])) return false;
+  if (value.contractVersion !== CONTRACT_VERSION || value.requestId !== requestId) return false;
+  if (value.ok === true) {
+    return exactObject(value.data, ['selectedVersion', 'capabilities', 'sessionId'])
+      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length === 0
+      && typeof value.data.sessionId === 'string' && UUID_PATTERN.test(value.data.sessionId);
+  }
+  if (value.ok !== false || !exactObject(value.error, ['category', 'code', 'messageKey', 'retryable', 'traceId'])) return false;
+  const errors: Record<HandshakeErrorCode, { category: ErrorCategory; key: MessageKey }> = {
+    INVALID_ARGUMENT: { category: 'validation', key: 'invalidArgument' },
+    UNSUPPORTED_CONTRACT: { category: 'validation', key: 'unsupportedContract' },
+    INVALID_SENDER: { category: 'permission', key: 'invalidSender' },
+    TIMEOUT: { category: 'system', key: 'timeout' },
+    UNAVAILABLE: { category: 'system', key: 'unavailable' },
+  };
+  const error = value.error;
+  if (typeof error.code !== 'string' || !Object.hasOwn(errors, error.code)) return false;
+  const expected = errors[error.code as HandshakeErrorCode];
+  return error.category === expected.category && error.messageKey === expected.key
+    && typeof error.retryable === 'boolean' && typeof error.traceId === 'string' && UUID_PATTERN.test(error.traceId);
+}

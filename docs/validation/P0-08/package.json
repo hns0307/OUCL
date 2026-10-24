@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-24T11:01:47.172Z",
+  "target": "win32-x64",
+  "directory": "release\\OUCL-0.0.0-win32-x64",
+  "entry": "OUCL.exe",
+  "signed": false,
+  "installer": false
+}

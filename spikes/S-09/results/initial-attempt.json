@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "timestampUtc": "2026-10-24T09:08:20.0573983+00:00",
+  "scriptSha256": "A95A40AF841B3ECDE4D1520C0CEFD66607665986792D74C435CBEC1A35B89C2F",
+  "powershell": "7.6.5",
+  "framework": ".NET 10.0.11",
+  "os": "Microsoft Windows 10.0.26300",
+  "architecture": "X64",
+  "sourceDrive": "D:\\",
+  "objectDrive": "C:\\",
+  "counts": {
+    "pass": 7,
+    "skip": 18,
+    "fail": 2
+  },
+  "capabilities": [
+    {
+      "kind": "FileSymbolicLinkFailure",
+      "exception": "System.Management.Automation.MethodInvocationException",
+      "code": -2146233087
+    },
+    {
+      "group": "same-volume",
+      "fileSymbolicLink": false
+    },
+    {
+      "group": "same-volume",
+      "kind": "JunctionFailure",
+      "exception": "System.ComponentModel.Win32Exception"
+    },
+    {
+      "group": "same-volume",
+      "directoryJunction": false
+    },
+    {
+      "kind": "FileSymbolicLinkFailure",
+      "exception": "System.Management.Automation.MethodInvocationException",
+      "code": -2146233087
+    },
+    {
+      "group": "cross-volume",
+      "fileSymbolicLink": false
+    },
+    {
+      "group": "cross-volume",
+      "kind": "JunctionFailure",
+      "exception": "System.ComponentModel.Win32Exception"
+    },
+    {
+      "group": "cross-volume",
+      "directoryJunction": false
+    }
+  ],
+  "cases": [
+    {
+      "group": "same-volume",
+      "id": "C01",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C02",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C03",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C04",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C05",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C06",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C07",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C08",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C09",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C10",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C11",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C12",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C13",
+      "status": "FAIL",
+      "detail": "System.Management.Automation.RuntimeException",
+      "assertion": "ROOT_BOUNDARY"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C01",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C02",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C03",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C04",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C05",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C06",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C07",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C08",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C09",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C10",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C11",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C12",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C13",
+      "status": "FAIL",
+      "detail": "System.Management.Automation.RuntimeException",
+      "assertion": "ROOT_BOUNDARY"
+    },
+    {
+      "group": "harness",
+      "id": "CLEANUP",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    }
+  ]
+}

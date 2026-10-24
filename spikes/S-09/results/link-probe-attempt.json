@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "timestampUtc": "2026-10-24T09:08:59.9063671+00:00",
+  "scriptSha256": "03FD4FC031F18DF532AD3AC4D7F51C0050EAA114BBAD695947B90B44977715B3",
+  "powershell": "7.6.5",
+  "framework": ".NET 10.0.11",
+  "os": "Microsoft Windows 10.0.26300",
+  "architecture": "X64",
+  "sourceDrive": "D:\\",
+  "objectDrive": "C:\\",
+  "counts": {
+    "fail": 0,
+    "skip": 14,
+    "pass": 13
+  },
+  "capabilities": [
+    {
+      "kind": "FileSymbolicLinkFailure",
+      "exception": "System.IO.IOException",
+      "code": -2147023582
+    },
+    {
+      "group": "same-volume",
+      "fileSymbolicLink": false
+    },
+    {
+      "group": "same-volume",
+      "directoryJunction": true
+    },
+    {
+      "kind": "FileSymbolicLinkFailure",
+      "exception": "System.IO.IOException",
+      "code": -2147023582
+    },
+    {
+      "group": "cross-volume",
+      "fileSymbolicLink": false
+    },
+    {
+      "group": "cross-volume",
+      "directoryJunction": true
+    }
+  ],
+  "cases": [
+    {
+      "group": "same-volume",
+      "id": "C01",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C02",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C03",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C04",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C05",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C06",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C07",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C08",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C09",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C10",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "same-volume",
+      "id": "C11",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C12",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "same-volume",
+      "id": "C13",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C01",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C02",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C03",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C04",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C05",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C06",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C07",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C08",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C09",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C10",
+      "status": "SKIP",
+      "detail": "Required real link capability unavailable"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C11",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C12",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "cross-volume",
+      "id": "C13",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    },
+    {
+      "group": "harness",
+      "id": "CLEANUP",
+      "status": "PASS",
+      "detail": "Assertions satisfied"
+    }
+  ]
+}

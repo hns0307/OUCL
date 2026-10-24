@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-10-24T11:01:50.075Z",
+  "status": "PASS",
+  "defaultPackagedEntry": true,
+  "rendererConnected": true,
+  "rendererHasNoNode": true,
+  "bridgeMethods": [
+    "handshake"
+  ],
+  "businessCapabilities": [],
+  "mainSha256": "33ba2b4432cf61aeafa050613273519b85ac830fc656eed568d9eb1976fdef43",
+  "temporaryLoopbackDebugger": true,
+  "signed": false
+}
