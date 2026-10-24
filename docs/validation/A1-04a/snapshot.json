@@ -1,0 +1,18 @@
+[
+  {
+    "path": "src/services/storage/files.ts",
+    "sha256": "f665a93efba82a5fd5bbaad58d50bfc9719339dc5264bc7f3c61effd114c4a17"
+  },
+  {
+    "path": "src/services/storage/records.ts",
+    "sha256": "96bb58c42705e5343969d78a8de03dfc04d95e81810ae0a6d99e573a51a7decc"
+  },
+  {
+    "path": "src/services/storage/tasks.ts",
+    "sha256": "8752c0bfcec5d594364fc610894bf49c4f5597198402cf95d479443acc74b57d"
+  },
+  {
+    "path": "tests/storage.test.ts",
+    "sha256": "44ec4808468e9d5cd7733a2c4cca124520eaf1a9a3ca43fc3b9f5f578179ac4a"
+  }
+]

@@ -1,0 +1,100 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ handshake only accepts strict request DTO and safe version integers (2.4379ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.9053ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.4732ms)
+✔ sender requires exact URL, same contents and main frame (0.1579ms)
+✔ response rejects mismatched request identity and injected capabilities (0.1625ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.1107ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (11.6378ms)
+✔ isolation priority is pack, explicit override, then global default (1.9199ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (1.2125ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.2668ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.2872ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.4966ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.3943ms)
+✔ versioned JSON commits real files, reopens and preserves strict revisions (102.7766ms)
+✔ all five commit boundaries recover old or new JSON and replay idempotently (285.0727ms)
+✔ first-create interruption rolls back absence or completes committed JSON (78.8593ms)
+✔ same-process revisions serialize and another repository cannot acquire the owner lease (29.6243ms)
+✔ invalid data and identifiers never create an operation or change JSON (59.9439ms)
+✔ changed JSON or missing authoritative database never silently becomes an empty store (50.8879ms)
+✔ unknown operation state, broken history and future schema all stop recovery (170.9855ms)
+✔ unknown staging content and unjournaled records are preserved for recovery (57.8367ms)
+✔ linked repository paths are refused without touching the target (6.7302ms)
+✔ an existing stale/foreign lease is never removed automatically (6.7115ms)
+✔ corrupt staging is kept intact and never promoted or silently discarded (29.9759ms)
+✔ SQLite atomically accepts tasks and identical request retries return the same task (32.1292ms)
+✔ persisted task CAS rejects stale updates and restart protects uncertain effects (49.8638ms)
+✔ missing acceptance evidence and corrupt task state fail recovery instead of replaying (170.7519ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (2.7112ms)
+✔ execution verifies before commit and never repeats terminal effects (0.5253ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.3245ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.3411ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.275ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.3979ms)
+✔ shared transfers obey demand from all installers independently (1.7336ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (3.0703ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (3.7342ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.7007ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (0.8596ms)
+✔ server-only input cannot provide a client or main class (0.3116ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (0.9477ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.3644ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (1.756ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (2.4146ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.9843ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (1.8135ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (1.6293ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (18.5237ms)
+ℹ tests 47
+ℹ suites 0
+ℹ pass 47
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1269.0281
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    download       |        |          |         |
+ℹ     integrity.js  | 100.00 |   100.00 |  100.00 |
+ℹ    path           |        |          |         |
+ℹ     layout.js     | 100.00 |    94.92 |  100.00 |
+ℹ    task           |        |          |         |
+ℹ     machine.js    | 100.00 |   100.00 |  100.00 |
+ℹ     scheduling.js | 100.00 |   100.00 |  100.00 |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.14 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    98.85 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BY2mAzAN.css    1.44 kB │ gzip:  0.69 kB
+dist/renderer/assets/index-BzFODMfZ.js   222.15 kB │ gzip: 70.01 kB
+
+✓ built in 149ms
+
+  dist\main\index.cjs  7.7kb
+
+Done in 6ms
+
+  dist\preload\index.cjs  3.5kb
+
+Done in 13ms

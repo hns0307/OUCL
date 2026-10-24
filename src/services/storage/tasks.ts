@@ -1,0 +1,103 @@
+import type { DatabaseSync } from 'node:sqlite';
+import { randomUUID } from 'node:crypto';
+import { createExecution, controlTask } from '../../core/task/machine.js';
+import type { Execution } from '../../core/task/machine.js';
+import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import { StorageError } from './files.js';
+
+export type TaskKind = 'download' | 'install' | 'java' | 'launch' | 'stop';
+export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
+const STATES = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
+const KINDS = ['download', 'install', 'java', 'launch', 'stop'];
+
+/** Checks the exact private execution format rather than accepting arbitrary serialized objects. */
+export function parseExecution(value: unknown): Execution {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new StorageError('INVALID_RECORD');
+  const record = value as Record<string, unknown>;
+  if (Object.keys(record).some(key => !['state', 'attempt', 'lastSequence', 'revision', 'bytesDone', 'bytesTotal'].includes(key))
+    || typeof record.state !== 'string' || !STATES.includes(record.state)
+    || !['attempt', 'lastSequence', 'revision', 'bytesDone'].every(key => typeof record[key] === 'number' && Number.isSafeInteger(record[key]) && record[key] >= 0)
+    || record.revision === 0 || record.revision === Number.MAX_SAFE_INTEGER
+    || (record.bytesTotal !== undefined && (typeof record.bytesTotal !== 'number' || !Number.isSafeInteger(record.bytesTotal)
+      || record.bytesTotal < (record.bytesDone as number)))) throw new StorageError('INVALID_RECORD');
+  return { state: record.state as Execution['state'], attempt: record.attempt as number, lastSequence: record.lastSequence as number,
+    revision: record.revision as number, bytesDone: record.bytesDone as number,
+    ...(record.bytesTotal === undefined ? {} : { bytesTotal: record.bytesTotal as number }) };
+}
+
+function identity(value: string): void { if (!UUID_PATTERN.test(value)) throw new StorageError('INVALID_RECORD'); }
+
+/** SQLite-only tasks and request deduplication, called exclusively while RecordStore owns its lease. */
+export class TaskTable {
+  constructor(private readonly db: DatabaseSync) {}
+
+  private transaction<T>(work: () => T): T {
+    this.db.exec('BEGIN IMMEDIATE');
+    try { const result = work(); this.db.exec('COMMIT'); return result; }
+    catch (error) { this.db.exec('ROLLBACK'); throw error; }
+  }
+
+  /** Persists requestId and task together; identical retries recover the original acceptance. */
+  accept(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): StoredTask {
+    identity(ownerId); identity(requestId);
+    if (!KINDS.includes(kind) || !/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
+    return this.transaction(() => {
+      const accepted = this.db.prepare('SELECT task_id, kind, payload_digest FROM requests WHERE owner_id=? AND request_id=?').get(ownerId, requestId);
+      if (accepted) {
+        if (accepted.kind !== kind || accepted.payload_digest !== payloadDigest || typeof accepted.task_id !== 'string') throw new StorageError('REVISION_CONFLICT');
+        const task = this.get(ownerId, accepted.task_id);
+        if (!task) throw new StorageError('NEEDS_RECOVERY');
+        return task;
+      }
+      const task: StoredTask = { taskId: randomUUID(), ownerId, kind, execution: createExecution() };
+      this.db.prepare('INSERT INTO tasks VALUES (?, ?, ?, ?)').run(task.taskId, ownerId, kind, JSON.stringify(task.execution));
+      this.db.prepare('INSERT INTO requests VALUES (?, ?, ?, ?, ?)').run(ownerId, requestId, kind, payloadDigest, task.taskId);
+      return task;
+    });
+  }
+
+  /** Looks up by stable application owner, not a transient window session. */
+  get(ownerId: string, taskId: string): StoredTask | undefined {
+    identity(ownerId); identity(taskId);
+    const row = this.db.prepare('SELECT owner_id, kind, execution FROM tasks WHERE id=? AND owner_id=?').get(taskId, ownerId);
+    if (!row) return undefined;
+    if (typeof row.kind !== 'string' || !KINDS.includes(row.kind) || typeof row.execution !== 'string') throw new StorageError('NEEDS_RECOVERY');
+    try { return { taskId, ownerId, kind: row.kind as TaskKind, execution: parseExecution(JSON.parse(row.execution) as unknown) }; }
+    catch { throw new StorageError('NEEDS_RECOVERY'); }
+  }
+
+  /** Uses compare-and-swap revision so concurrent callbacks cannot overwrite newer task state. */
+  update(ownerId: string, taskId: string, expectedRevision: number, execution: Execution): StoredTask {
+    const validated = parseExecution(execution);
+    return this.transaction(() => {
+      const current = this.get(ownerId, taskId);
+      if (!current || current.execution.revision !== expectedRevision || validated.revision !== expectedRevision + 1) throw new StorageError('REVISION_CONFLICT');
+      this.db.prepare('UPDATE tasks SET execution=? WHERE id=? AND owner_id=?').run(JSON.stringify(validated), taskId, ownerId);
+      return { ...current, execution: validated };
+    });
+  }
+
+  /** Marks uncertain in-flight work for recovery; never automatically replays side effects. */
+  recover(): void {
+    this.transaction(() => {
+      for (const row of this.db.prepare('SELECT id, owner_id FROM tasks').all()) {
+        if (typeof row.id !== 'string' || typeof row.owner_id !== 'string') throw new StorageError('NEEDS_RECOVERY');
+        const task = this.get(row.owner_id, row.id);
+        if (!task) throw new StorageError('NEEDS_RECOVERY');
+        const recovered = controlTask(task.execution, 'interrupted').execution;
+        if (recovered !== task.execution) this.db.prepare('UPDATE tasks SET execution=? WHERE id=?').run(JSON.stringify(recovered), row.id);
+      }
+      const accepted = new Set<string>();
+      for (const row of this.db.prepare('SELECT * FROM requests').all()) {
+        if (typeof row.owner_id !== 'string' || typeof row.request_id !== 'string' || typeof row.task_id !== 'string'
+          || typeof row.payload_digest !== 'string' || !/^[a-f0-9]{64}$/.test(row.payload_digest)) throw new StorageError('NEEDS_RECOVERY');
+        identity(row.request_id);
+        const task = this.get(row.owner_id, row.task_id);
+        if (!task || task.kind !== row.kind || accepted.has(row.task_id)) throw new StorageError('NEEDS_RECOVERY');
+        accepted.add(row.task_id);
+      }
+      if (accepted.size !== this.db.prepare('SELECT id FROM tasks').all().length) throw new StorageError('NEEDS_RECOVERY');
+      if (this.db.prepare('PRAGMA foreign_key_check').all().length) throw new StorageError('NEEDS_RECOVERY');
+    });
+  }
+}
