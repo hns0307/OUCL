@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-10-24T12:46:09.7996386+00:00",
+  "files": [
+    {
+      "path": "src\\core\\version\\arguments.ts",
+      "sha256": "54B3AD09C00069138FA2DC6C8544CB7E783AC4B5F87D5080050CD815779D595F"
+    },
+    {
+      "path": "src\\core\\version\\resolve.ts",
+      "sha256": "33AEF23AC44BB9BED980A7F899801699CC5FF1FD8B9300AF7D7CF2387E6BEB6A"
+    },
+    {
+      "path": "src\\core\\version\\types.ts",
+      "sha256": "A8BF96B9AB89A73032135B61DCC4FC174EADE046D5D3815BD317C098C870985A"
+    },
+    {
+      "path": "src\\core\\version\\validation.ts",
+      "sha256": "2DF0B2692C5DA33697387C8225A30B27F16E3B8F91393B012945CE58A3E34A86"
+    },
+    {
+      "path": "scripts\\test.mjs",
+      "sha256": "183BBE2CD33469AC387A6AEB7DAF3932F2444DF9341719DA39501BCF69E9A3CF"
+    },
+    {
+      "path": "scripts\\verify-version-samples.mjs",
+      "sha256": "940E0A98086E37007DDAD83596C349FCAAA3544F0BD79C747D903182DDA18A28"
+    },
+    {
+      "path": "tests\\version.test.ts",
+      "sha256": "4DD77862B51BBCFE3D7E9DFA91A0A8EB58C987001701AE7DC6F96F9790756C49"
+    }
+  ]
+}

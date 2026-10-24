@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-10-24T12:42:55.051Z",
+  "status": "PASS",
+  "source": "official HTTPS manifest with per-version SHA1",
+  "samples": [
+    {
+      "id": "1.21.1",
+      "mainClass": "net.minecraft.client.main.Main",
+      "javaMajor": 21,
+      "jarVersionId": "1.21.1",
+      "selectedLibraries": 70,
+      "gameArgumentCount": 22,
+      "jvmArgumentCount": 9,
+      "metadataParsed": true,
+      "gameLaunched": false
+    },
+    {
+      "id": "1.12.2",
+      "mainClass": "net.minecraft.client.main.Main",
+      "javaMajor": 8,
+      "jarVersionId": "1.12.2",
+      "selectedLibraries": 30,
+      "gameArgumentCount": 18,
+      "jvmArgumentCount": 0,
+      "metadataParsed": true,
+      "gameLaunched": false
+    },
+    {
+      "id": "1.6.4",
+      "mainClass": "net.minecraft.client.main.Main",
+      "javaMajor": 8,
+      "jarVersionId": "1.6.4",
+      "selectedLibraries": 15,
+      "gameArgumentCount": 10,
+      "jvmArgumentCount": 0,
+      "metadataParsed": true,
+      "gameLaunched": false
+    }
+  ],
+  "records": [
+    {
+      "url": "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
+      "sha1": "f09921bbfd54646ce1ddbe92caf6a8dce4502a9a",
+      "size": 278138,
+      "expectedSha1": null
+    },
+    {
+      "url": "https://piston-meta.mojang.com/v1/packages/1757c8b1fbfc6b638504e1f6cceb05893f7389d5/1.21.1.json",
+      "sha1": "1757c8b1fbfc6b638504e1f6cceb05893f7389d5",
+      "size": 38408,
+      "expectedSha1": "1757c8b1fbfc6b638504e1f6cceb05893f7389d5"
+    },
+    {
+      "url": "https://piston-meta.mojang.com/v1/packages/832d95b9f40699d4961394dcf6cf549e65f15dc5/1.12.2.json",
+      "sha1": "832d95b9f40699d4961394dcf6cf549e65f15dc5",
+      "size": 18416,
+      "expectedSha1": "832d95b9f40699d4961394dcf6cf549e65f15dc5"
+    },
+    {
+      "url": "https://piston-meta.mojang.com/v1/packages/b71bae449192fbbe1582ff32fb3765edf0b9b0a8/1.6.4.json",
+      "sha1": "b71bae449192fbbe1582ff32fb3765edf0b9b0a8",
+      "size": 10239,
+      "expectedSha1": "b71bae449192fbbe1582ff32fb3765edf0b9b0a8"
+    }
+  ]
+}

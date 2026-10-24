@@ -1,0 +1,64 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ handshake only accepts strict request DTO and safe version integers (1.3356ms)
+✔ trusted handshake negotiates version with zero business capabilities (0.9392ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.2226ms)
+✔ sender requires exact URL, same contents and main frame (0.123ms)
+✔ response rejects mismatched request identity and injected capabilities (0.1342ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.1106ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (3.6141ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (1.153ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (0.7439ms)
+✔ server-only input cannot provide a client or main class (0.2595ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (0.7584ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.2612ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (1.2819ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (1.4938ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.5187ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.4235ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (0.5613ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (14.0629ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 138.693
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.14 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    99.14 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BY2mAzAN.css    1.44 kB │ gzip:  0.69 kB
+dist/renderer/assets/index-BzFODMfZ.js   222.15 kB │ gzip: 70.01 kB
+
+✓ built in 872ms
+
+  dist\main\index.cjs  7.7kb
+
+Done in 8ms
+
+  dist\preload\index.cjs  3.5kb
+
+Done in 4ms

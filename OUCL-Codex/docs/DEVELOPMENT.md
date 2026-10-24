@@ -1,6 +1,6 @@
 # OUCL 开发规范与交付流程
 
-更新日期：2026-10-24。本文整理现有规则并提供阅读索引；持久约束以根级 [AGENTS.md](../../AGENTS.md) 为准。最新已批准默认设计方向、阶段0本地验证和空骨架；执行证据与缺项见TASK_PLAN，正式业务仍按指定增量启动。
+更新日期：2026-10-24。本文整理现有规则并提供阅读索引；持久约束以根级 [AGENTS.md](../../AGENTS.md) 为准。最新已明确批准阶段1A下载与启动闭环持续实施；按TASK_PLAN依赖逐增量验证与提交，不再停留在阶段0空骨架，也不扩大到后续阶段。
 
 ## 1. 每次任务的读取顺序
 
@@ -59,8 +59,8 @@ TASK_PLAN 记录执行范围与证据，DECISIONS 记录授权；二者必须一
 | 启动/下载/隔离等关键链路 | 集成/E2E或可复现实机步骤；按批准平台与版本分别留证 |
 | 增量交付 | 运行仓库实际存在的适用类型检查、lint、单测、构建；记录失败或不可用原因 |
 
-当前根级已建立package.json、pnpm锁文件和CI。适用命令：`pnpm typecheck`、`pnpm lint`、`pnpm test`、`pnpm build`（合并为`pnpm check`）、`pnpm test:spikes`、`pnpm audit --audit-level=high`、`pnpm audit:licenses`、`pnpm smoke`、`pnpm package:dir`、`pnpm smoke:package`。必须以实际执行证据报告，不把CI配置当成远端运行通过。core首次业务增量再建立已批默认85%行/分支目标，本轮不制造空core的覆盖率。
+当前根级已建立package.json、pnpm锁文件和CI。适用命令：`pnpm typecheck`、`pnpm lint`、`pnpm test`、`pnpm build`（合并为`pnpm check`）、`pnpm test:spikes`、`pnpm test:electron-sqlite`、`pnpm audit --audit-level=high`、`pnpm audit:licenses`、`pnpm smoke`、`pnpm package:dir`、`pnpm smoke:package`。必须以实际执行证据报告，不把CI配置当成远端运行通过。A1-01起已在pnpm test中启用core编译模块行/分支/函数各≥85%门槛，测试自身与IO脚本不计入该覆盖率。
 
 记录环境、文件快照或提交、输入、真实命令/步骤、预期与实际结果；使用 TASK_PLAN §6 模板。没有运行、只有mock或缺生产条件的能力不标生产通过。执行交付与用户验收分开，Codex 不替用户签署验收。
 
-提交/PR 使用 Conventional Commits，并附变更范围及验证结果。提交时只包含当前授权文件，不将用户已有未跟踪内容一并纳入。交付报告列明完成项、文件、验证、未完成/阻塞、下一最小增量；完成报告后停止，不自动实施后续全部功能。
+提交/PR 使用Conventional Commits，并附变更范围及验证结果。提交时只包含当前授权文件，不将用户已有未跟踪内容一并纳入。每个增量报告文件、验证、剩余问题与下一步；沿用最新1A限定阶段授权持续推进到真实下载/启动闭环，不把子任务交付当作整体目标完成，也不自动开始未授权后续阶段。
