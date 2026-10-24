@@ -211,3 +211,5 @@
 执行记录：worker已提交509963a，任务状态同步b7f5558。本轮A1-04b实现已批共享本体/独立来源记录/可重建SQLite搜索方向，63项测试及Electron正式worker验证通过，见[A1-04b报告](../../docs/validation/A1-04b/REPORT.md)。新对象来源约定见OBJECT_STORE；搜索库与任务库物理分开，不改tasks.sqlite格式，无新增依赖或渲染IPC。来源API锚定、下载/实例/UI/恢复接管等仍待接入，完整目标保持进行中。
 
 执行记录：对象仓库已提交6439805。本轮按已批准提案§7实现roots:list/roots:choose及roots.v1能力，固定数据目录登记与源码UI已接正式main/preload，70项测试及真实Electron窗口检查通过，见[A1-04d报告](../../docs/validation/A1-04d/REPORT.md)。没有新增候选外通道或第三方依赖，具体exact schema记录在ROOTS。真实native选择操作、新便携包、任务订阅及下载/启动仍未验证或未实现，不扩张声明。当前继续同一1A授权范围推进后续服务。
+
+执行记录：目录入口已提交147aeb8。本轮落实已批versions:catalog及catalog.v1，官方清单/描述信任链、缓存和分页进入正式界面，78项测试、真实官方响应及Electron显示验证通过，见[A1-05-catalog报告](../../docs/validation/A1-05-catalog/REPORT.md)。依据官方响应修正12条历史身份中的内部空格，身份不直接映射路径；未降低来源或越界校验。无新依赖，不改既有任务数据库格式；缓存使用原JSON提交/恢复协议。制品下载/启动仍未实现，不用元数据成功代替完整目标，继续相同1A批准范围。

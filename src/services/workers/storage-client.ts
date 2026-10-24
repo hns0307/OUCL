@@ -7,7 +7,8 @@ import type { StorageCommand } from './protocol.js';
 import type { IndexedObject } from '../storage/object-index.js';
 import type { Installation } from '../storage/installation.js';
 import type { RecordEnvelope } from '../storage/records.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation> };
+import type { CatalogCache } from '../storage/catalog-cache.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -70,7 +71,7 @@ export class StorageClient {
       if (!pending) return;
       this.pending.delete(reply.id); clearTimeout(pending.timer);
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
-        ...(reply.installation === undefined ? {} : { installation: reply.installation }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -115,6 +116,13 @@ export class StorageClient {
   /** Registers once; migration/overwriting an existing data location is intentionally unavailable. */
   async createInstallation(data: Installation): Promise<RecordEnvelope<Installation>> {
     const result = (await this.request({ kind: 'installation:set', data })).installation;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  /** Reads the validated official catalog cache privately in the main process. */
+  async readCatalog(): Promise<RecordEnvelope<CatalogCache> | undefined> { return (await this.request({ kind: 'catalog:get' })).catalog; }
+  /** Atomically updates the fixed cache record through the existing recovery journal. */
+  async writeCatalog(expectedRevision: number, data: CatalogCache): Promise<RecordEnvelope<CatalogCache>> {
+    const result = (await this.request({ kind: 'catalog:set', expectedRevision, data })).catalog;
     if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
   }
 

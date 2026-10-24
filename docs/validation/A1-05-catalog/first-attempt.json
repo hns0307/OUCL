@@ -1,0 +1,13 @@
+{
+  "status": "FAIL",
+  "timestamp": "2026-10-24T13:53:09.364Z",
+  "code": "UNTRUSTED_MANIFEST",
+  "records": [
+    {
+      "url": "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
+      "sha1": "f09921bbfd54646ce1ddbe92caf6a8dce4502a9a",
+      "expectedSha1": null,
+      "bytes": 278138
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-10-24T14:00:48.256Z",
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "contextIsolation": true,
+  "sandbox": true,
+  "nodeIntegration": false,
+  "bridgeMethods": [
+    "catalog",
+    "listRoots",
+    "chooseRoot",
+    "handshake"
+  ],
+  "rendererHasNoNode": true,
+  "handshake": "PASS",
+  "businessCapabilities": [
+    "roots.v1",
+    "catalog.v1"
+  ],
+  "popupDenied": true,
+  "rootsList": "PASS",
+  "directoryButtonRendered": true,
+  "nativePickerSelected": false,
+  "officialCatalogLoaded": true,
+  "visibleCatalogItems": 20,
+  "firstCatalogVersion": "26.3",
+  "packagedPayload": false
+}

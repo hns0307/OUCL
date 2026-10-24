@@ -11,12 +11,17 @@ import { ROOTS_CAPABILITY, ROOTS_CHOOSE_CHANNEL, ROOTS_LIST_CHANNEL } from '../s
 import { handleRoots } from '../ipc/roots.js';
 import { RootError, RootService } from '../services/roots/service.js';
 import { StorageClient } from '../services/workers/storage-client.js';
+import { CATALOG_CAPABILITY, CATALOG_CHANNEL } from '../shared/contracts/catalog.js';
+import { CatalogService } from '../services/catalog/service.js';
+import { CatalogError, OfficialMetadataReader } from '../services/catalog/transport.js';
+import { handleCatalog } from '../ipc/catalog.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
+let catalog: CatalogService | undefined;
 
 /** Authorizes exact application document, current window and primary frame before any service access. */
 function trustedSender(event: IpcMainInvokeEvent): boolean {
@@ -56,10 +61,14 @@ else void app.whenReady().then(async () => {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
+    catalog = new CatalogService(new OfficialMetadataReader(), storage);
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots ? [ROOTS_CAPABILITY] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY] : []);
   });
+  ipcMain.handle(CATALOG_CHANNEL, (event, input: unknown) => handleCatalog(input, trustedSender(event), randomUUID(), async query => {
+    if (!catalog) throw new CatalogError('CATALOG_UNAVAILABLE'); return catalog.list(query);
+  }));
   ipcMain.handle(ROOTS_LIST_CHANNEL, (event, input: unknown) => handleRoots(input, trustedSender(event), randomUUID(), async () => {
     if (!roots) throw new RootError('ROOT_UNAVAILABLE'); return roots.list();
   }));

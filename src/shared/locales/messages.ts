@@ -26,6 +26,19 @@ export const MESSAGES = {
   fixedStorage: '此位置用于固定共享仓库。迁移功能将在后续提供。',
   nextInstall: '下一步将接入原版下载与启动。',
   rootsUnavailable: '目录服务暂不可用，请关闭后重新打开。',
+  catalogTitle: '原版版本',
+  catalogDescription: '从 Minecraft 官方获取版本目录。安装功能正在接入。',
+  catalogLoading: '正在读取官方版本目录…',
+  catalogUnavailable: '暂时无法读取版本目录，请检查网络后重试。',
+  untrustedManifest: '版本信息未通过校验，已停止使用这份数据。',
+  catalogRefresh: '重新读取',
+  catalogMore: '下一页',
+  catalogRelease: '正式版',
+  catalogSnapshot: '快照',
+  catalogOld: '早期版本',
+  catalogCached: '使用已保存的目录',
+  catalogFresh: '目录读取时间',
+  catalogCandidate: '这些版本尚未完成本机兼容性实测。',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

@@ -8,6 +8,7 @@ import { parseStorageRequest, WorkerError } from './protocol.js';
 import type { WorkerCode, WorkerReply } from './protocol.js';
 import { ObjectIndex } from '../storage/object-index.js';
 import { parseInstallation } from '../storage/installation.js';
+import { parseCatalogCache } from '../storage/catalog-cache.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -31,11 +32,14 @@ async function storage(directory: string): Promise<void> {
         let task;
         let object;
         let installation;
+        let catalog;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
         else if (command.kind === 'installation:get') installation = await store.read('installation', parseInstallation);
         else if (command.kind === 'installation:set') installation = await store.write('installation', 0, command.data, parseInstallation);
+        else if (command.kind === 'catalog:get') catalog = await store.read('catalog', parseCatalogCache);
+        else if (command.kind === 'catalog:set') catalog = await store.write('catalog', command.expectedRevision, command.data, parseCatalogCache);
         else if (command.kind === 'object:lookup' || command.kind === 'object:remember' || command.kind === 'object:clear') {
           await guardDirectory(directory);
           index ??= await ObjectIndex.open(directory);
@@ -44,7 +48,7 @@ async function storage(directory: string): Promise<void> {
           else index.clear();
         } else { closing = true; index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
-          ...(installation === undefined ? {} : { installation }) });
+          ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

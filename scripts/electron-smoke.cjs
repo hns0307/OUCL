@@ -23,27 +23,37 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['chooseRoot', 'handshake', 'listRoots']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseRoot', 'handshake', 'listRoots']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1']);
     const roots = await window.webContents.executeJavaScript('window.oucl.listRoots()');
     assert.equal(roots.ok, true); assert.deepEqual(roots.data.items, []);
     const chooseButton = await window.webContents.executeJavaScript('!!document.querySelector(".root-settings button")');
     assert.ok(chooseButton);
+    const catalog = await window.webContents.executeJavaScript(`(async () => {
+      const deadline = Date.now() + 14000;
+      while (!document.querySelector('.version-list li') && !document.querySelector('.catalog .form-error') && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 50));
+      return { count: document.querySelectorAll('.version-list li').length, first: document.querySelector('.version-list strong')?.textContent, error: !!document.querySelector('.catalog .form-error') };
+    })()`);
+    assert.ok(catalog.count > 0, 'OFFICIAL_CATALOG_DID_NOT_LOAD');
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-04d');
+    const directory = path.resolve('docs/validation/A1-05-catalog');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
+    await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await writeFile(path.join(directory, 'catalog.png'), (await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 })).toPNG());
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
-      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1'], popupDenied: true,
+      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1', 'catalog.v1'], popupDenied: true,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
+      officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
       packagedPayload: false,
     };
     await writeFile(path.join(directory, 'smoke.json'), JSON.stringify(report, null, 2));

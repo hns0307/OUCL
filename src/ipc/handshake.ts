@@ -19,7 +19,7 @@ export function isTrustedDocument(actualUrl: string, expectedUrl: string, sameWe
 }
 
 /** Negotiates the empty contract without exposing business capabilities. */
-export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string, capabilities: readonly 'roots.v1'[] = []): HandshakeResult {
+export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string, capabilities: readonly ('roots.v1' | 'catalog.v1')[] = []): HandshakeResult {
   const futureEnvelope = exactObject(input, ['contractVersion', 'requestId', 'payload'])
     && typeof input.contractVersion === 'number' && Number.isSafeInteger(input.contractVersion) && input.contractVersion > CONTRACT_VERSION
     && isHandshakeRequest({ ...input, contractVersion: CONTRACT_VERSION });

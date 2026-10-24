@@ -23,7 +23,7 @@ export function record(value: unknown): value is Record<string, unknown> {
 /** Restricts upstream identifiers to bounded safe names, not arbitrary paths. */
 export function identifier(value: unknown): value is string {
   return typeof value === 'string' && value.length >= 1 && value.length <= 160
-    && /^[a-zA-Z0-9_.+-]+$/.test(value) && !['.', '..'].includes(value);
+    && /^[a-zA-Z0-9_.+ -]+$/.test(value) && value.trim() === value && !['.', '..'].includes(value);
 }
 
 /** Validates official artifact facts; callers must still establish metadata trust. */
