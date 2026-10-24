@@ -3,6 +3,9 @@ import type { Execution } from '../../core/task/machine.js';
 import type { StoredTask, TaskKind } from '../storage/tasks.js';
 import { parseExecution } from '../storage/tasks.js';
 import type { IndexedObject } from '../storage/object-index.js';
+import { parseInstallation } from '../storage/installation.js';
+import type { Installation } from '../storage/installation.js';
+import type { RecordEnvelope } from '../storage/records.js';
 
 export type WorkerCode = 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'UNSAFE_PATH' | 'STORAGE_IO'
   | 'WORKER_FAILED' | 'INVALID_MESSAGE' | 'QUEUE_FULL' | 'CANCELLED' | 'TIMEOUT' | 'FILE_TOO_LARGE';
@@ -24,12 +27,14 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'object:lookup'; sourceKey: string }
   | { kind: 'object:remember'; sourceKey: string; object: IndexedObject }
   | { kind: 'object:clear' }
+  | { kind: 'installation:get' }
+  | { kind: 'installation:set'; data: Installation }
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation> }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult };
@@ -44,7 +49,8 @@ function requireMessage(condition: unknown): asserts condition { if (!condition)
 export function parseStorageRequest(value: unknown): StorageRequest {
   requireMessage(object(value) && exact(value, ['version', 'id', 'command']) && value.version === 1 && uuid(value.id) && object(value.command));
   const command = value.command;
-  if (command.kind === 'close' || command.kind === 'object:clear') requireMessage(exact(command, ['kind']));
+  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get') requireMessage(exact(command, ['kind']));
+  else if (command.kind === 'installation:set') { requireMessage(exact(command, ['kind', 'data'])); parseInstallation(command.data); }
   else if (command.kind === 'object:lookup' || command.kind === 'object:remember') {
     requireMessage(typeof command.sourceKey === 'string' && /^[a-f0-9]{64}$/.test(command.sourceKey)
       && exact(command, command.kind === 'object:lookup' ? ['kind', 'sourceKey'] : ['kind', 'sourceKey', 'object']));
@@ -87,10 +93,16 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage(!(value.task !== undefined && value.object !== undefined)
-        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object'])]));
+      requireMessage([value.task, value.object, value.installation].filter(item => item !== undefined).length <= 1
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation'])]));
+      let installation: RecordEnvelope<Installation> | undefined;
+      if (value.installation !== undefined) {
+        requireMessage(object(value.installation) && exact(value.installation, ['schemaVersion', 'revision', 'data'])
+          && value.installation.schemaVersion === 1 && integer(value.installation.revision) && value.installation.revision > 0);
+        installation = { schemaVersion: 1, revision: value.installation.revision, data: parseInstallation(value.installation.data) };
+      }
       return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
-        ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }) };
+        ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }), ...(installation === undefined ? {} : { installation }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

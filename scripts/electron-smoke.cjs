@@ -23,22 +23,27 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual(renderer.bridgeKeys, ['handshake']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['chooseRoot', 'handshake', 'listRoots']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, []);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1']);
+    const roots = await window.webContents.executeJavaScript('window.oucl.listRoots()');
+    assert.equal(roots.ok, true); assert.deepEqual(roots.data.items, []);
+    const chooseButton = await window.webContents.executeJavaScript('!!document.querySelector(".root-settings button")');
+    assert.ok(chooseButton);
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/P0-08');
+    const directory = path.resolve('docs/validation/A1-04d');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
-      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: [], popupDenied: true,
+      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1'], popupDenied: true,
+      rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
       packagedPayload: false,
     };
     await writeFile(path.join(directory, 'smoke.json'), JSON.stringify(report, null, 2));
@@ -46,7 +51,7 @@ async function run(window) {
     clearTimeout(timeout);
     await window.webContents.session.closeAllConnections();
     window.destroy();
-    app.exit(0);
+    app.quit();
   } catch (error) {
     console.error(error);
     clearTimeout(timeout);

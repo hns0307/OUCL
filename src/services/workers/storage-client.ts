@@ -5,7 +5,9 @@ import type { StoredTask, TaskKind } from '../storage/tasks.js';
 import { parseReply, parseStorageRequest, WorkerError } from './protocol.js';
 import type { StorageCommand } from './protocol.js';
 import type { IndexedObject } from '../storage/object-index.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject };
+import type { Installation } from '../storage/installation.js';
+import type { RecordEnvelope } from '../storage/records.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -67,7 +69,8 @@ export class StorageClient {
       const pending = this.pending.get(reply.id);
       if (!pending) return;
       this.pending.delete(reply.id); clearTimeout(pending.timer);
-      if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }) }); else pending.reject(new WorkerError(reply.code));
+      if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
+        ...(reply.installation === undefined ? {} : { installation: reply.installation }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -107,6 +110,13 @@ export class StorageClient {
   async remember(sourceKey: string, object: IndexedObject): Promise<void> { await this.request({ kind: 'object:remember', sourceKey, object }); }
   /** Resets only the independent search cache for a provenance-based rebuild. */
   async clear(): Promise<void> { await this.request({ kind: 'object:clear' }); }
+  /** Reads the fixed data-directory registration, privately within the main process. */
+  async readInstallation(): Promise<RecordEnvelope<Installation> | undefined> { return (await this.request({ kind: 'installation:get' })).installation; }
+  /** Registers once; migration/overwriting an existing data location is intentionally unavailable. */
+  async createInstallation(data: Installation): Promise<RecordEnvelope<Installation>> {
+    const result = (await this.request({ kind: 'installation:set', data })).installation;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
 
   /** Drains earlier requests, closes the database, releases its own lease and waits for thread exit. */
   async close(): Promise<void> {

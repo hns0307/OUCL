@@ -6,4 +6,6 @@ workers提供StorageClient和有界HashPool，正式worker产物已在Electron�
 
 objects提供固定SHA256本体、独立来源证明、去重提交和索引重建，已接存储/哈希worker并通过Electron验证。来源认证仍由元数据服务负责，不能只凭本地摘要或索引相信内容；未知/损坏证据保留，不自动覆盖或GC。详见docs/contracts/OBJECT_STORE.md。
 
+roots经主进程注入的系统选择器登记固定数据目录，持久化走StorageClient固定installation schema，只向UI返回UUID/标签/可用状态。该服务已装配正式入口；玩家数据/实例与实际下载未接入。
+
 已批准的主进程IO编排层。本轮不实现下载、账户、实例或启动服务；平台能力经适配器注入。

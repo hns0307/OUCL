@@ -1,6 +1,6 @@
 # OUCL
 
-面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，已获用户明确批准持续实施。A1-01–03版本解析、路径隔离、摘要判断和任务调度纯策略已交付；下载及实际启动仍未完成。现有Electron + React界面/便携目录仍为空骨架，不将其当成可用MC启动器。阶段0技术缺项与后续支持声明按实测保留。
+面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，已获用户明确批准持续实施。已交付版本/路径/任务策略、存储/对象/worker基础与正式目录选择入口；下载及实际启动仍未完成。源码界面可登记固定游戏数据位置，旧便携目录仍为此前空骨架，不将其当成可用MC启动器。阶段0技术缺项与后续支持声明按实测保留。
 
 ## 开始工作
 
@@ -17,7 +17,7 @@ pnpm check
 pnpm start
 ```
 
-本地风险实验：`pnpm test:spikes`；空窗口验收：`pnpm smoke`；依赖检查：`pnpm audit --audit-level=high`、`pnpm audit:licenses`。受限工具环境可能阻止临时文件rename/junction或网络，实际结果与解决方式见报告，不关闭应用sandbox来让测试通过。
+本地风险实验：`pnpm test:spikes`；当前源码窗口验收：`pnpm smoke`；正式worker验证：`pnpm test:workers-runtime`；依赖检查：`pnpm audit --audit-level=high`、`pnpm audit:licenses`。受限工具环境可能阻止临时文件rename/junction或网络，实际结果与解决方式见报告，不关闭应用sandbox来让测试通过。
 
 `pnpm package:dir`生成新的`release/OUCL-0.0.0-win32-x64/OUCL.exe`便携目录，已存在同名目录则拒绝覆盖。`pnpm smoke:package`验证真实包默认入口。它是未签名工程预览，无安装器及游戏功能。
 

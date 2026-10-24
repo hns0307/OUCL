@@ -209,3 +209,5 @@
 执行记录：A1-04a基础已提交356b29f。本轮推进既定A1-04c最小worker，正式入口在Electron45验证StorageClient与有界流式HashPool，56项测试及完整检查通过，见[A1-04c报告](../../docs/validation/A1-04c/REPORT.md)。没有新增渲染IPC、第三方依赖或磁盘格式；私有消息不接任意SQL/脚本/renderer路径。存储超时不等于取消，哈希取消等待线程退出。原owner恢复/解压/实例事务等缺项保留，不把局部worker验证记为完整下载/启动目标完成。
 
 执行记录：worker已提交509963a，任务状态同步b7f5558。本轮A1-04b实现已批共享本体/独立来源记录/可重建SQLite搜索方向，63项测试及Electron正式worker验证通过，见[A1-04b报告](../../docs/validation/A1-04b/REPORT.md)。新对象来源约定见OBJECT_STORE；搜索库与任务库物理分开，不改tasks.sqlite格式，无新增依赖或渲染IPC。来源API锚定、下载/实例/UI/恢复接管等仍待接入，完整目标保持进行中。
+
+执行记录：对象仓库已提交6439805。本轮按已批准提案§7实现roots:list/roots:choose及roots.v1能力，固定数据目录登记与源码UI已接正式main/preload，70项测试及真实Electron窗口检查通过，见[A1-04d报告](../../docs/validation/A1-04d/REPORT.md)。没有新增候选外通道或第三方依赖，具体exact schema记录在ROOTS。真实native选择操作、新便携包、任务订阅及下载/启动仍未验证或未实现，不扩张声明。当前继续同一1A授权范围推进后续服务。

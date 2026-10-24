@@ -11,7 +11,21 @@ export const MESSAGES = {
   unsupportedContract: '应用组件版本不兼容。',
   invalidSender: '请求来源不受信任。',
   unavailable: '暂时无法完成请求。',
-  timeout: '连接超时，请重新打开应用。',
+  timeout: '等待超时，操作结果尚未确定，请稍后重试。',
+  storageTitle: '游戏存放位置',
+  storageDescription: '选择容量充足的文件夹，用于保存游戏、Java 和共享文件。',
+  chooseStorage: '选择文件夹',
+  choosingStorage: '正在选择…',
+  rootLabel: '游戏目录',
+  rootReady: '目录已登记',
+  rootUnavailable: '游戏目录暂不可用，请检查磁盘和访问权限后重试。',
+  rootOutOfScope: '请选择独立的数据文件夹，不要使用应用、源码或其上级目录。',
+  permissionDenied: '无法访问所选目录，请检查权限后重试。',
+  rootsLoading: '正在读取游戏目录…',
+  refreshRoots: '重新检测',
+  fixedStorage: '此位置用于固定共享仓库。迁移功能将在后续提供。',
+  nextInstall: '下一步将接入原版下载与启动。',
+  rootsUnavailable: '目录服务暂不可用，请关闭后重新打开。',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

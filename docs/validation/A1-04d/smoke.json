@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-24T13:40:09.895Z",
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "contextIsolation": true,
+  "sandbox": true,
+  "nodeIntegration": false,
+  "bridgeMethods": [
+    "listRoots",
+    "chooseRoot",
+    "handshake"
+  ],
+  "rendererHasNoNode": true,
+  "handshake": "PASS",
+  "businessCapabilities": [
+    "roots.v1"
+  ],
+  "popupDenied": true,
+  "rootsList": "PASS",
+  "directoryButtonRendered": true,
+  "nativePickerSelected": false,
+  "packagedPayload": false
+}

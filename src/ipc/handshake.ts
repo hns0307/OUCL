@@ -19,7 +19,7 @@ export function isTrustedDocument(actualUrl: string, expectedUrl: string, sameWe
 }
 
 /** Negotiates the empty contract without exposing business capabilities. */
-export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string): HandshakeResult {
+export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string, capabilities: readonly 'roots.v1'[] = []): HandshakeResult {
   const futureEnvelope = exactObject(input, ['contractVersion', 'requestId', 'payload'])
     && typeof input.contractVersion === 'number' && Number.isSafeInteger(input.contractVersion) && input.contractVersion > CONTRACT_VERSION
     && isHandshakeRequest({ ...input, contractVersion: CONTRACT_VERSION });
@@ -29,5 +29,5 @@ export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: 
   if (!isHandshakeRequest(input)) return handshakeFailure(requestId, 'INVALID_ARGUMENT', traceId);
   if (!input.payload.supportedVersions.includes(CONTRACT_VERSION)) return handshakeFailure(requestId, 'UNSUPPORTED_CONTRACT', traceId);
   if (!UUID_PATTERN.test(sessionId)) return handshakeFailure(requestId, 'UNAVAILABLE', traceId);
-  return { contractVersion: CONTRACT_VERSION, requestId, ok: true, data: { selectedVersion: CONTRACT_VERSION, capabilities: [], sessionId } };
+  return { contractVersion: CONTRACT_VERSION, requestId, ok: true, data: { selectedVersion: CONTRACT_VERSION, capabilities: [...capabilities], sessionId } };
 }

@@ -1,0 +1,70 @@
+[
+  {
+    "path": "src/shared/contracts/roots.ts",
+    "sha256": "03545cf4e24ec70b6aefcff451fb865cf387139f5caf41e596a3019557437665"
+  },
+  {
+    "path": "src/shared/contracts/handshake.ts",
+    "sha256": "32bee7d3366d2db01a4c57c8962ba79b1d7c5d3a06a2cda9addacac3943a61bb"
+  },
+  {
+    "path": "src/ipc/roots.ts",
+    "sha256": "044ce717d592483bd9fd89979b2838cb61191395bfa9f7d380de109a14ca0568"
+  },
+  {
+    "path": "src/ipc/preload.ts",
+    "sha256": "d4ac48ed55d90195781b022e35af895e0b4a267e6654452ed94a11ce390385bf"
+  },
+  {
+    "path": "src/ipc/handshake.ts",
+    "sha256": "db02b7e9e4c1d39c5290269d97bb2504213c239cff4f6d971a0d5606b3c5fbe4"
+  },
+  {
+    "path": "src/main/index.ts",
+    "sha256": "a3d85359c796f1d8ac5d21cc58d2e02ca66c6561b675b726b82077c381947642"
+  },
+  {
+    "path": "src/services/roots/service.ts",
+    "sha256": "7dffd5f090972226d014411d5df3279d658c399427d966d782629a89bf336302"
+  },
+  {
+    "path": "src/services/storage/installation.ts",
+    "sha256": "9db0bc864dbdcd73986c747da71932bdba03ac7b353ea038d2b955e6ad48b471"
+  },
+  {
+    "path": "src/services/workers/protocol.ts",
+    "sha256": "0acdde08be6e51be2a98f6f7747303c760539ef35fb357fac796502c969a599f"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "17d7dd9a33ee17265f9ce364cc967853c43994c75eb2fb0e6bf3af82342433b2"
+  },
+  {
+    "path": "src/services/workers/storage-client.ts",
+    "sha256": "33d25fe36616e20ed97b85632cc9ded2cae04580608801f9cc757869a2186b7f"
+  },
+  {
+    "path": "src/shared/locales/messages.ts",
+    "sha256": "2039c65b7366dcc10e8ef2193c1199152dd6daf0314703c8dd41fa9c2f9272fb"
+  },
+  {
+    "path": "src/ui/RootSettings.tsx",
+    "sha256": "30210e110f6eb5b4fec1e5d5d911832a57ee19bd7b298d07a0fa6ff1e4901a02"
+  },
+  {
+    "path": "src/ui/main.tsx",
+    "sha256": "d45753088182ddaa2d492944350c1d000ab24d9dd63154d085e935cf4a7f3b51"
+  },
+  {
+    "path": "src/ui/style.css",
+    "sha256": "cc0b29fdd2c7bbf3587afe38033b03d28bd809a1bc0965158d9ff73ec59f2ee2"
+  },
+  {
+    "path": "tests/roots.test.ts",
+    "sha256": "bfc78b85113f8db9c50cd338b95cc9dbb72abeec7af0ec2a22d9bd39a9191f3a"
+  },
+  {
+    "path": "scripts/electron-smoke.cjs",
+    "sha256": "31652397c4f3e08610e5787aab23d79a02841fed5005b1b0b58527cdde757e74"
+  }
+]

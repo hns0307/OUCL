@@ -1,4 +1,5 @@
 import type { MessageKey } from '../locales/messages.js';
+import type { RootsBridge } from './roots.js';
 
 export const CONTRACT_VERSION = 1 as const;
 export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
@@ -27,7 +28,7 @@ export interface HandshakeData {
 }
 export type HandshakeResult = { contractVersion: 1; requestId: string; ok: true; data: HandshakeData }
   | { contractVersion: 1; requestId: string; ok: false; error: AppError };
-export interface LauncherBridge { handshake(): Promise<HandshakeResult> }
+export interface LauncherBridge extends RootsBridge { handshake(): Promise<HandshakeResult> }
 
 /** Accepts a plain DTO with exact keys, excluding arrays and null. */
 export function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {
@@ -52,7 +53,8 @@ export function isHandshakeResult(value: unknown, requestId: string): value is H
   if (value.contractVersion !== CONTRACT_VERSION || value.requestId !== requestId) return false;
   if (value.ok === true) {
     return exactObject(value.data, ['selectedVersion', 'capabilities', 'sessionId'])
-      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length === 0
+      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length <= 1
+      && value.data.capabilities.every((item: unknown) => item === 'roots.v1')
       && typeof value.data.sessionId === 'string' && UUID_PATTERN.test(value.data.sessionId);
   }
   if (value.ok !== false || !exactObject(value.error, ['category', 'code', 'messageKey', 'retryable', 'traceId'])) return false;
