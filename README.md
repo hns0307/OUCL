@@ -6,6 +6,8 @@
 
 每次开发首先读取 [任务计划与阶段验收表](OUCL-Codex/docs/TASK_PLAN.md)，核对 [批准及待决记录](OUCL-Codex/docs/DECISIONS.md)，只执行当前获批阶段内的具体增量。接着阅读根级 [AGENTS.md](AGENTS.md) 和 [开发规范与交付流程](OUCL-Codex/docs/DEVELOPMENT.md)。
 
+下一对话的工作快照见 [agent.md](agent.md)，它不替代首读任务计划或批准记录。
+
 ## 安装、检查与运行
 
 使用Node 24.21+（24.x）与固定pnpm 12.3.4：
