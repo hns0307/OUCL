@@ -9,6 +9,7 @@ import type { InstanceMetadata, InstanceRecord, InstanceSummary } from '../src/s
 import { StorageClient } from '../src/services/workers/storage-client.js';
 import { RecordStore } from '../src/services/storage/records.js';
 import { parseReply, parseStorageRequest } from '../src/services/workers/protocol.js';
+import { sourceKey } from '../src/services/objects/provenance.js';
 
 const id = (n: number): string => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 const worker = new URL('../src/services/workers/entry.js', import.meta.url);
@@ -37,6 +38,63 @@ function loaderInstallMetadata(): InstanceMetadata {
       anchor: { kind: 'loader-maven', algorithm: 'sha256', digest: 'e'.repeat(64) }
     } }]
   } };
+}
+function installerInstallMetadata(withProcessors = false): InstanceMetadata {
+  const base = metadata();
+  const coordinatePath = (coordinate: string): string => {
+    const [body, extension = 'jar'] = coordinate.split('@'); const [group, artifact, version, classifier] = body!.split(':');
+    return `${group!.replaceAll('.', '/')}/${artifact}/${version}/${artifact}-${version}${classifier ? `-${classifier}` : ''}.${extension}`;
+  };
+  const coordinates = ['net.minecraftforge:installertools:1', 'net.minecraftforge:jarsplitter:1',
+    'net.minecraftforge:ForgeAutoRenamingTool:1:all', 'net.minecraftforge:binarypatcher:1', 'de.oceanlabs.mcp:mcp_config:1.20.1-stamp@zip'] as const;
+  const declarations = coordinates.map((coordinate, index) => ({ name: coordinate, downloads: { artifact: { path: coordinatePath(coordinate),
+    url: `https://maven.minecraftforge.net/${coordinatePath(coordinate)}`, sha1: String(index + 1).repeat(40), size: index + 20 } } }));
+  const tools = [coordinates[0], coordinates[1], coordinates[2], coordinates[3]] as const;
+  const p = (jar: string, args: string[], outputs: Record<string, string> = {}) => ({ jar, classpath: [jar], args, outputs });
+  const data = { MAPPINGS: { client: '[out:mappings:1@txt]' }, MOJMAPS: { client: '[out:mojmaps:1@txt]' },
+    MERGED_MAPPINGS: { client: '[out:merged:1@txt]' }, BINPATCH: { client: '/data/client.lzma' },
+    MC_SLIM: { client: '[out:client:1:slim]' }, MC_SLIM_SHA: { client: `'${'a'.repeat(40)}'` },
+    MC_EXTRA: { client: '[out:client:1:extra]' }, MC_EXTRA_SHA: { client: `'${'b'.repeat(40)}'` },
+    MC_SRG: { client: '[out:client:1:srg]' }, PATCHED: { client: '[out:forge:1:client]' }, PATCHED_SHA: { client: `'${'c'.repeat(40)}'` } };
+  const profileValue = { spec: 1, profile: 'forge', version: '1.20.1-forge-47.4.28', minecraft: '1.20.1', data,
+    libraries: declarations, processors: [
+      p(tools[0]!, ['--task', 'MCP_DATA', '--input', `[${coordinates[4]}]`, '--output', '{MAPPINGS}', '--key', 'mappings']),
+      p(tools[0]!, ['--task', 'DOWNLOAD_MOJMAPS', '--version', '1.20.1', '--side', '{SIDE}', '--output', '{MOJMAPS}']),
+      p(tools[0]!, ['--task', 'MERGE_MAPPING', '--left', '{MAPPINGS}', '--right', '{MOJMAPS}', '--output', '{MERGED_MAPPINGS}', '--classes', '--reverse-right']),
+      p(tools[1]!, ['--input', '{MINECRAFT_JAR}', '--slim', '{MC_SLIM}', '--extra', '{MC_EXTRA}', '--srg', '{MERGED_MAPPINGS}'],
+        { '{MC_SLIM}': '{MC_SLIM_SHA}', '{MC_EXTRA}': '{MC_EXTRA_SHA}' }),
+      p(tools[2]!, ['--input', '{MC_SLIM}', '--output', '{MC_SRG}', '--names', '{MERGED_MAPPINGS}', '--ann-fix', '--ids-fix', '--src-fix', '--record-fix']),
+      p(tools[3]!, ['--clean', '{MC_SRG}', '--output', '{PATCHED}', '--apply', '{BINPATCH}']),
+    ] };
+  const versionValue = { id: '1.20.1-forge-47.4.28', inheritsFrom: '1.20.1', type: 'release',
+    mainClass: 'cpw.mods.bootstraplauncher.BootstrapLauncher', arguments: { game: [], jvm: [] }, libraries: declarations.slice(0, 1) };
+  const profileBody = JSON.stringify(profileValue); const versionBody = JSON.stringify(versionValue);
+  const profileSha256 = createHash('sha256').update(profileBody).digest('hex'); const installerDigest = 'd'.repeat(40);
+  const installerUrl = 'https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.4.28/forge-1.20.1-47.4.28-installer.jar';
+  const installerSpec = { url: installerUrl, expected: { algorithm: 'sha1' as const, digest: installerDigest, size: 100, provenanceId: `loader:forge:${installerDigest}` },
+    anchor: { kind: 'loader-maven' as const, algorithm: 'sha256' as const, digest: 'e'.repeat(64) } };
+  const outputs = [
+    ['extract-mappings', tools[0], 'net.minecraftforge.installertools.ConsoleTool', ['MAPPINGS']],
+    ['download-mojang-mappings', tools[0], 'net.minecraftforge.installertools.ConsoleTool', ['MOJMAPS']],
+    ['merge-mappings', tools[0], 'net.minecraftforge.installertools.ConsoleTool', ['MERGED_MAPPINGS']],
+    ['split-client', tools[1], 'net.minecraftforge.jarsplitter.ConsoleTool', ['MC_SLIM', 'MC_EXTRA']],
+    ['rename-client', tools[2], 'net.minecraftforge.fart.Main', ['MC_SRG']],
+    ['apply-client-patches', tools[3], 'net.minecraftforge.binarypatcher.ConsoleTool', ['PATCHED']],
+  ] as const;
+  const processors = outputs.map(([role, tool, mainClass, keys]) => ({ role, tool, mainClass, outputs: keys.map(key => {
+    const raw = data[key as keyof typeof data].client; const coordinate = raw.slice(1, -1); const pathValue = coordinatePath(coordinate);
+    const upstream = `${key}_SHA` in data ? data[`${key}_SHA` as keyof typeof data].client.slice(1, -1) : undefined;
+    return { path: pathValue, size: 10, sha1: upstream ?? 'f'.repeat(40), sha256: '9'.repeat(64), ...(upstream ? { upstreamSha1: upstream } : {}) };
+  }) }));
+  return { ...base, environment: { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} }, loader: {
+    kind: 'forge', version: '47.4.28', catalogSourceUrl: 'https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json',
+    catalogSha256: '8'.repeat(64), installer: { sourceUrl: installerUrl, spec: installerSpec,
+      object: { digest: '7'.repeat(64), size: 100, sourceKey: sourceKey(installerSpec.expected, installerSpec.anchor) } },
+    profileBody, profileSha256, versionBody, versionSha256: createHash('sha256').update(versionBody).digest('hex'),
+    libraries: declarations.map(item => ({ path: item.downloads.artifact.path, spec: { url: item.downloads.artifact.url,
+      expected: { algorithm: 'sha1' as const, digest: item.downloads.artifact.sha1, size: item.downloads.artifact.size,
+        provenanceId: `loader:forge:${item.downloads.artifact.sha1}` }, anchor: { kind: 'loader-profile' as const, algorithm: 'sha256' as const, digest: profileSha256 } } })),
+    ...(withProcessors ? { processors } : {}) } };
 }
 function ready(revision = 1): InstanceRecord {
   const artifactId = `sha1-${'a'.repeat(40)}`;
@@ -147,6 +205,30 @@ test('loader metadata is revalidated from original profile bytes and per-library
     summary: summary(), phase: 'prepared', metadata: input }), { code: 'INVALID_RECORD' });
   assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'vanilla' },
     summary: summary(), phase: 'prepared', metadata: input }), { code: 'INVALID_RECORD' });
+});
+
+test('installer loader metadata preserves its upstream chain and validates processor evidence', () => {
+  const prepared = installerInstallMetadata();
+  const parsed = parseInstanceRecord({ formatVersion: 2, loader: { kind: 'forge', version: '47.4.28' }, summary: summary(), phase: 'prepared', metadata: prepared });
+  assert.equal(parsed.metadata?.loader?.kind, 'forge');
+  const completed = installerInstallMetadata(true);
+  const evidence = completed.loader?.kind === 'forge' ? completed.loader.processors : undefined;
+  assert.equal(parseInstanceRecord({ formatVersion: 2, loader: { kind: 'forge', version: '47.4.28' }, summary: summary(), phase: 'prepared', metadata: completed })
+    .metadata?.loader?.kind, 'forge');
+  assert.equal(evidence?.length, 6);
+  if (prepared.loader?.kind !== 'forge' || completed.loader?.kind !== 'forge' || !completed.loader.processors) assert.fail('fixture');
+  for (const loader of [
+    { ...prepared.loader, catalogSourceUrl: 'https://example.invalid/catalog.json' },
+    { ...prepared.loader, profileSha256: '0'.repeat(64) },
+    { ...prepared.loader, installer: { ...prepared.loader.installer, sourceUrl: prepared.loader.installer.sourceUrl.replace('47.4.28', '47.4.27') } },
+    { ...prepared.loader, installer: { ...prepared.loader.installer, object: { ...prepared.loader.installer.object, sourceKey: '0'.repeat(64) } } },
+    { ...prepared.loader, libraries: prepared.loader.libraries.map((item, index) => index ? item : { ...item, spec: { ...item.spec,
+      anchor: { ...item.spec.anchor, digest: '0'.repeat(64) } } }) },
+    { ...completed.loader, processors: completed.loader.processors.map((item, index) => index ? item : { ...item, mainClass: 'evil.Main' }) },
+    { ...completed.loader, processors: completed.loader.processors.map((item, index) => index !== 3 ? item : { ...item,
+      outputs: item.outputs.map(output => ({ ...output, upstreamSha1: '0'.repeat(40) })) }) },
+  ]) assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'forge', version: '47.4.28' },
+    summary: summary(), phase: 'prepared', metadata: { ...prepared, loader } }), { code: 'INVALID_RECORD' });
 });
 
 test('private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions', () => {

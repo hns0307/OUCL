@@ -63,6 +63,7 @@ export function restoreInstallMetadata(record: InstanceRecord): PreparedInstallM
   const version = resolveClientVersion(record.summary.mcVersionId, documents, stored.environment ?? { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
   const assets = parseAssetIndex(JSON.parse(stored.assetIndexBody) as unknown);
   if (!stored.loader) return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
+  if (stored.loader.kind !== 'fabric' && stored.loader.kind !== 'quilt') throw new InstallerError('NEEDS_RECOVERY');
   const environment = stored.environment; if (!environment) throw new InstallerError('NEEDS_RECOVERY');
   try {
     const profile = parseStoredLoaderProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version, stored.loader.profileBody, stored.loader.profileSha256);

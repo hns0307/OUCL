@@ -12,6 +12,13 @@ import { isOfficialLoaderMetadataUrl } from '../loaders/metadata.js';
 import { parseStoredLoaderProfile } from '../loaders/install-metadata.js';
 import { composeLoaderInstall } from '../loaders/compose.js';
 import type { LoaderLibraryPlan } from '../loaders/maven.js';
+import { parseInstallerProfile } from '../../core/loaders/installer-profile.js';
+import { enforceInstallerProcessorPolicy } from '../../core/loaders/processor-policy.js';
+import { requireProcessorMainClass } from '../../core/loaders/processor-manifest.js';
+import type { InstallerProcessorRole } from '../../core/loaders/types.js';
+import { composeInstallerInstall } from '../loaders/installer-compose.js';
+import { installerArtifactUrl } from '../loaders/installer-artifact.js';
+import { sourceKey } from '../objects/provenance.js';
 import { MAX_RECORD_BYTES, StorageError } from './files.js';
 
 export interface InstanceSummary {
@@ -24,10 +31,19 @@ export interface PersistedInstallMetadata {
   environment?: { os: 'windows'; arch: 'x64'; osVersion: string; features: Record<string, boolean> };
   loader?: PersistedLoaderMetadata;
 }
-export interface PersistedLoaderMetadata {
+export interface PersistedProfileLoaderMetadata {
   kind: 'fabric' | 'quilt'; version: string; profileBody: string; profileSourceUrl: string; profileSha256: string;
   libraries: Array<{ path: string; spec: DownloadSpec }>;
 }
+export interface PersistedProcessorOutput { path: string; size: number; sha1: string; sha256: string; upstreamSha1?: string }
+export interface PersistedProcessorEvidence { role: InstallerProcessorRole; tool: string; mainClass: string; outputs: PersistedProcessorOutput[] }
+export interface PersistedInstallerLoaderMetadata {
+  kind: 'forge' | 'neoforge'; version: string; catalogSourceUrl: string; catalogSha256: string;
+  installer: { sourceUrl: string; spec: DownloadSpec; object: ObjectRef };
+  profileBody: string; profileSha256: string; versionBody: string; versionSha256: string;
+  libraries: Array<{ path: string; spec: DownloadSpec }>; processors?: PersistedProcessorEvidence[];
+}
+export type PersistedLoaderMetadata = PersistedProfileLoaderMetadata | PersistedInstallerLoaderMetadata;
 export type InstanceMetadata = PersistedInstallMetadata;
 export interface InstanceReceipt { area: 'assets' | 'libraries' | 'version' | 'resources'; path: string; artifactId: string; mode: 'copy' | 'symlink' }
 export type InstanceLoaderIdentity = { kind: 'vanilla' } | { kind: 'fabric' | 'quilt' | 'forge' | 'neoforge'; version: string };
@@ -76,8 +92,8 @@ function environment(value: unknown): NonNullable<PersistedInstallMetadata['envi
   }));
   return { os: 'windows', arch: 'x64', osVersion: value.osVersion, features };
 }
-function loaderMetadata(value: unknown, minecraftVersion: string, baseDocuments: Record<string, string>, baseProofs: Record<string, string>,
-  assets: ReturnType<typeof parseAssetIndex>, selectedEnvironment: NonNullable<PersistedInstallMetadata['environment']>): PersistedLoaderMetadata {
+function profileLoaderMetadata(value: unknown, minecraftVersion: string, baseDocuments: Record<string, string>, baseProofs: Record<string, string>,
+  assets: ReturnType<typeof parseAssetIndex>, selectedEnvironment: NonNullable<PersistedInstallMetadata['environment']>): PersistedProfileLoaderMetadata {
   if (!exactObject(value, ['kind', 'version', 'profileBody', 'profileSourceUrl', 'profileSha256', 'libraries'])
     || (value.kind !== 'fabric' && value.kind !== 'quilt') || !identifier(value.version) || !/^[a-zA-Z0-9_.+-]+$/.test(value.version)
     || typeof value.profileBody !== 'string' || typeof value.profileSourceUrl !== 'string' || typeof value.profileSha256 !== 'string'
@@ -107,6 +123,100 @@ function loaderMetadata(value: unknown, minecraftVersion: string, baseDocuments:
     profileSha256: value.profileSha256, libraries: plan, environment: selectedEnvironment }); } catch { return invalid(); }
   return { kind: value.kind, version: value.version, profileBody: value.profileBody, profileSourceUrl: value.profileSourceUrl,
     profileSha256: value.profileSha256, libraries };
+}
+
+function downloadSpec(value: unknown): DownloadSpec {
+  if (!exactObject(value, ['url', 'expected', 'anchor']) || typeof value.url !== 'string' || !isArtifactUrl(value.url)) invalid();
+  let facts; try { facts = definition(value.expected, value.anchor); } catch { return invalid(); }
+  return { url: value.url, expected: facts.expected, anchor: facts.anchor };
+}
+function objectRef(value: unknown): ObjectRef {
+  if (!exactObject(value, ['digest', 'size', 'sourceKey']) || typeof value.digest !== 'string' || !/^[a-f0-9]{64}$/.test(value.digest)
+    || !integer(value.size) || value.size < 1 || value.size > 64 * 1024 ** 2 || typeof value.sourceKey !== 'string' || !/^[a-f0-9]{64}$/.test(value.sourceKey)) invalid();
+  return { digest: value.digest, size: value.size, sourceKey: value.sourceKey };
+}
+const PROCESSOR_OUTPUTS: Readonly<Record<InstallerProcessorRole, readonly string[]>> = {
+  'extract-mappings': ['MAPPINGS'], 'download-mojang-mappings': ['MOJMAPS'], 'merge-mappings': ['MERGED_MAPPINGS'],
+  'split-client': ['MC_SLIM', 'MC_EXTRA'], 'rename-client': ['MC_SRG'], 'apply-client-patches': ['PATCHED'],
+};
+
+function installerLoaderMetadata(value: Record<string, unknown>, minecraftVersion: string, baseDocuments: Record<string, string>,
+  baseProofs: Record<string, string>, assets: ReturnType<typeof parseAssetIndex>,
+  selectedEnvironment: NonNullable<PersistedInstallMetadata['environment']>): PersistedInstallerLoaderMetadata {
+  const hasProcessors = Object.hasOwn(value, 'processors');
+  if (!exactObject(value, ['kind', 'version', 'catalogSourceUrl', 'catalogSha256', 'installer', 'profileBody', 'profileSha256',
+    'versionBody', 'versionSha256', 'libraries', ...(hasProcessors ? ['processors'] : [])])
+    || (value.kind !== 'forge' && value.kind !== 'neoforge') || !identifier(value.version)
+    || typeof value.catalogSourceUrl !== 'string' || !isOfficialLoaderMetadataUrl(value.catalogSourceUrl)
+    || typeof value.catalogSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(value.catalogSha256)
+    || typeof value.profileBody !== 'string' || typeof value.profileSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(value.profileSha256)
+    || createHash('sha256').update(value.profileBody).digest('hex') !== value.profileSha256
+    || typeof value.versionBody !== 'string' || typeof value.versionSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(value.versionSha256)
+    || createHash('sha256').update(value.versionBody).digest('hex') !== value.versionSha256
+    || !Array.isArray(value.libraries) || value.libraries.length > 256 || !object(value.installer)) invalid();
+  const expectedCatalog = value.kind === 'forge' ? 'https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json'
+    : 'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge';
+  if (value.catalogSourceUrl !== expectedCatalog) invalid();
+  const installer = value.installer;
+  if (!exactObject(installer, ['sourceUrl', 'spec', 'object']) || typeof installer.sourceUrl !== 'string'
+    || installer.sourceUrl !== installerArtifactUrl(value.kind, minecraftVersion, value.version)) invalid();
+  const installerSpec = downloadSpec(installer.spec); const installerObject = objectRef(installer.object);
+  if (installerSpec.url !== installer.sourceUrl || installerSpec.expected.algorithm !== 'sha1'
+    || installerSpec.expected.provenanceId !== `loader:${value.kind}:${installerSpec.expected.digest}`
+    || installerSpec.anchor.kind !== 'loader-maven' || installerSpec.anchor.algorithm !== 'sha256'
+    || installerObject.size !== installerSpec.expected.size || installerObject.sourceKey !== sourceKey(installerSpec.expected, installerSpec.anchor)) invalid();
+  let profile;
+  try { profile = parseInstallerProfile(value.kind, minecraftVersion, value.version, JSON.parse(value.profileBody) as unknown, JSON.parse(value.versionBody) as unknown); }
+  catch { return invalid(); }
+  const libraries = value.libraries.map((entry, index) => {
+    if (!exactObject(entry, ['path', 'spec']) || typeof entry.path !== 'string') invalid();
+    const spec = downloadSpec(entry.spec); const declared = profile.libraries[index];
+    if (!declared || entry.path !== declared.path || spec.url !== declared.url || spec.expected.algorithm !== 'sha1'
+      || spec.expected.digest !== declared.sha1 || spec.expected.size !== declared.size
+      || spec.expected.provenanceId !== `loader:${value.kind}:${declared.sha1}`
+      || spec.anchor.kind !== 'loader-profile' || spec.anchor.algorithm !== 'sha256' || spec.anchor.digest !== value.profileSha256) invalid();
+    return { path: entry.path, spec };
+  });
+  if (libraries.length !== profile.libraries.length) invalid();
+  const controlled = enforceInstallerProcessorPolicy(profile);
+  let processors: PersistedProcessorEvidence[] | undefined;
+  if (hasProcessors) {
+    if (!Array.isArray(value.processors) || value.processors.length !== controlled.length) invalid();
+    processors = value.processors.map((entry, index) => {
+      const expected = controlled[index]!;
+      if (!exactObject(entry, ['role', 'tool', 'mainClass', 'outputs']) || entry.role !== expected.role || entry.tool !== expected.tool
+        || typeof entry.mainClass !== 'string' || !Array.isArray(entry.outputs)) invalid();
+      try { requireProcessorMainClass(value.kind as 'forge' | 'neoforge', expected.role, entry.mainClass); } catch { return invalid(); }
+      const outputKeys = PROCESSOR_OUTPUTS[expected.role]; if (entry.outputs.length !== outputKeys.length) invalid();
+      const parsedOutputs = entry.outputs.map((output, outputIndex) => {
+        const key = outputKeys[outputIndex]!; const declared = profile.data[key]; const proof = profile.data[`${key}_SHA`];
+        if (!declared || declared.kind !== 'artifact' || !exactObject(output, ['path', 'size', 'sha1', 'sha256',
+          ...(Object.hasOwn(output, 'upstreamSha1') ? ['upstreamSha1'] : [])]) || output.path !== declared.path
+          || !integer(output.size) || output.size < 1 || output.size > 1024 ** 3 || typeof output.sha1 !== 'string' || !/^[a-f0-9]{40}$/.test(output.sha1)
+          || typeof output.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(output.sha256)) invalid();
+        const upstream = proof?.kind === 'literal' && /^[a-f0-9]{40}$/.test(proof.value) ? proof.value : undefined;
+        if (upstream === undefined !== (output.upstreamSha1 === undefined) || upstream !== undefined && output.upstreamSha1 !== upstream
+          || upstream !== undefined && output.sha1 !== upstream) invalid();
+        return { path: output.path, size: output.size, sha1: output.sha1, sha256: output.sha256,
+          ...(upstream === undefined ? {} : { upstreamSha1: upstream }) };
+      });
+      return { role: expected.role, tool: expected.tool, mainClass: entry.mainClass, outputs: parsedOutputs };
+    });
+  }
+  try { composeInstallerInstall({ baseVersionDocuments: baseDocuments, baseMetadataSha1ByVersion: baseProofs, assets, profile,
+    profileSha256: value.profileSha256, environment: selectedEnvironment }); } catch { return invalid(); }
+  return { kind: value.kind, version: value.version, catalogSourceUrl: value.catalogSourceUrl, catalogSha256: value.catalogSha256,
+    installer: { sourceUrl: installer.sourceUrl, spec: installerSpec, object: installerObject }, profileBody: value.profileBody,
+    profileSha256: value.profileSha256, versionBody: value.versionBody, versionSha256: value.versionSha256, libraries,
+    ...(processors === undefined ? {} : { processors }) };
+}
+
+function loaderMetadata(value: unknown, minecraftVersion: string, baseDocuments: Record<string, string>, baseProofs: Record<string, string>,
+  assets: ReturnType<typeof parseAssetIndex>, selectedEnvironment: NonNullable<PersistedInstallMetadata['environment']>): PersistedLoaderMetadata {
+  if (!object(value) || typeof value.kind !== 'string') invalid();
+  return value.kind === 'fabric' || value.kind === 'quilt'
+    ? profileLoaderMetadata(value, minecraftVersion, baseDocuments, baseProofs, assets, selectedEnvironment)
+    : installerLoaderMetadata(value, minecraftVersion, baseDocuments, baseProofs, assets, selectedEnvironment);
 }
 function metadata(value: unknown, versionId: string): InstanceMetadata {
   const hasEnvironment = object(value) && Object.hasOwn(value, 'environment');

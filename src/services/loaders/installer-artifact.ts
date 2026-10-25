@@ -4,7 +4,7 @@ import type { LoaderCatalogDocument } from './metadata.js';
 import { isOfficialLoaderMetadataUrl } from './metadata.js';
 import { LoaderMavenError, readOfficialMavenProof } from './maven.js';
 
-function urlOf(kind: InstallerLoaderKind, minecraftVersion: string, loaderVersion: string): string {
+export function installerArtifactUrl(kind: InstallerLoaderKind, minecraftVersion: string, loaderVersion: string): string {
   if (kind === 'forge' && minecraftVersion === '1.20.1' && /^47\.\d+\.\d+$/.test(loaderVersion)) {
     const version = `${minecraftVersion}-${loaderVersion}`;
     return `https://maven.minecraftforge.net/net/minecraftforge/forge/${version}/forge-${version}-installer.jar`;
@@ -27,7 +27,7 @@ export class InstallerArtifactResolver {
       || !catalog.items.some(item => item.kind === kind && item.minecraftVersion === minecraftVersion && item.loaderVersion === loaderVersion)) {
       throw new LoaderMavenError('INVALID_METADATA');
     }
-    const sourceUrl = urlOf(kind, minecraftVersion, loaderVersion);
+    const sourceUrl = installerArtifactUrl(kind, minecraftVersion, loaderVersion);
     const proof = await readOfficialMavenProof(this.request, sourceUrl, signal);
     return { sourceUrl, catalogSha256: catalog.evidence.sha256,
       spec: { url: sourceUrl, expected: { algorithm: 'sha1', digest: proof.sha1, size: proof.size, provenanceId: `loader:${kind}:${proof.sha1}` },
