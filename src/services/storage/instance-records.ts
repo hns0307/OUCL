@@ -5,6 +5,13 @@ import { resolveClientVersion } from '../../core/version/resolve.js';
 import { installRelativePath, parseAssetIndex } from '../../core/install/assets.js';
 import { planVanillaInstall } from '../../core/install/plan.js';
 import type { ObjectRef } from '../objects/store.js';
+import { definition } from '../objects/provenance.js';
+import { isArtifactUrl } from '../download/types.js';
+import type { DownloadSpec } from '../download/types.js';
+import { isOfficialLoaderMetadataUrl } from '../loaders/metadata.js';
+import { parseStoredLoaderProfile } from '../loaders/install-metadata.js';
+import { composeLoaderInstall } from '../loaders/compose.js';
+import type { LoaderLibraryPlan } from '../loaders/maven.js';
 import { MAX_RECORD_BYTES, StorageError } from './files.js';
 
 export interface InstanceSummary {
@@ -15,6 +22,11 @@ export interface InstanceIndex { items: InstanceSummary[] }
 export interface PersistedInstallMetadata {
   versionDocuments: Record<string, string>; metadataSha1ByVersion: Record<string, string>; assetIndexBody: string;
   environment?: { os: 'windows'; arch: 'x64'; osVersion: string; features: Record<string, boolean> };
+  loader?: PersistedLoaderMetadata;
+}
+export interface PersistedLoaderMetadata {
+  kind: 'fabric' | 'quilt'; version: string; profileBody: string; profileSourceUrl: string; profileSha256: string;
+  libraries: Array<{ path: string; spec: DownloadSpec }>;
 }
 export type InstanceMetadata = PersistedInstallMetadata;
 export interface InstanceReceipt { area: 'assets' | 'libraries' | 'version' | 'resources'; path: string; artifactId: string; mode: 'copy' | 'symlink' }
@@ -64,9 +76,42 @@ function environment(value: unknown): NonNullable<PersistedInstallMetadata['envi
   }));
   return { os: 'windows', arch: 'x64', osVersion: value.osVersion, features };
 }
+function loaderMetadata(value: unknown, minecraftVersion: string, baseDocuments: Record<string, string>, baseProofs: Record<string, string>,
+  assets: ReturnType<typeof parseAssetIndex>, selectedEnvironment: NonNullable<PersistedInstallMetadata['environment']>): PersistedLoaderMetadata {
+  if (!exactObject(value, ['kind', 'version', 'profileBody', 'profileSourceUrl', 'profileSha256', 'libraries'])
+    || (value.kind !== 'fabric' && value.kind !== 'quilt') || !identifier(value.version) || !/^[a-zA-Z0-9_.+-]+$/.test(value.version)
+    || typeof value.profileBody !== 'string' || typeof value.profileSourceUrl !== 'string' || typeof value.profileSha256 !== 'string'
+    || !isOfficialLoaderMetadataUrl(value.profileSourceUrl) || !Array.isArray(value.libraries) || value.libraries.length > 256) invalid();
+  const expectedSource = `https://meta.${value.kind === 'fabric' ? 'fabricmc.net/v2' : 'quiltmc.org/v3'}/versions/loader/${minecraftVersion}/${value.version}/profile/json`;
+  if (value.profileSourceUrl !== expectedSource) invalid();
+  let profile;
+  try { profile = parseStoredLoaderProfile(value.kind, minecraftVersion, value.version, value.profileBody, value.profileSha256); }
+  catch { return invalid(); }
+  const libraries = value.libraries.map((entry, index) => {
+    if (!exactObject(entry, ['path', 'spec']) || typeof entry.path !== 'string' || !exactObject(entry.spec, ['url', 'expected', 'anchor'])
+      || typeof entry.spec.url !== 'string' || !isArtifactUrl(entry.spec.url)) invalid();
+    const declared = profile.libraries[index]; if (!declared || declared.path !== entry.path || declared.url !== entry.spec.url) invalid();
+    let facts;
+    try { facts = definition(entry.spec.expected, entry.spec.anchor); } catch { return invalid(); }
+    if (facts.expected.algorithm !== 'sha1' || facts.expected.provenanceId !== `loader:${value.kind}:${facts.expected.digest}`
+      || (facts.anchor.kind !== 'loader-profile' && facts.anchor.kind !== 'loader-maven') || facts.anchor.algorithm !== 'sha256'
+      || declared.proof === 'inline-sha1' && (facts.anchor.kind !== 'loader-profile' || facts.anchor.digest !== value.profileSha256
+        || facts.expected.digest !== declared.sha1 || facts.expected.size !== declared.size)
+      || declared.proof === 'official-sidecar-required' && facts.anchor.kind !== 'loader-maven') invalid();
+    return { path: entry.path, spec: { url: entry.spec.url, expected: facts.expected, anchor: facts.anchor } };
+  });
+  if (libraries.length !== profile.libraries.length) invalid();
+  const plan: LoaderLibraryPlan = { libraries, totalBytes: libraries.reduce((sum, entry) => sum + entry.spec.expected.size, 0) };
+  if (!Number.isSafeInteger(plan.totalBytes)) invalid();
+  try { composeLoaderInstall({ baseVersionDocuments: baseDocuments, baseMetadataSha1ByVersion: baseProofs, assets, profile,
+    profileSha256: value.profileSha256, libraries: plan, environment: selectedEnvironment }); } catch { return invalid(); }
+  return { kind: value.kind, version: value.version, profileBody: value.profileBody, profileSourceUrl: value.profileSourceUrl,
+    profileSha256: value.profileSha256, libraries };
+}
 function metadata(value: unknown, versionId: string): InstanceMetadata {
   const hasEnvironment = object(value) && Object.hasOwn(value, 'environment');
-  if (!exactObject(value, ['versionDocuments', 'metadataSha1ByVersion', 'assetIndexBody', ...(hasEnvironment ? ['environment'] : [])]) || !object(value.versionDocuments)
+  const hasLoader = object(value) && Object.hasOwn(value, 'loader');
+  if (!exactObject(value, ['versionDocuments', 'metadataSha1ByVersion', 'assetIndexBody', ...(hasEnvironment ? ['environment'] : []), ...(hasLoader ? ['loader'] : [])]) || !object(value.versionDocuments)
     || !object(value.metadataSha1ByVersion) || typeof value.assetIndexBody !== 'string') invalid();
   const entries = Object.entries(value.versionDocuments); const hashes = Object.entries(value.metadataSha1ByVersion);
   if (entries.length === 0 || entries.length > 32 || hashes.length !== entries.length) invalid();
@@ -86,8 +131,10 @@ function metadata(value: unknown, versionId: string): InstanceMetadata {
     || createHash('sha1').update(value.assetIndexBody).digest('hex') !== resolved.assetIndex.sha1) invalid();
   const assetIndex = parseAssetIndex(JSON.parse(value.assetIndexBody) as unknown);
   planVanillaInstall(resolved, Object.fromEntries(sha1s), assetIndex);
+  if (hasLoader && selectedEnvironment === undefined) invalid();
+  const parsedLoader = hasLoader ? loaderMetadata(value.loader, versionId, Object.fromEntries(documents), Object.fromEntries(sha1s), assetIndex, selectedEnvironment!) : undefined;
   return { versionDocuments: Object.fromEntries(documents), metadataSha1ByVersion: Object.fromEntries(sha1s), assetIndexBody: value.assetIndexBody,
-    ...(selectedEnvironment === undefined ? {} : { environment: selectedEnvironment }) };
+    ...(selectedEnvironment === undefined ? {} : { environment: selectedEnvironment }), ...(parsedLoader === undefined ? {} : { loader: parsedLoader }) };
 }
 function objects(value: unknown): Record<string, ObjectRef> {
   if (!object(value) || Object.keys(value).length > 100000) invalid();
@@ -133,6 +180,10 @@ export function parseInstanceRecord(value: unknown): InstanceRecord {
     const parsedLoader = versioned ? loader(value.loader) : { kind: 'vanilla' as const };
     const parsedObjects = value.objects === undefined ? undefined : objects(value.objects);
     const parsedReceipts = value.receipts === undefined ? undefined : receipts(value.receipts, parsedObjects ?? {});
+    const metadataLoader = parsedMetadata?.loader;
+    if (metadataLoader !== undefined) {
+      if (parsedLoader.kind === 'vanilla' || parsedLoader.kind !== metadataLoader.kind || parsedLoader.version !== metadataLoader.version) invalid();
+    } else if (parsedLoader.kind !== 'vanilla' && ['prepared', 'downloaded', 'materializing', 'ready'].includes(phase as string)) invalid();
     if (['prepared', 'downloaded', 'materializing', 'ready'].includes(phase) && !parsedMetadata
       || ['downloaded', 'materializing', 'ready'].includes(phase) && !parsedObjects
       || phase === 'ready' && (!parsedReceipts || !parsedObjects || Object.keys(parsedObjects).length === 0 || parsedReceipts.length === 0)

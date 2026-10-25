@@ -9,6 +9,8 @@ import { StorageClient } from '../src/services/workers/storage-client.js';
 import { CatalogService } from '../src/services/catalog/service.js';
 import { InstallMetadataService } from '../src/services/catalog/install-metadata.js';
 import { InstallerService, restoreInstallMetadata } from '../src/services/install/installer.js';
+import { LoaderInstallMetadataService } from '../src/services/loaders/install-metadata.js';
+import { parseLoaderProfile } from '../src/core/loaders/metadata.js';
 import type { MetadataReader } from '../src/services/catalog/transport.js';
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
@@ -60,6 +62,12 @@ async function fixture() {
     const digest = sha1(body); if (expected) assert.equal(digest, expected);
     return { body, sha1: digest, sha256: createHash('sha256').update(body).digest('hex') };
   } };
+  const loaderBytes = Buffer.from('loader library fixture'); const loaderHash = sha1(loaderBytes);
+  const loaderUrl = 'https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.20.1/fabric-loader-0.20.1.jar'; bodies.set(loaderUrl, loaderBytes);
+  const loaderValue = { id: 'fabric-loader-0.20.1-fixture', inheritsFrom: 'fixture', mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+    arguments: { game: [], jvm: ['-Dfabric.fixture=true'] }, libraries: [{ name: 'net.fabricmc:fabric-loader:0.20.1', url: 'https://maven.fabricmc.net/' }] };
+  const loaderBody = JSON.stringify(loaderValue); const loaderProfile = parseLoaderProfile('fabric', 'fixture', '0.20.1', loaderValue);
+  const loaderSha256 = createHash('sha256').update(loaderBody).digest('hex');
   const originalFetch = globalThis.fetch; let requests = 0; let delayed = false;
   globalThis.fetch = async (url, options) => {
     requests++; if (delayed) await new Promise<void>(resolve => setTimeout(resolve, 100));
@@ -67,7 +75,15 @@ async function fixture() {
     const bytes = bodies.get(String(url)); assert.ok(bytes, 'fixture URL not found');
     return new Response(new Uint8Array(bytes), { headers: { 'content-length': String(bytes.length) } });
   };
-  const createService = (repository: StorageClient): InstallerService => new InstallerService(repository, entry, new InstallMetadataService(new CatalogService(reader, repository), reader));
+  const createService = (repository: StorageClient): InstallerService => {
+    const vanilla = new InstallMetadataService(new CatalogService(reader, repository), reader);
+    const loader = new LoaderInstallMetadataService(vanilla, { profile: async () => ({ profile: loaderProfile, body: loaderBody,
+      evidence: { sourceUrl: 'https://meta.fabricmc.net/v2/versions/loader/fixture/0.20.1/profile/json', sha256: loaderSha256 } }) },
+    { plan: async () => ({ totalBytes: loaderBytes.length, libraries: [{ path: loaderProfile.libraries[0]!.path, spec: { url: loaderUrl,
+      expected: { algorithm: 'sha1', digest: loaderHash, size: loaderBytes.length, provenanceId: `loader:fabric:${loaderHash}` },
+      anchor: { kind: 'loader-maven', algorithm: 'sha256', digest: 'f'.repeat(64) } } }] }) });
+    return new InstallerService(repository, entry, vanilla, loader);
+  };
   const service = createService(storage);
   return { root, storage, service, createService, metadataDirectory, dataDirectory, requests: () => requests, delay: () => { delayed = true; },
     async close() { await service.close(); globalThis.fetch = originalFetch; await storage.close(); assert.equal(path.dirname(root), path.resolve(tmpdir())); assert.ok(path.basename(root).startsWith('oucl-installer-')); await rm(root, { recursive: true, force: true }); } };
@@ -105,6 +121,22 @@ test('actual installer commits a complete private instance and reuses shared fil
       await restarted.initialize(); assert.equal((await restarted.list(rootId)).filter(item => item.state === 'ready').length, 2);
       assert.equal((await restarted.task(rootId, accepted.taskId)).task.execution.state, 'completed');
     } finally { await restarted.close(); await reopened.close(); }
+  } finally { await f.close(); }
+});
+
+test('Fabric installation uses the same transaction and reopens with its pinned loader plan', async () => {
+  const f = await fixture();
+  try {
+    const accepted = await f.service.createLoader(request(12), { ...input, displayName: 'Fabric instance', loader: { kind: 'fabric', version: '0.20.1' } });
+    const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.ok(completed.instance);
+    const record = await f.storage.readInstance(completed.instance.instanceId); assert.equal(record?.data.loader?.kind, 'fabric');
+    assert.equal(record?.data.metadata?.loader?.version, '0.20.1');
+    const restored = restoreInstallMetadata(record!.data); assert.equal(restored.version.mainClass, 'net.fabricmc.loader.impl.launch.knot.KnotClient');
+    assert.ok(restored.version.jvmArguments.includes('-Dfabric.fixture=true'));
+    assert.ok(restored.plan.artifacts.some(item => item.sha1 === sha1(Buffer.from('loader library fixture'))));
+    await f.service.close(); await f.storage.close(); const reopened = await StorageClient.open(entry, f.metadataDirectory); const restarted = f.createService(reopened);
+    try { await restarted.initialize(); assert.equal((await restarted.list(rootId))[0]?.state, 'ready'); }
+    finally { await restarted.close(); await reopened.close(); }
   } finally { await f.close(); }
 });
 

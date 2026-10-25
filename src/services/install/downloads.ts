@@ -3,6 +3,8 @@ import { parseAssetIndex } from '../../core/install/assets.js';
 import { planVanillaInstall } from '../../core/install/plan.js';
 import type { PlannedArtifact, VanillaInstallPlan } from '../../core/install/plan.js';
 import type { PreparedInstallMetadata } from '../catalog/install-metadata.js';
+import type { PreparedLoaderMetadata } from '../loaders/install-metadata.js';
+import { rebuildPreparedLoaderPlan } from '../loaders/install-metadata.js';
 import type { DownloadCoordinator } from '../download/coordinator.js';
 import { CoordinatorError } from '../download/coordinator.js';
 import { DownloadError } from '../download/types.js';
@@ -23,7 +25,7 @@ export class InstallDownloadService {
   }
 
   /** Returns only after every artifact and independent proof is committed, or all owned consumers have joined. */
-  async run(metadata: PreparedInstallMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
+  async run(metadata: PreparedInstallMetadata | PreparedLoaderMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
     const controller = new AbortController(); const abort = (): void => controller.abort();
     options.signal?.addEventListener('abort', abort, { once: true });
     if (options.signal?.aborted) controller.abort();
@@ -32,7 +34,8 @@ export class InstallDownloadService {
       const body = metadata.assetIndexBody;
       let rawAssets: unknown;
       try { rawAssets = JSON.parse(body) as unknown; } catch { throw new DownloadError('INVALID_TRANSFER'); }
-      const plan = planVanillaInstall(metadata.version, metadata.metadataSha1ByVersion, parseAssetIndex(rawAssets));
+      const plan = 'loader' in metadata ? rebuildPreparedLoaderPlan({ ...metadata, assets: parseAssetIndex(rawAssets) })
+        : planVanillaInstall(metadata.version, metadata.metadataSha1ByVersion, parseAssetIndex(rawAssets));
       const index = metadata.version.assetIndex;
       const indexView = plan.views.find(view => view.area === 'assets' && view.path === `indexes/${index?.id}.json`);
       const indexArtifact = plan.artifacts.find(artifact => artifact.artifactId === indexView?.artifactId);

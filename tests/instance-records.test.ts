@@ -23,6 +23,21 @@ function metadata(): InstanceMetadata {
     assetIndex: { id: '5', url: 'https://piston-meta.mojang.com/v1/packages/fixture/5.json', sha1: sha1(assetIndexBody), size: Buffer.byteLength(assetIndexBody) } }) + '\n';
   return { versionDocuments: { '1.20.1': body }, metadataSha1ByVersion: { '1.20.1': sha1(body) }, assetIndexBody };
 }
+function loaderInstallMetadata(): InstanceMetadata {
+  const base = metadata(); const profile = JSON.stringify({ id: 'fabric-loader-0.20.1-1.20.1', inheritsFrom: '1.20.1',
+    mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient', arguments: { game: [], jvm: [] },
+    libraries: [{ name: 'net.fabricmc:fabric-loader:0.20.1', url: 'https://maven.fabricmc.net/' }] });
+  const digest = 'd'.repeat(40); const profileSha256 = createHash('sha256').update(profile).digest('hex');
+  return { ...base, environment: { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} }, loader: {
+    kind: 'fabric', version: '0.20.1', profileBody: profile,
+    profileSourceUrl: 'https://meta.fabricmc.net/v2/versions/loader/1.20.1/0.20.1/profile/json', profileSha256,
+    libraries: [{ path: 'net/fabricmc/fabric-loader/0.20.1/fabric-loader-0.20.1.jar', spec: {
+      url: 'https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.20.1/fabric-loader-0.20.1.jar',
+      expected: { algorithm: 'sha1', digest, size: 32, provenanceId: `loader:fabric:${digest}` },
+      anchor: { kind: 'loader-maven', algorithm: 'sha256', digest: 'e'.repeat(64) }
+    } }]
+  } };
+}
 function ready(revision = 1): InstanceRecord {
   const artifactId = `sha1-${'a'.repeat(40)}`;
   return { formatVersion: 2, loader: { kind: 'vanilla' }, summary: { ...summary(revision), state: 'ready' }, phase: 'ready', metadata: metadata(),
@@ -112,6 +127,26 @@ test('instance metadata persists the exact bounded Windows rule environment inst
     { ...input.environment, features: { flag: 'true' } }, { ...input.environment, unknown: true }]) {
     assert.throws(() => parseInstanceRecord({ summary: summary(), phase: 'prepared', metadata: { ...input, environment } }), { code: 'INVALID_RECORD' });
   }
+});
+
+test('loader metadata is revalidated from original profile bytes and per-library source proofs', () => {
+  const input = loaderInstallMetadata(); const record = parseInstanceRecord({ formatVersion: 2, loader: { kind: 'fabric', version: '0.20.1' },
+    summary: summary(), phase: 'prepared', metadata: input });
+  assert.deepEqual(record.metadata?.loader, input.loader);
+  for (const loader of [
+    { ...input.loader, profileSha256: 'f'.repeat(64) },
+    { ...input.loader, profileSourceUrl: 'https://meta.fabricmc.net/v2/versions/loader/1.20.1/latest/profile/json' },
+    { ...input.loader, libraries: input.loader!.libraries.map(item => ({ ...item, path: '../bad.jar' })) },
+    { ...input.loader, libraries: input.loader!.libraries.map(item => ({ ...item, spec: { ...item.spec, anchor: { kind: 'loader-profile', algorithm: 'sha256', digest: input.loader!.profileSha256 } } })) },
+    { ...input.loader, libraries: input.loader!.libraries.map(item => ({ ...item, spec: { ...item.spec, anchor: { ...item.spec.anchor, kind: 'mojang-version' } } })) }
+  ]) assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'fabric', version: '0.20.1' },
+    summary: summary(), phase: 'prepared', metadata: { ...input, loader } }), { code: 'INVALID_RECORD' });
+  assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'fabric', version: '0.20.1' },
+    summary: summary(), phase: 'prepared', metadata: { ...input, environment: undefined } }), { code: 'INVALID_RECORD' });
+  assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'quilt', version: '0.20.1' },
+    summary: summary(), phase: 'prepared', metadata: input }), { code: 'INVALID_RECORD' });
+  assert.throws(() => parseInstanceRecord({ formatVersion: 2, loader: { kind: 'vanilla' },
+    summary: summary(), phase: 'prepared', metadata: input }), { code: 'INVALID_RECORD' });
 });
 
 test('private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions', () => {

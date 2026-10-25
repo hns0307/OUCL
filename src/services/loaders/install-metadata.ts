@@ -19,7 +19,17 @@ export interface PreparedLoaderMetadata extends PreparedInstallMetadata {
     profileEvidence: LoaderMetadataEvidence;
     libraries: LoaderLibraryPlan;
     derivedDocument: string;
+    environment: VersionEnvironment;
   };
+}
+
+/** Rebuilds a loader plan from its original bytes and independently validated Maven facts. */
+export function rebuildPreparedLoaderPlan(metadata: PreparedLoaderMetadata) {
+  const profile = parseStoredLoaderProfile(metadata.loader.kind, metadata.version.ancestry[0] ?? '', metadata.loader.version,
+    metadata.loader.profileBody, metadata.loader.profileEvidence.sha256);
+  return composeLoaderInstall({ baseVersionDocuments: metadata.versionDocuments, baseMetadataSha1ByVersion: metadata.metadataSha1ByVersion,
+    assets: metadata.assets, profile, profileSha256: metadata.loader.profileEvidence.sha256, libraries: metadata.loader.libraries,
+    environment: metadata.loader.environment }).plan;
 }
 
 /** Builds a complete loader plan without writing files or selecting an unrequested version. */
@@ -41,7 +51,7 @@ export class LoaderInstallMetadataService {
       const composed = composeLoaderInstall({ baseVersionDocuments: base.versionDocuments, baseMetadataSha1ByVersion: base.metadataSha1ByVersion,
         assets: base.assets, profile: loader.profile, profileSha256: loader.evidence.sha256, libraries, environment });
       return { ...base, version: composed.version, plan: composed.plan, loader: { kind, version: loaderVersion,
-        profileBody: loader.body, profileEvidence: loader.evidence, libraries, derivedDocument: composed.loaderDocument } };
+        profileBody: loader.body, profileEvidence: loader.evidence, libraries, derivedDocument: composed.loaderDocument, environment } };
     } catch (error) {
       if (error instanceof CatalogError) throw error;
       throw new CatalogError('UNTRUSTED_MANIFEST');

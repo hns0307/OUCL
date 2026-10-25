@@ -21,6 +21,9 @@ import { DownloadCoordinator } from '../download/coordinator.js';
 import { ArtifactTransfer } from '../download/artifact-transfer.js';
 import { HttpTransfer } from '../download/http.js';
 import type { InstallMetadataService, PreparedInstallMetadata } from '../catalog/install-metadata.js';
+import type { LoaderInstallMetadataService, PreparedLoaderMetadata } from '../loaders/install-metadata.js';
+import { parseStoredLoaderProfile } from '../loaders/install-metadata.js';
+import { composeLoaderInstall } from '../loaders/compose.js';
 import { InstallDownloadService } from './downloads.js';
 import type { InstallDownloadProgress } from './downloads.js';
 import { artifactSpec } from './metadata-object.js';
@@ -40,6 +43,8 @@ export class InstallerError extends Error {
   }
 }
 export interface CreateInstanceInput { rootId: string; mcVersionId: string; displayName: string; isolation: InstanceSummary['isolation'] }
+export interface CreateLoaderInstanceInput extends CreateInstanceInput { loader: { kind: 'fabric' | 'quilt'; version: string } }
+type CreateInput = CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader'] };
 interface LiveInstall { task: StoredTask; stage: string; controller: AbortController; done: Promise<void>; changes: Promise<void>; progress?: InstallDownloadProgress; progressWrite?: Promise<void>; failure?: unknown }
 interface Runtime { rootId: string; dataDirectory: string; objects: ObjectStore; hashes: HashPool; extractor: NativeExtractor; coordinator: DownloadCoordinator; downloads: InstallDownloadService; views: FileViewService }
 
@@ -56,7 +61,15 @@ export function restoreInstallMetadata(record: InstanceRecord): PreparedInstallM
   const documents = Object.fromEntries(Object.entries(stored.versionDocuments).map(([id, body]) => [id, JSON.parse(body) as unknown]));
   const version = resolveClientVersion(record.summary.mcVersionId, documents, stored.environment ?? { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
   const assets = parseAssetIndex(JSON.parse(stored.assetIndexBody) as unknown);
-  return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
+  if (!stored.loader) return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
+  const environment = stored.environment; if (!environment) throw new InstallerError('NEEDS_RECOVERY');
+  try {
+    const profile = parseStoredLoaderProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version, stored.loader.profileBody, stored.loader.profileSha256);
+    const libraries = { libraries: stored.loader.libraries, totalBytes: stored.loader.libraries.reduce((sum, item) => sum + item.spec.expected.size, 0) };
+    const composed = composeLoaderInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
+      assets, profile, profileSha256: stored.loader.profileSha256, libraries, environment });
+    return { version: composed.version, assets, plan: composed.plan, ...stored };
+  } catch { throw new InstallerError('NEEDS_RECOVERY'); }
 }
 
 /** Owns actual vanilla installation effects and the existing JSON/SQLite task repositories. */
@@ -69,7 +82,8 @@ export class InstallerService {
   private fileTail: Promise<void> = Promise.resolve();
   private closed = false;
   private closing?: Promise<void>;
-  constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService) {}
+  constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService,
+    private readonly loaderMetadata?: LoaderInstallMetadataService) {}
 
   /** Publishes an immutable, content-addressed official JVM only after all files verify. Never overwrites an existing runtime. */
   async prepareJava(pack: JavaPackage, consumerId: string, signal: AbortSignal): Promise<string> {
@@ -153,18 +167,28 @@ export class InstallerService {
   }
   /** Persists idempotent acceptance and reserved identity before admitting background network/filesystem work. */
   create(requestId: string, input: CreateInstanceInput): Promise<{ taskId: string }> {
-    const canonical: CreateInstanceInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName, isolation: input.isolation };
+    const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName, isolation: input.isolation };
+    return this.enqueue(requestId, canonical);
+  }
+  /** Admits only Fabric/Quilt identities already selected through the strict loader contract. */
+  createLoader(requestId: string, input: CreateLoaderInstanceInput): Promise<{ taskId: string }> {
+    const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
+      isolation: input.isolation, loader: { ...input.loader } };
+    return this.enqueue(requestId, canonical);
+  }
+  private enqueue(requestId: string, canonical: CreateInput): Promise<{ taskId: string }> {
     const key = `${canonical.rootId}:${requestId.toLowerCase()}:${JSON.stringify(canonical)}`; const pending = this.admissions.get(key); if (pending) return pending;
     const admitted = this.admissionTail.then(() => this.admit(requestId.toLowerCase(), canonical));
     this.admissionTail = admitted.then(() => {}, () => {}); this.admissions.set(key, admitted);
     void admitted.finally(() => { this.admissions.delete(key); }).catch(() => {}); return admitted;
   }
-  private async admit(requestId: string, input: CreateInstanceInput): Promise<{ taskId: string }> {
+  private async admit(requestId: string, input: CreateInput): Promise<{ taskId: string }> {
     if (this.closed) throw new InstallerError('INSTALL_FAILED');
     const runtime = await this.resources(); if (runtime.rootId !== input.rootId) throw new InstallerError('ROOT_UNAVAILABLE');
     // Validation happens before task acceptance; display names never enter directory paths.
     const defaultIsolation = (await this.storage.readSettings())?.data.isolationDefault ?? true;
-    const seed = parseInstanceSummary({ ...input, isolation: input.isolation === 'inherit' ? defaultIsolation ? 'on' : 'off' : input.isolation,
+    const seed = parseInstanceSummary({ rootId: input.rootId, mcVersionId: input.mcVersionId, displayName: input.displayName,
+      isolation: input.isolation === 'inherit' ? defaultIsolation ? 'on' : 'off' : input.isolation,
       instanceId: input.rootId, taskId: input.rootId, state: 'installing', revision: 1 });
     const digest = createHash('sha256').update(JSON.stringify(input)).digest('hex');
     const task = await this.storage.accept(input.rootId, requestId, 'install', digest);
@@ -173,7 +197,9 @@ export class InstallerService {
     if (old) {
       const summary = old.data.summary;
       if (summary.rootId !== input.rootId || summary.taskId !== task.taskId || summary.mcVersionId !== input.mcVersionId
-        || summary.displayName !== input.displayName || input.isolation !== 'inherit' && summary.isolation !== input.isolation) throw new InstallerError('NEEDS_RECOVERY');
+        || summary.displayName !== input.displayName || input.isolation !== 'inherit' && summary.isolation !== input.isolation
+        || input.loader === undefined !== (old.data.loader?.kind === 'vanilla')
+        || input.loader !== undefined && (old.data.loader?.kind !== input.loader.kind || old.data.loader.version !== input.loader.version)) throw new InstallerError('NEEDS_RECOVERY');
       await this.index(summary); return { taskId: task.taskId };
     }
     const index = await this.storage.readInstances();
@@ -185,7 +211,7 @@ export class InstallerService {
       }
       throw new InstallerError('NAME_CONFLICT');
     }
-    const record: InstanceRecord = { formatVersion: 2, loader: { kind: 'vanilla' }, summary: { ...seed, instanceId, taskId: task.taskId }, phase: 'reserved' };
+    const record: InstanceRecord = { formatVersion: 2, loader: input.loader ?? { kind: 'vanilla' }, summary: { ...seed, instanceId, taskId: task.taskId }, phase: 'reserved' };
     await this.storage.writeInstance(instanceId, 0, record); await this.index(record.summary);
     const live: LiveInstall = { task, stage: 'metadata', controller: new AbortController(), done: Promise.resolve(), changes: Promise.resolve() };
     this.live.set(task.taskId, live);
@@ -244,8 +270,18 @@ export class InstallerService {
     try {
       await this.change(live, current => controlTask(current, 'start').execution); check();
       const environment = { os: 'windows' as const, arch: 'x64' as const, osVersion: release(), features: {} };
-      const prepared = await this.metadata.prepare(record.summary.mcVersionId, environment); check();
-      record = await this.save(record, 'prepared', { metadata: { versionDocuments: prepared.versionDocuments, metadataSha1ByVersion: prepared.metadataSha1ByVersion, assetIndexBody: prepared.assetIndexBody, environment } });
+      let prepared: PreparedInstallMetadata | PreparedLoaderMetadata;
+      if (!record.loader || record.loader.kind === 'vanilla') prepared = await this.metadata.prepare(record.summary.mcVersionId, environment);
+      else {
+        if ((record.loader.kind !== 'fabric' && record.loader.kind !== 'quilt') || !this.loaderMetadata) throw new InstallerError('INSTALL_FAILED');
+        prepared = await this.loaderMetadata.prepare(record.loader.kind, record.summary.mcVersionId, record.loader.version, environment, live.controller.signal);
+      }
+      check();
+      const loader = 'loader' in prepared ? { loader: { kind: prepared.loader.kind, version: prepared.loader.version,
+        profileBody: prepared.loader.profileBody, profileSourceUrl: prepared.loader.profileEvidence.sourceUrl,
+        profileSha256: prepared.loader.profileEvidence.sha256, libraries: prepared.loader.libraries.libraries } } : {};
+      record = await this.save(record, 'prepared', { metadata: { versionDocuments: prepared.versionDocuments, metadataSha1ByVersion: prepared.metadataSha1ByVersion,
+        assetIndexBody: prepared.assetIndexBody, environment, ...loader } });
       live.stage = 'downloading'; let lastProgress = 0;
       const downloaded = await runtime.downloads.run(prepared, { signal: live.controller.signal,
         consumerId: id => installIdentity(record.summary.instanceId, id), onProgress: value => {
