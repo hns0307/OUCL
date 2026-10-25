@@ -1,8 +1,8 @@
 {
   "name": "oucl",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "OUCL desktop launcher engineering foundation",
+  "description": "OUCL vanilla Minecraft offline desktop launcher",
   "type": "module",
   "main": "dist/main/index.cjs",
   "packageManager": "pnpm@12.3.4",

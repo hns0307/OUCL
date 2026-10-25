@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtemp, readFile, writeFile, lstat, readdir, unlink, rmdir } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile, lstat, readdir, unlink, rmdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 
 const metadata = JSON.parse(await readFile('package.json', 'utf8'));
+const evidence = path.resolve('docs/validation/A1-09-exe'); await mkdir(evidence, { recursive: true });
 const directory = path.resolve('release', `OUCL-${metadata.version}-win32-x64`);
 const profile = await mkdtemp(path.join(tmpdir(), 'oucl-package-smoke-'));
 const environment = { ...process.env };
@@ -83,18 +84,25 @@ try {
   const observed = evaluated.result.value;
   assert.ok(observed.connected && observed.noNode);
   assert.equal(observed.title, 'OUCL');
-  assert.deepEqual(observed.methods, ['handshake']);
+  assert.deepEqual([...observed.methods].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'stopGame', 'subscribeTask']);
   assert.equal(observed.handshake.ok, true);
-  assert.deepEqual(observed.handshake.data.capabilities, []);
+  assert.deepEqual(observed.handshake.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1']);
+  assert.ok((await lstat(path.join(profile, 'metadata', 'tasks.sqlite'))).isFile(), 'METADATA_NOT_IN_TEMP_PROFILE');
   const source = await readFile('dist/main/index.cjs');
   const packaged = await readFile(path.join(directory, 'resources/app/dist/main/index.cjs'));
   assert.deepEqual(source, packaged);
   await wait(500);
   const screenshot = await command('Page.captureScreenshot', { format: 'png' });
-  await writeFile('docs/validation/P0-08/package-window.png', Buffer.from(screenshot.data, 'base64'));
+  await writeFile(path.join(evidence, 'package-window.png'), Buffer.from(screenshot.data, 'base64'));
+  void command('Runtime.evaluate', { expression: 'window.close()', returnByValue: true }).catch(() => {});
+  let closingTimer; let exitCode;
+  try { [exitCode] = await Promise.race([ended, new Promise((_resolve, reject) => { closingTimer = setTimeout(() => { reject(new Error('NORMAL_CLOSE_TIMEOUT')); }, 10000); })]); }
+  finally { clearTimeout(closingTimer); }
+  assert.equal(exitCode, 0, 'NORMAL_PACKAGED_EXIT_FAILED');
+  await assert.rejects(lstat(path.join(profile, 'metadata', 'owner.lock')), { code: 'ENOENT' });
   const report = { timestamp: new Date().toISOString(), status: 'PASS', defaultPackagedEntry: true, rendererConnected: true, rendererHasNoNode: true, bridgeMethods: observed.methods,
-    businessCapabilities: [], mainSha256: createHash('sha256').update(packaged).digest('hex'), temporaryLoopbackDebugger: true, signed: false };
-  await writeFile('docs/validation/P0-08/package-smoke.json', JSON.stringify(report, null, 2));
+    businessCapabilities: observed.handshake.data.capabilities, normalExitCode: exitCode, metadataOwnerReleased: true, mainSha256: createHash('sha256').update(packaged).digest('hex'), temporaryLoopbackDebugger: true, signed: false };
+  await writeFile(path.join(evidence, 'package-smoke.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report));
 } finally {
   if (socket) socket.close();

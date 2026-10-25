@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-10-25T08:53:25.895Z",
+  "status": "PASS",
+  "defaultPackagedEntry": true,
+  "rendererConnected": true,
+  "rendererHasNoNode": true,
+  "bridgeMethods": [
+    "listInstances",
+    "createInstance",
+    "listTasks",
+    "getTask",
+    "controlTask",
+    "subscribeTask",
+    "chooseJava",
+    "listAccounts",
+    "createOfflineAccount",
+    "getSettings",
+    "launchGame",
+    "stopGame",
+    "listSessions",
+    "getSession",
+    "catalog",
+    "listRoots",
+    "chooseRoot",
+    "handshake"
+  ],
+  "businessCapabilities": [
+    "roots.v1",
+    "catalog.v1",
+    "instances.v1",
+    "tasks.v1",
+    "java.v1",
+    "accounts.v1",
+    "settings.v1",
+    "game.v1",
+    "sessions.v1"
+  ],
+  "normalExitCode": 0,
+  "metadataOwnerReleased": true,
+  "mainSha256": "5d82c589a4603ef86591f0ed7d161e77a61a4b035573dc00ac12dbee9be71aff",
+  "temporaryLoopbackDebugger": true,
+  "signed": false
+}
