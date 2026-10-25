@@ -1,4 +1,4 @@
-import type { VersionArgument } from '../version/types.js';
+import type { Rule, VersionArgument } from '../version/types.js';
 
 export type LoaderKind = 'fabric' | 'quilt' | 'forge' | 'neoforge';
 
@@ -18,6 +18,7 @@ export interface LoaderArtifact {
   sha1?: string;
   size?: number;
   proof: 'inline-sha1' | 'official-sidecar-required';
+  rules?: Rule[];
 }
 
 export interface LoaderProfile {

@@ -1,4 +1,4 @@
-import type { VersionArgument } from '../version/types.js';
+import type { Rule, VersionArgument } from '../version/types.js';
 import { identifier, parseClientVersion, record, requireMetadata, VersionError } from '../version/validation.js';
 import type { LoaderArtifact, LoaderProfile, LoaderVersionSummary } from './types.js';
 
@@ -72,7 +72,7 @@ function coordinatePath(coordinate: string): string {
   return `${group.replaceAll('.', '/')}/${artifact}/${version}/${artifact}-${version}${suffix}.${extension}`;
 }
 
-function parseLibrary(kind: ProfileKind, value: unknown): LoaderArtifact {
+function parseLibrary(kind: ProfileKind, value: unknown, rules: Rule[] | undefined): LoaderArtifact {
   requireMetadata(record(value) && boundedText(value.name));
   const path = coordinatePath(value.name);
   requireMetadata(typeof value.url === 'string' && value.url.length <= 2048);
@@ -87,6 +87,7 @@ function parseLibrary(kind: ProfileKind, value: unknown): LoaderArtifact {
     url: new URL(path, baseUrl).href,
     proof: 'official-sidecar-required'
   };
+  if (rules !== undefined) result.rules = rules;
   const hasSha1 = value.sha1 !== undefined;
   const hasSize = value.size !== undefined;
   requireMetadata(hasSha1 === hasSize);
@@ -117,7 +118,12 @@ export function parseLoaderProfile(
     && Array.isArray(value.libraries) && value.libraries.length <= 256);
   const game: VersionArgument[] = client.arguments?.game ?? [];
   const jvm: VersionArgument[] = client.arguments?.jvm ?? [];
-  const libraries = value.libraries.map(entry => parseLibrary(kind, entry));
+  const libraries = value.libraries.map((entry, index) => {
+    const parsed = client.libraries?.[index];
+    requireMetadata(parsed !== undefined && parsed.name === (record(entry) ? entry.name : undefined)
+      && parsed.downloads === undefined && parsed.natives === undefined && parsed.extract === undefined);
+    return parseLibrary(kind, entry, parsed.rules);
+  });
   requireMetadata(new Set(libraries.map(library => library.coordinate)).size === libraries.length
     && new Set(libraries.map(library => library.path)).size === libraries.length);
   return {

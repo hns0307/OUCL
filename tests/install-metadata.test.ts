@@ -47,9 +47,9 @@ test('install metadata keeps each descriptor origin and exact validated asset-in
   assert.deepEqual(prepared.assets.objects, [{ name: 'minecraft/音效.ogg', sha1: 'a'.repeat(40), size: 3 }]);
   assert.equal(prepared.plan.artifacts.length, 4);
   assert.equal(prepared.plan.totalBytes, client.size + library.size + assetIndex.size + 3);
-  assert.equal(prepared.plan.artifacts.find(item => item.url === library.url)?.source.sha1, hashes.base);
-  assert.equal(prepared.plan.artifacts.find(item => item.url === assetIndex.url)?.source.sha1, hashes.base);
-  assert.equal(prepared.plan.artifacts.find(item => item.url.startsWith('https://resources.download.minecraft.net/'))?.source.sha1, sha1);
+  assert.equal(prepared.plan.artifacts.find(item => item.url === library.url)?.source.digest, hashes.base);
+  assert.equal(prepared.plan.artifacts.find(item => item.url === assetIndex.url)?.source.digest, hashes.base);
+  assert.equal(prepared.plan.artifacts.find(item => item.url.startsWith('https://resources.download.minecraft.net/'))?.source.digest, sha1);
 });
 
 test('wrong returned hashes and forged same-size bodies are rejected before planning', async () => {

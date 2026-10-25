@@ -76,7 +76,7 @@ test('batch imports exact metadata, bounds work, commits all independent proofs 
     const shared = result.plan.artifacts.find(entry => entry.proofs.length === 2)!; assert.ok(shared);
     for (const proof of shared.proofs) assert.ok(f.index.has(sourceKey(
       { algorithm: 'sha1', digest: shared.sha1, size: shared.size, provenanceId: proof.provenanceId },
-      { kind: proof.source.kind, algorithm: 'sha1', digest: proof.source.sha1 })));
+      { kind: proof.source.kind, algorithm: proof.source.algorithm, digest: proof.source.digest })));
     assert.equal(f.stats().calls, result.plan.artifacts.length - 1); const written = f.stats().writes;
     await service.run(data); assert.equal(f.stats().writes, written); assert.equal(f.stats().active, 0);
   } finally { await f.close(); }

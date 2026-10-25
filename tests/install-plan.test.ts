@@ -71,9 +71,10 @@ test('vanilla install plans shared assets, Maven classpath and private native in
   assert.deepEqual(plan.classpath, ['org/example/library/1.0/library-1.0.jar', 'org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows.jar']);
   assert.ok(plan.natives.some(item => item.archivePath === 'org/example/library/1.0/library-1.0-natives-windows-64.jar'));
   assert.ok(plan.natives.every(item => item.exclude.includes('META-INF/')));
-  assert.equal(plan.artifacts.find(item => item.sha1 === hashes.client)?.source.sha1, hashes.base);
-  assert.equal(plan.artifacts.find(item => item.sha1 === hashes.modern)?.source.sha1, hashes.child);
-  assert.deepEqual(plan.artifacts.find(item => item.sha1 === hashes.asset)?.source, { kind: 'mojang-assets', sha1: hashes.index });
+  assert.equal(plan.artifacts.find(item => item.sha1 === hashes.client)?.source.digest, hashes.base);
+  assert.equal(plan.artifacts.find(item => item.sha1 === hashes.modern)?.source.digest, hashes.child);
+  assert.deepEqual(plan.artifacts.find(item => item.sha1 === hashes.asset)?.source,
+    { kind: 'mojang-assets', algorithm: 'sha1', digest: hashes.index });
   assert.ok(plan.views.some(item => item.area === 'version' && item.path === 'client.jar'));
   assert.ok(plan.views.some(item => item.area === 'assets' && item.path === 'virtual/index-17/minecraft/sound.ogg'));
   assert.ok(plan.views.some(item => item.area === 'resources' && item.path === 'minecraft/alias.ogg'));
@@ -87,7 +88,7 @@ test('content dedup keeps distinct official anchors and transport addresses inst
   const plan = planVanillaInstall(input, proof, assets); const shared = plan.artifacts.find(item => item.sha1 === hashes.client)!;
   assert.equal(plan.artifacts.length, 2); assert.equal(plan.totalBytes, 12); assert.equal(shared.proofs.length, 3);
   assert.equal(shared.alternateUrls.length, 2); assert.equal(plan.classpath.length, 1);
-  assert.equal(shared.source.sha1, hashes.base); assert.ok(shared.proofs.some(item => item.source.sha1 === hashes.child));
+  assert.equal(shared.source.digest, hashes.base); assert.ok(shared.proofs.some(item => item.source.digest === hashes.child));
 });
 
 test('missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes', () => {

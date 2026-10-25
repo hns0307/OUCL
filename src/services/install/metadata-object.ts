@@ -11,7 +11,7 @@ import { hasCode } from '../storage/files.js';
 export function artifactSpec(artifact: PlannedArtifact, proof = artifact.proofs[0]): DownloadSpec {
   if (!proof) throw new DownloadError('INVALID_TRANSFER');
   return { url: artifact.url, expected: { algorithm: 'sha1', digest: artifact.sha1, size: artifact.size, provenanceId: proof.provenanceId },
-    anchor: { kind: proof.source.kind, algorithm: 'sha1', digest: proof.source.sha1 } };
+    anchor: { kind: proof.source.kind, algorithm: proof.source.algorithm, digest: proof.source.digest } };
 }
 
 /** Imports exact verified metadata bytes without broadening the artifact-network host whitelist. */
