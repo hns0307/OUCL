@@ -23,10 +23,10 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'downloadResource', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateSettings']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'downloadResource', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateSettings']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1']);
     await window.webContents.executeJavaScript(`(async () => {
       document.querySelector('.account-chooser .text-button').click(); await new Promise(resolve=>setTimeout(resolve,80));
       const fields = document.querySelectorAll('.account-form input');
@@ -51,9 +51,11 @@ async function run(window) {
       const chosen = rows.find(row => row.querySelector('strong')?.textContent === '1.20.1') || rows[0];
       const id = chosen.querySelector('strong').textContent; chosen.querySelector('button').click();
       await new Promise(resolve => setTimeout(resolve, 100));
-      return { selected: document.querySelector('.selected-version')?.textContent === id, disabledWithoutRoot: document.querySelector('.install-confirm .primary')?.disabled === true };
+      return { selected: document.querySelector('.selected-version')?.textContent === id, disabledWithoutRoot: document.querySelector('.install-confirm .primary')?.disabled === true,
+        loaderChoices: [...document.querySelectorAll('.install-confirm label select')[0].options].map(option => option.value) };
     })()`);
     assert.equal(confirmation.selected, true); assert.equal(confirmation.disabledWithoutRoot, true);
+    assert.deepEqual(confirmation.loaderChoices, ['vanilla', 'fabric', 'quilt']);
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);
@@ -85,7 +87,7 @@ async function run(window) {
       actualOfflineAccountDomCreation: true, accountUuidNotExposed: true, javaChooserOperated: false,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
       officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
-      versionSelectionRendered: confirmation.selected, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
+      versionSelectionRendered: confirmation.selected, loaderChoices: confirmation.loaderChoices, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
       fourPagesRendered: true, smallWindowNoHorizontalOverflow: true, settingsSaveAndConflict: true,
       packagedPayload: false,
     };

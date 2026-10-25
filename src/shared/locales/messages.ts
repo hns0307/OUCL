@@ -52,6 +52,8 @@ export const MESSAGES = {
   uiSearchResources: '搜索资源名称',
   uiLoader: '运行组件 / 加载器',
   uiAllLoaders: '全部运行组件',
+  loaderVersion: '加载器版本',
+  loaderStable: '稳定版',
   uiSearch: '搜索',
   uiDiscover: '发现资源',
   uiResults: '项结果',
