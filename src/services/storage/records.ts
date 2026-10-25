@@ -95,15 +95,16 @@ export class RecordStore {
     return path.join(this.directory, `${recordId}.json`);
   }
 
-  private operations(): Operation[] {
-    return this.db.prepare('SELECT id, record_id, phase, before_json, after_json FROM operations ORDER BY rowid').all().map(row => {
+  private *operations(): Iterable<Operation> {
+    // Journal size grows with revisions, while the worker heap must stay bounded by a few records.
+    for (const row of this.db.prepare('SELECT id, record_id, phase, before_json, after_json FROM operations ORDER BY rowid').iterate()) {
       if (typeof row.id !== 'string' || !UUID_PATTERN.test(row.id)
         || typeof row.record_id !== 'string' || !ID_PATTERN.test(row.record_id)
         || typeof row.phase !== 'string' || !['PREPARED', 'APPLYING', 'COMMITTED', 'ROLLED_BACK'].includes(row.phase)
         || (row.before_json !== null && (typeof row.before_json !== 'string' || Buffer.byteLength(row.before_json) > MAX_RECORD_BYTES)) || typeof row.after_json !== 'string'
         || Buffer.byteLength(row.after_json) > MAX_RECORD_BYTES) throw new StorageError('NEEDS_RECOVERY');
-      return { id: row.id, recordId: row.record_id, phase: row.phase as Phase, before: row.before_json, after: row.after_json };
-    });
+      yield { id: row.id, recordId: row.record_id, phase: row.phase as Phase, before: row.before_json, after: row.after_json };
+    }
   }
 
   private requireKnown(recordId: string, bytes: Buffer | undefined): void {
@@ -120,20 +121,22 @@ export class RecordStore {
     return this.serial(async () => {
       this.available = false;
       try {
-        const operations = this.operations();
         const outcomes = new Map<string, string | undefined>();
         const pending = new Set<string>();
-        for (const operation of operations) {
+        for (const operation of this.operations()) {
           if (pending.has(operation.recordId)) throw new StorageError('NEEDS_RECOVERY');
           if (operation.phase === 'PREPARED' || operation.phase === 'APPLYING') pending.add(operation.recordId);
-          if (operation.before !== (outcomes.get(operation.recordId) ?? null)) throw new StorageError('NEEDS_RECOVERY');
+          if (digest(operation.before ?? undefined) !== outcomes.get(operation.recordId)) throw new StorageError('NEEDS_RECOVERY');
           const before = operation.before === null ? undefined : envelope(operation.before, value => value);
           const after = envelope(operation.after, value => value);
           if (after.revision !== (before?.revision ?? 0) + 1) throw new StorageError('NEEDS_RECOVERY');
-          outcomes.set(operation.recordId, operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined);
+          outcomes.set(operation.recordId, digest(operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined));
         }
-        for (const operation of operations) {
-          if (operation.phase === 'COMMITTED' || operation.phase === 'ROLLED_BACK') continue;
+        const latest = new Map<string, string | undefined>();
+        for (const operation of this.operations()) {
+          if (operation.phase === 'COMMITTED' || operation.phase === 'ROLLED_BACK') {
+            latest.set(operation.recordId, digest(operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined)); continue;
+          }
           const current = await readRegular(this.file(operation.recordId));
           let phase: Phase;
           if (digest(current) === digest(operation.after) && operation.phase === 'APPLYING') phase = 'COMMITTED';
@@ -143,14 +146,12 @@ export class RecordStore {
           const staged = await readRegular(temporary);
           if (staged !== undefined && digest(staged) !== digest(operation.after)) throw new StorageError('NEEDS_RECOVERY');
           this.db.prepare('UPDATE operations SET phase=? WHERE id=?').run(phase, operation.id);
+          latest.set(operation.recordId, digest(phase === 'COMMITTED' ? operation.after : operation.before ?? undefined));
           if (staged !== undefined) await unlink(temporary);
         }
         // Each latest record must agree with its last authoritative journal outcome.
-        const latest = new Map<string, Operation>();
-        for (const operation of this.operations()) latest.set(operation.recordId, operation);
-        for (const [id, operation] of latest) {
-          const wanted = operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined;
-          if (digest(await readRegular(this.file(id))) !== digest(wanted)) throw new StorageError('NEEDS_RECOVERY');
+        for (const [id, wantedDigest] of latest) {
+          if (digest(await readRegular(this.file(id))) !== wantedDigest) throw new StorageError('NEEDS_RECOVERY');
         }
         const known = new Set([...latest.keys()].map(id => `${id}.json`));
         for (const name of await readdir(this.directory)) {

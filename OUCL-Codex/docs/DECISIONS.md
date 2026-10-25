@@ -231,3 +231,5 @@
 执行记录：c076c47/d71213d后增加受管文件投影/明确复制回退和已有Java探测，185测试183 PASS/2环境SKIP、实际Electron投影及本机Oracle17属性验证通过；[投影报告](../../docs/validation/A1-08-file-views/REPORT.md)、[Java报告](../../docs/validation/A1-06-java-probe/REPORT.md)。无新依赖/公开IPC/持久schema，未选定新Java供应商或下载制品。完整安装事务、进程/UI和新exe仍待继续，不标完成。
 
 执行记录：162317e/cf3d2e8后落实已批实例JSON提交/任务日志方向及候选实例/任务契约，保存原始官方输入与实际规则环境，串联下载→投影→私有native→JSON提交，接入main/preload/实际安装确认、进度与实例UI。221测试219 PASS/2 SKIP、正式Electron记录、DOM两次实际安装fixture与官方目录窗口验证见[A1-08-installer报告](../../docs/validation/A1-08-installer/REPORT.md)。没有新增依赖/更改SQLite schema，新增固定私有记录域与既定公开候选exact schema；整批真实游戏、启动和新exe未验证。崩溃遗留owner仍不自动接管，未扩张阶段或完成声明。
+
+执行记录：官方1.20.1整批3,641制品/735,814,641字节及实例manifest落盘通过。重开实际大日志触发128MiB worker OOM，已独立复现并修正为流式历史校验；233测试231 PASS/2 SKIP及原内存限制下大日志恢复通过，见[官方安装报告](../../docs/validation/A1-08-official-install/REPORT.md)。不删日志、不提高worker限制、不改schema或自动移除旧owner；新的独立验证根重新校验缓存并安装。既定1A授权继续，尚无新exe交付。

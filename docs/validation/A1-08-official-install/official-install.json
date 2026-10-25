@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "fixture": false,
+  "gameLaunched": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "rootId": "235fbc3b-b852-4918-b255-b7d36c254039",
+  "taskId": "0ac64208-e073-4aea-9db0-16eb853feb66",
+  "instanceId": "58ffe787-b717-522f-a971-79c730e531fa",
+  "dataKey": "official-game-retry",
+  "artifacts": 3641,
+  "totalBytes": 735814641,
+  "receipts": 3641,
+  "privateNativesPublished": true,
+  "localManifestMatchesRecord": true,
+  "dataRetainedForLaunchValidation": true,
+  "timestamp": "2026-10-25T07:21:42.487Z",
+  "durationMs": 201038
+}

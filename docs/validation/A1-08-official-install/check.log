@@ -1,0 +1,296 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ official manifest parser bounds entries, identities, hashes, timestamps and origins (8.3972ms)
+✔ metadata HTTPS reader refuses origins, status, oversized bodies and wrong SHA1 (89.1839ms)
+✔ catalog paginates by source revision and does not claim runtime compatibility (9.1438ms)
+✔ stale verified cache works offline with its original timestamp and bounded refresh retries (10.0987ms)
+✔ invalid cache and corrupt fresh metadata never acquire trust through fallback (7.4848ms)
+✔ descriptor resolution verifies official metadata before returning the client plan and provenance (8.8599ms)
+✔ catalog IPC rejects paths/URLs and invalid senders before network access, and validates output (2.2458ms)
+✔ official catalog cache persists through real SQLite/JSON worker restart (502.1499ms)
+✔ physical transfer persists before writing and commits only verified bytes, then reuses the object (645.6826ms)
+✔ interrupted HTTP bytes survive a normal worker/store restart and resume with validators (1491.9038ms)
+✔ wrong digest never commits and a retry restarts rather than trusting the bad prefix (891.6178ms)
+✔ object commit with a lost final journal acknowledgement is reconciled without a second download (689.1877ms)
+✔ one physical engine rejects a concurrent same-identity writer rather than racing its staging file (511.6834ms)
+✔ lost acknowledgement after a successful final commit does not rewrite terminal state (717.6593ms)
+✔ cancellation during a verified-cache lookup wins before returning the object (491.5689ms)
+✔ verified cache cannot hide a contradictory authoritative committed object identity (670.4374ms)
+✔ one cancelled installer cannot interrupt another, including independent source evidence (9.9336ms)
+✔ paused consumers hold completion and revalidate their object when resuming (1.1411ms)
+✔ all-paused transport joins before resume starts a new attempt (0.7764ms)
+✔ last cancellation waits for physical cleanup and a new consumer waits for that old attempt (0.701ms)
+✔ bounded admission and per-consumer callback failures do not kill other demand (0.9184ms)
+✔ global concurrency stays bounded and failure evidence is redacted for every consumer (0.7217ms)
+✔ physical cleanup failure takes precedence over a cancellation request (2.1064ms)
+✔ close joins failed source-proof work and reports its failure rather than fake cancellation (5.0176ms)
+✔ close joins in-flight source-proof writes and never delivers to a cancelled consumer (15.0383ms)
+✔ real HTTP/object pipeline shares one transfer and writes both independently verified source proofs (1709.2353ms)
+✔ full transfer streams real bytes and commits progress only after the file is visible (60.8085ms)
+✔ 206 resumes a durable prefix and truncates an uncommitted disk tail before requesting (171.0851ms)
+✔ a server ignoring Range replaces the old prefix with a full verified-size response (55.9849ms)
+✔ reset sync failure cannot restore a durable prefix after its file was truncated (15.0014ms)
+✔ changed ETag and invalid range response reset once, then reject repeated protocol failure (47.8584ms)
+✔ 416 accepts exactly complete durable bytes and otherwise performs one clean restart (66.8447ms)
+✔ weak or missing validator causes a full restart; Last-Modified can safely resume (88.2658ms)
+✔ network interruption preserves and checkpoints the received prefix for the next attempt (40.6036ms)
+✔ cancellation waits for the durable prefix and closes the staging handle (20.9821ms)
+✔ overlong body, encoding, length and retry responses cannot produce complete state (182.4642ms)
+✔ header and idle timers are bounded and redact the original network exception (144.9608ms)
+✔ missing durable bytes and checkpoint failures stop without false completion (144.0728ms)
+﹣ linked staging files are refused when file symlink privilege is available (16.0042ms) # File symlink privilege unavailable; no system policy changed.
+✔ production HTTPS policy can be exercised through a local HTTP fetch adapter (128.9906ms)
+✔ durable transfer checkpoint is created with its marker and reopens without losing validators (254.0386ms)
+✔ transfer revisions reject stale callbacks and roll back a locked write cleanly (131.8261ms)
+✔ invalid identity, metadata, progress and validators cannot replace a checkpoint (70.5599ms)
+✔ only a zero-byte reset may change source or retreat; committed state cannot be rewritten (94.2355ms)
+✔ losing the authoritative ledger never creates an empty replacement or removes accepted tasks (79.5562ms)
+✔ the empty initialization crash window may finish the marker but populated unmarked ledgers stop (170.1233ms)
+✔ unknown ledger version, identity or schema stays on disk without being reset (575.8122ms)
+✔ malformed checkpoint records and unknown states block opening instead of disappearing (350.1149ms)
+✔ cached SQLite handles reject missing, changed or nonregular backing identity before reads and writes (249.6798ms)
+﹣ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (116.8312ms) # Windows refused rename of an open SQLite database; deterministic identity-adapter coverage remains active.
+✔ verified copy views preserve shared objects, validate receipts and reject unknown existing entries (648.6423ms)
+✔ file-link privilege failure explicitly returns a checked copy without changing system policy (500.7156ms)
+✔ unknown linked parents and target entries are rejected without touching their external target (366.7528ms)
+✔ cancellation and invalid source facts create no new file and missing recorded projections require recovery (392.2286ms)
+✔ real preferred file projection reports actual link capability and deletion preserves the object (704.196ms)
+✔ a recorded copy replaced by a hard link never acquires copy ownership (303.5826ms)
+✔ concurrent same-target creation serializes and refuses silent overwrite (377.3564ms)
+✔ spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease (68.5984ms)
+✔ gameDir lease excludes another instance and foreign marker is never removed (21.344ms)
+✔ spawn exception and asynchronous start failure leave no falsely running session or lease (85.2006ms)
+✔ only explicit confirmed force stop kills; graceful rejection preserves the live JVM (71.6012ms)
+✔ changed lease after process exit remains unknown and blocks future launches (153.6061ms)
+✔ Java mismatch, failed probe and pre-spawn cancellation cannot create game effects (10.083ms)
+✔ handshake only accepts strict request DTO and safe version integers (1.9334ms)
+✔ trusted handshake negotiates version with zero business capabilities (8.4063ms)
+✔ handshake validates the four implemented capabilities and still rejects duplicates or unknown APIs (0.2689ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (1.5259ms)
+✔ sender requires exact URL, same contents and main frame (0.5265ms)
+✔ response rejects mismatched request identity and injected capabilities (0.5424ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.3163ms)
+✔ sequential small-file hashes reuse one real worker and release each file before success (1880.6261ms)
+✔ cancelled active session exits before rejection and a queued hash uses a fresh worker (342.2424ms)
+✔ queue budget remains concurrency plus 32 waiting jobs and close joins all sessions (54.9795ms)
+✔ strict session schemas require correlated UUIDs and retain legacy single-file replies (1.1301ms)
+✔ well-formed stale replies from a previous job cannot complete or update the next job (102.089ms)
+✔ batch imports exact metadata, bounds work, commits all independent proofs and reuses cached bytes (3401.6881ms)
+✔ bad metadata and already aborted batches do not start a single network consumer (37.723ms)
+✔ one batch cancellation joins its work while another installation finishes shared downloads (1396.3487ms)
+✔ callback failures abort siblings and are redacted after all owned transfers finish (1107.884ms)
+✔ an in-flight commit error takes precedence over concurrent user cancellation (43.4828ms)
+✔ index import maps operating-system and cleanup exceptions to fixed errors (80.4166ms)
+✔ cancellation during metadata commit joins the commit and retains verified shared content (78.4679ms)
+✔ caller changes to the prepared plan or body cannot alter the admitted private plan (401.8994ms)
+✔ first-release install metadata refuses unsupported OS or architecture before network access (4.0236ms)
+✔ install metadata keeps each descriptor origin and exact validated asset-index bytes (4.696ms)
+✔ wrong returned hashes and forged same-size bodies are rejected before planning (0.6461ms)
+✔ asset-index declared size is checked as UTF8 bytes and cannot be trusted from a reader claim (1.1276ms)
+✔ missing asset metadata or its actual declaring origin never starts an index request (0.7217ms)
+✔ malformed asset JSON and absent source proofs are redacted rather than becoming an install plan (1.0038ms)
+✔ known catalog/network errors retain their fixed code and unknown dependency errors never leak (0.8394ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (24.7264ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (6.4831ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (5.2785ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (201.2961ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (1.1329ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (0.7366ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (0.6288ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (0.5723ms)
+✔ library views reject case, file-directory and differing-content collisions (0.6568ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (1.2396ms)
+✔ installer adapter enforces registered root scope and exposes only public summary/task fields (6.4763ms)
+✔ installer adapter pagination tokens are opaque, bounded to sender/channel/filter, and hold stable snapshots (4.0105ms)
+✔ installer task lists enforce owner/kind and completed results contain only the corresponding instance ID (0.9845ms)
+✔ installer controls call only durable cancel and return actual persisted state (0.705ms)
+✔ installer adapter maps known failures and rejects raw exception text at its boundary (0.9264ms)
+✔ installer subscriptions provide atomic seq-zero snapshots and strictly ordered bounded full updates (443.5147ms)
+✔ installer subscription ownership, repeated unsubscribe and sender removal never cancel installation (2.4732ms)
+✔ installer send callback failure removes only its subscription even if it throws a recognized service error (104.756ms)
+✔ installer poll iterations never overlap and close suppresses an already pending response (486.3724ms)
+✔ installer admission counts pending subscriptions and enforces per-sender and global budgets (8.4291ms)
+✔ installer pending subscription is discarded if its window disappears during snapshot acquisition (22.198ms)
+✔ actual installer commits a complete private instance and reuses shared files across a second instance (5271.1795ms)
+✔ request idempotency rejects changed payload and same-name admission never overwrites an instance (1944.2006ms)
+✔ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (1830.9927ms)
+✔ unknown existing shared entries are preserved and leave a recovery state rather than ready (766.1365ms)
+✔ instance summaries and indexes have exact bounded fields, canonical IDs and independent revisions (16.3465ms)
+✔ instance phases cannot claim ready without all materialization checkpoints (5.3718ms)
+✔ instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry (0.9545ms)
+✔ instance object refs and receipts reject paths, unknown fields, conflicts and absent content identities (1.6972ms)
+✔ instance body and metadata budgets are checked before accepting persistent JSON (36.822ms)
+✔ instance metadata persists the exact bounded Windows rule environment instead of guessing it on reopen (2.5723ms)
+✔ private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions (2.6003ms)
+✔ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (477.7642ms)
+✔ instance record and index commit separately so a half-completed index is never promoted to ready (509.7443ms)
+✔ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (168.8389ms)
+✔ instance storage does not create or accept arbitrary caller-selected parent directories (293.9171ms)
+✔ instance/task requests enforce each exact candidate payload and v1 envelope (4.9742ms)
+✔ pagination, names, MC identities, UUIDs and actions remain bounded (0.8304ms)
+✔ public instance summaries exclude storage identity and paths (1.0693ms)
+✔ task snapshots validate progress, enumerations and exact error mapping (0.8993ms)
+✔ task results and events reject leaked fields, wrong identities and nonterminal result (0.5889ms)
+✔ every domain error has fixed controlled public data (0.8614ms)
+✔ handler checks sender before dispatch and returns correlated safe failures (0.6611ms)
+✔ handler validates adapter outputs and task correlation without leaking private results (2.0422ms)
+✔ handler maps declared adapter failures and redacts arbitrary thrown values (0.9582ms)
+✔ Java properties parse supported 8/17/21 versions and explicit Windows x64 metadata (5.0704ms)
+✔ Java properties refuse incompatible majors, architecture, OS and inconsistent specification (3.6604ms)
+✔ Java properties cannot use banners, duplicate properties, malformed versions or private text as runtime evidence (0.7062ms)
+✔ Java probe uses exact non-shell argv, hidden child and removes ambient agent injection settings (15.9657ms)
+✔ Java cancellation kills and joins close rather than reporting termination immediately (3.7649ms)
+✔ Java timeout and combined output budget terminate and await child close (30.4787ms)
+✔ Java probe rejects nonzero exit, spawn errors and malformed UTF8 without exposing diagnostics (4.1897ms)
+✔ Java probe rejects unselected paths and cancelled/invalid inspections before spawning (1.1593ms)
+✔ Java default inspection requires an actual nonempty regular executable path (245.4601ms)
+✔ Java default inspection refuses a directory even when named java.exe (19.9331ms)
+✔ modern launch retains one argument per value, absolute Windows paths and inherited client jar (14.956ms)
+✔ legacy JVM fallback and virtual assets use the supplied actual game directory (1.1088ms)
+✔ Java mismatch, invalid identities, memory and launcher version fail before execution (12.2664ms)
+✔ conflicting JVM settings, unknown placeholders and oversized argv cannot silently launch (6.0564ms)
+✔ assetIndex id overrides legacy name and additional official argument bindings are literal (0.6385ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (31.6216ms)
+✔ isolation priority is pack, explicit override, then global default (2.9193ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (1.1767ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.6171ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.5871ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.4611ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.3375ms)
+✔ pure path imports remain allowed while actual Node and UI capabilities stay prohibited (1324.4734ms)
+✔ actual linked source parents and destination directories never redirect native extraction (58.3967ms)
+✔ native archives extract stored/deflated files, UTF8, descriptors and empty directories with exclusions (168.1319ms)
+✔ native archive original SHA256 and size are mandatory before creating any output (100.2963ms)
+✔ native archives reject traversal, Windows aliases and noncanonical names before writing (560.0106ms)
+✔ native archives reject unknown filename encoding and malformed UTF8 (197.48ms)
+✔ native archives reject symlink, special file, reparse and Unix hardlink metadata (227.2162ms)
+✔ native archives reject duplicates, case collisions and file/directory conflicts across all archives before writes (101.8217ms)
+✔ native archive CRC, declared output and fully consumed deflate bytes are verified (131.3866ms)
+✔ native archive limits reject excessive per-entry, aggregate and entry-count budgets before writes (206.8402ms)
+✔ native archive header disagreement, unsupported flags, ZIP64 and overlapping local records are refused (110.5613ms)
+✔ native extraction requires an empty destination and never overwrites player files (24.0814ms)
+✔ native extraction errors are fixed codes without filesystem paths (22.6175ms)
+✔ native worker schemas reject scripts, unknown keys, unsafe limits and unbounded replies (3.1054ms)
+✔ real one-shot worker releases its directory and rejects occupied output without leaking paths (265.5476ms)
+✔ native extraction admission is bounded and active cancellation joins before staging removal (174.0791ms)
+✔ close joins a running extraction and prevents admission, timeout and malformed archives stay fixed (207.3703ms)
+✔ real object commits deduplicate bytes but preserve independent source evidence (1475.1015ms)
+✔ same-sized wrong bytes never enter objects and malformed artifact facts reject early (556.2066ms)
+✔ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (766.0693ms)
+✔ interrupted append-only commits preserve orphan bytes and recover only proven sources (1167.061ms)
+✔ corrupt existing object is never overwritten by a new commit or reused through an index (462.5228ms)
+✔ broken provenance cannot acquire trust from a valid object or index hint (420.6316ms)
+✔ unknown cache schema blocks object search while durable tasks stay readable (916.0836ms)
+✔ root request schema accepts only an empty payload and valid correlated envelope (3.2714ms)
+✔ root results enforce labels, exact keys, channel schema and fixed error mapping (0.9816ms)
+✔ directory cancellation changes no registration and leaks no selected local path (317.7643ms)
+✔ native-adapter selection persists once and survives a storage-worker restart (638.5128ms)
+✔ application directories, their ancestors and linked selections are rejected (308.2899ms)
+✔ concurrent directory requests share one native selection and one stable record (339.7231ms)
+✔ disconnected directory is retained and shown unavailable rather than silently replaced (213.8268ms)
+✔ journal larger than the 128MiB worker heap reopens without retaining historical JSON snapshots (9570.5226ms)
+✔ versioned JSON commits real files, reopens and preserves strict revisions (205.5236ms)
+✔ all five commit boundaries recover old or new JSON and replay idempotently (648.3263ms)
+✔ first-create interruption rolls back absence or completes committed JSON (337.26ms)
+✔ same-process revisions serialize and another repository cannot acquire the owner lease (66.4981ms)
+✔ invalid data and identifiers never create an operation or change JSON (302.4797ms)
+✔ changed JSON or missing authoritative database never silently becomes an empty store (81.2112ms)
+✔ unknown operation state, broken history and future schema all stop recovery (235.0667ms)
+✔ unknown staging content and unjournaled records are preserved for recovery (77.0529ms)
+✔ linked repository paths are refused without touching the target (11.7887ms)
+✔ an existing stale/foreign lease is never removed automatically (10.1608ms)
+✔ corrupt staging is kept intact and never promoted or silently discarded (64.418ms)
+✔ SQLite atomically accepts tasks and identical request retries return the same task (49.8984ms)
+✔ persisted task CAS rejects stale updates and restart protects uncertain effects (170.784ms)
+✔ missing acceptance evidence and corrupt task state fail recovery instead of replaying (270.687ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (3.636ms)
+✔ execution verifies before commit and never repeats terminal effects (0.7795ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.3487ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.2563ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.3401ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.38ms)
+✔ shared transfers obey demand from all installers independently (16.793ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (3.4669ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (4.1905ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.8924ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (1.1323ms)
+✔ server-only input cannot provide a client or main class (0.4151ms)
+✔ library and asset-index provenance follows each actual declaration independently of the selected leaf (0.9542ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (2.6641ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.3494ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (0.6976ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (2.2794ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.7047ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.5609ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (1.1073ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (25.6559ms)
+✔ private worker messages reject extra keys, scripts, paths, unknown errors and versions (4.5142ms)
+✔ real storage worker persists idempotent acceptance and protects interrupted task state (585.4215ms)
+✔ storage request queue is bounded and reserves a draining close slot (247.2615ms)
+✔ storage caller timeout retains its queue slot and does not pretend mutation was cancelled (1582.1613ms)
+✔ worker crash becomes a fixed redacted failure and close waits for exit (52.274ms)
+✔ real streamed hashes match known bytes and the parent event loop stays responsive (385.3621ms)
+✔ hash cancellation waits for worker exit and leaves input bytes untouched (138.0715ms)
+✔ hash queue has a fixed budget and queued cancellation starts no worker (17.0557ms)
+✔ failed worker startup preserves corrupt metadata rather than replacing it (217.4283ms)
+ℹ tests 233
+ℹ suites 0
+ℹ pass 231
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 2
+ℹ todo 0
+ℹ duration_ms 10672.6203
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    download       |        |          |         |
+ℹ     integrity.js  | 100.00 |   100.00 |  100.00 |
+ℹ    install        |        |          |         |
+ℹ     assets.js     | 100.00 |   100.00 |  100.00 |
+ℹ     plan.js       | 100.00 |    98.78 |  100.00 |
+ℹ    launch         |        |          |         |
+ℹ     plan.js       | 100.00 |   100.00 |  100.00 |
+ℹ    path           |        |          |         |
+ℹ     layout.js     | 100.00 |    94.92 |  100.00 |
+ℹ    task           |        |          |         |
+ℹ     machine.js    | 100.00 |   100.00 |  100.00 |
+ℹ     scheduling.js | 100.00 |   100.00 |  100.00 |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.10 |  100.00 |
+ℹ     manifest.js   | 100.00 |   100.00 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    99.07 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 27 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-yzkDsGit.css    4.56 kB │ gzip:  1.56 kB
+dist/renderer/assets/index-By5dMfag.js   235.31 kB │ gzip: 74.29 kB
+
+✓ built in 114ms
+
+  dist\main\index.cjs  209.6kb
+
+Done in 16ms
+
+  dist\preload\index.cjs  29.5kb
+
+Done in 3ms
+
+  dist\workers\entry.cjs  99.2kb
+
+Done in 8ms

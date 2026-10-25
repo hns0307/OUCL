@@ -1,0 +1,8 @@
+{
+  "status": "FAIL",
+  "code": "ERR_WORKER_OUT_OF_MEMORY",
+  "heapLimitMiB": 128,
+  "copiedJournal": true,
+  "originalUntouched": true,
+  "observation": "Initial verify-recovery-heap.mjs stdout before streaming recovery patch; subsequent incomplete snapshot marker failure is separately preserved in recovery-before.json."
+}

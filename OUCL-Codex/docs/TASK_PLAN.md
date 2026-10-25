@@ -353,3 +353,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 27. 持久实例与实际安装编排
 
 162317e/cf3d2e8后整合原始元数据固定、实例JSON/index/私有worker、稳定任务/consumer身份及实际InstallerService，main/preload/下载确认/任务/实例UI已经接入。221测试219 PASS/2环境SKIP、正式Electron记录及实际DOM两次安装fixture通过，见[报告](../../docs/validation/A1-08-installer/REPORT.md)。两实例实际落盘并复用缓存，重载保留任务与实例；真实官方目录窗口验证通过。尚未下载整套真实官方游戏或启动MC，尚无新exe。完整kill/断电自动接管仍未证明，不标A1-08全部完成。下一直接接Java/离线/进程/UI与exe实际验证。
+
+## 28. 官方完整安装与重开规模修复
+
+1b5a116后实际官方1.20.1安装3,641制品/735,814,641字节、私有native与完整实例manifest通过，见[报告](../../docs/validation/A1-08-official-install/REPORT.md)。实际重开揭示190MB历史日志导致128MiB worker OOM，独立副本复现后改为流式历史校验和摘要映射；相同副本原限制下恢复通过，新增超128MiB日志回归。完整233测试231 PASS/2原有SKIP、类型/lint/build通过。旧异常owner不抢占，新独立根重新校验缓存并安装通过。启动参数/进程服务同时推进，Java/账户与启动UI、新exe及完整异常接管仍未完成。
