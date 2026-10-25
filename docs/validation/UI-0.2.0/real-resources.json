@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-10-25T12:45:29.047Z",
+  "status": "PASS",
+  "root": ".test-build\\v02-resources-yqgsio",
+  "samples": [
+    {
+      "kind": "mod",
+      "projectId": "P7dR8mSH",
+      "project": "Fabric API",
+      "versionId": "tCBJwbEV",
+      "version": "[26.4-snapshot-5] Fabric API 0.165.0+26.4",
+      "filename": "fabric-api-0.165.0+26.4.jar",
+      "bytes": 1739466,
+      "sha1": "e1292ea41d82e17a2a42af11bfebdd99e9114541",
+      "independentlyVerified": true
+    },
+    {
+      "kind": "resourcepack",
+      "projectId": "50dA9Sha",
+      "project": "Fresh Animations",
+      "versionId": "tvGVYMD4",
+      "version": "Fresh Animations 1.11.1 - 26.1+",
+      "filename": "FreshAnimations_v1.11.1_26.1+.zip",
+      "bytes": 776684,
+      "sha1": "ae9175983c5109162c86daae1acff34ccf623faf",
+      "independentlyVerified": true
+    },
+    {
+      "kind": "shader",
+      "projectId": "HVnmMxH1",
+      "project": "Complementary Shaders - Reimagined",
+      "versionId": "Bqen1mJX",
+      "version": "r5.9.3",
+      "filename": "ComplementaryReimagined_r5.9.3.zip",
+      "bytes": 553397,
+      "sha1": "838139b54cddb56b2e83cd260d8efd960ac536d6",
+      "independentlyVerified": true
+    }
+  ],
+  "workerReopenPreservesResources": true,
+  "workerReopenPreservesSettings": true
+}

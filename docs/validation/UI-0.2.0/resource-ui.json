@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-25T12:54:04.248Z",
+  "status": "PASS",
+  "selected": {
+    "title": "FerriteCore",
+    "version": "d5ddUdiB"
+  },
+  "realDownloadSubmittedThroughDom": true,
+  "downloadCompletedWhileHomeVisible": true,
+  "libraryVisible": true,
+  "settingsLoadedFromDisk": true,
+  "newInstanceIsolationDefaultApplied": true,
+  "taskId": "42197735-f97e-4e00-9ecf-eec3e8c5f6f9",
+  "filename": "ferritecore-9.0.0-fabric.jar",
+  "attempts": [
+    {
+      "state": "completed"
+    }
+  ],
+  "operatedUserWindows": false
+}
