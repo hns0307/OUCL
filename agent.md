@@ -10,6 +10,8 @@
 
 下一最小增量：先做Forge/NeoForge独立安装器spike，固定代表版本、官方制品与处理器输入输出，再将各自客户端处理器编排接入相同暂存/取消/提交事务；随后完成JAR worker双重检查/依赖确认事务、四加载器真实验收和0.3.0小EXE。Fabric/Quilt虽已有完整代码路径，尚无真实官方游戏/测试Mod证据，不能标阶段完成。
 
+Forge/NeoForge spike 预检：Forge 官方下载页于2026-10-26显示MC 1.20.1的Latest与Recommended均为47.4.28，安装器SHA-1为`585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge官方Maven确认MC 1.21.1系列为`21.1.x`且提供installer及SHA-1/SHA-256 sidecar，但尚未冻结具体稳定版。隔离目录`.test-build/installer-spike-20261026`保留约2.73 MiB的Forge官方安装器部分下载，未执行；下次可用curl续传后先核对sidecar，再只读提取`install_profile.json`/`version.json`。PCL目录中的3222字节`forge-installer.jar`只是其自有辅助类，仅用于确认不是可复用上游安装器，未复制或纳入OUCL。
+
 Git保护：原始暂存OUCL-Codex-Package.zip、OUCL.txt继续保留，不纳入本次提交；显式路径add/commit --only，不push。历史1A及阶段0缺项不关闭。用户此前允许多agent仅在历史1A上下文，本轮尚未委派子agent。
 
 ## 当前有效交接：0.2.2 同级运行环境（2026-10-25）
