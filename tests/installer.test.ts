@@ -106,6 +106,7 @@ test('actual installer commits a complete private instance and reuses shared fil
     const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.equal(completed.instance?.state, 'ready');
     const instanceId = completed.instance!.instanceId; const record = await f.storage.readInstance(instanceId); assert.ok(record);
     assert.equal(record.data.phase, 'ready'); assert.equal(record.data.receipts?.length, restoreInstallMetadata(record.data).plan.views.length);
+    assert.deepEqual((await f.service.listV2(rootId))[0]?.loader, { kind: 'vanilla' });
     const directory = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'versions', instanceId);
     const manifest = JSON.parse(await readFile(path.join(directory, 'oucl.instance.json'), 'utf8')) as { data: unknown };
     assert.deepEqual(manifest.data, record.data); assert.equal(await readFile(path.join(directory, 'natives', 'native.dll'), 'utf8'), 'non executable native fixture');
@@ -130,6 +131,7 @@ test('Fabric installation uses the same transaction and reopens with its pinned 
     const accepted = await f.service.createLoader(request(12), { ...input, displayName: 'Fabric instance', loader: { kind: 'fabric', version: '0.20.1' } });
     const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.ok(completed.instance);
     const record = await f.storage.readInstance(completed.instance.instanceId); assert.equal(record?.data.loader?.kind, 'fabric');
+    assert.deepEqual((await f.service.listV2(rootId))[0]?.loader, { kind: 'fabric', version: '0.20.1' });
     assert.equal(record?.data.metadata?.loader?.version, '0.20.1');
     const restored = restoreInstallMetadata(record!.data); assert.equal(restored.version.mainClass, 'net.fabricmc.loader.impl.launch.knot.KnotClient');
     assert.ok(restored.version.jvmArguments.includes('-Dfabric.fixture=true'));

@@ -34,6 +34,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { verifyLaunchInputs } from './launch-inputs.js';
 import type { JavaPackage } from '../java/runtime.js';
 import { guardDirectory, hasCode as fileHasCode } from '../storage/files.js';
+import type { InstanceV2Summary } from '../../shared/contracts/instances-v2.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -243,6 +244,17 @@ export class InstallerService {
   }
   /** Lists persisted summaries; unfinished installs never become ready merely because download bytes exist. */
   async list(rootId: string): Promise<InstanceSummary[]> { return (await this.storage.readInstances())?.data.items.filter(item => item.rootId === rootId) ?? []; }
+  /** Projects loader identity only after checking each authoritative private record. */
+  async listV2(rootId: string): Promise<InstanceV2Summary[]> {
+    const result: InstanceV2Summary[] = [];
+    for (const summary of await this.list(rootId)) {
+      const record = await this.storage.readInstance(summary.instanceId);
+      if (!record || record.data.summary.rootId !== rootId || !record.data.loader || summary.isolation === 'inherit') throw new InstallerError('NEEDS_RECOVERY');
+      result.push({ instanceId: summary.instanceId, displayName: summary.displayName, minecraftVersion: summary.mcVersionId,
+        loader: record.data.loader, isolation: summary.isolation, state: summary.state, revision: summary.revision });
+    }
+    return result;
+  }
   /** Returns the current task plus a redacted phase; this API contains no paths or raw upstream documents. */
   async task(rootId: string, taskId: string): Promise<{ task: StoredTask; stage: string; instance?: InstanceSummary }> {
     const task = this.live.get(taskId)?.task ?? await this.storage.get(rootId, taskId);

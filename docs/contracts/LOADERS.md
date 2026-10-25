@@ -68,3 +68,4 @@ Forge/NeoForge 安装器、sidecar 获取、下载任务和实例提交属于后
 - `loaders.v1` 已接入 preload 白名单与主进程 sender/envelope/output 三重校验。查询只接收 Minecraft 版本和四选一加载器标识；创建前主进程重新读取官方目录并确认精确版本仍存在。
 - 当前 Fabric/Quilt 使用上述完整安装事务；候选均标记 `unverified`，直到代表矩阵完成真实游戏验收。Forge/NeoForge 返回 `VERSION_UNSUPPORTED`，不会因为契约已列出名称而伪报可安装。
 - 创建只返回现有持久任务标识，进度、取消与重连继续复用 `tasks.v1`；渲染进程不能提交 URL、路径、摘要或处理器参数。
+- `instances.v2:list` 从每个权威私有实例记录生成加载器投影；原版明确为 `vanilla`，加载器实例返回固定种类和版本。v1 原版列表保持兼容，v2 不返回根、任务或文件路径。

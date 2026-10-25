@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isInstanceLoaderIdentity, isInstanceV2Summary } from '../src/shared/contracts/instances-v2.js';
+import { instancesV2Failure, isInstanceLoaderIdentity, isInstancesV2Result, isInstanceV2Summary } from '../src/shared/contracts/instances-v2.js';
+import { handleInstancesV2 } from '../src/ipc/instances-v2.js';
 import { isLoaderData, isLoaderPayload, isLoaderResult, loaderFailure } from '../src/shared/contracts/loaders.js';
 import type { LoaderChannel, LoaderCode, LoaderPayloads } from '../src/shared/contracts/loaders.js';
 import { handleLoaders } from '../src/ipc/loaders.js';
@@ -50,6 +51,22 @@ test('instances.v2 distinguishes vanilla and pinned loader identities without le
   assert.equal(isInstanceV2Summary({ ...summary, rootId: id }), false);
   assert.equal(isInstanceV2Summary({ ...summary, loader: { kind: 'forge' } }), false);
   assert.equal(isInstanceV2Summary({ ...summary, isolation: 'inherit' }), false);
+  const result = { contractVersion: 2 as const, requestId: id, ok: true as const, data: { items: [summary] } };
+  assert.equal(isInstancesV2Result(result, id), true);
+  assert.equal(isInstancesV2Result({ ...result, data: { items: [{ ...summary, rootId: id }] } }, id), false);
+  assert.equal(isInstancesV2Result(instancesV2Failure(id, 'NEEDS_RECOVERY', trace), id), true);
+});
+
+test('instances.v2 handler enforces its versioned envelope and validates private projections', async () => {
+  const input = { contractVersion: 2, requestId: id, payload: { rootId: id } };
+  const item = { instanceId: id, displayName: 'Fabric', minecraftVersion: '1.20.1', loader: { kind: 'fabric', version: '0.20.1' }, isolation: 'on', state: 'ready', revision: 2 };
+  assert.equal((await handleInstancesV2(input, true, trace, async () => [item])).ok, true);
+  for (const [value, trusted, code] of [[input, false, 'INVALID_SENDER'], [{ ...input, contractVersion: 3 }, true, 'UNSUPPORTED_CONTRACT'],
+    [{ ...input, payload: { rootId: '../private' } }, true, 'INVALID_ARGUMENT']] as const) {
+    const result = await handleInstancesV2(value, trusted, trace, async () => [item]); assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.error.code, code);
+  }
+  const hidden = await handleInstancesV2(input, true, trace, async () => [{ ...item, path: 'private' }]); assert.equal(hidden.ok, false);
 });
 
 test('loader handler validates sender, envelope and adapter output without leaking failures', async () => {

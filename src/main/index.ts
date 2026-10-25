@@ -42,6 +42,8 @@ import { LoaderMetadataClient, isOfficialLoaderMetadataUrl } from '../services/l
 import { LoaderMavenResolver } from '../services/loaders/maven.js';
 import { LoaderInstallMetadataService } from '../services/loaders/install-metadata.js';
 import { LoaderService } from '../services/loaders/service.js';
+import { INSTANCES_V2_CAPABILITY, INSTANCES_V2_LIST_CHANNEL } from '../shared/contracts/instances-v2.js';
+import { handleInstancesV2 } from '../ipc/instances-v2.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -120,8 +122,13 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : [])] : []);
   });
+  ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
+    const registered = await storage?.readInstallation();
+    if (!installer || registered?.data.rootId !== rootId) throw new Error('UNAVAILABLE');
+    return installer.listV2(rootId);
+  }));
   for (const channel of LOADER_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleLoaders(channel, input, trustedSender(event), randomUUID(), (async (selected: LoaderChannel, payload: LoaderPayloads[LoaderChannel], requestId: string) => {
     if (!loaders) throw new LoaderContractError('UNAVAILABLE');
     return loaders.dispatcher()(selected, payload, requestId) as Promise<LoaderData[typeof selected]>;
