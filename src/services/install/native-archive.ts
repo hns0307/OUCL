@@ -229,3 +229,30 @@ export async function extractSelectedArchive(destination: string, archive: Selec
     throw new NativeArchiveError('ARCHIVE_IO');
   }
 }
+
+/** Reads one fixed entry from a verified ZIP. Invoke only in a bounded worker. */
+export async function readVerifiedArchiveEntry(archive: SelectedArchiveInput, selected: string,
+  maximumBytes: number): Promise<Buffer> {
+  try {
+    if (!archive || typeof archive.file !== 'string' || !path.isAbsolute(archive.file)
+      || typeof archive.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(archive.sha256)
+      || !Number.isSafeInteger(archive.size) || archive.size < 1 || archive.size > MAX_ARCHIVE
+      || typeof selected !== 'string' || !Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > MAX_ARCHIVE) bad();
+    try { installRelativePath(selected); } catch { unsafe(); }
+    await guardDirectory(path.dirname(archive.file));
+    const bytes = await readRegular(archive.file, MAX_ARCHIVE);
+    if (!bytes || bytes.length !== archive.size || createHash('sha256').update(bytes).digest('hex') !== archive.sha256) {
+      throw new NativeArchiveError('HASH_MISMATCH');
+    }
+    const entries = parse(bytes, []);
+    let total = 0; for (const entry of entries) { total += entry.size; if (total > MAX_TOTAL) limit(); }
+    const chosen = entries.filter(entry => !entry.directory && entry.name.toLowerCase() === selected.toLowerCase());
+    if (chosen.length !== 1) bad();
+    if (chosen[0]!.size > maximumBytes) limit();
+    return unpack(chosen[0]!);
+  } catch (error) {
+    if (error instanceof NativeArchiveError) throw error;
+    if (hasCode(error, 'UNSAFE_PATH')) unsafe();
+    throw new NativeArchiveError('ARCHIVE_IO');
+  }
+}
