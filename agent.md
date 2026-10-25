@@ -1,5 +1,21 @@
 # OUCL 下一对话交接
 
+## 当前有效交接：0.2.2 同级运行环境（2026-10-25）
+
+用户明确要求运行时在EXE同级准备环境，缺少下载、完整则直接启动，并美化或隐藏检查/启动界面。批准已记TASK_PLAN顶部/DECISIONS末尾。本增量交付待体验，下面0.2.1是历史系统缓存方案，不再是当前默认。
+
+实现提交afcbb6d；报告和本交接单独提交，以git log为准。
+
+- 交付：release/OUCL-0.2.2.exe，234496字节（229KiB），SHA256 2b1f141d0cbd7610f19117b91009ac2c76bc3b4809febfc538b3009386ef7454；未签名，无新依赖、不push/发布。
+- Electron及内嵌应用固定在EXE旁OUCL.runtime，由Assembly位置确定，不依赖cwd。无环境才官方下载，完整缓存逐文件校验后复用。正常检查/准备/启动用隐藏ApplicationContext，无引导弹窗；仅下载/错误显示简洁窗口、进度/取消/重试。同级不可写则报错，不回退LocalAppData或提权。
+- 不搬动/删除0.2.1 LocalAppData缓存、Roaming/OUCL账户设置或游戏根。Java仍沿用0.2.1按需准备。移动时连EXE和OUCL.runtime一起复制可复用；只复制EXE则在新目录重下。退出后删除EXE+该同级目录即可删程序环境，不含用户游戏/账户。
+- 262测试260 PASS/0 FAIL/2原有SKIP；19原生引导测试、审计与127包许可通过。真实交付EXE在两份独立中文/空格目录冷启动下载约27/26秒通过；同一EXE+目录热启动约1.57秒，目录清单断言证明未创建新Electron。所有实际应用URL位于同级OUCL.runtime，24方法/10能力、无Node、正常退出释放owner通过。证据在docs/validation/BOOTSTRAP-0.2.2/REPORT.md。
+- 下载UI已实际读取并以独立同布局Preview截图检查。用户实体Esc停止Computer Use后，没有继续操作窗口；人工取消验收未完成且时序断言失败，不能写成GUI取消通过。只有取消信号/暂存清理的独立单测通过。不要为补证接管用户正在玩的MC窗口。
+- scripts/bootstrap-smoke.mjs按package版本写新证据目录。OUCL_BOOTSTRAP_COPY=1测试只复制单EXE至新中文目录；OUCL_EXE_TEST_PATH可对已准备目录复测。bootstrap/Preview.cs、ColdStart.cs均测试专用，产品只编译Launcher.cs。
+- 历史阶段缺项保持，0.2.2不算重新跑过游戏世界/全Java矩阵。用户两份原始暂存文件仍保留，显式路径add/commit --only，作者Li ZeRui。
+
+## 以下为0.2.1交付时历史快照
+
 ## 当前有效交接：0.2.1 小EXE（2026-10-25）
 
 用户明确选择“小exe首次下载依赖”，了解PCL按需Java后回复“按照你说的进行”。有效范围与真实批准已记录TASK_PLAN顶部/DECISIONS末尾。本增量已实现并验证，待用户体验；下文0.2.0/0.1.0是历史，不再以ZIP为推荐交付。
