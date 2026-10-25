@@ -40,7 +40,8 @@ test('adapter exposes public profiles/settings and only registers a chosen measu
   let stored: RecordEnvelope<LaunchProfiles> | undefined; let selected = false; let probes = 0;
   const storage = { readLaunchProfiles: async () => stored, writeLaunchProfiles: async (revision: number, data: LaunchProfiles) => {
     assert.equal(revision, stored?.revision ?? 0); stored = { schemaVersion: 1, revision: revision + 1, data }; return stored;
-  }, readInstallation: async () => undefined };
+  }, readInstallation: async () => undefined, readSettings: async () => undefined,
+  writeSettings: async (revision: number, data: import('../src/services/storage/settings.js').LaunchSettings) => ({ schemaVersion: 1 as const, revision: revision + 1, data }) };
   const profiles = new ProfileService(storage, { probe: async () => { probes++; return { executable: 'D:\\Fixture\\java.exe', major: 17, version: '17.0.12', vendor: 'fixture', architecture: 'x64', os: 'windows' }; } });
   const dispatch = profileDispatcher(profiles, storage, async () => selected ? 'D:\\Fixture\\java.exe' : undefined);
   assert.deepEqual(await dispatch('java:choose', {}, id), { selection: 'cancelled' }); assert.equal(probes, 0);

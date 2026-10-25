@@ -1,3 +1,4 @@
+import type { LaunchSettings } from '../storage/settings.js';
 import { Worker } from 'node:worker_threads';
 import { randomUUID } from 'node:crypto';
 import type { Execution } from '../../core/task/machine.js';
@@ -12,7 +13,7 @@ import type { TransferRecord } from '../download/types.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
 import type { LaunchProfiles } from '../storage/launch-profiles.js';
 import type { GameSessions } from '../storage/game-sessions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions> };
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -77,7 +78,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -94,6 +95,14 @@ export class StorageClient {
       try { this.worker.postMessage(request); }
       catch { this.pending.delete(request.id); clearTimeout(timer); reject(new WorkerError('INVALID_MESSAGE')); }
     });
+  }
+
+  /** Reads only the fixed launch settings domain. */
+  async readSettings(): Promise<RecordEnvelope<LaunchSettings> | undefined> { return (await this.request({ kind: 'settings:get' })).settings; }
+  /** Atomically persists a revision-checked settings change. */
+  async writeSettings(expectedRevision: number, data: LaunchSettings): Promise<RecordEnvelope<LaunchSettings>> {
+    const value = (await this.request({ kind: 'settings:set', expectedRevision, data })).settings;
+    if (!value) throw new WorkerError('INVALID_MESSAGE'); return value;
   }
 
   /** Reads fixed private session metadata, never arbitrary records or process identifiers. */

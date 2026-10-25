@@ -15,6 +15,6 @@ async function request<C extends ProfileChannel>(channel: C, payload: ProfilePay
 }
 /** Fixed profile methods only; no arbitrary channel/path/argument capability is exposed. */
 export function createProfilesBridge(): ProfilesBridge {
-  return { chooseJava: id => request('java:choose', {}, id, 130000), listAccounts: () => request('accounts:list', {}, globalThis.crypto.randomUUID()),
+  return { updateSettings: (id, input) => request('settings:update', input, id, 5000), chooseJava: id => request('java:choose', {}, id, 130000), listAccounts: () => request('accounts:list', {}, globalThis.crypto.randomUUID()),
     createOfflineAccount: (id, input) => request('accounts:createOffline', input, id), getSettings: () => request('settings:get', {}, globalThis.crypto.randomUUID()) };
 }

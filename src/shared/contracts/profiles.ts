@@ -2,7 +2,7 @@ import { exactObject, UUID_PATTERN } from './handshake.js';
 import type { AppError } from './handshake.js';
 import type { MessageKey } from '../locales/messages.js';
 
-export const PROFILE_CHANNELS = ['java:choose', 'accounts:list', 'accounts:createOffline', 'settings:get'] as const;
+export const PROFILE_CHANNELS = ['java:choose', 'accounts:list', 'accounts:createOffline', 'settings:get', 'settings:update'] as const;
 export const PROFILE_CAPABILITIES = ['java.v1', 'accounts.v1', 'settings.v1'] as const;
 export type ProfileChannel = typeof PROFILE_CHANNELS[number];
 export interface JavaRef { javaId: string; major: 8 | 17 | 21; arch: 'x64'; source: 'system'; available: boolean }
@@ -10,13 +10,14 @@ export interface AccountSummary { accountId: string; kind: 'offline'; displayNam
 export interface SettingsSummary { revision: number; rootId?: string; javaId?: string; memoryMiB: number; isolationDefault: boolean; theme: 'system' }
 export interface ProfilePayloads {
   'java:choose': Record<string, never>; 'accounts:list': Record<string, never>; 'settings:get': Record<string, never>;
+  'settings:update': { expectedRevision: number; patch: { memoryMiB?: number; isolationDefault?: boolean } };
   'accounts:createOffline': { displayName: string; gameName: string };
 }
 export interface ProfileData {
   'java:choose': { selection: 'cancelled' } | { selection: 'chosen'; java: JavaRef };
-  'accounts:list': { items: AccountSummary[] }; 'accounts:createOffline': { account: AccountSummary }; 'settings:get': SettingsSummary;
+  'accounts:list': { items: AccountSummary[] }; 'accounts:createOffline': { account: AccountSummary }; 'settings:get': SettingsSummary; 'settings:update': SettingsSummary;
 }
-export type ProfileCode = AppError['code'] | 'ACCOUNT_NAME_INVALID' | 'ACCOUNT_CONFLICT' | 'STORAGE_UNAVAILABLE' | 'JAVA_INVALID' | 'JAVA_ARCH_UNSUPPORTED' | 'CONFIG_CORRUPT';
+export type ProfileCode = AppError['code'] | 'ACCOUNT_NAME_INVALID' | 'ACCOUNT_CONFLICT' | 'STORAGE_UNAVAILABLE' | 'JAVA_INVALID' | 'JAVA_ARCH_UNSUPPORTED' | 'CONFIG_CORRUPT' | 'REVISION_CONFLICT' | 'MEMORY_OUT_OF_RANGE';
 export interface ProfileError extends Omit<AppError, 'code'> { code: ProfileCode }
 export type ProfileResult<C extends ProfileChannel> = { contractVersion: 1; requestId: string; ok: true; data: ProfileData[C] }
   | { contractVersion: 1; requestId: string; ok: false; error: ProfileError };
@@ -25,10 +26,12 @@ export interface ProfilesBridge {
   chooseJava(requestId: string): Promise<ProfileResult<'java:choose'>>;
   listAccounts(): Promise<ProfileResult<'accounts:list'>>;
   createOfflineAccount(requestId: string, input: ProfilePayloads['accounts:createOffline']): Promise<ProfileResult<'accounts:createOffline'>>;
+  updateSettings(requestId: string, input: ProfilePayloads['settings:update']): Promise<ProfileResult<'settings:update'>>;
   getSettings(): Promise<ProfileResult<'settings:get'>>;
 }
 export class ProfileContractError extends Error { constructor(readonly code: ProfileCode) { super(code); this.name = 'ProfileContractError'; } }
 const ERRORS: Record<ProfileCode, { category: AppError['category']; key: MessageKey; retry: boolean }> = {
+  REVISION_CONFLICT: { category: 'biz', key: 'settingsConflict', retry: true }, MEMORY_OUT_OF_RANGE: { category: 'validation', key: 'memoryInvalid', retry: false },
   INVALID_ARGUMENT: { category: 'validation', key: 'invalidArgument', retry: false }, UNSUPPORTED_CONTRACT: { category: 'validation', key: 'unsupportedContract', retry: false },
   INVALID_SENDER: { category: 'permission', key: 'invalidSender', retry: false }, TIMEOUT: { category: 'system', key: 'timeout', retry: true }, UNAVAILABLE: { category: 'system', key: 'unavailable', retry: true },
   ACCOUNT_NAME_INVALID: { category: 'validation', key: 'accountNameInvalid', retry: false }, ACCOUNT_CONFLICT: { category: 'biz', key: 'accountConflict', retry: false },
@@ -40,6 +43,13 @@ const name = (x: unknown): x is string => typeof x === 'string' && x.trim() === 
 /** Exact approved payloads; renderer paths and executable options are never accepted. */
 export function isProfilePayload<C extends ProfileChannel>(x: unknown, channel: C): x is ProfilePayloads[C] {
   if (!PROFILE_CHANNELS.includes(channel)) return false;
+  if (channel === 'settings:update') {
+    if (!exactObject(x, ['expectedRevision', 'patch']) || typeof x.expectedRevision !== 'number' || !Number.isSafeInteger(x.expectedRevision) || x.expectedRevision < 0 || typeof x.patch !== 'object' || x.patch === null) return false;
+    const keys = Object.keys(x.patch); const p = x.patch as Record<string, unknown>;
+    return keys.length > 0 && keys.every(key => ['memoryMiB', 'isolationDefault'].includes(key))
+      && (!Object.hasOwn(p, 'memoryMiB') || typeof p.memoryMiB === 'number' && Number.isSafeInteger(p.memoryMiB) && p.memoryMiB >= 512 && p.memoryMiB <= 65536)
+      && (!Object.hasOwn(p, 'isolationDefault') || typeof p.isolationDefault === 'boolean');
+  }
   return channel === 'accounts:createOffline' ? exactObject(x, ['displayName', 'gameName']) && name(x.displayName) && typeof x.gameName === 'string' && /^[A-Za-z0-9_]{3,16}$/.test(x.gameName) : exactObject(x, []);
 }
 function account(x: unknown): x is AccountSummary {
@@ -53,7 +63,7 @@ export function isProfileData<C extends ProfileChannel>(x: unknown, channel: C):
   if (channel === 'java:choose') return exactObject(x, ['selection']) && x.selection === 'cancelled'
     || exactObject(x, ['selection', 'java']) && x.selection === 'chosen' && exactObject(x.java, ['javaId', 'major', 'arch', 'source', 'available'])
     && uuid(x.java.javaId) && [8, 17, 21].includes(x.java.major as number) && x.java.arch === 'x64' && x.java.source === 'system' && x.java.available === true;
-  if (channel !== 'settings:get' || typeof x !== 'object' || x === null) return false;
+  if (!['settings:get', 'settings:update'].includes(channel) || typeof x !== 'object' || x === null) return false;
   return exactObject(x, ['revision', 'memoryMiB', 'isolationDefault', 'theme', ...['rootId', 'javaId'].filter(key => Object.hasOwn(x, key))])
     && typeof x.revision === 'number' && Number.isSafeInteger(x.revision) && x.revision >= 0
     && (!Object.hasOwn(x, 'rootId') || uuid(x.rootId)) && (!Object.hasOwn(x, 'javaId') || uuid(x.javaId))

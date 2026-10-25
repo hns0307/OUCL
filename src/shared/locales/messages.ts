@@ -1,4 +1,8 @@
 export const MESSAGES = {
+  resourceNetworkFailed: '资源服务暂时不可用，请检查网络后重试。',
+  resourceRateLimited: '资源服务请求较多，请稍后重试。',
+  resourceHashMismatch: '文件校验失败，未加入资源库，请重新下载。',
+  settingsConflict: '设置已被更新，请重新读取后保存。',
   appName: 'OUCL',
   welcome: '欢迎使用 OUCL',
   subtitle: '让社团的每一次相聚，从这里开始。',
