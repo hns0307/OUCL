@@ -23,10 +23,18 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseRoot', 'controlTask', 'createInstance', 'getTask', 'handshake', 'listInstances', 'listRoots', 'listTasks', 'subscribeTask']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSettings', 'getTask', 'handshake', 'listAccounts', 'listInstances', 'listRoots', 'listTasks', 'subscribeTask']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1']);
+    await window.webContents.executeJavaScript(`(async () => {
+      const fields = document.querySelectorAll('.account-inputs input');
+      for (const [index,value] of ['Smoke member','OUCL_Smoke'].entries()) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(fields[index],value); fields[index].dispatchEvent(new Event('input',{bubbles:true})); }
+      await new Promise(resolve=>setTimeout(resolve,100)); document.querySelectorAll('.profile-card')[1].querySelector('button').click();
+      const deadline=Date.now()+3000; while(!document.querySelector('select[aria-label="选择离线账户"] option')?.textContent.includes('OUCL_Smoke') && Date.now()<deadline) await new Promise(resolve=>setTimeout(resolve,30));
+    })()`);
+    const accounts = await window.webContents.executeJavaScript('window.oucl.listAccounts()');
+    assert.equal(accounts.ok, true); assert.equal(accounts.data.items.length, 1); assert.equal(accounts.data.items[0].gameName, 'OUCL_Smoke'); assert.equal('uuid' in accounts.data.items[0], false);
     const roots = await window.webContents.executeJavaScript('window.oucl.listRoots()');
     assert.equal(roots.ok, true); assert.deepEqual(roots.data.items, []);
     const chooseButton = await window.webContents.executeJavaScript('!!document.querySelector(".root-settings button")');
@@ -50,7 +58,7 @@ async function run(window) {
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-08-installer');
+    const directory = path.resolve('docs/validation/A1-09-launch-ui');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
     await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);
@@ -59,7 +67,8 @@ async function run(window) {
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
-      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1'], popupDenied: true,
+      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: renderer.result.data.capabilities, popupDenied: true,
+      actualOfflineAccountDomCreation: true, accountUuidNotExposed: true, javaChooserOperated: false,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
       officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
       versionSelectionRendered: confirmation.selected, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,

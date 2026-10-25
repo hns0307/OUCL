@@ -21,6 +21,10 @@ import { InstallerAdapter } from '../ipc/installer-adapter.js';
 import { handleInstances } from '../ipc/instances.js';
 import { INSTANCE_CHANNELS, INSTANCES_CAPABILITY, TASKS_CAPABILITY, TASK_EVENT_CHANNEL, InstanceContractError } from '../shared/contracts/instances.js';
 import type { InstanceDispatcher } from '../shared/contracts/instances.js';
+import { ProfileService } from '../services/launch/profiles.js';
+import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '../shared/contracts/profiles.js';
+import { handleProfiles } from '../ipc/profiles.js';
+import { profileDispatcher } from '../ipc/profiles-adapter.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -30,9 +34,13 @@ let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
 let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
+let profiles: ProfileService | undefined;
+const javaSelections = new Map<string, Promise<string | undefined>>();
+const pendingSelections = new Set<string>();
 
 /** Authorizes exact application document, current window and primary frame before any service access. */
 function trustedSender(event: IpcMainInvokeEvent): boolean {
+  if (event.sender.isDestroyed()) return false;
   return BrowserWindow.fromWebContents(event.sender) !== null && isTrustedDocument(event.senderFrame?.url ?? '', entryUrl,
     sessions.has(event.sender.id), event.senderFrame === event.sender.mainFrame);
 }
@@ -50,7 +58,7 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
-  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); });
+  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) installerAdapter?.removeSender(id); });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => { event.preventDefault(); });
@@ -69,14 +77,31 @@ else void app.whenReady().then(async () => {
   try {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
+    profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
     await service.initialize(); installer = service; installerAdapter = new InstallerAdapter(service, storage);
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : [])] : []);
   });
+  for (const channel of PROFILE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleProfiles(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!profiles || !storage) throw new ProfileContractError('UNAVAILABLE');
+    const dispatch = profileDispatcher(profiles, storage, async id => {
+      const key = `${event.sender.id}:${id}`; const pending = javaSelections.get(key); if (pending) return pending;
+      if (pendingSelections.size >= 16) throw new ProfileContractError('UNAVAILABLE');
+      while (javaSelections.size >= 64) { const stale = [...javaSelections.keys()].find(item => !pendingSelections.has(item)); if (!stale) throw new ProfileContractError('UNAVAILABLE'); javaSelections.delete(stale); }
+      const selection = (async () => {
+        const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new ProfileContractError('INVALID_SENDER');
+        const result = await dialog.showOpenDialog(owner, { title: MESSAGES.javaChoose, properties: ['openFile'], filters: [{ name: MESSAGES.javaExecutableLabel, extensions: ['exe'] }] });
+        if (!trustedSender(event)) throw new ProfileContractError('INVALID_SENDER'); return result.canceled ? undefined : result.filePaths[0];
+      })();
+      javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
+      return selection;
+    });
+    return dispatch(selected, payload, requestId);
+  }));
   for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
     const trusted = trustedSender(event);
     const unavailable: InstanceDispatcher = async () => { throw new InstanceContractError('UNAVAILABLE'); };
@@ -111,5 +136,5 @@ app.on('before-quit', event => {
   if (exiting) return;
   event.preventDefault(); exiting = true;
   installerAdapter?.close();
-  void (async () => { await installer?.close(); await storage?.close(); })().then(() => { app.quit(); }).catch(() => { app.exit(1); });
+  void (async () => { await profiles?.close(); await installer?.close(); await storage?.close(); })().then(() => { app.quit(); }).catch(() => { app.exit(1); });
 });

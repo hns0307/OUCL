@@ -1,5 +1,6 @@
 import { CONTRACT_VERSION, UUID_PATTERN, exactObject, isHandshakeRequest } from '../shared/contracts/handshake.js';
 import type { AppError, HandshakeErrorCode, HandshakeResult } from '../shared/contracts/handshake.js';
+import type { Capability } from '../shared/contracts/handshake.js';
 
 /** Returns a redacted failure; caller supplies a fresh trace ID, never raw input. */
 export function handshakeFailure(requestId: string, code: HandshakeErrorCode, traceId: string): HandshakeResult {
@@ -19,7 +20,7 @@ export function isTrustedDocument(actualUrl: string, expectedUrl: string, sameWe
 }
 
 /** Negotiates the empty contract without exposing business capabilities. */
-export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string, capabilities: readonly ('roots.v1' | 'catalog.v1' | 'instances.v1' | 'tasks.v1')[] = []): HandshakeResult {
+export function negotiateHandshake(input: unknown, trusted: boolean, sessionId: string, traceId: string, capabilities: readonly Capability[] = []): HandshakeResult {
   const futureEnvelope = exactObject(input, ['contractVersion', 'requestId', 'payload'])
     && typeof input.contractVersion === 'number' && Number.isSafeInteger(input.contractVersion) && input.contractVersion > CONTRACT_VERSION
     && isHandshakeRequest({ ...input, contractVersion: CONTRACT_VERSION });

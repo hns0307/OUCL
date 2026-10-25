@@ -365,3 +365,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 30. 已批启动档案与Java登记持久化
 
 沿用新批准D-20，ProfileService与固定launch-profiles JSON/私有worker已实现离线身份、幂等创建、同名冲突、Java实测登记/选择保持与串行写入。237测试235 PASS/2原有SKIP、完整检查与正式Electron worker重开通过，独立JDK UUID向量一致，见[报告](../../docs/validation/A1-08-launch-profiles/REPORT.md)。无新增依赖/公开IPC/SQLite schema；尚未接入产品Java/账户/启动UI，不重新询问已批身份规则。下一优先直接接公开契约、启动任务与会话、退出保活和完整exe验证。
+
+## 31. 档案与Java选择界面接入
+
+已批候选java:choose、accounts:list/createOffline及settings:get固定契约/handler/main/preload/React已接通，ProfileService退出等待在途探测与提交。242测试240 PASS/2原有SKIP和完整检查通过，正式Electron实际DOM创建离线账户、七能力/14方法白名单及官方目录窗口通过，见[报告](../../docs/validation/A1-09-launch-ui/PROFILE_REPORT.md)。无新增依赖/SQLite格式变化；真实native Java选择操作未自动验证。下一直接连接实例启动、持久任务/会话及退出保活，再生成并实测新exe。

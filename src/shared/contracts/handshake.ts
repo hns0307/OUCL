@@ -2,10 +2,13 @@ import type { MessageKey } from '../locales/messages.js';
 import type { RootsBridge } from './roots.js';
 import type { CatalogBridge } from './catalog.js';
 import type { InstanceBridge } from './instances.js';
+import type { ProfilesBridge } from './profiles.js';
 
 export const CONTRACT_VERSION = 1 as const;
 export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
 export const HANDSHAKE_TIMEOUT_MS = 3000;
+export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1'] as const;
+export type Capability = typeof CAPABILITIES[number];
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type ErrorCategory = 'system' | 'minecraft' | 'network' | 'biz' | 'validation' | 'auth' | 'permission' | 'disk' | 'cancelled';
@@ -30,7 +33,7 @@ export interface HandshakeData {
 }
 export type HandshakeResult = { contractVersion: 1; requestId: string; ok: true; data: HandshakeData }
   | { contractVersion: 1; requestId: string; ok: false; error: AppError };
-export interface LauncherBridge extends RootsBridge, CatalogBridge, InstanceBridge { handshake(): Promise<HandshakeResult> }
+export interface LauncherBridge extends RootsBridge, CatalogBridge, InstanceBridge, ProfilesBridge { handshake(): Promise<HandshakeResult> }
 
 /** Accepts a plain DTO with exact keys, excluding arrays and null. */
 export function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {
@@ -55,9 +58,9 @@ export function isHandshakeResult(value: unknown, requestId: string): value is H
   if (value.contractVersion !== CONTRACT_VERSION || value.requestId !== requestId) return false;
   if (value.ok === true) {
     return exactObject(value.data, ['selectedVersion', 'capabilities', 'sessionId'])
-      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length <= 4
+      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length <= CAPABILITIES.length
       && new Set(value.data.capabilities).size === value.data.capabilities.length
-    && value.data.capabilities.every((item: unknown) => item === 'roots.v1' || item === 'catalog.v1' || item === 'instances.v1' || item === 'tasks.v1')
+      && value.data.capabilities.every((item: unknown) => CAPABILITIES.includes(item as Capability))
       && typeof value.data.sessionId === 'string' && UUID_PATTERN.test(value.data.sessionId);
   }
   if (value.ok !== false || !exactObject(value.error, ['category', 'code', 'messageKey', 'retryable', 'traceId'])) return false;

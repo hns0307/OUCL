@@ -14,6 +14,8 @@ export class ProfileError extends Error {
 /** Serializes the single fixed profile record; display names never select paths or change game identity. */
 export class ProfileService {
   private tail: Promise<void> = Promise.resolve();
+  private closed = false;
+  private readonly jobs = new Set<Promise<unknown>>();
   constructor(private readonly storage: Pick<StorageClient, 'readLaunchProfiles' | 'writeLaunchProfiles'>, private readonly probe: Pick<JavaProbe, 'probe'> = new JavaProbe()) {}
   private serial<T>(action: () => Promise<T>): Promise<T> {
     const result = this.tail.then(action); this.tail = result.then(() => {}, () => {}); return result;
@@ -24,7 +26,12 @@ export class ProfileService {
   /** Reads trusted internal profiles, including the private executable/UUID; adapters must project a public DTO. */
   async list(): Promise<LaunchProfiles> { return (await this.read()).data; }
   /** Persists the measured explicitly chosen JVM; reselecting the same path preserves its opaque reference. */
-  async registerJava(executable: string): Promise<RegisteredJava> {
+  registerJava(executable: string): Promise<RegisteredJava> {
+    if (this.closed) return Promise.reject(new ProfileError('STORAGE_UNAVAILABLE'));
+    const result = this.register(executable); this.jobs.add(result);
+    void result.finally(() => { this.jobs.delete(result); }).catch(() => {}); return result;
+  }
+  private async register(executable: string): Promise<RegisteredJava> {
     let runtime: JavaRuntime;
     try { runtime = await this.probe.probe(executable); } catch { throw new ProfileError('JAVA_INVALID'); }
     return this.serial(async () => {
@@ -39,6 +46,7 @@ export class ProfileService {
   }
   /** Atomically stores the approved stable offline UUID and request result before acknowledging creation. */
   createOffline(requestId: string, input: { displayName: string; gameName: string }): Promise<OfflineAccount> {
+    if (this.closed) return Promise.reject(new ProfileError('STORAGE_UNAVAILABLE'));
     if (!UUID_PATTERN.test(requestId) || !validGameName(input.gameName) || typeof input.displayName !== 'string' || !input.displayName.trim()
       || input.displayName.length > 80 || /[\p{C}]/u.test(input.displayName)) return Promise.reject(new ProfileError('ACCOUNT_NAME_INVALID'));
     const canonical = { displayName: input.displayName.trim(), gameName: input.gameName };
@@ -58,4 +66,6 @@ export class ProfileService {
       await this.storage.writeLaunchProfiles(current.revision, data); return account;
     });
   }
+  /** Stops admission and joins already-owned Java probes and serialized commits before storage closes. */
+  async close(): Promise<void> { this.closed = true; await Promise.allSettled([...this.jobs]); await this.tail; }
 }

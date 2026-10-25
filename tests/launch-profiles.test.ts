@@ -64,3 +64,14 @@ test('private worker profile messages remain exact and cannot become arbitrary r
   assert.throws(() => parseReply({ version: 1, kind: 'response', id, ok: true, profiles: { schemaVersion: 2, revision: 1, data: {} } }));
   assert.throws(() => parseReply({ version: 1, kind: 'response', id, ok: true, profiles: { schemaVersion: 1, revision: 1, data: { javas: [], accounts: [], requests: [] } }, object: { digest: 'a'.repeat(64), size: 0 } }));
 });
+test('profile shutdown joins an admitted Java probe and commit and refuses new mutations', async () => {
+  let resume!: (value: JavaRuntime) => void; const probe = new Promise<JavaRuntime>(resolve => { resume = resolve; });
+  let wrote = false; const service = new ProfileService({ readLaunchProfiles: async () => undefined, writeLaunchProfiles: async (_revision, data) => {
+    wrote = true; return { schemaVersion: 1, revision: 1, data };
+  } }, { probe: async () => probe });
+  const registration = service.registerJava(java.executable); let closed = false;
+  const closing = service.close().then(() => { closed = true; }); await Promise.resolve(); assert.equal(closed, false);
+  await assert.rejects(service.registerJava(java.executable), { code: 'STORAGE_UNAVAILABLE' });
+  await assert.rejects(service.createOffline(id, { displayName: '成员', gameName: 'Player_1' }), { code: 'STORAGE_UNAVAILABLE' });
+  resume(java); await registration; await closing; assert.equal(wrote, true); assert.equal(closed, true);
+});

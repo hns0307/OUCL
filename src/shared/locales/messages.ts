@@ -72,6 +72,13 @@ export const MESSAGES = {
   stateReady: '已安装',
   stateInstalling: '正在安装',
   byteUnit: 'B', kilobyteUnit: 'KB', megabyteUnit: 'MB', gigabyteUnit: 'GB',
+  accountNameInvalid: '游戏名需为 3–16 位英文字母、数字或下划线，显示昵称不可为空。',
+  accountConflict: '此游戏名已有档案，请直接选择已有账户。',
+  javaInvalid: '请选择可用的 Windows 64 位 Java 8、17 或 21 的 java.exe。',
+  javaTitle: 'Java 运行环境', javaChoose: '选择 Java', javaChoosing: '正在选择并检查…', javaExecutableLabel: 'Java 可执行文件',
+  javaConfigured: 'Java 已登记，启动时将重新检查。', javaNotConfigured: '请选择电脑上已有的 java.exe。',
+  accountsTitle: '离线账户', accountNickname: '显示昵称', accountGameName: '游戏名', accountCreate: '创建档案', accountCreating: '正在保存…',
+  accountSelect: '选择离线账户', accountEmpty: '还没有离线档案', offlineNotice: '离线账户仅用于离线游戏，不代表正版登录。',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;
