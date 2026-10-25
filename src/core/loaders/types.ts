@@ -50,3 +50,7 @@ export interface InstallerProfile {
   data: Record<string, InstallerDataValue>;
   processors: InstallerProcessor[];
 }
+
+export type InstallerProcessorRole = 'extract-mappings' | 'download-mojang-mappings' | 'merge-mappings'
+  | 'split-client' | 'rename-client' | 'apply-client-patches';
+export interface ControlledInstallerProcessor extends InstallerProcessor { role: InstallerProcessorRole }
