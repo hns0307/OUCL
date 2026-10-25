@@ -34,7 +34,7 @@ export function isArtifactUrl(value: string): boolean {
     const url = new URL(value);
     return value.length <= 2048 && url.protocol === 'https:' && !url.username && !url.password && !url.port && !url.search && !url.hash
       && ['piston-data.mojang.com', 'resources.download.minecraft.net', 'libraries.minecraft.net', 'launcher.mojang.com', 'cdn.modrinth.com',
-        'maven.fabricmc.net', 'maven.quiltmc.org'].includes(url.hostname);
+        'maven.fabricmc.net', 'maven.quiltmc.org', 'maven.minecraftforge.net', 'maven.neoforged.net'].includes(url.hostname);
   } catch { return false; }
 }
 /** Parses exact private durable metadata; validators never substitute for the expected content hash. */

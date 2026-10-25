@@ -44,7 +44,7 @@ export class LoaderMavenResolver {
             if (!artifact.sha1 || artifact.size === undefined || artifact.size > LIBRARY_LIMIT) throw new LoaderMavenError('INVALID_METADATA');
             libraries[index] = { path: artifact.path, spec: this.spec(profile, artifact.url, artifact.sha1, artifact.size, 'loader-profile', evidence.sha256) };
           } else {
-            const proof = await this.sidecar(artifact.url, controller.signal);
+            const proof = await readOfficialMavenProof(this.request, artifact.url, controller.signal);
             libraries[index] = { path: artifact.path, spec: this.spec(profile, artifact.url, proof.sha1, proof.size, 'loader-maven', proof.anchor) };
           }
         }
@@ -66,30 +66,34 @@ export class LoaderMavenResolver {
       anchor: { kind, algorithm: 'sha256', digest: anchor } };
   }
 
-  private async sidecar(url: string, signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
-    const controller = new AbortController(); const abort = (): void => controller.abort();
-    signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) controller.abort();
-    const timer = setTimeout(() => { controller.abort(); }, 12000);
-    try {
-      const sidecar = await this.request(`${url}.sha1`, { method: 'GET', redirect: 'error', credentials: 'omit', signal: controller.signal,
-        headers: { accept: 'text/plain', 'accept-encoding': 'identity' } });
-      const declared = sidecar.headers.get('content-length'); const encoding = sidecar.headers.get('content-encoding');
-      if (sidecar.status !== 200 || !sidecar.body || declared !== null && (!/^\d+$/.test(declared) || Number(declared) > SIDECAR_LIMIT)
-        || encoding !== null && encoding !== 'identity') throw new LoaderMavenError('NETWORK_FAILED');
-      const chunks: Uint8Array[] = []; let bytes = 0;
-      for await (const chunk of sidecar.body) { bytes += chunk.byteLength; if (bytes > SIDECAR_LIMIT) throw new LoaderMavenError('INVALID_METADATA'); chunks.push(chunk); }
-      const body = Buffer.concat(chunks); const value = body.toString('ascii').trim();
-      if (!/^[a-fA-F0-9]{40}$/.test(value)) throw new LoaderMavenError('INVALID_METADATA');
-      const head = await this.request(url, { method: 'HEAD', redirect: 'error', credentials: 'omit', signal: controller.signal,
-        headers: { 'accept-encoding': 'identity' } });
-      const length = head.headers.get('content-length');
-      if (head.status !== 200 || length === null || !/^\d+$/.test(length)) throw new LoaderMavenError('NETWORK_FAILED');
-      const size = Number(length);
-      if (!Number.isSafeInteger(size) || size < 1 || size > LIBRARY_LIMIT) throw new LoaderMavenError('INVALID_METADATA');
-      return { sha1: value.toLowerCase(), size, anchor: createHash('sha256').update(body).digest('hex') };
-    } catch (error) {
-      if (error instanceof LoaderMavenError) throw error;
-      throw new LoaderMavenError(controller.signal.aborted && signal?.aborted ? 'CANCELLED' : 'NETWORK_FAILED');
-    } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); controller.abort(); }
-  }
+}
+
+/** Reads a SHA-1 sidecar and authoritative size from the exact admitted official Maven artifact URL. */
+export async function readOfficialMavenProof(request: typeof fetch, url: string,
+  signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
+  if (!isArtifactUrl(url)) throw new LoaderMavenError('INVALID_METADATA');
+  const controller = new AbortController(); const abort = (): void => controller.abort();
+  signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) controller.abort();
+  const timer = setTimeout(() => { controller.abort(); }, 12000);
+  try {
+    const sidecar = await request(`${url}.sha1`, { method: 'GET', redirect: 'error', credentials: 'omit', signal: controller.signal,
+      headers: { accept: 'text/plain', 'accept-encoding': 'identity' } });
+    const declared = sidecar.headers.get('content-length'); const encoding = sidecar.headers.get('content-encoding');
+    if (sidecar.status !== 200 || !sidecar.body || declared !== null && (!/^\d+$/.test(declared) || Number(declared) > SIDECAR_LIMIT)
+      || encoding !== null && encoding !== 'identity') throw new LoaderMavenError('NETWORK_FAILED');
+    const chunks: Uint8Array[] = []; let bytes = 0;
+    for await (const chunk of sidecar.body) { bytes += chunk.byteLength; if (bytes > SIDECAR_LIMIT) throw new LoaderMavenError('INVALID_METADATA'); chunks.push(chunk); }
+    const body = Buffer.concat(chunks); const value = body.toString('ascii').trim();
+    if (!/^[a-fA-F0-9]{40}$/.test(value)) throw new LoaderMavenError('INVALID_METADATA');
+    const head = await request(url, { method: 'HEAD', redirect: 'error', credentials: 'omit', signal: controller.signal,
+      headers: { 'accept-encoding': 'identity' } });
+    const length = head.headers.get('content-length');
+    if (head.status !== 200 || length === null || !/^\d+$/.test(length)) throw new LoaderMavenError('NETWORK_FAILED');
+    const size = Number(length);
+    if (!Number.isSafeInteger(size) || size < 1 || size > LIBRARY_LIMIT) throw new LoaderMavenError('INVALID_METADATA');
+    return { sha1: value.toLowerCase(), size, anchor: createHash('sha256').update(body).digest('hex') };
+  } catch (error) {
+    if (error instanceof LoaderMavenError) throw error;
+    throw new LoaderMavenError(controller.signal.aborted && signal?.aborted ? 'CANCELLED' : 'NETWORK_FAILED');
+  } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); controller.abort(); }
 }

@@ -39,6 +39,8 @@ test('loader Maven libraries use inline profile proof or the exact official side
 test('artifact policy admits only exact official Maven hosts without query or credentials', () => {
   assert.equal(isArtifactUrl('https://maven.fabricmc.net/a/b.jar'), true);
   assert.equal(isArtifactUrl('https://maven.quiltmc.org/repository/release/a/b.jar'), true);
+  assert.equal(isArtifactUrl('https://maven.minecraftforge.net/net/minecraftforge/forge/a.jar'), true);
+  assert.equal(isArtifactUrl('https://maven.neoforged.net/releases/net/neoforged/neoforge/a.jar'), true);
   assert.equal(isArtifactUrl('https://maven.fabricmc.net.evil.invalid/a.jar'), false);
   assert.equal(isArtifactUrl('https://maven.fabricmc.net/a.jar?token=x'), false);
 });
