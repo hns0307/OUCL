@@ -48,7 +48,8 @@ export class DownloadCoordinator {
   request(spec: DownloadSpec, options: ConsumerOptions): DownloadConsumer {
     if (this.closed || !UUID_PATTERN.test(options.consumerId) || this.consumers.has(options.consumerId) || !isArtifactUrl(spec.url)) throw new CoordinatorError('INVALID_CONSUMER');
     const canonical: DownloadSpec = { url: spec.url, ...definition(spec.expected, spec.anchor) };
-    const realm = canonical.anchor.kind.startsWith('mojang-') ? 'mojang' : canonical.anchor.kind === 'modrinth-version' ? 'modrinth' : 'adoptium';
+    const realm = canonical.anchor.kind.startsWith('mojang-') ? 'mojang' : canonical.anchor.kind === 'modrinth-version' ? 'modrinth'
+      : canonical.anchor.kind.startsWith('loader-') ? 'loader' : 'adoptium';
     const key = `${realm}:${canonical.expected.algorithm}:${canonical.expected.digest}:${canonical.expected.size}`;
     let job = this.jobs.get(key);
     if (this.consumers.size >= this.maxConsumers || !job && this.jobs.size >= this.maxJobs) throw new CoordinatorError('QUEUE_FULL');
