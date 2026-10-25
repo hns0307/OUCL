@@ -9,8 +9,9 @@ import { parseInstallation } from '../storage/installation.js';
 import { parseCatalogCache } from '../storage/catalog-cache.js';
 import { TransferDatabase } from '../storage/transfer-db.js';
 import { digestFile, startHashSession } from './hash-session.js';
-import { extractNativeArchives, NativeArchiveError } from '../install/native-archive.js';
+import { extractNativeArchives, extractSelectedArchive, NativeArchiveError } from '../install/native-archive.js';
 import { parseNativeRequest } from './native-protocol.js';
+import { INSTALLER_ENTRIES, parseInstallerArchiveRequest } from './installer-archive-protocol.js';
 import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 import { parseLaunchProfiles } from '../storage/launch-profiles.js';
 import { parseResourceLibrary } from '../storage/resources.js';
@@ -108,6 +109,16 @@ void (async () => {
       const result = await extractNativeArchives(request.destination, request.archives);
       port.postMessage({ version: 1, kind: 'native-result', ...result });
     } catch (error) { port.postMessage({ version: 1, kind: 'native-failed', code: error instanceof NativeArchiveError ? error.code : 'ARCHIVE_IO' }); }
+    port.close();
+  }
+  else if (input.kind === 'loader-installer-extract') {
+    try {
+      let request;
+      try { request = parseInstallerArchiveRequest(input); } catch { throw new NativeArchiveError('INVALID_ARCHIVE'); }
+      const result = await extractSelectedArchive(request.destination, request, INSTALLER_ENTRIES);
+      if (result.files !== 3) throw new NativeArchiveError('INVALID_ARCHIVE');
+      port.postMessage({ version: 1, kind: 'loader-installer-result', files: 3, bytes: result.bytes });
+    } catch (error) { port.postMessage({ version: 1, kind: 'loader-installer-failed', code: error instanceof NativeArchiveError ? error.code : 'ARCHIVE_IO' }); }
     port.close();
   }
   else if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'

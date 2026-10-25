@@ -15,6 +15,7 @@ export class NativeArchiveError extends Error {
   }
 }
 export interface NativeArchiveInput { file: string; sha256: string; size: number; exclude: string[] }
+export interface SelectedArchiveInput { file: string; sha256: string; size: number }
 interface Entry { name: string; directory: boolean; method: number; crc: number; size: number; compressed: Buffer; start: number; end: number; excluded: boolean }
 const MAX_ARCHIVE = 64 * 1024 ** 2;
 const MAX_TOTAL = 256 * 1024 ** 2;
@@ -184,6 +185,44 @@ export async function extractNativeArchives(destination: string, archives: reado
       files++; written += entry.size;
     }
     return { files, bytes: written };
+  } catch (error) {
+    if (error instanceof NativeArchiveError) throw error;
+    if (hasCode(error, 'UNSAFE_PATH') || hasCode(error, 'EEXIST')) unsafe();
+    throw new NativeArchiveError('ARCHIVE_IO');
+  }
+}
+
+/** Extracts an exact service-selected subset from one verified ZIP into an empty private workspace. */
+export async function extractSelectedArchive(destination: string, archive: SelectedArchiveInput,
+  selected: readonly string[]): Promise<{ files: number; bytes: number }> {
+  try {
+    const root = await guardDirectory(destination);
+    if ((await readdir(root)).length !== 0) unsafe();
+    if (!archive || typeof archive.file !== 'string' || !path.isAbsolute(archive.file)
+      || typeof archive.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(archive.sha256)
+      || !Number.isSafeInteger(archive.size) || archive.size < 1 || archive.size > MAX_ARCHIVE
+      || !Array.isArray(selected) || selected.length < 1 || selected.length > 16) bad();
+    const wanted = new Set<string>();
+    for (const name of selected) {
+      if (typeof name !== 'string') unsafe();
+      try { installRelativePath(name); } catch { unsafe(); }
+      const folded = name.toLowerCase(); if (wanted.has(folded)) unsafe(); wanted.add(folded);
+    }
+    await guardDirectory(path.dirname(archive.file));
+    const bytes = await readRegular(archive.file, MAX_ARCHIVE);
+    if (!bytes || bytes.length !== archive.size || createHash('sha256').update(bytes).digest('hex') !== archive.sha256) throw new NativeArchiveError('HASH_MISMATCH');
+    const entries = parse(bytes, []); checkPaths(entries);
+    let total = 0; for (const entry of entries) { total += entry.size; if (total > MAX_TOTAL) limit(); }
+    const chosen = entries.filter(entry => !entry.directory && !entry.excluded && wanted.has(entry.name.toLowerCase()));
+    if (chosen.length !== wanted.size) bad();
+    let selectedBytes = 0; for (const entry of chosen) { selectedBytes += entry.size; if (selectedBytes > MAX_ARCHIVE) limit(); }
+    await guardDirectory(root); if ((await readdir(root)).length !== 0) unsafe();
+    for (const entry of chosen) {
+      const body = unpack(entry); const directory = await prepareDirectory(root, entry.name.split('/').slice(0, -1).join('/'));
+      await guardDirectory(directory); const handle = await open(path.join(directory, entry.name.split('/').at(-1)!), 'wx');
+      try { await handle.writeFile(body); await handle.sync(); } finally { await handle.close(); }
+    }
+    return { files: chosen.length, bytes: selectedBytes };
   } catch (error) {
     if (error instanceof NativeArchiveError) throw error;
     if (hasCode(error, 'UNSAFE_PATH') || hasCode(error, 'EEXIST')) unsafe();
