@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "root": ".test-build\\official-java-uH2gBV",
+  "samples": [
+    {
+      "major": 17,
+      "measuredVersion": "17.0.15",
+      "vendor": "Microsoft",
+      "files": 403,
+      "bytes": 91160397,
+      "elapsedMs": 56115,
+      "manifestSha1": "89ce85ccb518c62e18b4b58d63399ba2d9611426",
+      "independentFileHashes": true
+    },
+    {
+      "major": 21,
+      "measuredVersion": "21.0.7",
+      "vendor": "Microsoft",
+      "files": 402,
+      "bytes": 99041788,
+      "elapsedMs": 71678,
+      "manifestSha1": "cb4394a27089d19f65d5baa6cf0482c27c3c7865",
+      "independentFileHashes": true
+    },
+    {
+      "major": 8,
+      "measuredVersion": "1.8.0_51",
+      "vendor": "Oracle Corporation",
+      "files": 192,
+      "bytes": 150204599,
+      "elapsedMs": 50505,
+      "manifestSha1": "03828bb8455f3cef94869286a0d941dd16933239",
+      "independentFileHashes": true
+    }
+  ],
+  "normalReopenWithoutNetwork": true
+}

@@ -1,5 +1,21 @@
 # OUCL 下一对话交接
 
+## 当前有效交接：0.2.1 小EXE（2026-10-25）
+
+用户明确选择“小exe首次下载依赖”，了解PCL按需Java后回复“按照你说的进行”。有效范围与真实批准已记录TASK_PLAN顶部/DECISIONS末尾。本增量已实现并验证，待用户体验；下文0.2.0/0.1.0是历史，不再以ZIP为推荐交付。
+
+实现提交：479d0e9；验证报告及本交接单独提交，以git log为准。
+
+- 交付：release/OUCL-0.2.1.exe，232448字节（227KiB）；只复制EXE即可，首次从Electron官方固定版本下载运行环境，后续缓存复用。SHA256 a2802e49c5c323d2586e3c910ec515e869d07fb4fb3130e61aa15c0cd4361d26。未签名、不push、不发布GitHub Release。
+- Windows 10/11 x64、系统.NET Framework 4.7.2+。C#引导只准备Electron并启动内嵌应用，业务仍TS/Electron/React。没安装electron-builder或NuGet依赖。缓存LocalAppData/OUCL/desktop-cache；原OUCL元数据和自选数据根不迁移。
+- JavaRuntimeService由LaunchService主进程装配；优先重新探测已登记及有界常见位置，缺少8/17/21则按Mojang官方index→SHA1 manifest→raw文件下载。复用Installer的coordinator/hash/object单owner；新anchor.kind=mojang-runtime，旧记录向后兼容。全部文件验证复制到暂存后rename至游戏根runtimes/java/<manifest-sha1>，再实际probe并登记。不扩展Java16/25、加载器或登录。
+- pnpm check：262测试260 PASS/0 FAIL/2原有软链接权限SKIP；14项原生bootstrap安全测试通过；audit无已知漏洞、127包许可无待审。三个真实官方Java逐文件独立摘要+实际JVM+正常重开禁止联网复用通过；最终EXE默认入口24方法/10能力、无Node、正常退出释放owner通过。隔离冷启动相同引导与前一文案候选载荷官方下载约24.8秒通过，最终EXE缓存入口约1.83秒。不要把这些写成新MC世界实测。
+- 全部证据在docs/validation/BOOTSTRAP-0.2.1/REPORT.md；设计及路径/恢复约定见docs/BOOTSTRAP.md。pnpm package:exe拒绝覆盖已存在同名产物，复测先保留本轮生成的旧候选，不删除用户目录。ColdStart.cs只是独立缓存测试入口，未编进产品。
+- 下载失败Electron从头重试，无自动镜像；Java复用可信断点/对象，中断暂存保留，不执行未完成目录。损坏Java保守停写。Java只显示准备提示，没有文件级进度。阶段0/1A历史缺项继续保留。
+- 用户已有暂存OUCL-Codex-Package.zip/OUCL.txt保持原样；显式路径add与commit --only，作者Li ZeRui，不push。引导测试使用独立profile，不操作用户MC窗口。
+
+## 以下为0.2.0交付时历史快照
+
 ## 当前有效交接：0.2.0（2026-10-25）
 
 用户已明确要求完整实施《OUCL 前端改版与资源下载》，不是仅预备UI。授权记录在DECISIONS末尾，TASK_PLAN顶部为新增量状态。本次实现已交付，待用户体验验收；不自动继续后续阶段。

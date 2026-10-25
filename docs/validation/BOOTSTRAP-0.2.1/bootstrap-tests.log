@@ -1,0 +1,2 @@
+$ node scripts/bootstrap-test.mjs
+PASS 14 bootstrap archive/hash/quoting checks
