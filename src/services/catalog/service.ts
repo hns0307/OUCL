@@ -72,11 +72,12 @@ export class CatalogService {
       ...(end < items.length ? { nextCursor: `v1.${loaded.cache.sha256}.${query.channel}.${end}` } : {}) }, fetchedAt: loaded.cache.fetchedAt, cached: loaded.cached };
   }
   /** Resolves only descriptors found in the official manifest, verifying SHA1 before parsing or inheriting. */
-  async resolve(id: string, environment: VersionEnvironment): Promise<{ version: ResolvedClientVersion; metadataSha1: string; metadataSha1ByVersion: Record<string, string> }> {
+  async resolve(id: string, environment: VersionEnvironment): Promise<{ version: ResolvedClientVersion; metadataSha1: string; metadataSha1ByVersion: Record<string, string>; versionDocuments: Record<string, string> }> {
     const loaded = await this.load(); const documents: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
     const entries = new Map(loaded.entries.map(entry => [entry.id, entry]));
     let next: string | undefined = id; let metadataSha1 = '';
     const metadataSha1ByVersion: Record<string, string> = Object.create(null) as Record<string, string>;
+    const versionDocuments: Record<string, string> = Object.create(null) as Record<string, string>;
     try {
       while (next !== undefined) {
         if (Object.hasOwn(documents, next) || Object.keys(documents).length >= 32) throw new CatalogError('UNTRUSTED_MANIFEST');
@@ -84,12 +85,13 @@ export class CatalogService {
         const document = await this.reader.read(entry.url, entry.sha1);
         if (document.sha1 !== entry.sha1) throw new CatalogError('UNTRUSTED_MANIFEST');
         metadataSha1ByVersion[next] = document.sha1;
+        versionDocuments[next] = document.body;
         if (!metadataSha1) metadataSha1 = document.sha1;
         const value: unknown = JSON.parse(document.body); documents[next] = value;
         if (typeof value !== 'object' || value === null || !('id' in value) || value.id !== next) throw new CatalogError('UNTRUSTED_MANIFEST');
         next = 'inheritsFrom' in value && typeof value.inheritsFrom === 'string' ? value.inheritsFrom : undefined;
       }
-      return { version: resolveClientVersion(id, documents, environment), metadataSha1, metadataSha1ByVersion };
+      return { version: resolveClientVersion(id, documents, environment), metadataSha1, metadataSha1ByVersion, versionDocuments };
     } catch (error) { throw error instanceof CatalogError ? error : new CatalogError('UNTRUSTED_MANIFEST'); }
   }
 }

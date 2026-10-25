@@ -229,3 +229,5 @@
 2026-10-25目标补充原文：“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能，下载界面可以参考MC_start文件夹里的其他启动器”。保留原1A持续批准与exe验收，新增本地下载UI交互参考许可，不复制源码素材、不启动后续阶段。
 
 执行记录：c076c47/d71213d后增加受管文件投影/明确复制回退和已有Java探测，185测试183 PASS/2环境SKIP、实际Electron投影及本机Oracle17属性验证通过；[投影报告](../../docs/validation/A1-08-file-views/REPORT.md)、[Java报告](../../docs/validation/A1-06-java-probe/REPORT.md)。无新依赖/公开IPC/持久schema，未选定新Java供应商或下载制品。完整安装事务、进程/UI和新exe仍待继续，不标完成。
+
+执行记录：162317e/cf3d2e8后落实已批实例JSON提交/任务日志方向及候选实例/任务契约，保存原始官方输入与实际规则环境，串联下载→投影→私有native→JSON提交，接入main/preload/实际安装确认、进度与实例UI。221测试219 PASS/2 SKIP、正式Electron记录、DOM两次实际安装fixture与官方目录窗口验证见[A1-08-installer报告](../../docs/validation/A1-08-installer/REPORT.md)。没有新增依赖/更改SQLite schema，新增固定私有记录域与既定公开候选exact schema；整批真实游戏、启动和新exe未验证。崩溃遗留owner仍不自动接管，未扩张阶段或完成声明。

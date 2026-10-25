@@ -23,7 +23,7 @@ const document: JsonDocument = { body, sha1, sha256: createHash('sha256').update
 function catalog(version: ResolvedClientVersion = resolved, metadataSha1ByVersion: Record<string, string> = hashes) {
   return { async resolve(id: string, actual: VersionEnvironment) {
     assert.equal(id, 'child'); assert.deepEqual(actual, environment);
-    return { version, metadataSha1: hashes.child, metadataSha1ByVersion };
+    return { version, metadataSha1: hashes.child, metadataSha1ByVersion, versionDocuments: {} };
   } };
 }
 

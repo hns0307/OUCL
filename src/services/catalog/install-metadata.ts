@@ -12,6 +12,7 @@ export interface PreparedInstallMetadata {
   plan: ReturnType<typeof planVanillaInstall>;
   metadataSha1ByVersion: Record<string, string>;
   assetIndexBody: string;
+  versionDocuments: Record<string, string>;
 }
 
 /** Combines the verified descriptor graph and asset index without downloading executable game content. */
@@ -30,7 +31,7 @@ export class InstallMetadataService {
         || createHash('sha1').update(document.body).digest('hex') !== index.sha1) throw new CatalogError('UNTRUSTED_MANIFEST');
       const assets = parseAssetIndex(JSON.parse(document.body) as unknown);
       const plan = planVanillaInstall(resolved.version, resolved.metadataSha1ByVersion, assets);
-      return { version: resolved.version, assets, plan, metadataSha1ByVersion: resolved.metadataSha1ByVersion, assetIndexBody: document.body };
+      return { version: resolved.version, assets, plan, metadataSha1ByVersion: resolved.metadataSha1ByVersion, assetIndexBody: document.body, versionDocuments: resolved.versionDocuments };
     } catch (error) {
       throw error instanceof CatalogError ? error : new CatalogError('UNTRUSTED_MANIFEST');
     }

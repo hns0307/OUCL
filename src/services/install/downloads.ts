@@ -23,7 +23,7 @@ export class InstallDownloadService {
   }
 
   /** Returns only after every artifact and independent proof is committed, or all owned consumers have joined. */
-  async run(metadata: PreparedInstallMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void } = {}): Promise<DownloadedInstall> {
+  async run(metadata: PreparedInstallMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
     const controller = new AbortController(); const abort = (): void => controller.abort();
     options.signal?.addEventListener('abort', abort, { once: true });
     if (options.signal?.aborted) controller.abort();
@@ -58,7 +58,7 @@ export class InstallDownloadService {
         try {
           while (next < queue.length) {
             cancelled(); const artifact = queue[next++]!;
-            const consumer = this.downloads.request(artifactSpec(artifact), { consumerId: randomUUID(), signal: controller.signal });
+            const consumer = this.downloads.request(artifactSpec(artifact), { consumerId: options.consumerId?.(artifact.artifactId) ?? randomUUID(), signal: controller.signal });
             // The consumer result settles only after its physical/proof cleanup; other installations remain independent.
             await complete(artifact, await consumer.result);
           }

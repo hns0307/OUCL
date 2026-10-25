@@ -11,6 +11,7 @@ import { TransferDatabase } from '../storage/transfer-db.js';
 import { digestFile, startHashSession } from './hash-session.js';
 import { extractNativeArchives, NativeArchiveError } from '../install/native-archive.js';
 import { parseNativeRequest } from './native-protocol.js';
+import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -37,6 +38,8 @@ async function storage(directory: string): Promise<void> {
         let installation;
         let catalog;
         let transfer;
+        let instances;
+        let instance;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
@@ -44,6 +47,13 @@ async function storage(directory: string): Promise<void> {
         else if (command.kind === 'installation:set') installation = await store.write('installation', 0, command.data, parseInstallation);
         else if (command.kind === 'catalog:get') catalog = await store.read('catalog', parseCatalogCache);
         else if (command.kind === 'catalog:set') catalog = await store.write('catalog', command.expectedRevision, command.data, parseCatalogCache);
+        else if (command.kind === 'instances:get') instances = await store.read('instances', parseInstanceIndex);
+        else if (command.kind === 'instances:set') instances = await store.write('instances', command.expectedRevision, command.data, parseInstanceIndex);
+        else if (command.kind === 'instance:get') {
+          instance = await store.read(instanceRecordId(command.instanceId), parseInstanceRecord);
+          if (instance && (instance.data.summary.instanceId !== command.instanceId.toLowerCase() || instance.data.summary.revision !== instance.revision)) throw new StorageError('NEEDS_RECOVERY');
+        }
+        else if (command.kind === 'instance:set') instance = await store.write(instanceRecordId(command.instanceId), command.expectedRevision, command.data, parseInstanceRecord);
         else if (command.kind === 'transfer:get' || command.kind === 'transfer:set') {
           await guardDirectory(directory); transfers ??= await TransferDatabase.open(directory, store);
           if (command.kind === 'transfer:get') transfer = transfers.get(command.key);
@@ -57,7 +67,8 @@ async function storage(directory: string): Promise<void> {
           else index.clear();
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
-          ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }) });
+          ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

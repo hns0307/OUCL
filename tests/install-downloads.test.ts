@@ -37,7 +37,7 @@ function metadata(count = 8): PreparedInstallMetadata {
     child: { id: 'child', inheritsFrom: 'base', libraries: [{ name: 'org.example:child:1', downloads: { artifact: shared } }] }
   }, { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
   const parsed = parseAssetIndex(JSON.parse(body) as unknown); const hashes = { base: 'b'.repeat(40), child: 'c'.repeat(40) };
-  return { version, assets: parsed, plan: planVanillaInstall(version, hashes, parsed), metadataSha1ByVersion: hashes, assetIndexBody: body };
+  return { version, assets: parsed, plan: planVanillaInstall(version, hashes, parsed), metadataSha1ByVersion: hashes, assetIndexBody: body, versionDocuments: {} };
 }
 async function fixture() {
   const root = await mkdtemp(path.join(tmpdir(), 'oucl-batch-')); const index = new Map<string, { digest: string; size: number }>();

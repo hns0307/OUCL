@@ -10,6 +10,8 @@ import { parseCatalogCache } from '../storage/catalog-cache.js';
 import type { CatalogCache } from '../storage/catalog-cache.js';
 import { parseTransferRecord } from '../download/types.js';
 import type { TransferRecord } from '../download/types.js';
+import { parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
+import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
 import path from 'node:path';
 
 export type WorkerCode = 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'UNSAFE_PATH' | 'STORAGE_IO'
@@ -38,13 +40,17 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'catalog:set'; expectedRevision: number; data: CatalogCache }
   | { kind: 'transfer:get'; key: string }
   | { kind: 'transfer:set'; expectedRevision: number; record: TransferRecord }
+  | { kind: 'instances:get' }
+  | { kind: 'instances:set'; expectedRevision: number; data: InstanceIndex }
+  | { kind: 'instance:get'; instanceId: string }
+  | { kind: 'instance:set'; instanceId: string; expectedRevision: number; data: InstanceRecord }
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
 export interface HashJobRequest { version: 1; kind: 'hash-job'; jobId: string; file: string; maximumBytes: number }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord> }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult }
@@ -71,7 +77,14 @@ export function parseHashJobRequest(value: unknown): HashJobRequest {
 export function parseStorageRequest(value: unknown): StorageRequest {
   requireMessage(object(value) && exact(value, ['version', 'id', 'command']) && value.version === 1 && uuid(value.id) && object(value.command));
   const command = value.command;
-  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get') requireMessage(exact(command, ['kind']));
+  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get' || command.kind === 'instances:get') requireMessage(exact(command, ['kind']));
+  else if (command.kind === 'instances:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseInstanceIndex(command.data); }
+  else if (command.kind === 'instance:get') requireMessage(exact(command, ['kind', 'instanceId']) && uuid(command.instanceId));
+  else if (command.kind === 'instance:set') {
+    requireMessage(exact(command, ['kind', 'instanceId', 'expectedRevision', 'data']) && uuid(command.instanceId) && integer(command.expectedRevision));
+    const data = parseInstanceRecord(command.data);
+    requireMessage(data.summary.instanceId === command.instanceId.toLowerCase() && data.summary.revision === command.expectedRevision + 1);
+  }
   else if (command.kind === 'installation:set') { requireMessage(exact(command, ['kind', 'data'])); parseInstallation(command.data); }
   else if (command.kind === 'catalog:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseCatalogCache(command.data); }
   else if (command.kind === 'transfer:get') requireMessage(exact(command, ['kind', 'key']) && typeof command.key === 'string' && /^[a-f0-9]{64}$/.test(command.key));
@@ -119,8 +132,8 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer].filter(item => item !== undefined).length <= 1
-        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer'])]));
+      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance].filter(item => item !== undefined).length <= 1
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance'])]));
       let installation: RecordEnvelope<Installation> | undefined;
       if (value.installation !== undefined) {
         requireMessage(object(value.installation) && exact(value.installation, ['schemaVersion', 'revision', 'data'])
@@ -133,9 +146,22 @@ export function parseReply(value: unknown): WorkerReply {
           && value.catalog.schemaVersion === 1 && integer(value.catalog.revision) && value.catalog.revision > 0);
         catalog = { schemaVersion: 1, revision: value.catalog.revision, data: parseCatalogCache(value.catalog.data) };
       }
+      let instances: RecordEnvelope<InstanceIndex> | undefined;
+      if (value.instances !== undefined) {
+        requireMessage(object(value.instances) && exact(value.instances, ['schemaVersion', 'revision', 'data']) && value.instances.schemaVersion === 1
+          && integer(value.instances.revision) && value.instances.revision > 0);
+        instances = { schemaVersion: 1, revision: value.instances.revision, data: parseInstanceIndex(value.instances.data) };
+      }
+      let instance: RecordEnvelope<InstanceRecord> | undefined;
+      if (value.instance !== undefined) {
+        requireMessage(object(value.instance) && exact(value.instance, ['schemaVersion', 'revision', 'data']) && value.instance.schemaVersion === 1
+          && integer(value.instance.revision) && value.instance.revision > 0);
+        const data = parseInstanceRecord(value.instance.data); requireMessage(data.summary.revision === value.instance.revision);
+        instance = { schemaVersion: 1, revision: value.instance.revision, data };
+      }
       return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
         ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }), ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }),
-        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }) };
+        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

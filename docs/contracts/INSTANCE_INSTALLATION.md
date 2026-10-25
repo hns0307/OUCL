@@ -1,0 +1,17 @@
+# 原版安装记录与编排
+
+本增量落实已批版本化JSON+原SQLite操作日志及实例提交点，不更改数据库schema、不增第三方依赖。私有worker只开放固定instances索引及instance-UUID域读写，拒绝通用文件/JSON/SQL接口。InstanceSummary.revision与该实例JSON envelope一致，索引JSON独立CAS。
+
+InstanceRecord包含summary、phase及按阶段出现的metadata/objects/receipts。metadata保存原始官方描述正文、逐版本SHA1、原资产索引正文和实际Windows x64规则environment；读写均严格验证原文摘要、继承、资源索引和纯计划，不因本地SHA相同获得新的外部信任。初始信任仍来自Catalog官方HTTPS清单。每实例4MiB、metadata正文2MiB，超预算明确拒绝，不截断。objects按sha1制品身份保存SHA256本体引用，receipts保存逻辑area/path/制品与实际link/copy类型。
+
+InstallerService.create先以稳定应用root归属受理requestId，内容不一致拒绝，taskId派生独立UUIDv5实例身份与逐制品consumer身份；显示名不入路径。同名进行中/ready实例冲突；failed/cancelled可用新requestId新建重试并复用缓存。任务/实例记录先落盘，再进行网络与文件效果，不能把accepted当作安装完成。
+
+阶段：reserved→prepared（固定原文）→downloaded（完整对象引用）→materializing（全路径冲突预检后的意图与分批receipt）→ready。下载允许并行共享，文件落地按根串行。assets/libraries用固定store/views/root路径投影、受控目录junction；目录链接不可用时使用普通目录，文件链接权限不足明确复制。祖先jar使用隐藏受管依赖目录，不制造伪子jar。原版描述与私有natives派生准备，最后原子写本地oucl.instance.json，再写应用实例JSON与索引ready，最后任务completed。
+
+取消先持久cancelling，再中止本人消费者并等待落盘/来源证明收尾。已验证对象和派生入口保留，不清理玩家数据。进入最终commit后拒绝取消；提交失败或未知确认保守needsRecovery。普通关闭等待任务及worker/对象拥有者释放。启动initialize将中断记录保守标needsRecovery，不抢占崩溃遗留owner，不根据存在文件推定ready。
+
+已证明新建实例正常流程及正常关闭重开；尚未实现完整断电/kill后的自动重放接管、部分投影意图恢复界面或完整维修。JSON日志本身可恢复不代表跨目录操作全部已自动恢复。单应用、根文件操作串行不等同恶意同用户文件系统TOCTOU隔离。ready代表安装时已验证，后续实际启动仍须校验依赖与会话锁；当前没有启动游戏或发布新exe的证据。
+
+公开契约按既有候选落地instances:list/create、tasks:list/get/control/subscribe和events:unsubscribe，精确schema在shared/contracts/instances.ts，纯handler验证sender与结果；实际main/preload/UI已经装配，握手仅在服务初始化后开放instances.v1/tasks.v1。不返回owner/path/原始元数据，不把accepted当作生产成功。
+
+InstallerAdapter按可信文档生命周期隔离分页与订阅，100ms非重叠轮询实际任务；订阅返回原子snapshot与seq，事件只发变化，断序由preload重新查询。退订、导航或发送失败仅释放订阅，不取消安装。游标有归属、过滤条件和30秒寿命；实例/任务有界分页。preload仅提供固定方法，3秒调用超时不取消任务；UI保留requestId重试受理，显示已验证字节及实际阶段，取消失败明确反馈。任务pause/resume暂返回不支持，不显示虚假操作能力。

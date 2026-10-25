@@ -4,7 +4,7 @@ import type { MessageKey } from '../shared/locales/messages.js';
 import type { RootSummary } from '../shared/contracts/roots.js';
 
 /** Presents the native-directory workflow using only the narrow preload API. */
-export function RootSettings({ enabled }: { enabled: boolean }) {
+export function RootSettings({ enabled, onRootChange }: { enabled: boolean; onRootChange?: (rootId: string | undefined) => void }) {
   const [items, setItems] = useState<RootSummary[]>([]);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -15,11 +15,11 @@ export function RootSettings({ enabled }: { enabled: boolean }) {
     let active = true;
     void window.oucl?.listRoots().then(result => {
       if (!active) return;
-      if (result.ok) { setItems(result.data.items); setError(undefined); } else setError(result.error.messageKey);
+      if (result.ok) { setItems(result.data.items); onRootChange?.(result.data.items.find(item => item.available)?.rootId); setError(undefined); } else setError(result.error.messageKey);
       setLoading(false);
     }).catch(() => { if (active) { setError('rootsUnavailable'); setLoading(false); } });
     return () => { active = false; };
-  }, [enabled]);
+  }, [enabled, onRootChange]);
   async function choose(): Promise<void> {
     const bridge = window.oucl; if (!bridge || busy) return;
     setBusy(true); setError(undefined); retryId.current ??= crypto.randomUUID();
@@ -28,13 +28,13 @@ export function RootSettings({ enabled }: { enabled: boolean }) {
       if (!result.ok) { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT') retryId.current = undefined; return; }
       retryId.current = undefined;
       const listed = await bridge.listRoots();
-      if (listed.ok) setItems(listed.data.items); else setError(listed.error.messageKey);
+      if (listed.ok) { setItems(listed.data.items); onRootChange?.(listed.data.items.find(item => item.available)?.rootId); } else setError(listed.error.messageKey);
     } catch { setError('rootsUnavailable'); }
     finally { setBusy(false); }
   }
   async function refresh(): Promise<void> {
     if (!window.oucl || busy) return; setBusy(true);
-    try { const result = await window.oucl.listRoots(); if (result.ok) { setItems(result.data.items); setError(undefined); } else setError(result.error.messageKey); }
+    try { const result = await window.oucl.listRoots(); if (result.ok) { setItems(result.data.items); onRootChange?.(result.data.items.find(item => item.available)?.rootId); setError(undefined); } else setError(result.error.messageKey); }
     catch { setError('rootsUnavailable'); } finally { setBusy(false); }
   }
   return <section className="root-settings card" aria-labelledby="storage-title">

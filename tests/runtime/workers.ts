@@ -37,9 +37,15 @@ void app.whenReady().then(async () => {
     const task = await client.accept(ownerId, requestId, 'download', 'a'.repeat(64));
     assert.equal((await client.accept(ownerId, requestId, 'download', 'a'.repeat(64))).taskId, task.taskId);
     await client.update(ownerId, task.taskId, 1, controlTask(task.execution, 'start').execution);
+    const reservedInstance = { instanceId: '00000000-0000-4000-8000-000000000003', rootId: ownerId, taskId: task.taskId,
+      displayName: 'Runtime reserved fixture', mcVersionId: '1.20.1', isolation: 'on' as const, state: 'installing' as const, revision: 1 };
+    await client.writeInstance(reservedInstance.instanceId, 0, { summary: reservedInstance, phase: 'reserved' });
+    await client.writeInstances(0, { items: [reservedInstance] });
     await client.close();
     client = await StorageClient.open(entry, storeDirectory);
     assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
+    assert.equal((await client.readInstance(reservedInstance.instanceId))?.data.phase, 'reserved');
+    assert.equal((await client.readInstances())?.data.items[0]?.state, 'installing');
     await client.close(); client = undefined;
     const file = path.join(root, 'hash-input.bin'); const block = Buffer.alloc(1024 * 1024, 17);
     const sha1 = createHash('sha1'); const sha256 = createHash('sha256');
@@ -118,7 +124,7 @@ void app.whenReady().then(async () => {
     let batchArtifactsVerified = 0;
     try {
       const batch = new InstallDownloadService(batchCoordinator, objects);
-      const prepared = { version, assets, plan: planVanillaInstall(version, metadataSha1ByVersion, assets), metadataSha1ByVersion, assetIndexBody };
+      const prepared = { version, assets, plan: planVanillaInstall(version, metadataSha1ByVersion, assets), metadataSha1ByVersion, assetIndexBody, versionDocuments: {} };
       const result = await batch.run(prepared); batchArtifactsVerified = result.objects.size;
       assert.equal(batchArtifactsVerified, 2); await batch.run(prepared); assert.equal(batchNetworkRequests, 1);
     } finally { await batchCoordinator.close(); }
@@ -155,7 +161,8 @@ void app.whenReady().then(async () => {
       transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
       sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
       batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true,
-      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true, fileViewMode: receipt.mode, fileViewVerified: true }));
+      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true, fileViewMode: receipt.mode, fileViewVerified: true,
+      instanceRecordsPersisted: true, unreadyInstanceNotPromoted: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

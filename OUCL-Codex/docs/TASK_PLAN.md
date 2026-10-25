@@ -349,3 +349,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 26. 文件投影与已有Java探测基础
 
 新增FileViewService，优先受管软链接、权限不足明确校验复制回退、receipt复核与未知冲突拒绝；并行JavaProbe固定非shell参数、版本/位数检查与取消等待close。完整185测试183 PASS/2环境SKIP、正式Electron投影和本机Oracle17探测通过，见[文件投影](../../docs/validation/A1-08-file-views/REPORT.md)和[Java探测](../../docs/validation/A1-06-java-probe/REPORT.md)。两者仍为基础服务，安装操作日志/实例ready、Java注册/受管下载、游戏进程UI与exe闭环未完成。新目标增加下载界面可参考MC_start其他启动器，后续仅借鉴交互，不复制源码素材。
+
+## 27. 持久实例与实际安装编排
+
+162317e/cf3d2e8后整合原始元数据固定、实例JSON/index/私有worker、稳定任务/consumer身份及实际InstallerService，main/preload/下载确认/任务/实例UI已经接入。221测试219 PASS/2环境SKIP、正式Electron记录及实际DOM两次安装fixture通过，见[报告](../../docs/validation/A1-08-installer/REPORT.md)。两实例实际落盘并复用缓存，重载保留任务与实例；真实官方目录窗口验证通过。尚未下载整套真实官方游戏或启动MC，尚无新exe。完整kill/断电自动接管仍未证明，不标A1-08全部完成。下一直接接Java/离线/进程/UI与exe实际验证。

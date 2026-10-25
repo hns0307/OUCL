@@ -15,6 +15,12 @@ import { CATALOG_CAPABILITY, CATALOG_CHANNEL } from '../shared/contracts/catalog
 import { CatalogService } from '../services/catalog/service.js';
 import { CatalogError, OfficialMetadataReader } from '../services/catalog/transport.js';
 import { handleCatalog } from '../ipc/catalog.js';
+import { InstallMetadataService } from '../services/catalog/install-metadata.js';
+import { InstallerService } from '../services/install/installer.js';
+import { InstallerAdapter } from '../ipc/installer-adapter.js';
+import { handleInstances } from '../ipc/instances.js';
+import { INSTANCE_CHANNELS, INSTANCES_CAPABILITY, TASKS_CAPABILITY, TASK_EVENT_CHANNEL, InstanceContractError } from '../shared/contracts/instances.js';
+import type { InstanceDispatcher } from '../shared/contracts/instances.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -22,6 +28,8 @@ const sessions = new Map<number, string>();
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
+let installer: InstallerService | undefined;
+let installerAdapter: InstallerAdapter | undefined;
 
 /** Authorizes exact application document, current window and primary frame before any service access. */
 function trustedSender(event: IpcMainInvokeEvent): boolean {
@@ -29,7 +37,7 @@ function trustedSender(event: IpcMainInvokeEvent): boolean {
     sessions.has(event.sender.id), event.senderFrame === event.sender.mainFrame);
 }
 
-/** Creates the sandboxed empty application window; no business services are wired. */
+/** Creates the sandboxed application window and binds subscriptions to its trusted document lifetime. */
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 1040, height: 720, minWidth: 720, minHeight: 520, show: false,
@@ -42,7 +50,8 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
-  window.webContents.once('destroyed', () => { sessions.delete(id); });
+  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) installerAdapter?.removeSender(id); });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => { event.preventDefault(); });
   window.webContents.on('will-attach-webview', event => { event.preventDefault(); });
@@ -61,10 +70,20 @@ else void app.whenReady().then(async () => {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
-    catalog = new CatalogService(new OfficialMetadataReader(), storage);
+    const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
+    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
+    await service.initialize(); installer = service; installerAdapter = new InstallerAdapter(service, storage);
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : [])] : []);
+  });
+  for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trusted = trustedSender(event);
+    const unavailable: InstanceDispatcher = async () => { throw new InstanceContractError('UNAVAILABLE'); };
+    const dispatch = trusted && installerAdapter ? installerAdapter.dispatcher(event.sender.id, message => {
+      if (event.sender.isDestroyed()) throw new InstanceContractError('UNAVAILABLE'); event.sender.send(TASK_EVENT_CHANNEL, message);
+    }) : unavailable;
+    return handleInstances(channel, input, trusted, randomUUID(), dispatch);
   });
   ipcMain.handle(CATALOG_CHANNEL, (event, input: unknown) => handleCatalog(input, trustedSender(event), randomUUID(), async query => {
     if (!catalog) throw new CatalogError('CATALOG_UNAVAILABLE'); return catalog.list(query);
@@ -91,6 +110,6 @@ let exiting = false;
 app.on('before-quit', event => {
   if (exiting) return;
   event.preventDefault(); exiting = true;
-  void storage?.close().catch(() => {}).finally(() => { app.quit(); });
-  if (!storage) app.quit();
+  installerAdapter?.close();
+  void (async () => { await installer?.close(); await storage?.close(); })().then(() => { app.quit(); }).catch(() => { app.exit(1); });
 });

@@ -23,10 +23,10 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseRoot', 'handshake', 'listRoots']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseRoot', 'controlTask', 'createInstance', 'getTask', 'handshake', 'listInstances', 'listRoots', 'listTasks', 'subscribeTask']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1']);
     const roots = await window.webContents.executeJavaScript('window.oucl.listRoots()');
     assert.equal(roots.ok, true); assert.deepEqual(roots.data.items, []);
     const chooseButton = await window.webContents.executeJavaScript('!!document.querySelector(".root-settings button")');
@@ -37,12 +37,20 @@ async function run(window) {
       return { count: document.querySelectorAll('.version-list li').length, first: document.querySelector('.version-list strong')?.textContent, error: !!document.querySelector('.catalog .form-error') };
     })()`);
     assert.ok(catalog.count > 0, 'OFFICIAL_CATALOG_DID_NOT_LOAD');
+    const confirmation = await window.webContents.executeJavaScript(`(async () => {
+      const rows = [...document.querySelectorAll('.version-list li')];
+      const chosen = rows.find(row => row.querySelector('strong')?.textContent === '1.20.1') || rows[0];
+      const id = chosen.querySelector('strong').textContent; chosen.querySelector('button').click();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return { selected: document.querySelector('.selected-version')?.textContent === id, disabledWithoutRoot: document.querySelector('.install-confirm .primary')?.disabled === true };
+    })()`);
+    assert.equal(confirmation.selected, true); assert.equal(confirmation.disabledWithoutRoot, true);
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-05-catalog');
+    const directory = path.resolve('docs/validation/A1-08-installer');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
     await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);
@@ -51,9 +59,10 @@ async function run(window) {
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
-      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1', 'catalog.v1'], popupDenied: true,
+      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1'], popupDenied: true,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
       officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
+      versionSelectionRendered: confirmation.selected, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
       packagedPayload: false,
     };
     await writeFile(path.join(directory, 'smoke.json'), JSON.stringify(report, null, 2));

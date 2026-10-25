@@ -9,7 +9,8 @@ import type { Installation } from '../storage/installation.js';
 import type { RecordEnvelope } from '../storage/records.js';
 import type { CatalogCache } from '../storage/catalog-cache.js';
 import type { TransferRecord } from '../download/types.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord };
+import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -73,7 +74,8 @@ export class StorageClient {
       this.pending.delete(reply.id); clearTimeout(pending.timer);
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
-        ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -131,6 +133,23 @@ export class StorageClient {
   async getTransfer(key: string): Promise<TransferRecord | undefined> { return (await this.request({ kind: 'transfer:get', key })).transfer; }
   /** Persists a revision-checked transfer checkpoint in SQLite before acknowledging it to the downloader. */
   async saveTransfer(expectedRevision: number, record: TransferRecord): Promise<void> { await this.request({ kind: 'transfer:set', expectedRevision, record }); }
+  /** Reads the fixed instance index without interpreting a list entry as proof of completed installation. */
+  async readInstances(): Promise<RecordEnvelope<InstanceIndex> | undefined> { return (await this.request({ kind: 'instances:get' })).instances; }
+  /** CAS-writes only the bounded typed instance index, through the existing JSON commit journal. */
+  async writeInstances(expectedRevision: number, data: InstanceIndex): Promise<RecordEnvelope<InstanceIndex>> {
+    const result = (await this.request({ kind: 'instances:set', expectedRevision, data })).instances;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  /** Reads one UUID-bound installation record; no caller-controlled record name is accepted. */
+  async readInstance(instanceId: string): Promise<RecordEnvelope<InstanceRecord> | undefined> {
+    const result = (await this.request({ kind: 'instance:get', instanceId })).instance;
+    if (result && result.data.summary.instanceId !== instanceId.toLowerCase()) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  /** CAS-writes a private installation checkpoint, keeping its summary revision equal to its envelope. */
+  async writeInstance(instanceId: string, expectedRevision: number, data: InstanceRecord): Promise<RecordEnvelope<InstanceRecord>> {
+    const result = (await this.request({ kind: 'instance:set', instanceId, expectedRevision, data })).instance;
+    if (!result || result.data.summary.instanceId !== instanceId.toLowerCase()) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
 
   /** Drains earlier requests, closes the database, releases its own lease and waits for thread exit. */
   async close(): Promise<void> {

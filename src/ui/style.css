@@ -29,3 +29,32 @@ select { font: inherit; font-size: 14px; padding: 10px; border: 1px solid #dce3d
 .version-list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 2px; border-bottom: 1px solid #e9ede5; font-size: 14px; }
 .version-list time { color: #70796e; font-size: 13px; }
 @media (max-width: 600px) { header { padding: 24px; } .welcome { padding-top: 30px; } h1 { font-size: 30px; } }
+.launcher { max-width: 1160px; text-align: left; padding-top: 12px; }
+.launcher h1 { margin: 12px 0; font-size: 34px; }
+.launcher .subtitle { margin-bottom: 24px; }
+.install-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.installation-column { min-width: 0; }
+.installation-column .card { display: block; }
+.install-layout .card { margin-top: 20px; }
+.version-search, .install-confirm input, .install-confirm select { width: 100%; border: 1px solid #ccd7c8; border-radius: 8px; padding: 11px 12px; background: #fff; color: inherit; font: inherit; }
+.version-search { margin: 12px 0 4px; }
+.version-list { max-height: 520px; overflow-y: auto; padding-right: 6px; }
+.version-list li { align-items: center; padding: 11px 8px; border-radius: 8px; }
+.version-list li[data-selected="true"] { background: #e8f1e3; }
+.version-list li > div { display: flex; flex-direction: column; gap: 5px; }
+.version-list .version-select { font-size: 12px; padding: 7px 10px; white-space: nowrap; }
+.selected-version { font-size: 27px; font-weight: 700; margin: 18px 0; color: #446e49; }
+.install-confirm label { display: block; font-size: 14px; margin: 12px 0; }
+.install-confirm input { margin-top: 8px; }
+.primary { width: 100%; background: #446e49; color: #fff; border-color: #446e49; margin-top: 10px; }
+button:disabled { cursor: default; opacity: .55; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #86a775; outline-offset: 3px; }
+.task-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.task-heading h2 { margin: 0; }
+.install-task { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e4eadd; }
+.install-task progress { width: 100%; height: 8px; accent-color: #547c4f; margin-top: 14px; }
+.instance-list { list-style: none; padding: 0; margin: 16px 0 0; }
+.instance-list li { display: flex; justify-content: space-between; gap: 12px; padding: 13px 0; border-top: 1px solid #e4eadd; font-size: 13px; }
+.instance-list li > div { display: flex; flex-direction: column; gap: 6px; }
+.instance-list li > span { max-width: 55%; color: #64705d; }
+@media (max-width: 820px) { .install-layout { grid-template-columns: 1fr; } .version-list { max-height: 300px; } .launcher { padding: 8px 20px 50px; } }
