@@ -369,3 +369,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 31. 档案与Java选择界面接入
 
 已批候选java:choose、accounts:list/createOffline及settings:get固定契约/handler/main/preload/React已接通，ProfileService退出等待在途探测与提交。242测试240 PASS/2原有SKIP和完整检查通过，正式Electron实际DOM创建离线账户、七能力/14方法白名单及官方目录窗口通过，见[报告](../../docs/validation/A1-09-launch-ui/PROFILE_REPORT.md)。无新增依赖/SQLite格式变化；真实native Java选择操作未自动验证。下一直接连接实例启动、持久任务/会话及退出保活，再生成并实测新exe。
+
+## 32. 正式启动任务、会话与实例按钮
+
+LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessions候选已接main/preload/实例按钮。启动复用安装器拥有者，复核关键依赖/native，真实spawn/close驱动状态；关窗口保活、明确确认停止及正常退出收尾已接。248测试246 PASS/2原有SKIP、完整检查、九能力/18方法窗口及DOM启动真实Java退出1的非执行fixture验证通过，见[报告](../../docs/validation/A1-09-launch-ui/game/GAME_REPORT.md)。实际fixture不算MC成功。新exe默认入口的真实目录/Java选择、官方下载、菜单/世界、退出重启下一直接实测；旧release不替代。

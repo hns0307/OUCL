@@ -47,14 +47,20 @@ async function projection(gameRoot: string, name: 'assets' | 'libraries', view: 
   }
 }
 
-/** Establishes the approved root views and private instance namespace without creating player-data placeholders. */
-export async function prepareInstanceDirectories(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): Promise<InstanceDirectories> {
+/** Computes the same controlled layout for installation and subsequent launch checks. */
+export function instanceGameLayout(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): GameLayout {
   const inherited = metadata.version.jarVersionId !== metadata.version.id;
   const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
-  const layout = planGameLayout({ dataDirectory, rootId: summary.rootId, instanceId: summary.instanceId,
+  return planGameLayout({ dataDirectory, rootId: summary.rootId, instanceId: summary.instanceId,
     mcVersionId: summary.mcVersionId, directoryId: summary.instanceId, versionRecordId: summary.instanceId,
     jar: { directoryId: jarId, versionRecordId: jarId },
     isolation: { globalDefault: true, instance: summary.isolation, pack: false } });
+}
+/** Establishes the approved root views and private instance namespace without creating player-data placeholders. */
+export async function prepareInstanceDirectories(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): Promise<InstanceDirectories> {
+  const layout = instanceGameLayout(dataDirectory, summary, metadata);
+  const inherited = metadata.version.jarVersionId !== metadata.version.id;
+  const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
   const store = await ensureChildDirectory(dataDirectory, 'store');
   const views = await ensureChildDirectory(store, 'views', summary.rootId);
   const roots = await ensureChildDirectory(dataDirectory, 'roots', summary.rootId, '.minecraft');

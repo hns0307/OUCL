@@ -23,10 +23,10 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSettings', 'getTask', 'handshake', 'listAccounts', 'listInstances', 'listRoots', 'listTasks', 'subscribeTask']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'stopGame', 'subscribeTask']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1']);
     await window.webContents.executeJavaScript(`(async () => {
       const fields = document.querySelectorAll('.account-inputs input');
       for (const [index,value] of ['Smoke member','OUCL_Smoke'].entries()) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(fields[index],value); fields[index].dispatchEvent(new Event('input',{bubbles:true})); }
@@ -58,7 +58,7 @@ async function run(window) {
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-09-launch-ui');
+    const directory = path.resolve('docs/validation/A1-09-launch-ui/game');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
     await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);

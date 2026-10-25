@@ -2,9 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
 import type { InstanceSummary, InstallStage, TaskSnapshot } from '../shared/contracts/instances.js';
+import { LaunchControls, useGameSessions } from './LaunchControls.js';
 
 const STAGE_MESSAGES: Record<InstallStage, MessageKey> = { metadata: 'stageMetadata', downloading: 'stageDownloading', materializing: 'stageMaterializing',
-  committing: 'stageCommitting', completed: 'stageCompleted', failed: 'stageFailed', cancelled: 'stageCancelled', needsRecovery: 'stageRecovery', queued: 'stageQueued' };
+  committing: 'stageCommitting', completed: 'stageCompleted', failed: 'stageFailed', cancelled: 'stageCancelled', needsRecovery: 'stageRecovery', queued: 'stageQueued', preparing: 'stagePreparing' };
 function bytes(value: number): string {
   const units = [MESSAGES.byteUnit, MESSAGES.kilobyteUnit, MESSAGES.megabyteUnit, MESSAGES.gigabyteUnit]; let unit = 0; let number = value;
   while (number >= 1024 && unit < units.length - 1) { number /= 1024; unit++; }
@@ -44,7 +45,8 @@ function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled:
 }
 
 /** Connects the approved vanilla instance/task flow; all network, files and process work stays behind preload. */
-export function InstallPanel({ enabled, rootId, versionId }: { enabled: boolean; rootId: string | undefined; versionId: string | undefined }) {
+export function InstallPanel({ enabled, rootId, versionId, gameEnabled, accountId }: { enabled: boolean; rootId: string | undefined; versionId: string | undefined; gameEnabled: boolean; accountId: string | undefined }) {
+  const sessions = useGameSessions(gameEnabled, rootId);
   const [displayName, setDisplayName] = useState(''); const [isolation, setIsolation] = useState<'on' | 'off'>('on');
   const [instances, setInstances] = useState<InstanceSummary[]>([]); const [tasks, setTasks] = useState<TaskSnapshot[]>([]);
   const [busy, setBusy] = useState(false); const [error, setError] = useState<MessageKey>(); const [refresh, setRefresh] = useState(0);
@@ -60,7 +62,7 @@ export function InstallPanel({ enabled, rootId, versionId }: { enabled: boolean;
     void Promise.all([window.oucl.listInstances({ rootId, limit: 100 }), window.oucl.listTasks({ limit: 100 })]).then(([listed, current]) => {
       if (!active) return;
       if (listed.ok) setInstances(listed.data.items); else setError(listed.error.messageKey);
-      if (current.ok) setTasks(current.data.items.slice(-6)); else setError(current.error.messageKey);
+      if (current.ok) setTasks(current.data.items.filter(task => task.kind === 'install').slice(-6)); else setError(current.error.messageKey);
     }).catch(() => { if (active) setError('unavailable'); });
     return () => { active = false; };
   }, [enabled, rootId, refresh]);
@@ -89,7 +91,7 @@ export function InstallPanel({ enabled, rootId, versionId }: { enabled: boolean;
     </section>
     {tasks.length > 0 && <section className="card"><h2>{MESSAGES.tasksTitle}</h2>{tasks.map(task => <InstallTask key={task.taskId} initial={task} onSettled={taskSettled} />)}</section>}
     <section className="card"><div className="task-heading"><h2>{MESSAGES.installedTitle}</h2><button disabled={!rootId} onClick={refreshList}>{MESSAGES.refreshInstances}</button></div>
-      {instances.length === 0 ? <p>{MESSAGES.noInstances}</p> : <ul className="instance-list">{instances.map(instance => <li key={instance.instanceId} data-instance-id={instance.instanceId} data-instance-state={instance.state}><div><strong>{instance.displayName}</strong><span>{instance.mcVersionId}</span></div><span>{instance.state === 'ready' ? MESSAGES.stateReady : instance.state === 'installing' ? MESSAGES.stateInstalling : instance.state === 'needsRecovery' ? MESSAGES.stageRecovery : instance.state === 'cancelled' ? MESSAGES.stageCancelled : MESSAGES.stageFailed}</span></li>)}</ul>}
+      {instances.length === 0 ? <p>{MESSAGES.noInstances}</p> : <ul className="instance-list">{instances.map(instance => <li key={instance.instanceId} data-instance-id={instance.instanceId} data-instance-state={instance.state}><div className="instance-details"><strong>{instance.displayName}</strong><span>{instance.mcVersionId}</span></div><span>{instance.state === 'ready' ? MESSAGES.stateReady : instance.state === 'installing' ? MESSAGES.stateInstalling : instance.state === 'needsRecovery' ? MESSAGES.stageRecovery : instance.state === 'cancelled' ? MESSAGES.stageCancelled : MESSAGES.stageFailed}</span>{gameEnabled && instance.state === 'ready' && <LaunchControls instance={instance} accountId={accountId} current={sessions.find(session => session.instanceId === instance.instanceId)} />}</li>)}</ul>}
     </section>
   </div>;
 }

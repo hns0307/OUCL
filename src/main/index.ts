@@ -25,6 +25,10 @@ import { ProfileService } from '../services/launch/profiles.js';
 import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '../shared/contracts/profiles.js';
 import { handleProfiles } from '../ipc/profiles.js';
 import { profileDispatcher } from '../ipc/profiles-adapter.js';
+import { LaunchService } from '../services/launch/service.js';
+import { GameAdapter } from '../ipc/game-adapter.js';
+import { handleGame } from '../ipc/game.js';
+import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -35,6 +39,7 @@ let catalog: CatalogService | undefined;
 let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
 let profiles: ProfileService | undefined;
+let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
 const javaSelections = new Map<string, Promise<string | undefined>>();
 const pendingSelections = new Set<string>();
 
@@ -58,8 +63,9 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
-  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
-  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) installerAdapter?.removeSender(id); });
+  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
+  window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => { event.preventDefault(); });
   window.webContents.on('will-attach-webview', event => { event.preventDefault(); });
@@ -81,11 +87,19 @@ else void app.whenReady().then(async () => {
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
-    await service.initialize(); installer = service; installerAdapter = new InstallerAdapter(service, storage);
+    await service.initialize(); installer = service;
+    launches = new LaunchService(storage, profiles, service); await launches.initialize();
+    launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
+    const repository = storage;
+    gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
+    installerAdapter = new InstallerAdapter(service, storage, gameAdapter);
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : [])] : []);
   });
+  for (const channel of GAME_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleGame(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!gameAdapter) throw new InstanceContractError('UNAVAILABLE'); return gameAdapter.dispatcher(event.sender.id)(selected, payload, requestId);
+  }));
   for (const channel of PROFILE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleProfiles(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!profiles || !storage) throw new ProfileContractError('UNAVAILABLE');
     const dispatch = profileDispatcher(profiles, storage, async id => {
@@ -129,12 +143,15 @@ else void app.whenReady().then(async () => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 }).catch(() => { app.exit(1); });
-app.on('second-instance', () => { const window = BrowserWindow.getAllWindows()[0]; if (window) { if (window.isMinimized()) window.restore(); window.focus(); } });
+app.on('second-instance', () => { const window = BrowserWindow.getAllWindows()[0]; if (window) { closeWhenGamesExit = false; if (window.isMinimized()) window.restore(); window.show(); window.focus(); } });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 let exiting = false;
+let shutdownInProgress = false;
 app.on('before-quit', event => {
   if (exiting) return;
-  event.preventDefault(); exiting = true;
-  installerAdapter?.close();
-  void (async () => { await profiles?.close(); await installer?.close(); await storage?.close(); })().then(() => { app.quit(); }).catch(() => { app.exit(1); });
+  event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
+  void (async () => {
+    if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
+    installerAdapter?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+  })().catch(() => { app.exit(1); });
 });

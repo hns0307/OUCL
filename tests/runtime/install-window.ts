@@ -6,8 +6,10 @@ import path from 'node:path';
 import { crc32 } from 'node:zlib';
 import { createRequire } from 'node:module';
 import { StorageClient } from '../../src/services/workers/storage-client.js';
+import { ProfileService } from '../../src/services/launch/profiles.js';
 
 const root = process.argv[2]; const entry = process.argv[3]; const main = process.argv[4];
+const javaExecutable = process.argv[5];
 assert.ok(root && path.isAbsolute(root) && path.basename(root).startsWith('oucl-install-window-') && entry && path.isAbsolute(entry) && main && path.isAbsolute(main));
 const rootId = '00000000-0000-4000-8000-000000000001';
 app.setPath('userData', path.join(root, 'profile'));
@@ -75,6 +77,19 @@ async function verify(window: BrowserWindow): Promise<void> {
   stage = 'first-install'; await window.webContents.executeJavaScript(`document.querySelector('.install-confirm button.primary').click()`);
   await waitFor(window, `document.querySelectorAll('li[data-instance-state="ready"]').length === 1 && document.querySelectorAll('[data-task-state="completed"]').length === 1`);
   assert.equal(artifactRequests, 4);
+  let realJavaExitObserved = false;
+  if (javaExecutable) {
+    stage = 'launch-from-dom';
+    await waitFor(window, `document.querySelector('.launch-controls button.primary') && !document.querySelector('.launch-controls button.primary').disabled`);
+    await window.webContents.executeJavaScript(`document.querySelector('.launch-controls button.primary').click()`);
+    await waitFor(window, `document.querySelector('.launch-controls[data-game-state="exited"]')`);
+    const sessions: unknown = await window.webContents.executeJavaScript(`window.oucl.listSessions({limit:100})`);
+    assert.ok(typeof sessions === 'object' && sessions !== null && 'ok' in sessions && sessions.ok === true && 'data' in sessions);
+    const result = sessions as { data: { items: { exitCode?: number; state: string }[] } };
+    assert.equal(result.data.items.length, 1); assert.equal(result.data.items[0]?.state, 'exited'); assert.equal(result.data.items[0]?.exitCode, 1);
+    // These fixture JARs are text. The trusted JVM exits for missing Main; this is not a Minecraft success claim.
+    realJavaExitObserved = true;
+  }
   stage = 'cache-reuse';
   await window.webContents.executeJavaScript(`(() => { const field=document.querySelector('.install-confirm input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(field,'Second window fixture'); field.dispatchEvent(new Event('input',{bubbles:true})); })()`);
   await waitFor(window, `!document.querySelector('.install-confirm button.primary').disabled`);
@@ -105,6 +120,8 @@ async function verify(window: BrowserWindow): Promise<void> {
     rootPreRegistered: true, actualMainPreloadRenderer: true, actualMetadataAndArtifactServices: true, actualDomInstallClicks: 2,
     readyInstances: 2, completedTasks: 2, artifactRequests, metadataRequests, cacheReused: true, reloadPreservedInstancesAndTasks: true,
     clientNativeAndManifestVerified: true, contextIsolation: true, sandbox: true, rendererNodeAbsent: true,
+    launchButtonClicked: Boolean(javaExecutable), realJavaExitObserved, expectedMissingMainExitCode: javaExecutable ? 1 : undefined,
+    javaPreRegistered: Boolean(javaExecutable), productionJavaPickerOperated: false,
     electron: process.versions.electron, node: process.versions.node };
   process.stdout.write(`OUCL_INSTALL_WINDOW_RESULT:${JSON.stringify(report)}\n`);
   globalThis.fetch = originalFetch; window.destroy(); app.quit();
@@ -115,7 +132,10 @@ app.once('will-quit', () => { complete = true; clearTimeout(deadline); });
 void app.whenReady().then(async () => {
   const directory = path.join(root!, 'profile', 'metadata'); await mkdir(directory, { recursive: true }); await mkdir(path.join(root!, 'games'));
   const storage = await StorageClient.open(entry!, directory);
-  try { await storage.createInstallation({ rootId, dataDirectory: path.join(root!, 'games') }); } finally { await storage.close(); }
+  try {
+    await storage.createInstallation({ rootId, dataDirectory: path.join(root!, 'games') });
+    if (javaExecutable) { assert.ok(path.isAbsolute(javaExecutable)); const profiles = new ProfileService(storage); await profiles.registerJava(javaExecutable); await profiles.createOffline('00000000-0000-4000-8000-000000000017', { displayName: 'Window fixture', gameName: 'OUCL_Fixture' }); await profiles.close(); }
+  } finally { await storage.close(); }
   app.once('browser-window-created', (_event, window) => { void verify(window).catch(error => {
     const failureType = error instanceof Error && ['Error', 'TypeError', 'AssertionError'].includes(error.name) ? error.name : 'UNKNOWN';
     process.stdout.write(`OUCL_INSTALL_WINDOW_RESULT:${JSON.stringify({ status: 'FAIL', code: 'WINDOW_VERIFICATION_FAILED', stage, failureType, fixture: true, gameLaunched: false, artifactRequests, metadataRequests })}\n`);

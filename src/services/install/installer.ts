@@ -25,6 +25,7 @@ import { FileViewService } from './file-views.js';
 import { ensureChildDirectory, prepareInstanceDirectories, prepareInstanceNatives, viewTarget, writeDerivedJson } from './instance-files.js';
 import { hasCode } from '../storage/files.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import { verifyLaunchInputs } from './launch-inputs.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -93,6 +94,18 @@ export class InstallerService {
     await this.index(result.data.summary); return result.data;
   }
 
+  /** Reuses the existing object owner and serialized file lane to verify a ready instance before launch. */
+  async prepareLaunch(instanceId: string, expectedRevision: number, signal: AbortSignal) {
+    if (this.closed) throw new InstallerError('INSTALL_FAILED');
+    const operation = this.fileTail.then(async () => {
+      if (signal.aborted) throw new InstallerError('CANCELLED');
+      const runtime = await this.resources(); const record = await this.storage.readInstance(instanceId);
+      if (!record || record.data.summary.rootId !== runtime.rootId || record.data.phase !== 'ready') throw new InstallerError('INSTANCE_NOT_FOUND');
+      if (record.revision !== expectedRevision) throw new InstallerError('NEEDS_RECOVERY');
+      return verifyLaunchInputs(runtime, record, restoreInstallMetadata(record.data), signal);
+    });
+    this.fileTail = operation.then(() => {}, () => {}); return operation;
+  }
   /** Persists idempotent acceptance and reserved identity before admitting background network/filesystem work. */
   create(requestId: string, input: CreateInstanceInput): Promise<{ taskId: string }> {
     const canonical: CreateInstanceInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName, isolation: input.isolation };

@@ -7,6 +7,7 @@ import type { LaunchPlan } from '../../core/launch/plan.js';
 import { JavaProbe } from '../java/probe.js';
 import type { JavaRuntime } from '../java/probe.js';
 import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
+import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 
 export type GameProcessCode = 'INSTANCE_BUSY' | 'JAVA_INCOMPATIBLE' | 'LAUNCH_FAILED' | 'CANCELLED' | 'SESSION_NOT_FOUND'
   | 'CONFIRMATION_REQUIRED' | 'STOP_UNSUPPORTED' | 'NEEDS_RECOVERY';
@@ -35,8 +36,10 @@ export class GameProcessService {
   }
 
   /** Caller resolves executableRef from its trusted Java registry and verifies every installed dependency first. */
-  async launch(instanceId: string, executable: string, major: 8 | 17 | 21, plan: LaunchPlan, options: { signal?: AbortSignal } = {}): Promise<GameSession> {
+  async launch(instanceId: string, executable: string, major: 8 | 17 | 21, plan: LaunchPlan, options: { signal?: AbortSignal; sessionId?: string; initialRevision?: number } = {}): Promise<GameSession> {
     if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(instanceId)) throw new GameProcessError('LAUNCH_FAILED');
+    if (options.sessionId !== undefined && (!UUID_PATTERN.test(options.sessionId) || this.live.has(options.sessionId))
+      || options.initialRevision !== undefined && (!Number.isSafeInteger(options.initialRevision) || options.initialRevision < 1 || options.initialRevision >= Number.MAX_SAFE_INTEGER)) throw new GameProcessError('LAUNCH_FAILED');
     const cancelled = (): void => { if (options.signal?.aborted) throw new GameProcessError('CANCELLED'); };
     cancelled();
     let runtime: JavaRuntime;
@@ -44,7 +47,7 @@ export class GameProcessService {
     catch { cancelled(); throw new GameProcessError('JAVA_INCOMPATIBLE'); }
     if (runtime.major !== major || runtime.architecture !== 'x64') throw new GameProcessError('JAVA_INCOMPATIBLE');
     const directory = await guardDirectory(plan.cwd); cancelled();
-    const sessionId = randomUUID(); const token = randomUUID(); const file = path.join(directory, 'oucl.session.lock');
+    const sessionId = options.sessionId ?? randomUUID(); const token = randomUUID(); const file = path.join(directory, 'oucl.session.lock');
     let handle;
     try { handle = await open(file, 'wx'); }
     catch (error) { throw new GameProcessError(hasCode(error, 'EEXIST') ? 'INSTANCE_BUSY' : 'LAUNCH_FAILED'); }
@@ -64,7 +67,7 @@ export class GameProcessService {
       if (error instanceof GameProcessError) throw error;
       throw new GameProcessError('LAUNCH_FAILED');
     }
-    const snapshot: GameSession = { sessionId, instanceId, state: 'running', revision: 1, startedAt: new Date().toISOString() };
+    const snapshot: GameSession = { sessionId, instanceId, state: 'running', revision: options.initialRevision ?? 1, startedAt: new Date().toISOString() };
     let resolveExit!: () => void; const ended = new Promise<void>(resolve => { resolveExit = resolve; });
     const live: LiveSession = { snapshot, child, ended, lines: [] }; this.live.set(sessionId, live);
     // Consume both pipes with bounded line buffers. Raw output is never persisted or returned.

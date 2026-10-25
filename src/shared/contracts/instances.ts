@@ -18,16 +18,17 @@ export const INSTANCE_CHANNELS = [INSTANCES_LIST_CHANNEL, INSTANCES_CREATE_CHANN
 export type InstanceChannel = typeof INSTANCE_CHANNELS[number];
 export type InstanceCode = AppError['code'] | 'OUT_OF_SCOPE' | 'ROOT_UNAVAILABLE' | 'VERSION_UNSUPPORTED' | 'NAME_CONFLICT'
   | 'DISK_FULL' | 'PERMISSION_DENIED' | 'TASK_STORE_UNAVAILABLE' | 'TASK_NOT_FOUND' | 'TASK_NOT_OWNED' | 'INVALID_TASK_STATE'
-  | 'CANCEL_TOO_LATE' | 'CURSOR_EXPIRED' | 'SUBSCRIPTION_NOT_OWNED' | 'NEEDS_RECOVERY' | 'INSTALL_FAILED';
+  | 'CANCEL_TOO_LATE' | 'CURSOR_EXPIRED' | 'SUBSCRIPTION_NOT_OWNED' | 'NEEDS_RECOVERY' | 'INSTALL_FAILED'
+  | 'LAUNCH_FAILED' | 'JAVA_INCOMPATIBLE' | 'AUTH_REQUIRED' | 'DEPENDENCY_MISSING' | 'MEMORY_OUT_OF_RANGE' | 'INSTANCE_BUSY' | 'REVISION_CONFLICT' | 'STOP_UNSUPPORTED' | 'CONFIRMATION_REQUIRED' | 'SESSION_NOT_FOUND' | 'SESSION_NOT_OWNED';
 export interface InstanceError extends Omit<AppError, 'code'> { code: InstanceCode }
 export interface Page<T> { items: T[]; nextCursor?: string }
 export interface InstanceSummary {
   instanceId: string; displayName: string; mcVersionId: string; isolation: 'inherit' | 'on' | 'off';
   state: 'installing' | 'ready' | 'failed' | 'cancelled' | 'needsRecovery'; revision: number;
 }
-export type InstallStage = 'metadata' | 'downloading' | 'materializing' | 'committing' | 'completed' | 'failed' | 'cancelled' | 'needsRecovery' | 'queued';
+export type InstallStage = 'metadata' | 'downloading' | 'materializing' | 'committing' | 'completed' | 'failed' | 'cancelled' | 'needsRecovery' | 'queued' | 'preparing';
 export interface TaskSnapshot {
-  taskId: string; kind: 'install'; state: TaskState; stage: InstallStage; revision: number; bytesDone: number;
+  taskId: string; kind: 'install' | 'launch' | 'stop'; state: TaskState; stage: InstallStage; revision: number; bytesDone: number;
   bytesTotal?: number; error?: InstanceError;
 }
 export interface InstancePayloads {
@@ -43,7 +44,7 @@ export interface InstanceData {
   'instances:list': Page<InstanceSummary>;
   'instances:create': { taskId: string };
   'tasks:list': Page<TaskSnapshot>;
-  'tasks:get': { snapshot: TaskSnapshot; result?: { instanceId: string } };
+  'tasks:get': { snapshot: TaskSnapshot; result?: { instanceId: string } | { sessionId: string; stopped?: true; exitCode?: number } };
   'tasks:control': { taskId: string; accepted: true; state: TaskState };
   'tasks:subscribe': { subscriptionId: string; snapshot: TaskSnapshot; seq: number };
   'events:unsubscribe': { removed: boolean };
@@ -66,7 +67,7 @@ export interface InstanceBridge {
   subscribeTask(taskId: string, listener: (snapshot: TaskSnapshot) => void): Promise<{ result: InstanceResult<'tasks:subscribe'>; dispose: () => void }>;
 }
 const STATES: readonly TaskState[] = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
-const STAGES: readonly InstallStage[] = ['metadata', 'downloading', 'materializing', 'committing', 'completed', 'failed', 'cancelled', 'needsRecovery', 'queued'];
+const STAGES: readonly InstallStage[] = ['metadata', 'downloading', 'materializing', 'committing', 'completed', 'failed', 'cancelled', 'needsRecovery', 'queued', 'preparing'];
 const ERRORS: Record<InstanceCode, { category: AppError['category']; key: MessageKey; retryable: boolean }> = {
   INVALID_ARGUMENT: { category: 'validation', key: 'invalidArgument', retryable: false },
   UNSUPPORTED_CONTRACT: { category: 'validation', key: 'unsupportedContract', retryable: false },
@@ -88,6 +89,16 @@ const ERRORS: Record<InstanceCode, { category: AppError['category']; key: Messag
   SUBSCRIPTION_NOT_OWNED: { category: 'permission', key: 'invalidSender', retryable: false },
   NEEDS_RECOVERY: { category: 'disk', key: 'unavailable', retryable: false },
   INSTALL_FAILED: { category: 'minecraft', key: 'unavailable', retryable: true },
+  LAUNCH_FAILED: { category: 'minecraft', key: 'launchFailed', retryable: true },
+  JAVA_INCOMPATIBLE: { category: 'validation', key: 'javaIncompatible', retryable: false },
+  AUTH_REQUIRED: { category: 'auth', key: 'chooseAccountFirst', retryable: false },
+  DEPENDENCY_MISSING: { category: 'minecraft', key: 'dependencyMissing', retryable: true },
+  MEMORY_OUT_OF_RANGE: { category: 'validation', key: 'memoryInvalid', retryable: false },
+  INSTANCE_BUSY: { category: 'biz', key: 'instanceBusy', retryable: true },
+  REVISION_CONFLICT: { category: 'biz', key: 'instanceChanged', retryable: true },
+  STOP_UNSUPPORTED: { category: 'biz', key: 'stopUnsupported', retryable: false },
+  CONFIRMATION_REQUIRED: { category: 'permission', key: 'stopConfirmation', retryable: false },
+  SESSION_NOT_FOUND: { category: 'biz', key: 'unavailable', retryable: false }, SESSION_NOT_OWNED: { category: 'permission', key: 'invalidSender', retryable: false },
 };
 /** Fixed domain failure for injected adapters; arbitrary exception messages never cross IPC. */
 export class InstanceContractError extends Error {
@@ -152,8 +163,10 @@ export function isInstanceSummary(value: unknown): value is InstanceSummary {
 /** Validates bounded public progress rather than forwarding a stored task row. */
 export function isTaskSnapshot(value: unknown): value is TaskSnapshot {
   if (!optionalKeys(value, ['taskId', 'kind', 'state', 'stage', 'revision', 'bytesDone'], ['bytesTotal', 'error'])
-    || !uuid(value.taskId) || value.kind !== 'install' || !state(value.state) || typeof value.stage !== 'string' || !STAGES.includes(value.stage as InstallStage)
+    || !uuid(value.taskId) || !['install', 'launch', 'stop'].includes(value.kind as string) || !state(value.state) || typeof value.stage !== 'string' || !STAGES.includes(value.stage as InstallStage)
     || !integer(value.revision) || value.revision < 1 || !integer(value.bytesDone)
+    || value.kind !== 'install' && ['metadata', 'downloading', 'materializing'].includes(value.stage)
+    || value.kind === 'install' && value.stage === 'preparing'
     || Object.hasOwn(value, 'bytesTotal') && (!integer(value.bytesTotal) || value.bytesTotal < value.bytesDone)
     || Object.hasOwn(value, 'error') && !isInstanceError(value.error)) return false;
   return true;
@@ -169,7 +182,10 @@ export function isInstanceData<C extends InstanceChannel>(value: unknown, channe
     case 'instances:create': return exactObject(value, ['taskId']) && uuid(value.taskId);
     case 'tasks:list': return page(value, isTaskSnapshot, item => item.taskId.toLowerCase());
     case 'tasks:get': return optionalKeys(value, ['snapshot'], ['result']) && isTaskSnapshot(value.snapshot)
-      && (!Object.hasOwn(value, 'result') || value.snapshot.state === 'completed' && exactObject(value.result, ['instanceId']) && uuid(value.result.instanceId));
+      && (!Object.hasOwn(value, 'result') || value.snapshot.state === 'completed' && (value.snapshot.kind === 'install'
+        ? exactObject(value.result, ['instanceId']) && uuid(value.result.instanceId)
+        : value.snapshot.kind === 'launch' ? exactObject(value.result, ['sessionId']) && uuid(value.result.sessionId)
+          : optionalKeys(value.result, ['sessionId', 'stopped'], ['exitCode']) && uuid(value.result.sessionId) && value.result.stopped === true && (!Object.hasOwn(value.result, 'exitCode') || Number.isSafeInteger(value.result.exitCode))));
     case 'tasks:control': return exactObject(value, ['taskId', 'accepted', 'state']) && uuid(value.taskId) && value.accepted === true && state(value.state);
     case 'tasks:subscribe': return exactObject(value, ['subscriptionId', 'snapshot', 'seq']) && uuid(value.subscriptionId) && isTaskSnapshot(value.snapshot) && integer(value.seq);
     case 'events:unsubscribe': return exactObject(value, ['removed']) && typeof value.removed === 'boolean';

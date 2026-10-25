@@ -10,6 +10,15 @@ import { CatalogService } from '../src/services/catalog/service.js';
 import { InstallMetadataService } from '../src/services/catalog/install-metadata.js';
 import { InstallerService, restoreInstallMetadata } from '../src/services/install/installer.js';
 import type { MetadataReader } from '../src/services/catalog/transport.js';
+import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
+import type { ChildProcessWithoutNullStreams } from 'node:child_process';
+import { LaunchService } from '../src/services/launch/service.js';
+import { GameProcessService } from '../src/services/launch/process.js';
+import { ProfileService } from '../src/services/launch/profiles.js';
+import { GameAdapter } from '../src/ipc/game-adapter.js';
+import { InstallerAdapter } from '../src/ipc/installer-adapter.js';
+import type { TaskChangedEvent } from '../src/shared/contracts/instances.js';
 
 const entry = new URL('../src/services/workers/entry.js', import.meta.url);
 const rootId = '00000000-0000-4000-8000-000000000001';
@@ -61,7 +70,7 @@ async function fixture() {
   const createService = (repository: StorageClient): InstallerService => new InstallerService(repository, entry, new InstallMetadataService(new CatalogService(reader, repository), reader));
   const service = createService(storage);
   return { root, storage, service, createService, metadataDirectory, dataDirectory, requests: () => requests, delay: () => { delayed = true; },
-    async close() { await service.close(); globalThis.fetch = originalFetch; await storage.close(); await rm(root, { recursive: true, force: true }); } };
+    async close() { await service.close(); globalThis.fetch = originalFetch; await storage.close(); assert.equal(path.dirname(root), path.resolve(tmpdir())); assert.ok(path.basename(root).startsWith('oucl-installer-')); await rm(root, { recursive: true, force: true }); } };
 }
 async function finished(service: InstallerService, taskId: string) {
   const deadline = Date.now() + 15000;
@@ -131,4 +140,65 @@ test('unknown existing shared entries are preserved and leave a recovery state r
     assert.equal(result.task.execution.state, 'needsRecovery'); assert.equal(result.instance?.state, 'needsRecovery');
     assert.equal(await readFile(foreign, 'utf8'), 'foreign contents');
   } finally { await f.close(); }
+});
+
+class FakeGame extends EventEmitter {
+  stdout = new PassThrough(); stderr = new PassThrough(); stdin = new PassThrough(); kills = 0;
+  kill(): boolean { this.kills++; queueMicrotask(() => { this.emit('close', null, 'SIGKILL'); }); return true; }
+}
+const measuredJava = { executable: 'D:\\Fixture\\java.exe', major: 17 as const, version: '17.0.12', vendor: 'fixture', architecture: 'x64' as const, os: 'windows' as const };
+async function gameFinished(service: LaunchService, taskId: string) {
+  const deadline = Date.now() + 10000;
+  while (Date.now() < deadline) {
+    const value = await service.task(rootId, taskId);
+    if (value && ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(value.task.execution.state)) return value;
+    await new Promise<void>(resolve => setTimeout(resolve, 10));
+  }
+  throw new Error('GAME_TASK_TIMEOUT');
+}
+test('installed objects stay owned once while launch tasks, subscriptions, natural exit and session history persist', async () => {
+  const f = await fixture(); const child = new FakeGame(); let game: LaunchService | undefined; let adapter: InstallerAdapter | undefined;
+  try {
+    const installed = await f.service.create(request(50), input); const ready = await finished(f.service, installed.taskId); assert.ok(ready.instance);
+    const profiles = new ProfileService(f.storage, { probe: async () => measuredJava }); await profiles.registerJava(measuredJava.executable);
+    const account = await profiles.createOffline(request(51), { displayName: '成员', gameName: 'Player_1' });
+    const processes = new GameProcessService({ probe: { probe: async () => measuredJava }, start: (_file, args, options) => {
+      assert.equal(options.shell, false); assert.ok(args.includes('Player_1')); queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
+    } });
+    game = new LaunchService(f.storage, profiles, f.service, processes, () => 16 * 1024 ** 3); await game.initialize();
+    const extra = new GameAdapter(game, async () => rootId); adapter = new InstallerAdapter(f.service, f.storage, extra);
+    const payload = { instanceId: ready.instance.instanceId, accountId: account.accountId, expectedRevision: ready.instance.revision };
+    const accepted = await game.launch(request(52), payload); assert.deepEqual(await game.launch(request(52), payload), accepted);
+    const events: TaskChangedEvent[] = []; const dispatch = adapter.dispatcher(1, event => { events.push(event); });
+    const subscription = await dispatch('tasks:subscribe', { taskId: accepted.taskId }, request(53)); assert.equal(subscription.snapshot.kind, 'launch');
+    const launched = await gameFinished(game, accepted.taskId); assert.equal(launched.task.execution.state, 'completed');
+    const queried = await dispatch('tasks:get', { taskId: accepted.taskId }, request(54)); assert.ok(queried.result && 'sessionId' in queried.result); assert.equal(queried.result.sessionId, accepted.taskId);
+    await new Promise<void>(resolve => setTimeout(resolve, 160)); assert.ok(subscription.snapshot.state === 'completed' || events.some(event => event.payload.state === 'completed'));
+    assert.equal((await game.session(rootId, accepted.taskId)).state, 'running'); assert.equal(await game.close(), false); assert.equal(child.kills, 0);
+    await assert.rejects(game.launch(request(52), { ...payload, expectedRevision: payload.expectedRevision + 1 }), { code: 'REVISION_CONFLICT' });
+    await assert.rejects(game.cancel(rootId, accepted.taskId), { code: 'CANCEL_TOO_LATE' });
+    child.emit('close', 0, null); assert.equal((await processes.wait(accepted.taskId)).state, 'exited'); assert.equal(await game.close(), true);
+    assert.equal((await f.storage.readGameSessions())?.data.items[0]?.snapshot.exitCode, 0);
+    await f.service.close(); await f.storage.close();
+    const reopened = await StorageClient.open(entry, f.metadataDirectory); const restartedInstaller = f.createService(reopened);
+    const restarted = new LaunchService(reopened, new ProfileService(reopened), restartedInstaller);
+    try { await restarted.initialize(); assert.equal((await restarted.session(rootId, accepted.taskId)).exitCode, 0); assert.equal((await restarted.task(rootId, accepted.taskId))?.task.execution.state, 'completed'); }
+    finally { await restarted.close(); await restartedInstaller.close(); await reopened.close(); }
+  } finally { child.emit('close', 0, null); adapter?.close(); await game?.close(); await f.close(); }
+});
+test('explicit stop is durable, cannot act without confirmation and waits for the actual owned process close', async () => {
+  const f = await fixture(); const child = new FakeGame(); let game: LaunchService | undefined;
+  try {
+    const ready = await finished(f.service, (await f.service.create(request(60), input)).taskId); assert.ok(ready.instance);
+    const profiles = new ProfileService(f.storage, { probe: async () => measuredJava }); await profiles.registerJava(measuredJava.executable);
+    const account = await profiles.createOffline(request(61), { displayName: '成员', gameName: 'Player_2' });
+    const processes = new GameProcessService({ probe: { probe: async () => measuredJava }, start: () => { queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams; } });
+    game = new LaunchService(f.storage, profiles, f.service, processes, () => 16 * 1024 ** 3); await game.initialize();
+    const launched = await game.launch(request(62), { instanceId: ready.instance.instanceId, accountId: account.accountId, expectedRevision: ready.instance.revision }); await gameFinished(game, launched.taskId);
+    await assert.rejects(game.stop(request(63), launched.taskId, 'force', false), { code: 'CONFIRMATION_REQUIRED' });
+    await assert.rejects(game.stop(request(63), launched.taskId, 'graceful', true), { code: 'STOP_UNSUPPORTED' }); assert.equal(child.kills, 0);
+    const stopped = await game.stop(request(64), launched.taskId, 'force', true); assert.equal((await gameFinished(game, stopped.taskId)).task.execution.state, 'completed'); assert.equal(child.kills, 1);
+    assert.deepEqual(await game.stop(request(64), launched.taskId, 'force', true), stopped); assert.equal(child.kills, 1);
+    assert.equal((await game.session(rootId, launched.taskId)).state, 'exited'); assert.equal(await game.close(), true);
+  } finally { child.emit('close', 0, null); await game?.close(); await f.close(); }
 });

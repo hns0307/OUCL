@@ -243,3 +243,5 @@
 执行记录：D-20批准已进入正式ProfileService及固定launch-profiles JSON与typed私有worker，身份与Java登记在正常关闭重开后保持；237测试235 PASS/2 SKIP、完整检查与Electron worker验证通过，独立JDK UUID向量一致，见[档案报告](../../docs/validation/A1-08-launch-profiles/REPORT.md)。没有新依赖/公开IPC/SQLite schema；产品公开契约及选择/启动/会话UI与exe继续实施，不将内部服务当作最终交付。
 
 执行记录：已批候选档案/Java/settings读取契约已装配main/preload/界面，242测试240 PASS/2 SKIP、完整检查和实际Electron DOM创建账户验证通过，见[界面报告](../../docs/validation/A1-09-launch-ui/PROFILE_REPORT.md)。Java仅原生选择后主进程实测，内部路径与游戏UUID不回renderer；真实native选择操作尚未自动验证。没有新增依赖、SQLite格式或后续阶段能力，继续接实际实例启动/会话及新exe。
+
+执行记录：启动/停止持久任务与session JSON、严格候选game/sessions接口及实例启动按钮已接通；复用原安装器对象拥有者，关闭窗口时保活，显式确认才强停。248测试246 PASS/2 SKIP、完整检查和正式Electron DOM启动真实JVM/预期缺主类退出1验证通过，见[启动UI报告](../../docs/validation/A1-09-launch-ui/game/GAME_REPORT.md)。新私有固定session域沿用原版本JSON/日志，未改SQLite格式/新增依赖/后续阶段；不将fixture等同MC或新exe验收，下一直接打包真实验证。

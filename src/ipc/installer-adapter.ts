@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { UUID_PATTERN } from '../shared/contracts/handshake.js';
-import { InstanceContractError, instanceFailure, isInstancePayload, isInstanceSummary, isTaskSnapshot } from '../shared/contracts/instances.js';
+import { InstanceContractError, instanceFailure, isInstancePayload, isInstanceSummary, isTaskSnapshot, isInstanceData } from '../shared/contracts/instances.js';
 import type { InstanceChannel, InstanceCode, InstanceData, InstanceDispatcher, InstancePayloads, InstanceSummary, InstallStage, TaskChangedEvent, TaskSnapshot } from '../shared/contracts/instances.js';
 import type { InstallerService } from '../services/install/installer.js';
 import { InstallerError } from '../services/install/installer.js';
@@ -10,6 +10,11 @@ import type { RecordEnvelope } from '../services/storage/records.js';
 
 type Service = Pick<InstallerService, 'create' | 'list' | 'task' | 'cancel'>;
 type TaskView = Awaited<ReturnType<Service['task']>>;
+export interface AdditionalTasks {
+  get(root: string, taskId: string): Promise<InstanceData['tasks:get'] | undefined>;
+  list(root: string): Promise<TaskSnapshot[]>;
+  cancel(root: string, taskId: string): Promise<void>;
+}
 type Send = (event: TaskChangedEvent) => void;
 interface Subscription { id: string; sender: number; root: string; task: string; seq: number; snapshot: TaskSnapshot; send: Send }
 interface Cursor { sender: number; root: string; channel: 'instances:list' | 'tasks:list'; filter: string; items: InstanceSummary[] | TaskSnapshot[]; offset: number; expires: number }
@@ -70,7 +75,15 @@ export class InstallerAdapter {
   private timer?: ReturnType<typeof setInterval>;
   private polling = false;
   private closed = false;
-  constructor(private readonly service: Service, private readonly roots: { readInstallation(): Promise<RecordEnvelope<Installation> | undefined> }) {}
+  constructor(private readonly service: Service, private readonly roots: { readInstallation(): Promise<RecordEnvelope<Installation> | undefined> }, private readonly additional?: AdditionalTasks) {}
+  private async publicTask(root: string, taskId: string): Promise<InstanceData['tasks:get']> {
+    const extra = await this.additional?.get(root, taskId.toLowerCase());
+    if (extra) { if (!isInstanceData(extra, 'tasks:get') || extra.snapshot.taskId.toLowerCase() !== taskId.toLowerCase()) throw new InstanceContractError('TASK_STORE_UNAVAILABLE'); return extra; }
+    const value = await this.service.task(root, taskId.toLowerCase()); const snapshot = taskSnapshot(value, root, taskId);
+    const instance = value.instance;
+    if (instance && (instance.rootId.toLowerCase() !== root || instance.taskId.toLowerCase() !== taskId.toLowerCase())) throw new InstanceContractError('TASK_NOT_OWNED');
+    return { snapshot, ...(snapshot.state === 'completed' && instance ? { result: { instanceId: instance.instanceId } } : {}) };
+  }
 
   /** Binds event delivery to one validated webContents identity; sender removal invalidates in-flight admission. */
   dispatcher(senderId: number, send: Send): InstanceDispatcher {
@@ -134,20 +147,18 @@ export class InstallerAdapter {
           const snapshot = taskSnapshot(await this.service.task(root, item.taskId), root, item.taskId);
           if (payload.state === undefined || payload.state === snapshot.state) items.push(snapshot);
         }
+        for (const snapshot of await this.additional?.list(root) ?? []) if (payload.state === undefined || payload.state === snapshot.state) items.push(snapshot);
       }
       this.available(sender, generation); return this.page(sender, root, channel, payload.state ?? '', payload, items);
     }
     if (channel === 'tasks:get' && isInstancePayload(payload, channel)) {
-      const value = await this.service.task(root, payload.taskId.toLowerCase()); const snapshot = taskSnapshot(value, root, payload.taskId);
-      const instance = value.instance;
-      if (instance && (instance.rootId.toLowerCase() !== root || instance.taskId.toLowerCase() !== payload.taskId.toLowerCase())) throw new InstanceContractError('TASK_NOT_OWNED');
-      return { snapshot, ...(snapshot.state === 'completed' && instance ? { result: { instanceId: instance.instanceId } } : {}) };
+      return this.publicTask(root, payload.taskId);
     }
     if (channel === 'tasks:control' && isInstancePayload(payload, channel)) {
-      taskSnapshot(await this.service.task(root, payload.taskId.toLowerCase()), root, payload.taskId);
+      const current = (await this.publicTask(root, payload.taskId)).snapshot;
       if (payload.action !== 'cancel') throw new InstanceContractError('INVALID_TASK_STATE');
-      await this.service.cancel(root, payload.taskId.toLowerCase());
-      const snapshot = taskSnapshot(await this.service.task(root, payload.taskId.toLowerCase()), root, payload.taskId);
+      if (current.kind === 'install') await this.service.cancel(root, payload.taskId.toLowerCase()); else await this.additional?.cancel(root, payload.taskId.toLowerCase());
+      const snapshot = (await this.publicTask(root, payload.taskId)).snapshot;
       return { taskId: payload.taskId, accepted: true, state: snapshot.state };
     }
     if (channel === 'tasks:subscribe' && isInstancePayload(payload, channel)) {
@@ -157,7 +168,7 @@ export class InstallerAdapter {
       if (own >= 64 || total >= 256) throw new InstanceContractError('UNAVAILABLE');
       this.pending.set(sender, (this.pending.get(sender) ?? 0) + 1);
       try {
-        const snapshot = taskSnapshot(await this.service.task(root, payload.taskId.toLowerCase()), root, payload.taskId); this.available(sender, generation);
+        const snapshot = (await this.publicTask(root, payload.taskId)).snapshot; this.available(sender, generation);
         const id = randomUUID(); this.subscriptions.set(id, { id, sender, root, task: payload.taskId, seq: 0, snapshot, send }); this.start();
         return { subscriptionId: id, snapshot, seq: 0 };
       } finally { const count = (this.pending.get(sender) ?? 1) - 1; if (count > 0) this.pending.set(sender, count); else this.pending.delete(sender); }
@@ -173,14 +184,14 @@ export class InstallerAdapter {
   }
   private async poll(): Promise<void> {
     if (this.closed || this.subscriptions.size === 0) return;
-    const root = await this.root(); const queried = new Map<string, Promise<TaskView>>();
+    const root = await this.root(); const queried = new Map<string, Promise<InstanceData['tasks:get']>>();
     for (const subscription of [...this.subscriptions.values()]) {
       if (this.closed || !this.subscriptions.has(subscription.id)) continue;
       if (subscription.root !== root) { this.remove(subscription.id); continue; }
       try {
         const taskId = subscription.task.toLowerCase();
-        let query = queried.get(taskId); if (!query) { query = this.service.task(root, taskId); queried.set(taskId, query); }
-        const snapshot = taskSnapshot(await query, root, subscription.task);
+        let query = queried.get(taskId); if (!query) { query = this.publicTask(root, taskId); queried.set(taskId, query); }
+        const snapshot = (await query).snapshot;
         if (this.closed || this.subscriptions.get(subscription.id) !== subscription) continue;
         if (snapshot.revision === subscription.snapshot.revision && snapshot.stage === subscription.snapshot.stage) continue;
         subscription.snapshot = snapshot; subscription.seq++;

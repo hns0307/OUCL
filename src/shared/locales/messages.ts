@@ -79,6 +79,14 @@ export const MESSAGES = {
   javaConfigured: 'Java 已登记，启动时将重新检查。', javaNotConfigured: '请选择电脑上已有的 java.exe。',
   accountsTitle: '离线账户', accountNickname: '显示昵称', accountGameName: '游戏名', accountCreate: '创建档案', accountCreating: '正在保存…',
   accountSelect: '选择离线账户', accountEmpty: '还没有离线档案', offlineNotice: '离线账户仅用于离线游戏，不代表正版登录。',
+  launchFailed: '游戏未能正常启动，请检查 Java 和实例文件。', javaIncompatible: '所选 Java 与此版本不匹配，请选择该版本需要的 64 位 Java。',
+  chooseAccountFirst: '请先创建并选择离线账户。', dependencyMissing: '启动文件缺失或不完整，请重新安装此实例。', memoryInvalid: '当前电脑无法安全分配所需的游戏内存。',
+  instanceBusy: '此游戏目录正在使用中，请先退出正在运行的游戏。', instanceChanged: '实例信息已改变，请刷新后重试。',
+  stopUnsupported: '无法安全请求正常退出，请在游戏内退出；强制结束需要另行确认。', stopConfirmation: '请先保存游戏进度，并明确确认强制结束。',
+  stagePreparing: '检查启动环境',
+  launchGame: '启动游戏', launchPreparing: '正在处理…', gameRunning: '游戏运行中', gameStopping: '正在结束游戏…', gameUnknown: '启动准备中或进程状态尚未确认',
+  gameExited: '游戏已退出', exitCode: '退出码', forceStop: '强制结束游戏', confirmForceStop: '我已保存进度，确认强制结束',
+  gameKeepAlive: '关闭此窗口后，启动器会保留到游戏退出。重新打开 OUCL 可返回此处。',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

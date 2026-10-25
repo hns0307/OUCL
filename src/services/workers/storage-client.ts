@@ -11,7 +11,8 @@ import type { CatalogCache } from '../storage/catalog-cache.js';
 import type { TransferRecord } from '../download/types.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
 import type { LaunchProfiles } from '../storage/launch-profiles.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles> };
+import type { GameSessions } from '../storage/game-sessions.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -76,7 +77,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -95,6 +96,13 @@ export class StorageClient {
     });
   }
 
+  /** Reads fixed private session metadata, never arbitrary records or process identifiers. */
+  async readGameSessions(): Promise<RecordEnvelope<GameSessions> | undefined> { return (await this.request({ kind: 'sessions:get' })).sessions; }
+  /** CAS commit of fixed game-session metadata; does not accept arbitrary record IDs or paths. */
+  async writeGameSessions(expectedRevision: number, data: GameSessions): Promise<RecordEnvelope<GameSessions>> {
+    const result = (await this.request({ kind: 'sessions:set', expectedRevision, data })).sessions;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
   /** Reads only the fixed private Java/offline identity record. */
   async readLaunchProfiles(): Promise<RecordEnvelope<LaunchProfiles> | undefined> { return (await this.request({ kind: 'profiles:get' })).profiles; }
   /** CAS commit of the fixed typed Java/offline profile domain, never arbitrary JSON. */
