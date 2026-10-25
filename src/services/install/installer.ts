@@ -185,7 +185,7 @@ export class InstallerService {
       }
       throw new InstallerError('NAME_CONFLICT');
     }
-    const record: InstanceRecord = { summary: { ...seed, instanceId, taskId: task.taskId }, phase: 'reserved' };
+    const record: InstanceRecord = { formatVersion: 2, loader: { kind: 'vanilla' }, summary: { ...seed, instanceId, taskId: task.taskId }, phase: 'reserved' };
     await this.storage.writeInstance(instanceId, 0, record); await this.index(record.summary);
     const live: LiveInstall = { task, stage: 'metadata', controller: new AbortController(), done: Promise.resolve(), changes: Promise.resolve() };
     this.live.set(task.taskId, live);

@@ -25,7 +25,7 @@ function metadata(): InstanceMetadata {
 }
 function ready(revision = 1): InstanceRecord {
   const artifactId = `sha1-${'a'.repeat(40)}`;
-  return { summary: { ...summary(revision), state: 'ready' }, phase: 'ready', metadata: metadata(),
+  return { formatVersion: 2, loader: { kind: 'vanilla' }, summary: { ...summary(revision), state: 'ready' }, phase: 'ready', metadata: metadata(),
     objects: { [artifactId]: { digest: 'b'.repeat(64), size: 8, sourceKey: 'c'.repeat(64) } },
     receipts: [{ area: 'version', path: 'client.jar', artifactId, mode: 'copy' }] };
 }
@@ -50,7 +50,8 @@ test('instance summaries and indexes have exact bounded fields, canonical IDs an
 });
 
 test('instance phases cannot claim ready without all materialization checkpoints', () => {
-  assert.equal(parseInstanceRecord({ summary: summary(), phase: 'reserved' }).phase, 'reserved');
+  assert.deepEqual(parseInstanceRecord({ summary: summary(), phase: 'reserved' }),
+    { formatVersion: 2, loader: { kind: 'vanilla' }, summary: summary(), phase: 'reserved' });
   assert.deepEqual(parseInstanceRecord(ready()), ready());
   for (const invalid of [{ summary: summary(), phase: 'ready' }, { summary: { ...summary(), state: 'ready' }, phase: 'ready' },
     { summary: summary(), phase: 'prepared' }, { summary: summary(), phase: 'downloaded', metadata: metadata() },
@@ -58,6 +59,14 @@ test('instance phases cannot claim ready without all materialization checkpoints
     assert.throws(() => parseInstanceRecord(invalid), { code: 'INVALID_RECORD' });
   }
   assert.equal(parseInstanceRecord({ summary: { ...summary(), state: 'failed' }, phase: 'failed' }).summary.state, 'failed');
+  assert.deepEqual(parseInstanceRecord({ formatVersion: 2, loader: { kind: 'fabric', version: '0.20.1' }, summary: summary(), phase: 'reserved' }).loader,
+    { kind: 'fabric', version: '0.20.1' });
+  for (const invalid of [
+    { formatVersion: 3, loader: { kind: 'vanilla' }, summary: summary(), phase: 'reserved' },
+    { formatVersion: 2, summary: summary(), phase: 'reserved' },
+    { loader: { kind: 'vanilla' }, summary: summary(), phase: 'reserved' },
+    { formatVersion: 2, loader: { kind: 'fabric' }, summary: summary(), phase: 'reserved' }
+  ]) assert.throws(() => parseInstanceRecord(invalid), { code: 'INVALID_RECORD' });
 });
 
 test('instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry', () => {
@@ -127,7 +136,7 @@ test('real instance storage worker CAS persists through close/reopen without alt
     await client.remember('b'.repeat(64), { digest: 'c'.repeat(64), size: 8 });
     const index = await client.writeInstances(0, { items: [summary()] }); assert.equal(index.revision, 1);
     const reserved = await client.writeInstance(id(1), 0, { summary: summary(), phase: 'reserved' }); assert.equal(reserved.revision, 1);
-    const prepared: InstanceRecord = { summary: summary(2), phase: 'prepared', metadata: metadata() };
+    const prepared: InstanceRecord = { formatVersion: 2, loader: { kind: 'vanilla' }, summary: summary(2), phase: 'prepared', metadata: metadata() };
     assert.equal((await client.writeInstance(id(1), 1, prepared)).data.phase, 'prepared');
     await assert.rejects(client.writeInstance(id(1), 1, prepared), { code: 'REVISION_CONFLICT' });
     await assert.rejects(client.writeInstances(0, { items: [summary()] }), { code: 'REVISION_CONFLICT' });

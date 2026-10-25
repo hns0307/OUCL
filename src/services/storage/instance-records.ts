@@ -18,8 +18,10 @@ export interface PersistedInstallMetadata {
 }
 export type InstanceMetadata = PersistedInstallMetadata;
 export interface InstanceReceipt { area: 'assets' | 'libraries' | 'version' | 'resources'; path: string; artifactId: string; mode: 'copy' | 'symlink' }
+export type InstanceLoaderIdentity = { kind: 'vanilla' } | { kind: 'fabric' | 'quilt' | 'forge' | 'neoforge'; version: string };
 export interface InstanceRecord {
   summary: InstanceSummary; phase: 'reserved' | 'prepared' | 'downloaded' | 'materializing' | 'ready' | 'failed' | 'cancelled' | 'needsRecovery';
+  formatVersion?: 2; loader?: InstanceLoaderIdentity;
   metadata?: InstanceMetadata; objects?: Record<string, ObjectRef>; receipts?: InstanceReceipt[];
 }
 function invalid(): never { throw new StorageError('INVALID_RECORD'); }
@@ -108,18 +110,27 @@ function receipts(value: unknown, refs: Record<string, ObjectRef>): InstanceRece
     return { area: entry.area as InstanceReceipt['area'], path: name, artifactId: entry.artifactId, mode: entry.mode as InstanceReceipt['mode'] };
   });
 }
+function loader(value: unknown): InstanceLoaderIdentity {
+  if (exactObject(value, ['kind']) && value.kind === 'vanilla') return { kind: 'vanilla' };
+  if (!exactObject(value, ['kind', 'version']) || typeof value.kind !== 'string' || !['fabric', 'quilt', 'forge', 'neoforge'].includes(value.kind)
+    || !identifier(value.version) || !/^[a-zA-Z0-9_.+-]+$/.test(value.version)) invalid();
+  return { kind: value.kind as Exclude<InstanceLoaderIdentity['kind'], 'vanilla'>, version: value.version };
+}
 
 /** Validates local integrity and shape only; initial official trust and materialized-file checks remain service responsibilities. */
 export function parseInstanceRecord(value: unknown): InstanceRecord {
   try {
     if (!object(value)) invalid();
     budget(value);
-    const optional = ['metadata', 'objects', 'receipts'].filter(key => Object.hasOwn(value, key));
+    const versioned = Object.hasOwn(value, 'formatVersion') || Object.hasOwn(value, 'loader');
+    if (versioned && (!Object.hasOwn(value, 'formatVersion') || !Object.hasOwn(value, 'loader') || value.formatVersion !== 2)) invalid();
+    const optional = ['formatVersion', 'loader', 'metadata', 'objects', 'receipts'].filter(key => Object.hasOwn(value, key));
     if (!exactObject(value, ['summary', 'phase', ...optional])) invalid();
     const summary = parseInstanceSummary(value.summary); const phase = value.phase;
     if (typeof phase !== 'string' || !['reserved', 'prepared', 'downloaded', 'materializing', 'ready', 'failed', 'cancelled', 'needsRecovery'].includes(phase)
       || summary.state !== (['reserved', 'prepared', 'downloaded', 'materializing'].includes(phase) ? 'installing' : phase)) invalid();
     const parsedMetadata = value.metadata === undefined ? undefined : metadata(value.metadata, summary.mcVersionId);
+    const parsedLoader = versioned ? loader(value.loader) : { kind: 'vanilla' as const };
     const parsedObjects = value.objects === undefined ? undefined : objects(value.objects);
     const parsedReceipts = value.receipts === undefined ? undefined : receipts(value.receipts, parsedObjects ?? {});
     if (['prepared', 'downloaded', 'materializing', 'ready'].includes(phase) && !parsedMetadata
@@ -127,7 +138,7 @@ export function parseInstanceRecord(value: unknown): InstanceRecord {
       || phase === 'ready' && (!parsedReceipts || !parsedObjects || Object.keys(parsedObjects).length === 0 || parsedReceipts.length === 0)
       || parsedObjects && !parsedMetadata || parsedReceipts && !parsedObjects
       || optional.some(key => value[key] === undefined)) invalid();
-    const result: InstanceRecord = { summary, phase: phase as InstanceRecord['phase'], ...(parsedMetadata === undefined ? {} : { metadata: parsedMetadata }),
+    const result: InstanceRecord = { formatVersion: 2, loader: parsedLoader, summary, phase: phase as InstanceRecord['phase'], ...(parsedMetadata === undefined ? {} : { metadata: parsedMetadata }),
       ...(parsedObjects === undefined ? {} : { objects: parsedObjects }), ...(parsedReceipts === undefined ? {} : { receipts: parsedReceipts }) };
     budget(result); return result;
   } catch { return invalid(); }
