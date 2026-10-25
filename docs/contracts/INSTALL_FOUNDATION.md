@@ -20,7 +20,15 @@ DownloadCoordinator内部接PhysicalTransfer与SourceAttestor，不直接访问U
 
 当前consumer/job关联只保留在内存，**没有跨进程持久任务关联/用户归属授权/公开TaskSnapshot**。物理续传元数据本身已有SQLite持久化；不能将其等同于安装任务恢复。后续Task服务应先持久化安装/consumer关联，再执行effects，并按既定任务契约接订阅、取消与重载恢复。
 
-## 持久哈希会话
+## 批量可信对象准备
+
+InstallDownloadService.run接PreparedInstallMetadata，重新从原正文和版本来源生成私有计划，按索引view定位精确制品。importAssetIndex先核对原UTF8字节大小/SHA1，复用已验证缓存或写受管staging并commit；不经artifact网络白名单请求metadata host。
+
+默认4条lane（1–16），每条仅持有一个consumer，首proof下载后对额外proof依次adopt，不产生数千活跃job或重复物理传输。成功返回plan和artifactId→ObjectRef；进度区分totalBytes和verifiedBytes，仅完成全部来源证明后计入。
+
+外部取消只中止本批consumer；失败停止派发并等待所有lane与来源/提交完成，实际失败优先于取消。已提交共享对象保留。回调异常固定CALLBACK_FAILED，文件与清理错误固定映射，不能带出路径。该服务仍无持久安装关联、实例物化或公开任务生命周期。
+
+## 持久哈希会话实现
 
 HashPool保持原hash/close公开API、并发1–4、32等待预算、120s限时与64MiB线程堆上限，改为复用hash-only线程。workerData为exact `{version:1,kind:hash-session}`；每个hash-job有UUID、受控绝对文件与maximumBytes，回复hash-job-progress/result/failed严格带jobId，未知字段/脚本拒绝，旧job回复不能结束新job。
 

@@ -12,6 +12,10 @@ import { ArtifactTransfer } from '../../src/services/download/artifact-transfer.
 import { HttpTransfer } from '../../src/services/download/http.js';
 import { sourceKey } from '../../src/services/objects/provenance.js';
 import { DownloadCoordinator } from '../../src/services/download/coordinator.js';
+import { InstallDownloadService } from '../../src/services/install/downloads.js';
+import { resolveClientVersion } from '../../src/core/version/resolve.js';
+import { parseAssetIndex } from '../../src/core/install/assets.js';
+import { planVanillaInstall } from '../../src/core/install/plan.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -97,6 +101,24 @@ void app.whenReady().then(async () => {
       assert.equal((await b.result).digest, objectA.digest); assert.equal(transferRequests, 2);
       assert.equal((await objects.lookup(secondSource.expected, anchor))?.digest, objectA.digest);
     } finally { await shared.close(); }
+    const assetIndexBody = '{\n  "objects": {}\n}\n'; const assetIndexHash = createHash('sha1').update(assetIndexBody).digest('hex');
+    const version = resolveClientVersion('fixture', { fixture: { id: 'fixture', mainClass: 'net.minecraft.client.main.Main',
+      downloads: { client: { url: transferSpec.url, sha1: expected.digest, size: expected.size } },
+      assetIndex: { id: 'fixture', url: `https://piston-meta.mojang.com/v1/packages/${assetIndexHash}/fixture.json`, sha1: assetIndexHash, size: Buffer.byteLength(assetIndexBody) }
+    } }, { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
+    const assets = parseAssetIndex(JSON.parse(assetIndexBody) as unknown); const metadataSha1ByVersion = { fixture: anchor.digest };
+    let batchNetworkRequests = 0;
+    const batchPhysical = new ArtifactTransfer(new HttpTransfer(async () => {
+      batchNetworkRequests++; return new Response(fixture, { headers: { 'content-length': String(fixture.length) } });
+    }), client, objects);
+    const batchCoordinator = new DownloadCoordinator(batchPhysical, objects);
+    let batchArtifactsVerified = 0;
+    try {
+      const batch = new InstallDownloadService(batchCoordinator, objects);
+      const prepared = { version, assets, plan: planVanillaInstall(version, metadataSha1ByVersion, assets), metadataSha1ByVersion, assetIndexBody };
+      const result = await batch.run(prepared); batchArtifactsVerified = result.objects.size;
+      assert.equal(batchArtifactsVerified, 2); await batch.run(prepared); assert.equal(batchNetworkRequests, 1);
+    } finally { await batchCoordinator.close(); }
     const hashWorkersSpawned = pool.spawnedWorkers;
     assert.ok(hashWorkersSpawned <= 3, 'HASH_SESSIONS_WERE_NOT_REUSED');
     await objects.close(); objects = undefined;
@@ -107,7 +129,8 @@ void app.whenReady().then(async () => {
       progressEvents, cancellationJoined: true, fileHandleReleased: true, objectDeduplicated: true, provenanceSeparated: true,
       objectIndexRebuilt: true, durableTaskPreserved: true, artifactTransferVerified: true,
       transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
-      sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned }));
+      sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
+      batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

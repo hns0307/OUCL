@@ -221,3 +221,5 @@
 目标更新：用户将持续目标明确为“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能”。最终验收须为实际Windows exe的下载/启动闭环；原阶段1A业务批准、逐增量提交和交接要求继续有效，不扩大后续阶段。旧工程预览、CLI或元数据成功均不能代替此交付。
 
 执行记录：在60e91f8/b739dd4后，整合暂停保留的安装准备与活跃共享协调代码；144测试和真实官方索引/正式Electron验证见[A1-05-install-plan报告](../../docs/validation/A1-05-install-plan/REPORT.md)。仅内部来源字段、无IO计划和既有worker职责优化，没有新依赖、公开IPC或磁盘schema。consumer持久关联与真实安装启动及exe交付仍未完成，继续同一1A授权。
+
+执行记录：5620b0c后落实批量可信下载与精确原索引导入，152测试150 PASS/2 SKIP及正式Electron fixture验证通过，见[A1-05-install-downloads报告](../../docs/validation/A1-05-install-downloads/REPORT.md)。无新依赖、渲染IPC或持久schema；仍没有完整持久安装任务、物化/解压、Java/档案/进程/UI和最终exe验证，不标目标完成。
