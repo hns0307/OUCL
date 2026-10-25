@@ -17,3 +17,10 @@
 - 当前允许仓库：Fabric `maven.fabricmc.net`；Quilt `maven.quiltmc.org` 与其明确引用的 Fabric Maven。禁止 HTTP、凭据、查询串、片段和任意镜像替换。
 
 Forge/NeoForge 安装器、sidecar 获取、下载任务和实例提交属于后续已批准增量，不由本契约声称已完成。
+
+## 官方目录适配
+
+- Fabric 固定读取 `meta.fabricmc.net/v2/versions/loader/{minecraft}` 与对应的 `/{loader}/profile/json`。
+- Quilt 固定读取 `meta.quiltmc.org/v3/versions/loader/{minecraft}` 与对应的 `/{loader}/profile/json`。
+- URL 由主进程按受控标识构造，拒绝调用方 URL、重定向、查询串、凭据和非固定 API 版本；响应仍经过既有 2 MiB 上限、超时与严格 UTF-8/JSON 校验。
+- 响应 SHA-256 与精确来源 URL 作为“该元数据响应”的来源证据保存；它不替代 profile 所引用 JAR 的上游摘要。
