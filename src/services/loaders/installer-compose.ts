@@ -1,14 +1,27 @@
 import { enforceInstallerProcessorPolicy } from '../../core/loaders/processor-policy.js';
+import { parseInstallerProfile } from '../../core/loaders/installer-profile.js';
 import type { InstallerProfile } from '../../core/loaders/types.js';
 import type { AssetIndexContent } from '../../core/install/assets.js';
 import { artifactProofKey, planVanillaInstall } from '../../core/install/plan.js';
 import type { PlannedArtifact, PlannedSource, VanillaInstallPlan } from '../../core/install/plan.js';
 import { resolveClientVersion } from '../../core/version/resolve.js';
 import type { VersionEnvironment } from '../../core/version/types.js';
+import { createHash } from 'node:crypto';
 
 export interface InstallerCompositionInput {
   baseVersionDocuments: Readonly<Record<string, string>>; baseMetadataSha1ByVersion: Readonly<Record<string, string>>;
   assets: AssetIndexContent; profile: InstallerProfile; profileSha256: string; environment: VersionEnvironment;
+}
+
+/** Revalidates both exact installer documents before any resume path rebuilds their projection. */
+export function parseStoredInstallerProfile(kind: InstallerProfile['kind'], minecraftVersion: string, loaderVersion: string,
+  profileBody: string, profileSha256: string, versionBody: string, versionSha256: string): InstallerProfile {
+  if (typeof profileBody !== 'string' || Buffer.byteLength(profileBody) > 2 * 1024 ** 2 || !/^[a-f0-9]{64}$/.test(profileSha256)
+    || createHash('sha256').update(profileBody).digest('hex') !== profileSha256
+    || typeof versionBody !== 'string' || Buffer.byteLength(versionBody) > 2 * 1024 ** 2 || !/^[a-f0-9]{64}$/.test(versionSha256)
+    || createHash('sha256').update(versionBody).digest('hex') !== versionSha256) throw new Error('INVALID_INSTALLER_PROFILE');
+  try { return parseInstallerProfile(kind, minecraftVersion, loaderVersion, JSON.parse(profileBody) as unknown, JSON.parse(versionBody) as unknown); }
+  catch { throw new Error('INVALID_INSTALLER_PROFILE'); }
 }
 
 function addProcessorLibraries(plan: VanillaInstallPlan, profile: InstallerProfile, source: PlannedSource): VanillaInstallPlan {

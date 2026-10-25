@@ -10,6 +10,7 @@ import { StorageClient } from '../src/services/workers/storage-client.js';
 import { RecordStore } from '../src/services/storage/records.js';
 import { parseReply, parseStorageRequest } from '../src/services/workers/protocol.js';
 import { sourceKey } from '../src/services/objects/provenance.js';
+import { restoreInstallMetadata } from '../src/services/install/installer.js';
 
 const id = (n: number): string => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 const worker = new URL('../src/services/workers/entry.js', import.meta.url);
@@ -211,6 +212,8 @@ test('installer loader metadata preserves its upstream chain and validates proce
   const prepared = installerInstallMetadata();
   const parsed = parseInstanceRecord({ formatVersion: 2, loader: { kind: 'forge', version: '47.4.28' }, summary: summary(), phase: 'prepared', metadata: prepared });
   assert.equal(parsed.metadata?.loader?.kind, 'forge');
+  const restored = restoreInstallMetadata(parsed); assert.equal(restored.version.mainClass, 'cpw.mods.bootstraplauncher.BootstrapLauncher');
+  assert.ok(restored.plan.artifacts.some(item => item.source.kind === 'loader-profile'));
   const completed = installerInstallMetadata(true);
   const evidence = completed.loader?.kind === 'forge' ? completed.loader.processors : undefined;
   assert.equal(parseInstanceRecord({ formatVersion: 2, loader: { kind: 'forge', version: '47.4.28' }, summary: summary(), phase: 'prepared', metadata: completed })

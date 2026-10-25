@@ -35,6 +35,7 @@ import { verifyLaunchInputs } from './launch-inputs.js';
 import type { JavaPackage } from '../java/runtime.js';
 import { guardDirectory, hasCode as fileHasCode } from '../storage/files.js';
 import type { InstanceV2Summary } from '../../shared/contracts/instances-v2.js';
+import { composeInstallerInstall, parseStoredInstallerProfile } from '../loaders/installer-compose.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -63,9 +64,15 @@ export function restoreInstallMetadata(record: InstanceRecord): PreparedInstallM
   const version = resolveClientVersion(record.summary.mcVersionId, documents, stored.environment ?? { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
   const assets = parseAssetIndex(JSON.parse(stored.assetIndexBody) as unknown);
   if (!stored.loader) return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
-  if (stored.loader.kind !== 'fabric' && stored.loader.kind !== 'quilt') throw new InstallerError('NEEDS_RECOVERY');
   const environment = stored.environment; if (!environment) throw new InstallerError('NEEDS_RECOVERY');
   try {
+    if (stored.loader.kind === 'forge' || stored.loader.kind === 'neoforge') {
+      const profile = parseStoredInstallerProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version,
+        stored.loader.profileBody, stored.loader.profileSha256, stored.loader.versionBody, stored.loader.versionSha256);
+      const composed = composeInstallerInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
+        assets, profile, profileSha256: stored.loader.profileSha256, environment });
+      return { version: composed.version, assets, plan: composed.plan, ...stored };
+    }
     const profile = parseStoredLoaderProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version, stored.loader.profileBody, stored.loader.profileSha256);
     const libraries = { libraries: stored.loader.libraries, totalBytes: stored.loader.libraries.reduce((sum, item) => sum + item.spec.expected.size, 0) };
     const composed = composeLoaderInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
