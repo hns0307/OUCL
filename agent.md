@@ -2,15 +2,15 @@
 
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
-用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26 01:04已通过账户工具确认5小时窗口实际重置（已用1%，不再沿用旧时间推断），恢复开发。接近5小时额度剩余10%时仍须保存、提交并暂停等待下次实际重置。
+用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26约06:04再次通过账户工具确认5小时窗口实际重置为已用0%后恢复开发；本轮文档更新前已用62%。接近5小时额度剩余10%时仍须保存、提交并暂停等待下次实际重置。
 
-当前提交：164daf3为Mod版本三态规则；fefe1e1/50f96d8为Fabric/Quilt严格解析和官方端点；b47fbfd为`loaders.v1`/`instances.v2`契约；eab9cdb为官方Maven sidecar→可信下载计划；6ccba5a为加载器与原版继承合成；c0f09ab为实例记录v2/旧原版按需规范化；b08b657为原版+profile+sidecar完整元数据编排；bdfeda7为Fabric/Quilt共享下载、物化、取消、恢复及启动复验事务；e86caf3公开`loaders.v1`；00ae76b公开`instances.v2`；d7ffa4c接入下载页加载器选择与实例标识。profile固定核对加载器/MC身份、入口、Maven坐标和仓库；内联SHA-1必须同时有大小，缺失则明确要求同官方Maven sidecar，不用本地摘要冒充上游证明。每个加载器库保留自身profile或sidecar来源，原版来源不被替换。**四加载器完整交付、Mod管理、0.3.0及实机矩阵仍未交付**，版本仍为0.2.2；尚未运行游戏或触碰用户游戏数据。
+当前 Fabric/Quilt 链截至d7ffa4c：严格元数据、可信共享下载/物化/取消/恢复事务、`loaders.v1`/`instances.v2`和界面均已接入。Forge/NeoForge新增18d7c6f–e9213fe：官方安装器spike，目录与sidecar下载证明，选择性提取，严格profile解析；只允许固定六步客户端处理器，八个官方工具JAR的清单入口经SHA-1/大小复验后再匹配固定入口；参数只展开到私有暂存树，可取消执行器等待子进程close，产物在worker中摘要及完整ZIP/JAR结构复验，处理器专用库与最终游戏classpath分离。**Forge/NeoForge尚未接入共享下载、持久记录和实例ready提交，公共查询/创建仍关闭；四加载器完整交付、Mod管理、0.3.0及实机矩阵仍未交付**，版本仍为0.2.2；尚未执行处理器、运行游戏或触碰用户游戏数据。
 
 依赖评估已完成：smol-toml 1.9.0，BSD-3-Clause，npm解包139963字节、无声明运行依赖；生产依赖audit 0漏洞，许可证检查128包无待审，记录在docs/DEPENDENCIES.md及licenses.json。Fabric/Quilt事务相关的隔离安装、取消、重开和启动链测试20/20通过；公共契约/握手目标测试、typecheck、lint、build及隔离Electron smoke通过，后者确认27方法/12能力和原版/Fabric/Quilt三选项。完整`pnpm test`本轮在受限执行环境再次出现多项既有SQLite/传输失败并长时间不结束，已中断，不能标整库通过；最终交付前须在正常权限与隔离TEMP环境保存完整`pnpm check`结果。
 
-下一最小增量：先做Forge/NeoForge独立安装器spike，固定代表版本、官方制品与处理器输入输出，再将各自客户端处理器编排接入相同暂存/取消/提交事务；随后完成JAR worker双重检查/依赖确认事务、四加载器真实验收和0.3.0小EXE。Fabric/Quilt虽已有完整代码路径，尚无真实官方游戏/测试Mod证据，不能标阶段完成。
+下一最小增量：扩展实例持久元数据以保存安装器上游SHA-1/sidecar锚、原始profile/version字节、逐库证明和处理器产物证据；随后把安装器下载→提取→库/原版下载→暂存物化→Java17/21处理→复验→单次ready提交接入现有任务事务，最后才开放Forge/NeoForge查询/创建。之后完成JAR worker双重检查/依赖确认事务、四加载器真实验收和0.3.0小EXE。Fabric/Quilt虽已有完整代码路径，尚无真实官方游戏/测试Mod证据，不能标阶段完成。
 
-Forge/NeoForge spike 预检：Forge 官方下载页于2026-10-26显示MC 1.20.1的Latest与Recommended均为47.4.28，安装器SHA-1为`585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge官方Maven确认MC 1.21.1系列为`21.1.x`且提供installer及SHA-1/SHA-256 sidecar，但尚未冻结具体稳定版。隔离目录`.test-build/installer-spike-20261026`保留约2.73 MiB的Forge官方安装器部分下载，未执行；下次可用curl续传后先核对sidecar，再只读提取`install_profile.json`/`version.json`。PCL目录中的3222字节`forge-installer.jar`只是其自有辅助类，仅用于确认不是可复用上游安装器，未复制或纳入OUCL。
+Forge/NeoForge样本证据：Forge 1.20.1-47.4.28官方安装器8,859,760字节、SHA-1 `585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge 21.1.258格式样本6,972,022字节、SHA-1 `4e873ba909cd4d2c0818517f479a69a655097691`。当前NeoForge官方目录生产候选首项已实际读到21.1.265（6,992,412字节，SHA-1 `25ce1d35d619ccfd3080076fa5758c18e11a9778`），发布前仍需按稳定目录重新冻结。隔离`.test-build`中的安装器和八个处理器工具均只读验证、未执行。完整typecheck/lint/build及新增聚焦测试通过；完整`pnpm test/check`仍受既有受限环境SQLite/传输问题影响，不能标整库通过。
 
 Git保护：原始暂存OUCL-Codex-Package.zip、OUCL.txt继续保留，不纳入本次提交；显式路径add/commit --only，不push。历史1A及阶段0缺项不关闭。用户此前允许多agent仅在历史1A上下文，本轮尚未委派子agent。
 

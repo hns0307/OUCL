@@ -16,7 +16,18 @@
 - Maven 坐标只允许安全的 group、artifact、version、可选 classifier/extension，并由坐标确定相对路径。
 - 当前允许仓库：Fabric `maven.fabricmc.net`；Quilt `maven.quiltmc.org` 与其明确引用的 Fabric Maven。禁止 HTTP、凭据、查询串、片段和任意镜像替换。
 
-Forge/NeoForge 安装器、sidecar 获取、下载任务和实例提交属于后续已批准增量，不由本契约声称已完成。
+Forge/NeoForge 已完成官方目录、安装器 sidecar、只读提取、严格 profile 解析与受控处理器基础；下载任务和实例提交仍属于后续增量，不由本契约声称已完成。
+
+## Forge / NeoForge 安装器与处理器边界
+
+- Forge 当前代表候选为 MC 1.20.1 / 47.4.28 / Java 17；NeoForge 生产目录限定 MC 1.21.1 的 `21.1.x` / Java 21。候选仍为 `unverified`，发布前须重新冻结 NeoForge 稳定版本并完成实机矩阵。
+- 安装器 URL 只能由加载器、Minecraft 与加载器版本构造；同一官方 Maven 的 SHA-1 sidecar 与 HEAD 大小共同形成下载规格。已验证安装器只在私有空暂存目录选择性提取 `install_profile.json`、`version.json`、`data/client.lzma`。
+- profile 首先解析成不具执行权限的事实，再由独立策略只接受固定六步客户端链：映射提取、Mojang mappings 下载、映射合并、客户端 JAR 拆分、重命名、二进制补丁。未知工具坐标、顺序、任务、参数、占位符或伪造输出摘要全部拒绝。
+- 处理器主类从已按 profile SHA-1/大小核验的工具 JAR 清单中有界读取，但必须再次匹配加载器与步骤的固定入口表；清单不能自行授权任意 Java 类。
+- 参数只由受控 profile、验证库坐标与私有暂存根展开；不拼 shell，不接受渲染进程路径、URL或参数。处理器专用库会物化到暂存 `libraries`，但不因下载而加入最终游戏 classpath。
+- 串行执行前复验 Java 主版本与 x64，清除 `JAVA_TOOL_OPTIONS`、`_JAVA_OPTIONS`、`JDK_JAVA_OPTIONS`、`CLASSPATH`。取消或超时先终止并等待实际 close，不能在子进程仍存活时发布或清理暂存。
+- 每步输出必须是此前不存在的受控路径；在有界 worker 中计算摘要，JAR/ZIP 还会完整解压验证非空与结构。profile 提供的 SHA-1 强制匹配；本地 SHA-256 另存为产物证据，不冒充上游摘要。
+- 以上已通过官方 Forge/NeoForge 安装器和八个处理器工具的只读结构复验，但尚未装配到实例 `ready` 提交，也未执行实际处理器或启动游戏，因此 Forge/NeoForge 公共创建入口继续关闭。
 
 ## 官方目录适配
 
@@ -66,7 +77,7 @@ Forge/NeoForge 安装器、sidecar 获取、下载任务和实例提交属于后
 ## 主进程公开边界
 
 - `loaders.v1` 已接入 preload 白名单与主进程 sender/envelope/output 三重校验。查询只接收 Minecraft 版本和四选一加载器标识；创建前主进程重新读取官方目录并确认精确版本仍存在。
-- 当前 Fabric/Quilt 使用上述完整安装事务；候选均标记 `unverified`，直到代表矩阵完成真实游戏验收。Forge/NeoForge 返回 `VERSION_UNSUPPORTED`，不会因为契约已列出名称而伪报可安装。
+- 当前 Fabric/Quilt 使用上述完整安装事务；候选均标记 `unverified`，直到代表矩阵完成真实游戏验收。Forge/NeoForge 虽已有目录和受控处理器基础，仍返回 `VERSION_UNSUPPORTED`，直到下载、处理、持久恢复和提交成为同一事务。
 - 创建只返回现有持久任务标识，进度、取消与重连继续复用 `tasks.v1`；渲染进程不能提交 URL、路径、摘要或处理器参数。
 - `instances.v2:list` 从每个权威私有实例记录生成加载器投影；原版明确为 `vanilla`，加载器实例返回固定种类和版本。v1 原版列表保持兼容，v2 不返回根、任务或文件路径。
 
