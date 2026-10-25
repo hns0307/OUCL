@@ -28,7 +28,7 @@ export interface InstanceSummary {
 }
 export type InstallStage = 'metadata' | 'downloading' | 'materializing' | 'committing' | 'completed' | 'failed' | 'cancelled' | 'needsRecovery' | 'queued' | 'preparing';
 export interface TaskSnapshot {
-  taskId: string; kind: 'install' | 'launch' | 'stop'; state: TaskState; stage: InstallStage; revision: number; bytesDone: number;
+  taskId: string; kind: 'install' | 'launch' | 'stop' | 'download'; state: TaskState; stage: InstallStage; revision: number; bytesDone: number;
   bytesTotal?: number; error?: InstanceError;
 }
 export interface InstancePayloads {
@@ -163,9 +163,9 @@ export function isInstanceSummary(value: unknown): value is InstanceSummary {
 /** Validates bounded public progress rather than forwarding a stored task row. */
 export function isTaskSnapshot(value: unknown): value is TaskSnapshot {
   if (!optionalKeys(value, ['taskId', 'kind', 'state', 'stage', 'revision', 'bytesDone'], ['bytesTotal', 'error'])
-    || !uuid(value.taskId) || !['install', 'launch', 'stop'].includes(value.kind as string) || !state(value.state) || typeof value.stage !== 'string' || !STAGES.includes(value.stage as InstallStage)
+    || !uuid(value.taskId) || !['install', 'launch', 'stop', 'download'].includes(value.kind as string) || !state(value.state) || typeof value.stage !== 'string' || !STAGES.includes(value.stage as InstallStage)
     || !integer(value.revision) || value.revision < 1 || !integer(value.bytesDone)
-    || value.kind !== 'install' && ['metadata', 'downloading', 'materializing'].includes(value.stage)
+    || value.kind !== 'install' && value.kind !== 'download' && ['metadata', 'downloading', 'materializing'].includes(value.stage)
     || value.kind === 'install' && value.stage === 'preparing'
     || Object.hasOwn(value, 'bytesTotal') && (!integer(value.bytesTotal) || value.bytesTotal < value.bytesDone)
     || Object.hasOwn(value, 'error') && !isInstanceError(value.error)) return false;

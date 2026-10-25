@@ -13,6 +13,7 @@ import { extractNativeArchives, NativeArchiveError } from '../install/native-arc
 import { parseNativeRequest } from './native-protocol.js';
 import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 import { parseLaunchProfiles } from '../storage/launch-profiles.js';
+import { parseResourceLibrary } from '../storage/resources.js';
 import { parseSettings } from '../storage/settings.js';
 import { parseGameSessions } from '../storage/game-sessions.js';
 
@@ -46,9 +47,12 @@ async function storage(directory: string): Promise<void> {
         let profiles;
         let sessions;
         let settings;
+        let resources;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
+        else if (command.kind === 'resources:get') resources = await store.read('resource-library', parseResourceLibrary);
+        else if (command.kind === 'resources:set') resources = await store.write('resource-library', command.expectedRevision, command.data, parseResourceLibrary);
         else if (command.kind === 'settings:get') settings = await store.read('launch-settings', parseSettings);
         else if (command.kind === 'settings:set') settings = await store.write('launch-settings', command.expectedRevision, command.data, parseSettings);
         else if (command.kind === 'sessions:get') sessions = await store.read('game-sessions', parseGameSessions);
@@ -80,7 +84,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

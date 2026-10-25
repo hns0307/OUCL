@@ -162,8 +162,9 @@ test('installed objects stay owned once while launch tasks, subscriptions, natur
     const installed = await f.service.create(request(50), input); const ready = await finished(f.service, installed.taskId); assert.ok(ready.instance);
     const profiles = new ProfileService(f.storage, { probe: async () => measuredJava }); await profiles.registerJava(measuredJava.executable);
     const account = await profiles.createOffline(request(51), { displayName: '成员', gameName: 'Player_1' });
+    await f.storage.writeSettings(0, { memoryMiB: 3072, isolationDefault: false });
     const processes = new GameProcessService({ probe: { probe: async () => measuredJava }, start: (_file, args, options) => {
-      assert.equal(options.shell, false); assert.ok(args.includes('Player_1')); queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
+      assert.equal(options.shell, false); assert.ok(args.includes('Player_1')); assert.ok(args.includes('-Xmx3072M')); queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
     } });
     game = new LaunchService(f.storage, profiles, f.service, processes, () => 16 * 1024 ** 3); await game.initialize();
     const extra = new GameAdapter(game, async () => rootId); adapter = new InstallerAdapter(f.service, f.storage, extra);
@@ -201,4 +202,16 @@ test('explicit stop is durable, cannot act without confirmation and waits for th
     assert.deepEqual(await game.stop(request(64), launched.taskId, 'force', true), stopped); assert.equal(child.kills, 1);
     assert.equal((await game.session(rootId, launched.taskId)).state, 'exited'); assert.equal(await game.close(), true);
   } finally { child.emit('close', 0, null); await game?.close(); await f.close(); }
+});
+
+test('new inherited isolation captures the saved default and remains stable after settings change and retry', async () => {
+  const f = await fixture();
+  try {
+    await f.storage.writeSettings(0, { memoryMiB: 2048, isolationDefault: false });
+    const chosen = { ...input, isolation: 'inherit' as const }; const accepted = await f.service.create(request(70), chosen);
+    const installed = await finished(f.service, accepted.taskId); assert.equal(installed.instance?.isolation, 'off');
+    await f.storage.writeSettings(1, { memoryMiB: 2048, isolationDefault: true });
+    assert.deepEqual(await f.service.create(request(70), chosen), accepted);
+    assert.equal((await f.service.list(rootId))[0]?.isolation, 'off');
+  } finally { await f.close(); }
 });

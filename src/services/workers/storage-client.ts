@@ -1,4 +1,5 @@
 import type { LaunchSettings } from '../storage/settings.js';
+import type { ResourceLibrary } from '../storage/resources.js';
 import { Worker } from 'node:worker_threads';
 import { randomUUID } from 'node:crypto';
 import type { Execution } from '../../core/task/machine.js';
@@ -13,7 +14,7 @@ import type { TransferRecord } from '../download/types.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
 import type { LaunchProfiles } from '../storage/launch-profiles.js';
 import type { GameSessions } from '../storage/game-sessions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings> };
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -78,7 +79,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -95,6 +96,14 @@ export class StorageClient {
       try { this.worker.postMessage(request); }
       catch { this.pending.delete(request.id); clearTimeout(timer); reject(new WorkerError('INVALID_MESSAGE')); }
     });
+  }
+
+  /** Reads the fixed resource ownership index. */
+  async readResources(): Promise<RecordEnvelope<ResourceLibrary> | undefined> { return (await this.request({ kind: 'resources:get' })).resources; }
+  /** CAS-writes bounded resource ownership metadata through the JSON commit journal. */
+  async writeResources(expectedRevision: number, data: ResourceLibrary): Promise<RecordEnvelope<ResourceLibrary>> {
+    const result = (await this.request({ kind: 'resources:set', expectedRevision, data })).resources;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
   }
 
   /** Reads only the fixed launch settings domain. */

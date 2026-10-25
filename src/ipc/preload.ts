@@ -1,3 +1,4 @@
+import { createResourcesBridge } from './preload-resources.js';
 import { contextBridge, ipcRenderer } from 'electron';
 import { CONTRACT_VERSION, HANDSHAKE_CHANNEL, HANDSHAKE_TIMEOUT_MS, isHandshakeResult } from '../shared/contracts/handshake.js';
 import type { LauncherBridge, HandshakeResult } from '../shared/contracts/handshake.js';
@@ -26,6 +27,7 @@ const bridge: LauncherBridge = Object.freeze({
   ...createInstanceBridge(),
   ...createProfilesBridge(),
   ...createGameBridge(),
+  ...createResourcesBridge(),
   async catalog(query: CatalogQuery): Promise<CatalogResult> {
     const requestId = globalThis.crypto.randomUUID();
     if (!isCatalogQuery(query)) return catalogFailure(requestId, 'INVALID_ARGUMENT', requestId);

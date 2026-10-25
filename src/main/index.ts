@@ -1,4 +1,9 @@
-import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
+import { ResourceService } from '../services/resources/service.js';
+import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../shared/contracts/resources.js';
+import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
+import { handleResources } from '../ipc/resources.js';
+import { ensureChildDirectory } from '../services/install/instance-files.js';
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { mkdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
@@ -33,6 +38,7 @@ import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
+let resources: ResourceService | undefined;
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
@@ -53,7 +59,7 @@ function trustedSender(event: IpcMainInvokeEvent): boolean {
 /** Creates the sandboxed application window and binds subscriptions to its trusted document lifetime. */
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
-    width: 1040, height: 720, minWidth: 720, minHeight: 520, show: false,
+    width: 1180, height: 820, minWidth: 720, minHeight: 520, show: false,
     title: MESSAGES.appName, backgroundColor: '#f4f5f0', autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.cjs'),
@@ -92,11 +98,32 @@ else void app.whenReady().then(async () => {
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
-    installerAdapter = new InstallerAdapter(service, storage, gameAdapter);
+    const resourceService = new ResourceService(storage, service); await resourceService.initialize(); resources = resourceService;
+    const resourceTasks = resources; const games = gameAdapter;
+    installerAdapter = new InstallerAdapter(service, storage, {
+      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id),
+      list: async root => [...await games.list(root), ...await resourceTasks.list(root)],
+      cancel: async (root, id) => { if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
+    });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : [])] : []);
   });
+  for (const channel of RESOURCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleResources(channel, input, trustedSender(event), randomUUID(), (async (selected: ResourceChannel, payload: ResourcePayloads[ResourceChannel], requestId: string) => {
+    if (!resources || !storage) throw new ResourceContractError('UNAVAILABLE');
+    let data: ResourceData[typeof selected];
+    if (selected === 'resources:search' && isResourcePayload(payload, 'resources:search')) data = await resources.client.search(payload);
+    else if (selected === 'resources:versions' && isResourcePayload(payload, 'resources:versions')) data = await resources.client.versions(payload);
+    else if (selected === 'resources:download' && isResourcePayload(payload, 'resources:download')) data = await resources.download(requestId, payload);
+    else if (selected === 'resources:library') data = await resources.library();
+    else if (selected === 'resources:open') {
+      const registration = await storage.readInstallation(); if (!registration) throw new ResourceContractError('ROOT_UNAVAILABLE');
+      const directory = await ensureChildDirectory(registration.data.dataDirectory, 'resource-library');
+      if (!trustedSender(event)) throw new ResourceContractError('INVALID_SENDER');
+      if (await shell.openPath(directory)) throw new ResourceContractError('UNAVAILABLE'); data = { opened: true };
+    } else throw new ResourceContractError('INVALID_ARGUMENT');
+    return data;
+  }) as ResourceDispatcher));
   for (const channel of GAME_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleGame(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!gameAdapter) throw new InstanceContractError('UNAVAILABLE'); return gameAdapter.dispatcher(event.sender.id)(selected, payload, requestId);
   }));
@@ -152,6 +179,6 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
-    installerAdapter?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    installerAdapter?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });

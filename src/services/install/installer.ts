@@ -1,3 +1,6 @@
+import type { DownloadSpec, TransferOptions } from '../download/types.js';
+import type { ObjectRef } from '../objects/store.js';
+import type { ResourceRecord } from '../storage/resources.js';
 import { createHash } from 'node:crypto';
 import { lstat } from 'node:fs/promises';
 import path from 'node:path';
@@ -66,6 +69,17 @@ export class InstallerService {
   private closing?: Promise<void>;
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService) {}
 
+  /** Shares the single object-store owner and bounded coordinator with resource downloads. */
+  async transferResource(spec: DownloadSpec, taskId: string, options: TransferOptions): Promise<ObjectRef> {
+    const runtime = await this.resources();
+    return runtime.coordinator.request(spec, { consumerId: taskId, ...options }).result;
+  }
+  /** Publishes a verified resource into its fixed task namespace; no instance files are touched. */
+  async materializeResource(record: ResourceRecord, object: ObjectRef): Promise<void> {
+    const runtime = await this.resources(); const library = await ensureChildDirectory(runtime.dataDirectory, 'resource-library');
+    await runtime.views.materialize(library, `${record.kind}/${record.taskId}/${record.filename}`, record.spec, object, { mode: 'prefer-link' });
+  }
+
   private async resources(): Promise<Runtime> {
     this.runtime ??= (async () => {
       const registration = await this.storage.readInstallation(); if (!registration) throw new InstallerError('ROOT_UNAVAILABLE');
@@ -118,7 +132,9 @@ export class InstallerService {
     if (this.closed) throw new InstallerError('INSTALL_FAILED');
     const runtime = await this.resources(); if (runtime.rootId !== input.rootId) throw new InstallerError('ROOT_UNAVAILABLE');
     // Validation happens before task acceptance; display names never enter directory paths.
-    const seed = parseInstanceSummary({ ...input, instanceId: input.rootId, taskId: input.rootId, state: 'installing', revision: 1 });
+    const defaultIsolation = (await this.storage.readSettings())?.data.isolationDefault ?? true;
+    const seed = parseInstanceSummary({ ...input, isolation: input.isolation === 'inherit' ? defaultIsolation ? 'on' : 'off' : input.isolation,
+      instanceId: input.rootId, taskId: input.rootId, state: 'installing', revision: 1 });
     const digest = createHash('sha256').update(JSON.stringify(input)).digest('hex');
     const task = await this.storage.accept(input.rootId, requestId, 'install', digest);
     if (this.live.has(task.taskId)) return { taskId: task.taskId };
@@ -126,7 +142,7 @@ export class InstallerService {
     if (old) {
       const summary = old.data.summary;
       if (summary.rootId !== input.rootId || summary.taskId !== task.taskId || summary.mcVersionId !== input.mcVersionId
-        || summary.displayName !== input.displayName || summary.isolation !== input.isolation) throw new InstallerError('NEEDS_RECOVERY');
+        || summary.displayName !== input.displayName || input.isolation !== 'inherit' && summary.isolation !== input.isolation) throw new InstallerError('NEEDS_RECOVERY');
       await this.index(summary); return { taskId: task.taskId };
     }
     const index = await this.storage.readInstances();
