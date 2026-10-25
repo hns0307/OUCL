@@ -160,19 +160,22 @@ test('installed objects stay owned once while launch tasks, subscriptions, natur
   const f = await fixture(); const child = new FakeGame(); let game: LaunchService | undefined; let adapter: InstallerAdapter | undefined;
   try {
     const installed = await f.service.create(request(50), input); const ready = await finished(f.service, installed.taskId); assert.ok(ready.instance);
-    const profiles = new ProfileService(f.storage, { probe: async () => measuredJava }); await profiles.registerJava(measuredJava.executable);
+    const profiles = new ProfileService(f.storage, { probe: async () => measuredJava });
     const account = await profiles.createOffline(request(51), { displayName: '成员', gameName: 'Player_1' });
     await f.storage.writeSettings(0, { memoryMiB: 3072, isolationDefault: false });
     const processes = new GameProcessService({ probe: { probe: async () => measuredJava }, start: (_file, args, options) => {
       assert.equal(options.shell, false); assert.ok(args.includes('Player_1')); assert.ok(args.includes('-Xmx3072M')); queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
     } });
-    game = new LaunchService(f.storage, profiles, f.service, processes, () => 16 * 1024 ** 3); await game.initialize();
+    let javaPrepared = false;
+    game = new LaunchService(f.storage, profiles, f.service, processes, () => 16 * 1024 ** 3, { ensure: async (major, taskId, signal) => {
+      assert.equal(major, 17); assert.ok(taskId); assert.equal(signal.aborted, false); javaPrepared = true; return profiles.registerJava(measuredJava.executable);
+    } }); await game.initialize();
     const extra = new GameAdapter(game, async () => rootId); adapter = new InstallerAdapter(f.service, f.storage, extra);
     const payload = { instanceId: ready.instance.instanceId, accountId: account.accountId, expectedRevision: ready.instance.revision };
     const accepted = await game.launch(request(52), payload); assert.deepEqual(await game.launch(request(52), payload), accepted);
     const events: TaskChangedEvent[] = []; const dispatch = adapter.dispatcher(1, event => { events.push(event); });
     const subscription = await dispatch('tasks:subscribe', { taskId: accepted.taskId }, request(53)); assert.equal(subscription.snapshot.kind, 'launch');
-    const launched = await gameFinished(game, accepted.taskId); assert.equal(launched.task.execution.state, 'completed');
+    const launched = await gameFinished(game, accepted.taskId); assert.equal(launched.task.execution.state, 'completed'); assert.equal(javaPrepared, true);
     const queried = await dispatch('tasks:get', { taskId: accepted.taskId }, request(54)); assert.ok(queried.result && 'sessionId' in queried.result); assert.equal(queried.result.sessionId, accepted.taskId);
     await new Promise<void>(resolve => setTimeout(resolve, 160)); assert.ok(subscription.snapshot.state === 'completed' || events.some(event => event.payload.state === 'completed'));
     assert.equal((await game.session(rootId, accepted.taskId)).state, 'running'); assert.equal(await game.close(), false); assert.equal(child.kills, 0);

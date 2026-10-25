@@ -3,7 +3,7 @@ import { ResourceContractError, isResourceData, isResourceVersion, resourceFilen
 import type { ResourceData, ResourcePayloads, ResourceQuery, ResourceVersion, ResourceKind } from '../../shared/contracts/resources.js';
 import type { DownloadSpec } from '../download/types.js';
 
-const AGENT = 'hns0307/OUCL/0.2.0 (https://github.com/hns0307/OUCL)';
+const AGENT = 'hns0307/OUCL/0.2.1 (https://github.com/hns0307/OUCL)';
 const LIMIT = 8 * 1024 * 1024;
 function object(x: unknown): Record<string, unknown> {
   if (typeof x !== 'object' || x === null || Array.isArray(x)) throw new ResourceContractError('NETWORK_FAILED'); return x as Record<string, unknown>;

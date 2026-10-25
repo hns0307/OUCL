@@ -13,6 +13,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec install-electron
       - run: pnpm check
+      - run: pnpm test:bootstrap
       - run: pnpm test:spikes
       - run: pnpm test:electron-sqlite
       - run: pnpm test:workers-runtime

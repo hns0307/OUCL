@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { ExpectedArtifact } from '../../core/download/integrity.js';
 
-export interface TrustAnchor { kind: 'mojang-version' | 'mojang-assets' | 'adoptium-runtime' | 'modrinth-version'; algorithm: 'sha1' | 'sha256'; digest: string }
+export interface TrustAnchor { kind: 'mojang-version' | 'mojang-assets' | 'mojang-runtime' | 'adoptium-runtime' | 'modrinth-version'; algorithm: 'sha1' | 'sha256'; digest: string }
 export interface Provenance { schemaVersion: 1; objectDigest: string; expected: ExpectedArtifact; anchor: TrustAnchor }
 export type ObjectCode = 'INVALID_ARTIFACT' | 'HASH_MISMATCH' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'OBJECT_IO';
 /** A fixed object-store failure that never carries a local path or upstream metadata. */
@@ -23,7 +23,7 @@ export function definition(expected: unknown, anchor: unknown): { expected: Expe
     || typeof expected.size !== 'number' || !Number.isSafeInteger(expected.size) || expected.size < 0 || expected.size > 64 * 1024 ** 3
     || typeof expected.provenanceId !== 'string' || !/^[a-zA-Z0-9_.:-]{1,160}$/.test(expected.provenanceId)
     || !record(anchor) || !keys(anchor, ['kind', 'algorithm', 'digest'])
-    || typeof anchor.kind !== 'string' || !['mojang-version', 'mojang-assets', 'adoptium-runtime', 'modrinth-version'].includes(anchor.kind)
+    || typeof anchor.kind !== 'string' || !['mojang-version', 'mojang-assets', 'mojang-runtime', 'adoptium-runtime', 'modrinth-version'].includes(anchor.kind)
     || typeof anchor.algorithm !== 'string' || !['sha1', 'sha256'].includes(anchor.algorithm) || !hex(anchor.digest, anchor.algorithm === 'sha1' ? 40 : 64)) throw new ObjectError('INVALID_ARTIFACT');
   return { expected: { algorithm: expected.algorithm as ExpectedArtifact['algorithm'], digest: expected.digest.toLowerCase(), size: expected.size, provenanceId: expected.provenanceId },
     anchor: { kind: anchor.kind as TrustAnchor['kind'], algorithm: anchor.algorithm as TrustAnchor['algorithm'], digest: anchor.digest.toLowerCase() } };

@@ -31,6 +31,7 @@ import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '..
 import { handleProfiles } from '../ipc/profiles.js';
 import { profileDispatcher } from '../ipc/profiles-adapter.js';
 import { LaunchService } from '../services/launch/service.js';
+import { JavaRuntimeService } from '../services/java/runtime.js';
 import { GameAdapter } from '../ipc/game-adapter.js';
 import { handleGame } from '../ipc/game.js';
 import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
@@ -94,7 +95,7 @@ else void app.whenReady().then(async () => {
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
     await service.initialize(); installer = service;
-    launches = new LaunchService(storage, profiles, service); await launches.initialize();
+    launches = new LaunchService(storage, profiles, service, undefined, undefined, new JavaRuntimeService(profiles, service)); await launches.initialize();
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });

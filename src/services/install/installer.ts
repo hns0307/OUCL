@@ -2,7 +2,7 @@ import type { DownloadSpec, TransferOptions } from '../download/types.js';
 import type { ObjectRef } from '../objects/store.js';
 import type { ResourceRecord } from '../storage/resources.js';
 import { createHash } from 'node:crypto';
-import { lstat } from 'node:fs/promises';
+import { lstat, mkdtemp, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { release } from 'node:os';
 import { resolveClientVersion } from '../../core/version/resolve.js';
@@ -29,6 +29,8 @@ import { ensureChildDirectory, prepareInstanceDirectories, prepareInstanceNative
 import { hasCode } from '../storage/files.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { verifyLaunchInputs } from './launch-inputs.js';
+import type { JavaPackage } from '../java/runtime.js';
+import { guardDirectory, hasCode as fileHasCode } from '../storage/files.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -68,6 +70,35 @@ export class InstallerService {
   private closed = false;
   private closing?: Promise<void>;
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService) {}
+
+  /** Publishes an immutable, content-addressed official JVM only after all files verify. Never overwrites an existing runtime. */
+  async prepareJava(pack: JavaPackage, consumerId: string, signal: AbortSignal): Promise<string> {
+    const runtime = await this.resources();
+    const parent = await ensureChildDirectory(runtime.dataDirectory, 'runtimes', 'java');
+    const destination = path.join(parent, pack.digest);
+    let exists = false;
+    try { await guardDirectory(destination); exists = true; } catch (error) { if (!fileHasCode(error, 'ENOENT')) throw error; }
+    if (exists) {
+      for (const file of pack.files) {
+        if (signal.aborted) throw new InstallerError('CANCELLED');
+        const target = path.join(destination, file.relative); await guardDirectory(path.dirname(target));
+        const stat = await lstat(target); if (!stat.isFile() || stat.isSymbolicLink()) throw new InstallerError('NEEDS_RECOVERY');
+        const hash = await runtime.hashes.hash(target, { maximumBytes: file.spec.expected.size, signal });
+        if (hash.size !== file.spec.expected.size || hash.sha1 !== file.spec.expected.digest) throw new InstallerError('NEEDS_RECOVERY');
+      }
+    } else {
+      const staging = await mkdtemp(path.join(parent, '.preparing-'));
+      // Interrupted staging is never a published runtime. Verified objects remain resumable in the shared store.
+      for (const file of pack.files) {
+        if (signal.aborted) throw new InstallerError('CANCELLED');
+        const object = await runtime.coordinator.request(file.spec, { consumerId, signal }).result;
+        await runtime.views.materialize(staging, file.relative, file.spec, object, { mode: 'copy', signal });
+      }
+      if (signal.aborted) throw new InstallerError('CANCELLED');
+      await guardDirectory(parent); await rename(staging, destination);
+    }
+    return path.join(destination, 'bin/java.exe');
+  }
 
   /** Shares the single object-store owner and bounded coordinator with resource downloads. */
   async transferResource(spec: DownloadSpec, taskId: string, options: TransferOptions): Promise<ObjectRef> {

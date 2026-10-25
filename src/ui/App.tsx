@@ -42,7 +42,7 @@ export function App() {
         <span className={`instance-icon icon-${index % 3}`}>◈</span><span><strong>{item.displayName}</strong><small>{item.mcVersionId} · {item.state === 'ready' ? MESSAGES.stateReady : item.state === 'installing' ? MESSAGES.stateInstalling : item.state === 'needsRecovery' ? MESSAGES.stageRecovery : item.state === 'cancelled' ? MESSAGES.stageCancelled : MESSAGES.stageFailed}</small></span><span className="selected-dot" />
       </button>)}</div>
       <button className="add-game secondary" onClick={() => { setDownloadTab('minecraft'); state.setPage('downloads'); }}>＋ {MESSAGES.uiInstallGame}</button>
-      <div className="sidebar-bottom"><span className="tiny-square" /><span>OUCL <strong>0.2.0</strong></span><small>{MESSAGES.uiLocalLibrary}</small></div>
+      <div className="sidebar-bottom"><span className="tiny-square" /><span>OUCL <strong>0.2.1</strong></span><small>{MESSAGES.uiLocalLibrary}</small></div>
     </aside>
     <main className="main-content"><div className="page-heading"><div><span className="eyebrow">{state.page === 'home' ? 'YOUR NEXT ADVENTURE' : state.page === 'downloads' ? 'EXPLORE & DOWNLOAD' : state.page === 'announcements' ? 'STAY CONNECTED' : 'MAKE IT YOURS'}</span><h1>{MESSAGES[NAV.find(n => n.id === state.page)!.label]}</h1><p>{state.page === 'home' ? MESSAGES.uiHomeSubtitle : state.page === 'downloads' ? MESSAGES.uiDownloadsSubtitle : state.page === 'announcements' ? MESSAGES.uiAnnouncementsSubtitle : MESSAGES.uiSettingsSubtitle}</p></div>
       {activeTasks > 0 && <button className="task-pill" onClick={() => { state.setPage('downloads'); }}>{activeTasks} {MESSAGES.uiActiveTasks}</button>}</div>
@@ -60,7 +60,7 @@ export function App() {
         <div hidden={downloadTab === 'minecraft'}><ResourceBrowser enabled={has('resources.v1') && state.page === 'downloads' && downloadTab !== 'minecraft'} kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
       </div>
       <div hidden={state.page !== 'announcements'}><AnnouncementsPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} /></div>
-      <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.2.0</span></footer>
+      <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.2.1</span></footer>
     </main></div>
   </div>;
 }

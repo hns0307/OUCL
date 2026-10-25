@@ -59,6 +59,7 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
   return <div className="launch-controls" data-game-state={session?.state ?? 'idle'}>
     <button className="primary" disabled={pending || busy || !accountId} onClick={() => { void launch(); }}>{pending ? MESSAGES.launchPreparing : session?.state === 'running' ? MESSAGES.gameRunning : MESSAGES.launchGame}</button>
     {!accountId && <span className="storage-note">{MESSAGES.chooseAccountFirst}</span>}
+    {pending && !session && <p className="storage-note" role="status">{MESSAGES.javaAutoPreparing}</p>}
     {session && <p role="status">{session.state === 'running' ? MESSAGES.gameRunning : session.state === 'stopping' ? MESSAGES.gameStopping : session.state === 'unknown' ? MESSAGES.gameUnknown : `${MESSAGES.gameExited}${session.exitCode === undefined ? '' : ` · ${MESSAGES.exitCode} ${session.exitCode}`}`}</p>}
     {session?.state === 'running' && <><p className="storage-note">{MESSAGES.gameKeepAlive}</p><label className="force-confirm"><input type="checkbox" checked={confirmed} onChange={event => { setConfirmed(event.target.checked); }} />{MESSAGES.confirmForceStop}</label><button disabled={!confirmed || pending} onClick={() => { void stop(); }}>{MESSAGES.forceStop}</button></>}
     {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}

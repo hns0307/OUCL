@@ -13,9 +13,9 @@ export interface MetadataReader { read(url: string, expectedSha1?: string): Prom
 
 /** Bounded HTTPS transport. Inject fetch for deterministic tests; redirects/credentials are disabled. */
 export class OfficialMetadataReader implements MetadataReader {
-  constructor(private readonly request: typeof fetch = fetch) {}
+  constructor(private readonly request: typeof fetch = fetch, private readonly accepts: (url: string) => boolean = isOfficialMetadataUrl) {}
   async read(url: string, expectedSha1?: string): Promise<JsonDocument> {
-    if (!isOfficialMetadataUrl(url) || expectedSha1 !== undefined && !/^[a-f0-9]{40}$/.test(expectedSha1)) throw new CatalogError('UNTRUSTED_MANIFEST');
+    if (!this.accepts(url) || expectedSha1 !== undefined && !/^[a-f0-9]{40}$/.test(expectedSha1)) throw new CatalogError('UNTRUSTED_MANIFEST');
     const controller = new AbortController(); const deadline = setTimeout(() => { controller.abort(); }, 12000);
     let response: Response | undefined;
     try {

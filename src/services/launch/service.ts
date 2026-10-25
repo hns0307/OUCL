@@ -13,6 +13,7 @@ import { LAUNCH_ERRORS } from '../storage/game-sessions.js';
 import type { GameSessions, LaunchFailure, SavedSession } from '../storage/game-sessions.js';
 import type { RecordEnvelope } from '../storage/records.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import type { JavaRuntimeService } from '../java/runtime.js';
 
 export interface LaunchRequest { instanceId: string; accountId: string; expectedRevision: number }
 interface Job { task: StoredTask; controller: AbortController; changes: Promise<void>; done: Promise<void> }
@@ -36,7 +37,8 @@ export class LaunchService {
   private closed = false;
   private idleListener?: () => void;
   constructor(private readonly storage: StorageClient, private readonly profiles: Pick<ProfileService, 'list'>,
-    private readonly installer: Pick<InstallerService, 'prepareLaunch'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem) {}
+    private readonly installer: Pick<InstallerService, 'prepareLaunch'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem,
+    private readonly javaRuntime?: Pick<JavaRuntimeService, 'ensure'>) {}
 
   /** Normal restart preserves exited history. A previous running record cannot become an owned process by PID guesswork. */
   async initialize(): Promise<void> {
@@ -75,15 +77,18 @@ export class LaunchService {
       this.start(task, async job => {
         const accountData = await this.profiles.list(); const account = accountData.accounts.find(item => item.accountId === canonical.accountId);
         if (!account) throw new LaunchServiceError('AUTH_REQUIRED');
-        const java = accountData.javas.find(item => item.javaId === accountData.selectedJavaId); if (!java) throw new GameProcessError('JAVA_INCOMPATIBLE');
         if (2048 * 1024 ** 2 > this.physicalMemory() * 0.75) throw new LaunchPlanError('MEMORY_OUT_OF_RANGE');
         const record = await this.storage.readInstance(canonical.instanceId);
         if (!record || record.data.summary.rootId !== rootId || record.data.phase !== 'ready') throw new GameProcessError('LAUNCH_FAILED');
         if (record.revision !== canonical.expectedRevision) throw new LaunchServiceError('REVISION_CONFLICT');
         const verified = await this.installer.prepareLaunch(canonical.instanceId, canonical.expectedRevision, job.controller.signal);
         this.check(job);
+        const java = this.javaRuntime ? await this.javaRuntime.ensure(verified.prepared.version.javaMajor, task.taskId, job.controller.signal)
+          : accountData.javas.find(item => item.javaId === accountData.selectedJavaId);
+        if (!java) throw new GameProcessError('JAVA_INCOMPATIBLE');
+        this.check(job);
         const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: (await this.storage.readSettings())?.data.memoryMiB ?? 2048, launcherVersion: '0.2.0' });
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: (await this.storage.readSettings())?.data.memoryMiB ?? 2048, launcherVersion: '0.2.1' });
         await this.event(job, 'transferred'); this.check(job); await this.event(job, 'verified');
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2 });
