@@ -24,3 +24,9 @@ Forge/NeoForge 安装器、sidecar 获取、下载任务和实例提交属于后
 - Quilt 固定读取 `meta.quiltmc.org/v3/versions/loader/{minecraft}` 与对应的 `/{loader}/profile/json`。
 - URL 由主进程按受控标识构造，拒绝调用方 URL、重定向、查询串、凭据和非固定 API 版本；响应仍经过既有 2 MiB 上限、超时与严格 UTF-8/JSON 校验。
 - 响应 SHA-256 与精确来源 URL 作为“该元数据响应”的来源证据保存；它不替代 profile 所引用 JAR 的上游摘要。
+
+## 公共契约版本
+
+- `loaders.v1` 固定两个方法：按 Minecraft 版本及加载器查询候选，以及创建带加载器的新隔离实例任务。创建请求只含根标识、版本标识、显示名和隔离选项，不接受路径、URL或任意安装器参数。
+- 原 `instances.v1` 的原版创建和返回结构保持不变。`instances.v2` 的投影为每个实例明确返回 `vanilla`，或加载器种类及固定版本；不暴露根、任务、文件路径和原始元数据。
+- 未完整装配安装事务前不在握手中公布这两个 capability，防止客户端把契约存在误认为功能可用。
