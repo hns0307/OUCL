@@ -26,3 +26,9 @@
 安装后审查：Vite传递构建依赖lightningcss及其win32二进制1.33.0均声明MPL-2.0，已读取所装包LICENSE与package.json；作为构建工具保留原包声明，不修改或复制其源码，不放入应用运行载荷。许可证检查仅为这两个固定包加入已审查构建例外，不全局放行任意MPL包。发布前仍需对实际分发载荷及Electron第三方声明逐项归档，此次不作为法律审查结论。
 
 Electron45包不再包含自动postinstall，CI和复现需要显式`pnpm exec install-electron`；其install.js使用包内checksums.json校验发行下载。pnpm12的构建许可采用allowBuilds，仅放行esbuild；未使用全局允许脚本。依据：[pnpm构建设置](https://pnpm.io/settings/build)。
+
+## Mod 声明解析依赖（2026-10-26）
+
+用户已在四加载器与 Mod 管理方案中明确批准采用 `smol-toml 1.9.0`，用于解析 Forge/NeoForge JAR 内的标准 TOML 声明，不使用正则模拟 TOML。npm 官方 registry 记录的固定版本解包体积为 139963 字节，许可证为 BSD-3-Clause，无声明的运行时依赖；包由 squirrelchat/smol-toml 上游维护。安装后 `pnpm audit --prod` 报告 0 个已知漏洞，仓库许可证检查识别 128 个包、无待审例外。固定版本的 registry integrity 为 `sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==`。
+
+本依赖只进入受限 JAR 声明解析路径；安装器执行、压缩边界与递归依赖解析仍由 OUCL 自身的有界 worker 和事务编排控制。上述审计是截至核验时的工具输出，不构成永久无漏洞保证。
