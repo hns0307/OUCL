@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 
 const metadata = JSON.parse(await readFile('package.json', 'utf8'));
-const evidence = path.resolve('docs/validation/A1-09-exe'); await mkdir(evidence, { recursive: true });
+const evidence = path.resolve('docs/validation/UI-0.2.0'); await mkdir(evidence, { recursive: true });
 const directory = path.resolve('release', `OUCL-${metadata.version}-win32-x64`);
 const profile = await mkdtemp(path.join(tmpdir(), 'oucl-package-smoke-'));
 const environment = { ...process.env };
@@ -84,9 +84,9 @@ try {
   const observed = evaluated.result.value;
   assert.ok(observed.connected && observed.noNode);
   assert.equal(observed.title, 'OUCL');
-  assert.deepEqual([...observed.methods].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'stopGame', 'subscribeTask']);
+  assert.deepEqual([...observed.methods].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'downloadResource', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateSettings']);
   assert.equal(observed.handshake.ok, true);
-  assert.deepEqual(observed.handshake.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1']);
+  assert.deepEqual(observed.handshake.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1']);
   assert.ok((await lstat(path.join(profile, 'metadata', 'tasks.sqlite'))).isFile(), 'METADATA_NOT_IN_TEMP_PROFILE');
   const source = await readFile('dist/main/index.cjs');
   const packaged = await readFile(path.join(directory, 'resources/app/dist/main/index.cjs'));

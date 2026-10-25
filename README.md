@@ -1,6 +1,6 @@
 # OUCL
 
-面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，最终需交付可运行Windows exe中的下载与启动。已有基础策略、共享下载协调、可信安装计划、存储/对象/worker、目录选择、官方版本浏览及真实制品续传验证；界面安装和实际启动仍未完成。旧便携目录仍为此前空骨架，不能当最终exe。
+面向高校社团的 Minecraft Java 版桌面启动器。0.1.0已完成用户实测的原版离线下载与启动；0.2.0提供首页、下载、公告、设置四页，左侧真实实例列表、右侧离线人物档案，以及Modrinth的Mod、材质包和光影资源库下载。资源仅下载和校验，不自动安装加载器或修改实例；公告暂为UI。内存和新实例隔离默认值可保存并实际生效。
 
 ## 开始工作
 
@@ -23,7 +23,11 @@ pnpm start
 
 `pnpm test`后可运行`node scripts/verify-download.mjs`验证真实官方客户端下载、取消/重开续传和对象复用；它使用临时目录并清理，不启动游戏。证据见[A1-05传输报告](docs/validation/A1-05-transfer/REPORT.md)。
 
-`pnpm package:dir`生成新的`release/OUCL-0.0.0-win32-x64/OUCL.exe`便携目录，已存在同名目录则拒绝覆盖。`pnpm smoke:package`验证真实包默认入口。它是未签名工程预览，无安装器及游戏功能。
+`pnpm package:dir`生成新的`release/OUCL-0.2.0-win32-x64/OUCL.exe`便携目录，已存在同名目录则拒绝覆盖。运行需保留整个目录；`pnpm smoke:package`验证真实包默认入口。包未签名，不含安装器、Java或Minecraft本体。
+
+使用顺序：设置页选择游戏目录和适配的Java → 首页新建离线档案 → 下载页安装Minecraft → 左侧选择实例，在右侧启动。Mod等资源可在下载页搜索、选择版本和文件，下载后在资源库查看。
+
+执行`pnpm test`后，可运行`node scripts/verify-resources.mjs`验证三类真实资源及重开保持；`node scripts/verify-resource-ui.mjs`从独立Electron界面提交下载并验证切页后继续。两者只使用新的`.test-build`目录。验证报告见[0.2.0记录](docs/validation/UI-0.2.0/REPORT.md)，契约见[设置](docs/SETTINGS.md)和[资源库](docs/RESOURCES.md)。
 
 证据：[骨架验证报告](docs/validation/P0-08/REPORT.md)、[工程ADR](docs/adr/ADR-003-engineering-baseline.md)、[阶段0实验报告](spikes/phase0-local/REPORT.md)、[依赖评估](docs/DEPENDENCIES.md)。
 

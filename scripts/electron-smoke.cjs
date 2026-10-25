@@ -4,7 +4,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 
 app.disableHardwareAcceleration();
-const timeout = setTimeout(() => { console.error('SMOKE_TIMEOUT'); app.exit(1); }, 20000);
+const timeout = setTimeout(() => { console.error('SMOKE_TIMEOUT'); app.exit(1); }, 45000);
 let finished = false;
 
 async function run(window) {
@@ -23,14 +23,15 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'stopGame', 'subscribeTask']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'downloadResource', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateSettings']);
     assert.ok(renderer.nodeAbsent);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1']);
     await window.webContents.executeJavaScript(`(async () => {
-      const fields = document.querySelectorAll('.account-inputs input');
+      document.querySelector('.account-chooser .text-button').click(); await new Promise(resolve=>setTimeout(resolve,80));
+      const fields = document.querySelectorAll('.account-form input');
       for (const [index,value] of ['Smoke member','OUCL_Smoke'].entries()) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(fields[index],value); fields[index].dispatchEvent(new Event('input',{bubbles:true})); }
-      await new Promise(resolve=>setTimeout(resolve,100)); document.querySelectorAll('.profile-card')[1].querySelector('button').click();
+      await new Promise(resolve=>setTimeout(resolve,100)); document.querySelector('.account-form button[type=submit]').click();
       const deadline=Date.now()+3000; while(!document.querySelector('select[aria-label="选择离线账户"] option')?.textContent.includes('OUCL_Smoke') && Date.now()<deadline) await new Promise(resolve=>setTimeout(resolve,30));
     })()`);
     const accounts = await window.webContents.executeJavaScript('window.oucl.listAccounts()');
@@ -58,12 +59,25 @@ async function run(window) {
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-09-launch-ui/game');
+    const directory = path.resolve('docs/validation/UI-0.2.0');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
-    await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);
-    await new Promise(resolve => setTimeout(resolve, 150));
-    await writeFile(path.join(directory, 'catalog.png'), (await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 })).toPNG());
+    for (const [index, name] of [[0, 'home'], [1, 'downloads'], [2, 'announcements'], [3, 'settings']]) {
+      await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[${index}].click()`);
+      await new Promise(resolve => setTimeout(resolve, 120));
+      await writeFile(path.join(directory, `${name}.png`), (await window.webContents.capturePage()).toPNG());
+      const overflow = await window.webContents.executeJavaScript('document.documentElement.scrollWidth > innerWidth'); assert.equal(overflow, false, name);
+    }
+    await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[3].click(); document.querySelectorAll('.setting-row input')[0].focus()`);
+    const settings = await window.webContents.executeJavaScript(`(async()=>{
+      const old = await window.oucl.getSettings(); const changed = await window.oucl.updateSettings(crypto.randomUUID(), {expectedRevision:old.data.revision,patch:{memoryMiB:1024,isolationDefault:false}});
+      const stale = await window.oucl.updateSettings(crypto.randomUUID(), {expectedRevision:old.data.revision,patch:{memoryMiB:2048}});
+      return {changed, stale, actual:await window.oucl.getSettings()};
+    })()`);
+    assert.equal(settings.changed.ok,true); assert.equal(settings.stale.error.code,'REVISION_CONFLICT'); assert.equal(settings.actual.data.memoryMiB,1024);
+    window.setSize(720, 520); await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[0].click()`); await new Promise(resolve=>setTimeout(resolve,150));
+    assert.equal(await window.webContents.executeJavaScript('document.documentElement.scrollWidth > innerWidth'),false);
+    await writeFile(path.join(directory,'small-window.png'),(await window.webContents.capturePage()).toPNG());
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
@@ -72,6 +86,7 @@ async function run(window) {
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
       officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
       versionSelectionRendered: confirmation.selected, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
+      fourPagesRendered: true, smallWindowNoHorizontalOverflow: true, settingsSaveAndConflict: true,
       packagedPayload: false,
     };
     await writeFile(path.join(directory, 'smoke.json'), JSON.stringify(report, null, 2));

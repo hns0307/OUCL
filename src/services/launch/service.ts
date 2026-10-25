@@ -83,7 +83,7 @@ export class LaunchService {
         const verified = await this.installer.prepareLaunch(canonical.instanceId, canonical.expectedRevision, job.controller.signal);
         this.check(job);
         const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: (await this.storage.readSettings())?.data.memoryMiB ?? 2048, launcherVersion: '0.1.0' });
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: (await this.storage.readSettings())?.data.memoryMiB ?? 2048, launcherVersion: '0.2.0' });
         await this.event(job, 'transferred'); this.check(job); await this.event(job, 'verified');
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2 });

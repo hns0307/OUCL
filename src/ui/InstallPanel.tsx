@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
-import type { InstanceSummary, InstallStage, TaskSnapshot } from '../shared/contracts/instances.js';
-import { LaunchControls, useGameSessions } from './LaunchControls.js';
+import type { InstallStage, TaskSnapshot } from '../shared/contracts/instances.js';
+import { useLauncher } from './launcher-state.js';
 
 const STAGE_MESSAGES: Record<InstallStage, MessageKey> = { metadata: 'stageMetadata', downloading: 'stageDownloading', materializing: 'stageMaterializing',
   committing: 'stageCommitting', completed: 'stageCompleted', failed: 'stageFailed', cancelled: 'stageCancelled', needsRecovery: 'stageRecovery', queued: 'stageQueued', preparing: 'stagePreparing' };
@@ -13,7 +13,7 @@ function bytes(value: number): string {
 }
 function terminal(snapshot: TaskSnapshot): boolean { return ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(snapshot.state); }
 
-function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled: (snapshot: TaskSnapshot) => void }) {
+export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled: (snapshot: TaskSnapshot) => void }) {
   const [snapshot, setSnapshot] = useState(initial); const [error, setError] = useState<MessageKey>(); const [cancelling, setCancelling] = useState(false);
   useEffect(() => {
     if (!window.oucl) return; let active = true; let dispose: (() => void) | undefined; let timer: ReturnType<typeof setInterval> | undefined;
@@ -45,53 +45,30 @@ function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled:
 }
 
 /** Connects the approved vanilla instance/task flow; all network, files and process work stays behind preload. */
-export function InstallPanel({ enabled, rootId, versionId, gameEnabled, accountId }: { enabled: boolean; rootId: string | undefined; versionId: string | undefined; gameEnabled: boolean; accountId: string | undefined }) {
-  const sessions = useGameSessions(gameEnabled, rootId);
+export function InstallPanel({ enabled, rootId, versionId }: { enabled: boolean; rootId: string | undefined; versionId: string | undefined }) {
+  const { settings, tasks, refreshGame } = useLauncher();
   const [displayName, setDisplayName] = useState(''); const [isolation, setIsolation] = useState<'on' | 'off'>('on');
-  const [instances, setInstances] = useState<InstanceSummary[]>([]); const [tasks, setTasks] = useState<TaskSnapshot[]>([]);
-  const [busy, setBusy] = useState(false); const [error, setError] = useState<MessageKey>(); const [refresh, setRefresh] = useState(0);
+  const [busy, setBusy] = useState(false); const [error, setError] = useState<MessageKey>();
   const requestId = useRef<string | undefined>(undefined); const accepted = useRef(false);
-  const refreshList = useCallback(() => { setRefresh(value => value + 1); }, []);
-  const taskSettled = useCallback((snapshot: TaskSnapshot) => {
-    if (snapshot.state === 'failed' || snapshot.state === 'cancelled') { accepted.current = false; requestId.current = undefined; }
-    refreshList();
-  }, [refreshList]);
   useEffect(() => { setDisplayName(versionId ?? ''); requestId.current = undefined; accepted.current = false; setError(undefined); }, [versionId]);
-  useEffect(() => {
-    if (!enabled || !rootId || !window.oucl) return; let active = true;
-    void Promise.all([window.oucl.listInstances({ rootId, limit: 100 }), window.oucl.listTasks({ limit: 100 })]).then(([listed, current]) => {
-      if (!active) return;
-      if (listed.ok) setInstances(listed.data.items); else setError(listed.error.messageKey);
-      if (current.ok) setTasks(current.data.items.filter(task => task.kind === 'install').slice(-6)); else setError(current.error.messageKey);
-    }).catch(() => { if (active) setError('unavailable'); });
-    return () => { active = false; };
-  }, [enabled, rootId, refresh]);
+  useEffect(() => { setIsolation(settings?.isolationDefault === false ? 'off' : 'on'); }, [versionId, settings?.isolationDefault]);
   async function install(): Promise<void> {
     if (!window.oucl || !rootId || !versionId || busy || accepted.current) return;
     setBusy(true); setError(undefined); requestId.current ??= crypto.randomUUID();
     try {
       const result = await window.oucl.createInstance(requestId.current, { rootId, mcVersionId: versionId, displayName: displayName.trim(), isolation });
       if (!result.ok) { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT') requestId.current = undefined; return; }
-      accepted.current = true; const task = await window.oucl.getTask(result.data.taskId);
-      if (task.ok) setTasks(current => [...current.filter(item => item.taskId !== result.data.taskId), task.data.snapshot].slice(-6));
-      refreshList();
+      accepted.current = true; await refreshGame();
     } catch { setError('unavailable'); } finally { setBusy(false); }
   }
   if (!enabled) return null;
-  return <div className="installation-column">
-    <section className="card install-confirm" aria-labelledby="install-title"><h2 id="install-title">{MESSAGES.installTitle}</h2>
-      {!versionId ? <p>{MESSAGES.installPrompt}</p> : <><div className="selected-version">{versionId}</div>
-        <label>{MESSAGES.instanceName}<input value={displayName} maxLength={80} onChange={event => { setDisplayName(event.target.value); requestId.current = undefined; accepted.current = false; }} /></label>
-        <select aria-label={MESSAGES.isolationOn} value={isolation} onChange={event => { setIsolation(event.target.value as 'on' | 'off'); requestId.current = undefined; accepted.current = false; }}><option value="on">{MESSAGES.isolationOn}</option><option value="off">{MESSAGES.isolationOff}</option></select>
-        <p className="storage-note">{MESSAGES.installHint}</p>
-        {!rootId && <p>{MESSAGES.chooseRootFirst}</p>}
-        <button className="primary" disabled={busy || !rootId || displayName.trim().length === 0 || accepted.current} onClick={() => { void install(); }}>{busy ? MESSAGES.installAccepting : MESSAGES.installConfirm}</button>
-      </>}
-      {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}
-    </section>
-    {tasks.length > 0 && <section className="card"><h2>{MESSAGES.tasksTitle}</h2>{tasks.map(task => <InstallTask key={task.taskId} initial={task} onSettled={taskSettled} />)}</section>}
-    <section className="card"><div className="task-heading"><h2>{MESSAGES.installedTitle}</h2><button disabled={!rootId} onClick={refreshList}>{MESSAGES.refreshInstances}</button></div>
-      {instances.length === 0 ? <p>{MESSAGES.noInstances}</p> : <ul className="instance-list">{instances.map(instance => <li key={instance.instanceId} data-instance-id={instance.instanceId} data-instance-state={instance.state}><div className="instance-details"><strong>{instance.displayName}</strong><span>{instance.mcVersionId}</span></div><span>{instance.state === 'ready' ? MESSAGES.stateReady : instance.state === 'installing' ? MESSAGES.stateInstalling : instance.state === 'needsRecovery' ? MESSAGES.stageRecovery : instance.state === 'cancelled' ? MESSAGES.stageCancelled : MESSAGES.stageFailed}</span>{gameEnabled && instance.state === 'ready' && <LaunchControls instance={instance} accountId={accountId} current={sessions.find(session => session.instanceId === instance.instanceId)} />}</li>)}</ul>}
-    </section>
+  return <div className="installation-column"><section className="card install-confirm" aria-labelledby="install-title"><h2 id="install-title">{MESSAGES.installTitle}</h2>
+    {!versionId ? <div className="empty-state"><span className="empty-glyph">↓</span><p>{MESSAGES.installPrompt}</p></div> : <><div className="selected-version">{versionId}</div>
+      <label>{MESSAGES.instanceName}<input value={displayName} maxLength={80} onChange={event => { setDisplayName(event.target.value); requestId.current = undefined; accepted.current = false; }} /></label>
+      <select aria-label={MESSAGES.isolationOn} value={isolation} onChange={event => { setIsolation(event.target.value as 'on' | 'off'); requestId.current = undefined; accepted.current = false; }}><option value="on">{MESSAGES.isolationOn}</option><option value="off">{MESSAGES.isolationOff}</option></select>
+      <p className="storage-note">{MESSAGES.installHint}</p>{!rootId && <p>{MESSAGES.chooseRootFirst}</p>}
+      <button className="primary" disabled={busy || !rootId || !displayName.trim() || accepted.current} onClick={() => { void install(); }}>{busy ? MESSAGES.installAccepting : MESSAGES.installConfirm}</button>
+    </>}{error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}</section>
+    {tasks.some(t => t.kind === 'install') && <section className="card"><h2>{MESSAGES.tasksTitle}</h2>{tasks.filter(t => t.kind === 'install').slice(-6).map(task => <InstallTask key={task.taskId} initial={task} onSettled={refreshGame} />)}</section>}
   </div>;
 }
