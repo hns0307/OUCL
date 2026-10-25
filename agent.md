@@ -1,6 +1,6 @@
 # OUCL 下一对话交接
 
-更新：2026-10-25，Asia/Shanghai。代码基线：`e834de6`。本文件是工作快照，不替代AGENTS或批准记录；每次开发**先读OUCL-Codex/docs/TASK_PLAN.md**，再读AGENTS.md、DECISIONS.md及关联契约。不要仅凭本文件判断新授权或测试成功。
+更新：2026-10-25，Asia/Shanghai。代码基线：`c076c47`。本文件是工作快照，不替代AGENTS或批准记录；每次开发**先读OUCL-Codex/docs/TASK_PLAN.md**，再读AGENTS.md、DECISIONS.md及关联契约。不要仅凭本文件判断新授权或测试成功。
 
 ## 用户目标与有效授权
 
@@ -20,7 +20,7 @@
 
 ## 本轮验证与复现
 
-- `pnpm check`：152项，150 PASS / 0 FAIL / 2 SKIP，typecheck/lint/build通过。core行100%、分支98.98%、函数100%，不是整个服务/UI的覆盖率。
+- `pnpm check`：168项，166 PASS / 0 FAIL / 2 SKIP，typecheck/lint/build通过。core行100%、分支98.98%、函数100%，不是整个服务/UI的覆盖率。
 - 两个skip：文件软链接权限不足；Windows拒绝重命名打开的SQLite。确定性stat适配器覆盖了缺失/换身份/link/directory，但不冒充OS实际替换测试通过。未改系统权限。
 - `pnpm test:workers-runtime`：实际Electron45/Node24.22正式worker通过fixture传输取消、正常关闭重开、206续传、对象提交/复用，共享consumer取消隔离及独立来源adopt。整次测试创建2个hash线程，包含主动取消后的替换；另有40个文件只创建1个线程的单测。
 - `node scripts/verify-install-plan.mjs`（先pnpm test生成.test-build）：真实官方1.21.1、1.20.1、1.12.2、1.6.4描述/资产索引信任链与计划通过，去重制品数3960/3641/1323/613。1.20.1计划总量735,814,641字节，仅为计划；四个样本gameDownloaded/gameLaunched均false。
@@ -47,7 +47,7 @@
 
 - transfers.sqlite不是缓存，不能像objects-index.sqlite一样丢弃。marker在而库不在要停写；不能建空库继续。
 - 只允许官方HTTPS artifact host，redirect/凭证/query/fragment禁用；localhost仅在测试fetch适配器映射。
-- assetIndex URL使用piston-meta元数据域，该域故意未列入artifact传输白名单。后续执行器应将prepare返回的精确assetIndexBody写受管staging并交ObjectStore校验提交，不能重编码JSON或随意放宽网络策略。
+- assetIndex URL使用piston-meta元数据域，该域故意未列入artifact传输白名单。现有批量执行器将prepare返回的精确assetIndexBody写受管staging并交ObjectStore校验提交，不能重编码JSON或随意放宽网络策略。
 - 一个去重制品可有多个proof，批量执行器必须逐个保留独立来源。索引/库绑定实际声明父版本，不用叶子版本哈希替代；x86/ARM64 native JAR仍可在上游classpath，不能解压进x64私有natives。
 - 强ETag需有引号；真实Mojang响应本次使用了Last-Modified作为If-Range。二者都不能替代官方哈希。
 - 警惕清零顺序：保存0成功后必须立即清内存position，再truncate/fsync，故障时不能重新登记旧前缀。
@@ -56,9 +56,9 @@
 
 ## 下一步优先顺序
 
-1. `e834de6`已交付`services/install`批量下载执行器：精确原索引入库、默认4条lane、多proof追加、取消/失败等待本批收尾及缓存复用。新增8项实际ObjectStore测试通过；Electron验证2份fixture制品/重复批次仅1次传输。尚未真实整批下载官方游戏、持久关联或物化。下一处理受管文件布局与安全native解压，仍先查实际工作区。
+1. `e834de6`已交付`services/install`批量下载执行器：精确原索引入库、默认4条lane、多proof追加、取消/失败等待本批收尾及缓存复用。新增8项实际ObjectStore测试通过；Electron验证2份fixture制品/重复批次仅1次传输。尚未真实整批下载官方游戏、持久关联或物化。`c076c47`已继续实现安全解压基础，见下节；下一处理受管文件视图和持久安装任务，仍先查实际工作区。
 2. 补consumer/安装任务持久关联及已批tasks:*订阅/退订：TaskAccepted、严格TaskSnapshot/错误、进度有界合并、超时幂等、终态查询与退出/重载恢复。先核对PROPOSAL§7，不发明通用execute或临时假成功IPC。
-3. 受管文件物化及安全解压：身份分离、隐藏父jar、固定store、私有可写数据、受控软链接及已批复制回退；解压需安全有界worker，不能偷偷依赖未评估的传递包。
+3. 受管文件物化：身份分离、隐藏父jar、固定store、私有可写数据、受控软链接及已批复制回退。已有安全解压仅写隔离空目录，后续需绑定实例租约/操作日志并发布私有natives，不能以此代替实例事务。
 4. Java检测/选择、离线档案、参数数组、gameDir排他租约、真实进程与实际安装/启动UI闭环，然后打包新exe。实际从该exe下载、到菜单/临时世界、退出重启及共享/隔离验证后，才能判断目标完成。旧release仍非该成果。
 
 只读环境核对：PATH现有受信任Oracle Java实测17.0.12、amd64/64位；已知供应商目录未发现8/21。没有安装/下载Java。不要把Temurin/Adoptium候选写成已批准发行商；读DECISIONS的D-03及实际制品核验要求。Java17可作为相应版本的后续候选，未实测游戏不能声明兼容。
@@ -72,3 +72,12 @@
 - CI配置存在，本轮未推送远端，不能声称远端CI通过。不要覆盖历史validation或旧release来制造新包验证。
 
 交付前更新TASK_PLAN、DECISIONS、验证报告及本文件。下一对话应接着推进真实安装/启动，而不是重新做G0或在下载单文件/空窗口处结束目标。
+
+## c076c47 native安全解压补充
+
+- `src/services/install/native-archive.ts`：已验证对象SHA256/大小、严格ZIP中央/本地header/CRC/完整deflate消费、路径/链接/全局大小写和文件目录冲突，先计划后独占写入。默认排除META-INF/，排除项仍校验正文和预算。
+- `src/services/workers/native-extractor.ts`及native-protocol.ts：exact私有one-shot协议；同时仅1个worker、128MiB线程堆、120s超时；最多64归档、每档64MiB、总输入/展开各256MiB、4096项；取消/关闭先terminate/join，保留隔离workspace，不冒充回滚。总RSS并非线程堆上限。
+- 新增12归档测试和4worker测试；完整168项166 PASS/2既有SKIP，typecheck/lint/build通过。正式Electron45/Node24.22 worker已实际解压fixture并验证退出后文件/目录可删除。
+- `node scripts/verify-native-archives.mjs`真实官方验证：1.20.1的7归档→18文件/3,354,056字节；1.12.2的2归档→7文件/462,336字节；官方SHA1→共享对象→解压前SHA256均通过，gameLaunched=false，临时文件清理。不能声称已加载DLL或游戏兼容全通过。
+- 最新权威证据：`docs/validation/A1-08-native-extraction/REPORT.md`及check.log、official-natives.json、electron-runtime.json、snapshot.json；契约`docs/contracts/NATIVE_EXTRACTION.md`。最新worker-runtime输出写新目录，不覆盖旧批量/传输证据。
+- 完整exe目标仍未达到：界面仍仅目录登记/版本浏览，持久安装任务、共享视图/复制回退、实例事务、Java/离线档案、实际游戏进程/UI、新exe实测均待继续。当前已有NativeExtractor不是实例natives最终发布，禁止直接将非空玩家/旧natives目录传入。主进程只传自己的受管staging和官方可信对象。
