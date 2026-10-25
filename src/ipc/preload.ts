@@ -11,6 +11,7 @@ import type { CatalogQuery, CatalogResult } from '../shared/contracts/catalog.js
 import { createInstanceBridge } from './preload-instances.js';
 import { createProfilesBridge } from './preload-profiles.js';
 import { createGameBridge } from './preload-game.js';
+import { createLoadersBridge } from './preload-loaders.js';
 
 async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 'choose', requestId: string, timeoutMs: number): Promise<RootsResult<T>> {
   if (!UUID_PATTERN.test(requestId)) return rootsFailure(globalThis.crypto.randomUUID(), 'INVALID_ARGUMENT', globalThis.crypto.randomUUID());
@@ -28,6 +29,7 @@ const bridge: LauncherBridge = Object.freeze({
   ...createProfilesBridge(),
   ...createGameBridge(),
   ...createResourcesBridge(),
+  ...createLoadersBridge(),
   async catalog(query: CatalogQuery): Promise<CatalogResult> {
     const requestId = globalThis.crypto.randomUUID();
     if (!isCatalogQuery(query)) return catalogFailure(requestId, 'INVALID_ARGUMENT', requestId);

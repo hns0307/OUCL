@@ -35,6 +35,13 @@ import { JavaRuntimeService } from '../services/java/runtime.js';
 import { GameAdapter } from '../ipc/game-adapter.js';
 import { handleGame } from '../ipc/game.js';
 import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
+import { LOADER_CHANNELS, LOADERS_CAPABILITY, LoaderContractError } from '../shared/contracts/loaders.js';
+import type { LoaderChannel, LoaderData, LoaderDispatcher, LoaderPayloads } from '../shared/contracts/loaders.js';
+import { handleLoaders } from '../ipc/loaders.js';
+import { LoaderMetadataClient, isOfficialLoaderMetadataUrl } from '../services/loaders/metadata.js';
+import { LoaderMavenResolver } from '../services/loaders/maven.js';
+import { LoaderInstallMetadataService } from '../services/loaders/install-metadata.js';
+import { LoaderService } from '../services/loaders/service.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -45,6 +52,7 @@ let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
 let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
+let loaders: LoaderService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
 const javaSelections = new Map<string, Promise<string | undefined>>();
@@ -93,8 +101,12 @@ else void app.whenReady().then(async () => {
     profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
-    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
+    const vanillaMetadata = new InstallMetadataService(catalog, reader);
+    const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
+    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
+      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver()));
     await service.initialize(); installer = service;
+    loaders = new LoaderService(loaderClient, service);
     launches = new LaunchService(storage, profiles, service, undefined, undefined, new JavaRuntimeService(profiles, service)); await launches.initialize();
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
@@ -108,8 +120,12 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : [])] : []);
   });
+  for (const channel of LOADER_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleLoaders(channel, input, trustedSender(event), randomUUID(), (async (selected: LoaderChannel, payload: LoaderPayloads[LoaderChannel], requestId: string) => {
+    if (!loaders) throw new LoaderContractError('UNAVAILABLE');
+    return loaders.dispatcher()(selected, payload, requestId) as Promise<LoaderData[typeof selected]>;
+  }) as LoaderDispatcher));
   for (const channel of RESOURCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleResources(channel, input, trustedSender(event), randomUUID(), (async (selected: ResourceChannel, payload: ResourcePayloads[ResourceChannel], requestId: string) => {
     if (!resources || !storage) throw new ResourceContractError('UNAVAILABLE');
     let data: ResourceData[typeof selected];

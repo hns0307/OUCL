@@ -22,6 +22,11 @@ export interface LoaderError extends Omit<AppError, 'code'> { code: LoaderCode }
 export type LoaderResult<C extends LoaderChannel> = { contractVersion: 1; requestId: string; ok: true; data: LoaderData[C] }
   | { contractVersion: 1; requestId: string; ok: false; error: LoaderError };
 export interface LoaderDispatcher { <C extends LoaderChannel>(channel: C, payload: LoaderPayloads[C], requestId: string): Promise<LoaderData[C]> }
+export interface LoadersBridge {
+  loaderVersions(input: LoaderPayloads['loaders:versions']): Promise<LoaderResult<'loaders:versions'>>;
+  createLoaderInstance(requestId: string, input: LoaderPayloads['loaders:create']): Promise<LoaderResult<'loaders:create'>>;
+}
+export class LoaderContractError extends Error { constructor(readonly code: LoaderCode) { super(code); this.name = 'LoaderContractError'; } }
 
 const ERRORS: Record<LoaderCode, { category: AppError['category']; key: MessageKey; retryable: boolean }> = {
   INVALID_ARGUMENT: { category: 'validation', key: 'invalidArgument', retryable: false },

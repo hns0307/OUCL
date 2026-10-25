@@ -3,6 +3,9 @@ import test from 'node:test';
 import { isInstanceLoaderIdentity, isInstanceV2Summary } from '../src/shared/contracts/instances-v2.js';
 import { isLoaderData, isLoaderPayload, isLoaderResult, loaderFailure } from '../src/shared/contracts/loaders.js';
 import type { LoaderChannel, LoaderCode, LoaderPayloads } from '../src/shared/contracts/loaders.js';
+import { handleLoaders } from '../src/ipc/loaders.js';
+import { LoaderContractError } from '../src/shared/contracts/loaders.js';
+import type { LoaderDispatcher } from '../src/shared/contracts/loaders.js';
 
 const id = '00000000-0000-4000-8000-000000000001';
 const trace = '00000000-0000-4000-8000-000000000002';
@@ -47,4 +50,20 @@ test('instances.v2 distinguishes vanilla and pinned loader identities without le
   assert.equal(isInstanceV2Summary({ ...summary, rootId: id }), false);
   assert.equal(isInstanceV2Summary({ ...summary, loader: { kind: 'forge' } }), false);
   assert.equal(isInstanceV2Summary({ ...summary, isolation: 'inherit' }), false);
+});
+
+test('loader handler validates sender, envelope and adapter output without leaking failures', async () => {
+  const envelope = { contractVersion: 1, requestId: id, payload: payloads['loaders:versions'] };
+  let calls = 0; const good = (async () => { calls++; return { items: [{ loaderVersion: '0.20.1', stable: true, support: 'unverified' }] }; }) as LoaderDispatcher;
+  assert.equal((await handleLoaders('loaders:versions', envelope, true, trace, good)).ok, true); assert.equal(calls, 1);
+  for (const [input, trusted, code] of [[envelope, false, 'INVALID_SENDER'], [{ ...envelope, contractVersion: 2 }, true, 'UNSUPPORTED_CONTRACT'],
+    [{ ...envelope, payload: { ...envelope.payload, url: 'private' } }, true, 'INVALID_ARGUMENT']] as const) {
+    const result = await handleLoaders('loaders:versions', input, trusted, trace, good); assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.error.code, code);
+  }
+  const unsafe: LoaderDispatcher = async () => ({ items: [{ loaderVersion: '0.20.1', stable: true, support: 'unverified', path: 'private' }] }) as never;
+  const hidden = await handleLoaders('loaders:versions', envelope, true, trace, unsafe); assert.equal(hidden.ok, false);
+  const known: LoaderDispatcher = async () => { throw new LoaderContractError('VERSION_UNSUPPORTED'); };
+  const failure = await handleLoaders('loaders:versions', envelope, true, trace, known); assert.equal(failure.ok, false);
+  if (!failure.ok) assert.equal(failure.error.code, 'VERSION_UNSUPPORTED');
 });
