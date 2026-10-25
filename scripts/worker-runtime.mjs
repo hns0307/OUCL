@@ -23,8 +23,8 @@ try {
   const line = output.split(/\r?\n/).find(value => value.startsWith('OUCL_WORKERS_RESULT:'));
   const report = line ? JSON.parse(line.slice('OUCL_WORKERS_RESULT:'.length)) : { status: 'FAIL', code: 'NO_RUNTIME_REPORT' };
   report.exitCode = exitCode; report.timestamp = new Date().toISOString();
-  await mkdir('docs/validation/A1-08-installer', { recursive: true });
-  await writeFile('docs/validation/A1-08-installer/electron-runtime.json', JSON.stringify(report, null, 2) + '\n');
+  await mkdir('docs/validation/A1-08-launch-profiles', { recursive: true });
+  await writeFile('docs/validation/A1-08-launch-profiles/electron-runtime.json', JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));
   if (report.status !== 'PASS' || exitCode !== 0) process.exitCode = 1;
 } finally {

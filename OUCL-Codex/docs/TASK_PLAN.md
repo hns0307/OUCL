@@ -361,3 +361,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 29. 实际游戏主菜单与D-20冻结
 
 纯LaunchPlan和GameProcessService（gameDir锁、Java复核、真实spawn/close、确认强停及固定里程碑）通过11项新测试。正式源码服务重开官方实例，复核66启动依赖/native后实际运行1.20.1+Java17，Computer Use主菜单截图见[报告](../../docs/validation/A1-08-official-launch/REPORT.md)；用户操作窗口后停止自动输入，世界、自然退出/再次启动未证明。用户明确批准D-20推荐规则：3–16位ASCII字母/数字/下划线、OfflinePlayer UUID v3永久保存、显示名分离、游戏名改名新档案。下一直接接Java/离线档案、启动/会话任务与UI、新exe实测，不再重复询问相同D-20规则。
+
+## 30. 已批启动档案与Java登记持久化
+
+沿用新批准D-20，ProfileService与固定launch-profiles JSON/私有worker已实现离线身份、幂等创建、同名冲突、Java实测登记/选择保持与串行写入。237测试235 PASS/2原有SKIP、完整检查与正式Electron worker重开通过，独立JDK UUID向量一致，见[报告](../../docs/validation/A1-08-launch-profiles/REPORT.md)。无新增依赖/公开IPC/SQLite schema；尚未接入产品Java/账户/启动UI，不重新询问已批身份规则。下一优先直接接公开契约、启动任务与会话、退出保活和完整exe验证。

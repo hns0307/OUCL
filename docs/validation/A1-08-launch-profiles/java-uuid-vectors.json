@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "reference": "Actual trusted local JDK17 java.util.UUID.nameUUIDFromBytes with UTF-8 OfflinePlayer prefix",
+  "vectors": {
+    "Notch": "b50ad385-829d-3141-a216-7e7d7539ba7f",
+    "Steve": "5627dd98-e6be-3c21-b8a8-e92344183641",
+    "OUCL_Test1": "b0cfe708-13d8-3959-b8ef-18d1540b06c9"
+  },
+  "nodeImplementationMatched": true,
+  "productionGameIdentityClaim": false
+}

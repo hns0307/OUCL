@@ -12,6 +12,7 @@ import { digestFile, startHashSession } from './hash-session.js';
 import { extractNativeArchives, NativeArchiveError } from '../install/native-archive.js';
 import { parseNativeRequest } from './native-protocol.js';
 import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
+import { parseLaunchProfiles } from '../storage/launch-profiles.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -40,9 +41,12 @@ async function storage(directory: string): Promise<void> {
         let transfer;
         let instances;
         let instance;
+        let profiles;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
+        else if (command.kind === 'profiles:get') profiles = await store.read('launch-profiles', parseLaunchProfiles);
+        else if (command.kind === 'profiles:set') profiles = await store.write('launch-profiles', command.expectedRevision, command.data, parseLaunchProfiles);
         else if (command.kind === 'installation:get') installation = await store.read('installation', parseInstallation);
         else if (command.kind === 'installation:set') installation = await store.write('installation', 0, command.data, parseInstallation);
         else if (command.kind === 'catalog:get') catalog = await store.read('catalog', parseCatalogCache);
@@ -68,7 +72,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

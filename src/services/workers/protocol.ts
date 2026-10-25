@@ -12,6 +12,8 @@ import { parseTransferRecord } from '../download/types.js';
 import type { TransferRecord } from '../download/types.js';
 import { parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
+import { parseLaunchProfiles } from '../storage/launch-profiles.js';
+import type { LaunchProfiles } from '../storage/launch-profiles.js';
 import path from 'node:path';
 
 export type WorkerCode = 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'UNSAFE_PATH' | 'STORAGE_IO'
@@ -44,13 +46,15 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'instances:set'; expectedRevision: number; data: InstanceIndex }
   | { kind: 'instance:get'; instanceId: string }
   | { kind: 'instance:set'; instanceId: string; expectedRevision: number; data: InstanceRecord }
+  | { kind: 'profiles:get' }
+  | { kind: 'profiles:set'; expectedRevision: number; data: LaunchProfiles }
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
 export interface HashJobRequest { version: 1; kind: 'hash-job'; jobId: string; file: string; maximumBytes: number }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord> }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles> }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult }
@@ -77,7 +81,8 @@ export function parseHashJobRequest(value: unknown): HashJobRequest {
 export function parseStorageRequest(value: unknown): StorageRequest {
   requireMessage(object(value) && exact(value, ['version', 'id', 'command']) && value.version === 1 && uuid(value.id) && object(value.command));
   const command = value.command;
-  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get' || command.kind === 'instances:get') requireMessage(exact(command, ['kind']));
+  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get' || command.kind === 'instances:get' || command.kind === 'profiles:get') requireMessage(exact(command, ['kind']));
+  else if (command.kind === 'profiles:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseLaunchProfiles(command.data); }
   else if (command.kind === 'instances:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseInstanceIndex(command.data); }
   else if (command.kind === 'instance:get') requireMessage(exact(command, ['kind', 'instanceId']) && uuid(command.instanceId));
   else if (command.kind === 'instance:set') {
@@ -132,8 +137,14 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance].filter(item => item !== undefined).length <= 1
-        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance'])]));
+      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance, value.profiles].filter(item => item !== undefined).length <= 1
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance']), ...(value.profiles === undefined ? [] : ['profiles'])]));
+      let profiles: RecordEnvelope<LaunchProfiles> | undefined;
+      if (value.profiles !== undefined) {
+        requireMessage(object(value.profiles) && exact(value.profiles, ['schemaVersion', 'revision', 'data']) && value.profiles.schemaVersion === 1
+          && integer(value.profiles.revision) && value.profiles.revision > 0);
+        profiles = { schemaVersion: 1, revision: value.profiles.revision, data: parseLaunchProfiles(value.profiles.data) };
+      }
       let installation: RecordEnvelope<Installation> | undefined;
       if (value.installation !== undefined) {
         requireMessage(object(value.installation) && exact(value.installation, ['schemaVersion', 'revision', 'data'])
@@ -161,7 +172,7 @@ export function parseReply(value: unknown): WorkerReply {
       }
       return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
         ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }), ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }),
-        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }) };
+        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

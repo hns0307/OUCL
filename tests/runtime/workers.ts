@@ -19,6 +19,7 @@ import { planVanillaInstall } from '../../src/core/install/plan.js';
 import { NativeExtractor } from '../../src/services/workers/native-extractor.js';
 import { crc32 } from 'node:zlib';
 import { FileViewService } from '../../src/services/install/file-views.js';
+import { ProfileService } from '../../src/services/launch/profiles.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -41,11 +42,18 @@ void app.whenReady().then(async () => {
       displayName: 'Runtime reserved fixture', mcVersionId: '1.20.1', isolation: 'on' as const, state: 'installing' as const, revision: 1 };
     await client.writeInstance(reservedInstance.instanceId, 0, { summary: reservedInstance, phase: 'reserved' });
     await client.writeInstances(0, { items: [reservedInstance] });
+    const profiles = new ProfileService(client, { probe: async () => ({ executable: 'D:\\Fixture\\java.exe', major: 17, version: '17.0.12', vendor: 'fixture', architecture: 'x64', os: 'windows' }) });
+    const offline = await profiles.createOffline(requestId, { displayName: 'Runtime profile', gameName: 'OUCL_Test1' });
+    const registeredJava = await profiles.registerJava('D:\\Fixture\\java.exe');
     await client.close();
     client = await StorageClient.open(entry, storeDirectory);
     assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
     assert.equal((await client.readInstance(reservedInstance.instanceId))?.data.phase, 'reserved');
     assert.equal((await client.readInstances())?.data.items[0]?.state, 'installing');
+    const persistedProfiles = await client.readLaunchProfiles();
+    assert.equal(persistedProfiles?.data.accounts[0]?.uuid, 'b0cfe708-13d8-3959-b8ef-18d1540b06c9');
+    assert.equal(persistedProfiles?.data.accounts[0]?.accountId, offline.accountId);
+    assert.equal(persistedProfiles?.data.selectedJavaId, registeredJava.javaId);
     await client.close(); client = undefined;
     const file = path.join(root, 'hash-input.bin'); const block = Buffer.alloc(1024 * 1024, 17);
     const sha1 = createHash('sha1'); const sha256 = createHash('sha256');
@@ -162,7 +170,7 @@ void app.whenReady().then(async () => {
       sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
       batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true,
       nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true, fileViewMode: receipt.mode, fileViewVerified: true,
-      instanceRecordsPersisted: true, unreadyInstanceNotPromoted: true }));
+      instanceRecordsPersisted: true, unreadyInstanceNotPromoted: true, offlineIdentityPersisted: true, javaSelectionPersisted: true, profileJavaProbeMocked: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

@@ -10,7 +10,8 @@ import type { RecordEnvelope } from '../storage/records.js';
 import type { CatalogCache } from '../storage/catalog-cache.js';
 import type { TransferRecord } from '../download/types.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord> };
+import type { LaunchProfiles } from '../storage/launch-profiles.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -75,7 +76,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -94,6 +95,13 @@ export class StorageClient {
     });
   }
 
+  /** Reads only the fixed private Java/offline identity record. */
+  async readLaunchProfiles(): Promise<RecordEnvelope<LaunchProfiles> | undefined> { return (await this.request({ kind: 'profiles:get' })).profiles; }
+  /** CAS commit of the fixed typed Java/offline profile domain, never arbitrary JSON. */
+  async writeLaunchProfiles(expectedRevision: number, data: LaunchProfiles): Promise<RecordEnvelope<LaunchProfiles>> {
+    const result = (await this.request({ kind: 'profiles:set', expectedRevision, data })).profiles;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
   /** Durable idempotent acceptance; retry with the same business requestId after an unknown outcome. */
   async accept(ownerId: string, requestId: string, taskKind: TaskKind, payloadDigest: string): Promise<StoredTask> {
     const { task } = await this.request({ kind: 'accept', ownerId, requestId, taskKind, payloadDigest });

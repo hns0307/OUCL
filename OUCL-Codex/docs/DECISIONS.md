@@ -239,3 +239,5 @@
 用户对具体规则问题直接答复“批准推荐兼容规则”。状态：**APPROVED**。游戏名限3–16位ASCII英文字母、数字、下划线；按UTF-8的`OfflinePlayer:<gameName>`执行UUID v3算法生成并永久保存（MD5只用于兼容身份，非安全校验）；改游戏名创建新档案，中文显示昵称独立保存，改昵称不改游戏UUID。此记录冻结此前D-20字符/长度与UUID算法待决，历史PENDING保留但不覆盖本批准；不引入正版身份查询或认证绕过。
 
 执行记录：纯LaunchPlan与目录排他GameProcessService及11项新测试通过，完整233测试检查通过。正式源码服务实际启动官方1.20.1、Java17，并由Computer Use观察主菜单，见[启动报告](../../docs/validation/A1-08-official-launch/REPORT.md)。用户操作游戏窗口后停止键鼠自动化；世界、退出/重启及新exe仍未验收。生产离线档案与Java选择/游戏任务/会话UI下一步依据上述D-20批准接入。
+
+执行记录：D-20批准已进入正式ProfileService及固定launch-profiles JSON与typed私有worker，身份与Java登记在正常关闭重开后保持；237测试235 PASS/2 SKIP、完整检查与Electron worker验证通过，独立JDK UUID向量一致，见[档案报告](../../docs/validation/A1-08-launch-profiles/REPORT.md)。没有新依赖/公开IPC/SQLite schema；产品公开契约及选择/启动/会话UI与exe继续实施，不将内部服务当作最终交付。
