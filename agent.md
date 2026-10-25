@@ -1,10 +1,10 @@
 # OUCL 下一对话交接
 
-更新：2026-10-25，Asia/Shanghai。代码基线：`c076c47`。本文件是工作快照，不替代AGENTS或批准记录；每次开发**先读OUCL-Codex/docs/TASK_PLAN.md**，再读AGENTS.md、DECISIONS.md及关联契约。不要仅凭本文件判断新授权或测试成功。
+更新：2026-10-25，Asia/Shanghai。代码基线：`162317e`。本文件是工作快照，不替代AGENTS或批准记录；每次开发**先读OUCL-Codex/docs/TASK_PLAN.md**，再读AGENTS.md、DECISIONS.md及关联契约。不要仅凭本文件判断新授权或测试成功。
 
 ## 用户目标与有效授权
 
-- 最新目标原文：“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能”。**尚未完成，不能标goal complete。** 最终须从实际Windows exe默认入口完成下载、安装、真实游戏启动、退出及重启验证；CLI、空窗口或旧工程预览不能代替交付。
+- 最新目标原文：“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能，下载界面可以参考MC_start文件夹里的其他启动器”。**尚未完成，不能标goal complete。** 最终须从实际Windows exe默认入口完成下载、安装、真实游戏启动、退出及重启验证；CLI、空窗口或旧工程预览不能代替交付。
 - 用户直接批准过“阶段1A下载与启动闭环，持续实现并提交”。暂停后又明确恢复目标，允许多个子agent并行，要求每个可验证增量Git提交，并维护本交接文件。
 - 当前G2、阶段1A；同范围无需反复索要启动确认。不要扩大到加载器、正版登录、联机、整合包或后台；偏离已批架构/IPC/存储/安全及新增依赖仍按AGENTS再审批。
 - 先说明本次增量文件、风险和验证；实施、实际检查、同步文档、Conventional Commit。并行时划分独占文件，主agent统一复核/串行提交，避免共享index冲突。
@@ -20,7 +20,7 @@
 
 ## 本轮验证与复现
 
-- `pnpm check`：168项，166 PASS / 0 FAIL / 2 SKIP，typecheck/lint/build通过。core行100%、分支98.98%、函数100%，不是整个服务/UI的覆盖率。
+- `pnpm check`：185项，183 PASS / 0 FAIL / 2 SKIP，typecheck/lint/build通过。core行100%、分支98.98%、函数100%，不是整个服务/UI的覆盖率。
 - 两个skip：文件软链接权限不足；Windows拒绝重命名打开的SQLite。确定性stat适配器覆盖了缺失/换身份/link/directory，但不冒充OS实际替换测试通过。未改系统权限。
 - `pnpm test:workers-runtime`：实际Electron45/Node24.22正式worker通过fixture传输取消、正常关闭重开、206续传、对象提交/复用，共享consumer取消隔离及独立来源adopt。整次测试创建2个hash线程，包含主动取消后的替换；另有40个文件只创建1个线程的单测。
 - `node scripts/verify-install-plan.mjs`（先pnpm test生成.test-build）：真实官方1.21.1、1.20.1、1.12.2、1.6.4描述/资产索引信任链与计划通过，去重制品数3960/3641/1323/613。1.20.1计划总量735,814,641字节，仅为计划；四个样本gameDownloaded/gameLaunched均false。
@@ -81,3 +81,13 @@
 - `node scripts/verify-native-archives.mjs`真实官方验证：1.20.1的7归档→18文件/3,354,056字节；1.12.2的2归档→7文件/462,336字节；官方SHA1→共享对象→解压前SHA256均通过，gameLaunched=false，临时文件清理。不能声称已加载DLL或游戏兼容全通过。
 - 最新权威证据：`docs/validation/A1-08-native-extraction/REPORT.md`及check.log、official-natives.json、electron-runtime.json、snapshot.json；契约`docs/contracts/NATIVE_EXTRACTION.md`。最新worker-runtime输出写新目录，不覆盖旧批量/传输证据。
 - 完整exe目标仍未达到：界面仍仅目录登记/版本浏览，持久安装任务、共享视图/复制回退、实例事务、Java/离线档案、实际游戏进程/UI、新exe实测均待继续。当前已有NativeExtractor不是实例natives最终发布，禁止直接将非空玩家/旧natives目录传入。主进程只传自己的受管staging和官方可信对象。
+
+## 162317e 文件投影/Java与下一轮整合重点
+
+- 代码已提交：`src/services/install/file-views.ts` FileViewService.materialize(directory,relative,spec,object,{mode,existing?,signal?})，ObjectStore独立来源复核，优先软链接、权限不足明确copy、256KiB有界复制+fsync+哈希、receipt核对。未知入口冲突不覆盖，已登记copy若nlink不为1拒绝。入口完整创建后返回receipt，即使此刻取消也须由安装日志记录真实副作用，不能假称无写入。未实现目录junction或安装事务，不直接用于玩家目录替换。
+- `src/services/java/probe.ts` JavaProbe.probe(executable,{signal?,timeoutMs?})、parseJavaProperties；只运行明确选择/此前可信的绝对常规java.exe，固定argv，无shell，剥离Java options/CLASSPATH注入，64KiB输出预算/默认8s，取消/超量/超时kill并等close。仅Windows x64的8/17/21。没有枚举、持久注册、受管下载或新发行商选择。
+- 完整185测试183 PASS/2既有SKIP、类型/lint/build通过；7项文件投影+10项Java测试。Electron实测fileViewMode=copy、fileViewVerified=true，不把权限回退说成文件软链接成功。真实Oracle17.0.12属性通过，脚本`node scripts/verify-java.mjs <可信java.exe路径>`，报告不保存绝对路径；未启动MC。
+- 最新证据`docs/validation/A1-08-file-views/`（完整check.log、Electron、snapshot）和`docs/validation/A1-06-java-probe/`（报告、local-java.json、snapshot），契约`docs/contracts/FILE_VIEWS.md`。旧报告保留历史，不覆盖。
+- 新目标已写入TASK_PLAN/DECISIONS：下载界面允许参考MC_start其他启动器。`docs/DOWNLOAD_UI_REFERENCE.md`已只读核对KAMUCL/PCL/PCL1/XMCL具体UI来源，建议版本筛选→安装确认→真实任务阶段/取消重试→已安装启动；没有运行它们或复制源码/素材/依赖。
+- **下一轮优先整合实际安装流程，不再只新增离散基础函数**：落实原已批实例JSON提交点/操作日志与持久consumer关联，装配现有InstallMetadataService→InstallDownloadService→FileViewService→NativeExtractor，准备根视图/实例目录及受控ready记录；接已批instances:create/list和tasks:*严格契约及UI。安装后接Java选择、离线档案、LaunchPlan/参数数组、gameDir排他及真实进程；目标先用可信现有Java17与1.20.1实测，再新exe默认入口验证。没有任何完整游戏已安装或已启动的证据。
+- 继续显式路径commit--only，保留用户暂存ZIP/OUCL.txt，无push授权；最终exe未完成，goal保持active。新供应商/依赖和偏离批准基线仍再审批。
