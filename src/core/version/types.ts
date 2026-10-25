@@ -25,6 +25,7 @@ export interface ClientVersion {
 export interface VersionEnvironment { os: 'windows' | 'linux' | 'osx'; arch: 'x64' | 'x86'; osVersion: string; features: Readonly<Record<string, boolean>> }
 export interface ResolvedLibrary {
   name: string;
+  sourceVersionId: string;
   artifact?: DownloadArtifact;
   native?: DownloadArtifact;
   nativeClassifier?: string;
@@ -39,6 +40,7 @@ export interface ResolvedClientVersion {
   client: DownloadArtifact;
   jarVersionId: string;
   assetIndex?: AssetIndex;
+  assetIndexVersionId?: string;
   assets?: string;
   libraries: ResolvedLibrary[];
   gameArguments: string[];

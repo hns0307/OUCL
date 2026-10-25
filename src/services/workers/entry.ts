@@ -1,6 +1,4 @@
 import { parentPort, workerData } from 'node:worker_threads';
-import { lstat, open } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { RecordStore } from '../storage/records.js';
 import { guardDirectory, StorageError } from '../storage/files.js';
@@ -10,6 +8,7 @@ import { ObjectIndex } from '../storage/object-index.js';
 import { parseInstallation } from '../storage/installation.js';
 import { parseCatalogCache } from '../storage/catalog-cache.js';
 import { TransferDatabase } from '../storage/transfer-db.js';
+import { digestFile, startHashSession } from './hash-session.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -65,29 +64,8 @@ async function storage(directory: string): Promise<void> {
 }
 
 async function hashFile(file: string, maximumBytes: number): Promise<void> {
-  await guardDirectory(path.dirname(file));
-  const info = await lstat(file);
-  if (!info.isFile() || info.isSymbolicLink()) throw new WorkerError('UNSAFE_PATH');
-  if (info.size > maximumBytes) throw new WorkerError('FILE_TOO_LARGE');
-  const handle = await open(file, 'r');
-  try {
-    const original = await handle.stat();
-    if (original.dev !== info.dev || original.ino !== info.ino || original.size !== info.size || !original.isFile()) throw new WorkerError('UNSAFE_PATH');
-    const sha1 = createHash('sha1'); const sha256 = createHash('sha256');
-    let size = 0; let lastProgress = -Infinity;
-    for await (const chunk of handle.createReadStream({ autoClose: false, highWaterMark: 256 * 1024 })) {
-      const bytes = chunk as Buffer;
-      size += bytes.length;
-      if (size > maximumBytes || size > original.size) throw new WorkerError('FILE_TOO_LARGE');
-      sha1.update(bytes); sha256.update(bytes);
-      if (performance.now() - lastProgress >= 100) {
-        send({ version: 1, kind: 'hash-progress', bytesDone: size, bytesTotal: original.size }); lastProgress = performance.now();
-      }
-    }
-    const final = await handle.stat();
-    if (size !== original.size || final.size !== original.size || final.mtimeMs !== original.mtimeMs) throw new WorkerError('NEEDS_RECOVERY');
-    send({ version: 1, kind: 'hash-result', result: { size, sha1: sha1.digest('hex'), sha256: sha256.digest('hex') } });
-  } finally { await handle.close(); }
+  const result = await digestFile(file, maximumBytes, (bytesDone, bytesTotal) => { send({ version: 1, kind: 'hash-progress', bytesDone, bytesTotal }); });
+  send({ version: 1, kind: 'hash-result', result });
   port!.close();
 }
 
@@ -96,6 +74,7 @@ void (async () => {
   if (typeof input !== 'object' || input === null || !('version' in input) || input.version !== 1 || !('kind' in input)) throw new WorkerError('INVALID_MESSAGE');
   if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'
     && 'directory' in input && typeof input.directory === 'string') await storage(input.directory);
+  else if (input.kind === 'hash-session' && Object.keys(input).sort().join(',') === 'kind,version') startHashSession(port);
   else if (input.kind === 'hash' && Object.keys(input).sort().join(',') === 'file,kind,maximumBytes,version'
     && 'file' in input && typeof input.file === 'string' && path.isAbsolute(input.file)
     && 'maximumBytes' in input && typeof input.maximumBytes === 'number' && Number.isSafeInteger(input.maximumBytes)

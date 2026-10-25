@@ -10,6 +10,7 @@ import { parseCatalogCache } from '../storage/catalog-cache.js';
 import type { CatalogCache } from '../storage/catalog-cache.js';
 import { parseTransferRecord } from '../download/types.js';
 import type { TransferRecord } from '../download/types.js';
+import path from 'node:path';
 
 export type WorkerCode = 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' | 'STORE_BUSY' | 'UNSAFE_PATH' | 'STORAGE_IO'
   | 'WORKER_FAILED' | 'INVALID_MESSAGE' | 'QUEUE_FULL' | 'CANCELLED' | 'TIMEOUT' | 'FILE_TOO_LARGE';
@@ -40,18 +41,31 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
+export interface HashJobRequest { version: 1; kind: 'hash-job'; jobId: string; file: string; maximumBytes: number }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
   | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
-  | { version: 1; kind: 'hash-result'; result: HashResult };
+  | { version: 1; kind: 'hash-result'; result: HashResult }
+  | { version: 1; kind: 'hash-ready' }
+  | { version: 1; kind: 'hash-job-progress'; jobId: string; bytesDone: number; bytesTotal: number }
+  | { version: 1; kind: 'hash-job-result'; jobId: string; result: HashResult }
+  | { version: 1; kind: 'hash-job-failed'; jobId: string; code: WorkerCode };
 
 function object(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }
 function exact(value: Record<string, unknown>, keys: string[]): boolean { return Object.keys(value).sort().join(',') === keys.sort().join(','); }
 function uuid(value: unknown): value is string { return typeof value === 'string' && UUID_PATTERN.test(value); }
 function integer(value: unknown): value is number { return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0; }
 function requireMessage(condition: unknown): asserts condition { if (!condition) throw new WorkerError('INVALID_MESSAGE'); }
+
+/** Accepts only bounded hash requests from the trusted owning process, correlated by a fresh UUID. */
+export function parseHashJobRequest(value: unknown): HashJobRequest {
+  requireMessage(object(value) && exact(value, ['version', 'kind', 'jobId', 'file', 'maximumBytes']) && value.version === 1
+    && value.kind === 'hash-job' && uuid(value.jobId) && typeof value.file === 'string' && value.file.length <= 32760
+    && path.isAbsolute(value.file) && integer(value.maximumBytes) && value.maximumBytes <= 64 * 1024 ** 3);
+  return { version: 1, kind: 'hash-job', jobId: value.jobId, file: value.file, maximumBytes: value.maximumBytes };
+}
 
 /** Parses a private allowlist; no arbitrary paths, SQL, callbacks or scripts are accepted as commands. */
 export function parseStorageRequest(value: unknown): StorageRequest {
@@ -97,6 +111,7 @@ function parseIndexed(value: unknown): IndexedObject {
 export function parseReply(value: unknown): WorkerReply {
   requireMessage(object(value) && value.version === 1);
   if (value.kind === 'ready') { requireMessage(exact(value, ['version', 'kind'])); return { version: 1, kind: 'ready' }; }
+  if (value.kind === 'hash-ready') { requireMessage(exact(value, ['version', 'kind'])); return { version: 1, kind: 'hash-ready' }; }
   if (value.kind === 'startup-failed') {
     requireMessage(exact(value, ['version', 'kind', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'startup-failed', code: value.code as WorkerCode };
@@ -125,13 +140,28 @@ export function parseReply(value: unknown): WorkerReply {
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };
   }
-  if (value.kind === 'hash-progress') {
-    requireMessage(exact(value, ['version', 'kind', 'bytesDone', 'bytesTotal']) && integer(value.bytesDone) && integer(value.bytesTotal) && value.bytesDone <= value.bytesTotal);
+  if (value.kind === 'hash-job-failed') {
+    requireMessage(exact(value, ['version', 'kind', 'jobId', 'code']) && uuid(value.jobId) && typeof value.code === 'string' && CODES.includes(value.code));
+    return { version: 1, kind: 'hash-job-failed', jobId: value.jobId, code: value.code as WorkerCode };
+  }
+  if (value.kind === 'hash-progress' || value.kind === 'hash-job-progress') {
+    requireMessage(exact(value, value.kind === 'hash-progress' ? ['version', 'kind', 'bytesDone', 'bytesTotal'] : ['version', 'kind', 'jobId', 'bytesDone', 'bytesTotal'])
+      && integer(value.bytesDone) && integer(value.bytesTotal) && value.bytesDone <= value.bytesTotal);
+    if (value.kind === 'hash-job-progress') {
+      requireMessage(uuid(value.jobId));
+      return { version: 1, kind: 'hash-job-progress', jobId: value.jobId, bytesDone: value.bytesDone, bytesTotal: value.bytesTotal };
+    }
     return { version: 1, kind: 'hash-progress', bytesDone: value.bytesDone, bytesTotal: value.bytesTotal };
   }
-  requireMessage(value.kind === 'hash-result' && exact(value, ['version', 'kind', 'result']) && object(value.result));
+  requireMessage((value.kind === 'hash-result' || value.kind === 'hash-job-result')
+    && exact(value, value.kind === 'hash-result' ? ['version', 'kind', 'result'] : ['version', 'kind', 'jobId', 'result']) && object(value.result));
   const result = value.result;
   requireMessage(exact(result, ['size', 'sha1', 'sha256']) && integer(result.size) && typeof result.sha1 === 'string'
     && /^[a-f0-9]{40}$/.test(result.sha1) && typeof result.sha256 === 'string' && /^[a-f0-9]{64}$/.test(result.sha256));
-  return { version: 1, kind: 'hash-result', result: { size: result.size, sha1: result.sha1, sha256: result.sha256 } };
+  const parsed = { size: result.size, sha1: result.sha1, sha256: result.sha256 };
+  if (value.kind === 'hash-job-result') {
+    requireMessage(uuid(value.jobId));
+    return { version: 1, kind: 'hash-job-result', jobId: value.jobId, result: parsed };
+  }
+  return { version: 1, kind: 'hash-result', result: parsed };
 }

@@ -24,16 +24,16 @@ export function resolveClientVersion(targetId: string, documents: Readonly<Recor
   chain.reverse();
   let mainClass: string | undefined; let type = 'release'; let javaMajor = 8;
   let client: ResolvedClientVersion['client'] | undefined; let jarVersionId = '';
-  let assetIndex: ResolvedClientVersion['assetIndex']; let assets: string | undefined;
-  const libraries = new Map<string, VersionLibrary>(); let gameArguments: string[] = []; const jvmArguments: string[] = [];
+  let assetIndex: { value: NonNullable<ResolvedClientVersion['assetIndex']>; sourceVersionId: string } | undefined; let assets: string | undefined;
+  const libraries = new Map<string, { library: VersionLibrary; sourceVersionId: string }>(); let gameArguments: string[] = []; const jvmArguments: string[] = [];
   for (const version of chain) {
     if (version.mainClass !== undefined) mainClass = version.mainClass;
     if (version.type !== undefined) type = version.type;
     if (version.javaVersion !== undefined) javaMajor = version.javaVersion.majorVersion;
     if (version.downloads?.client) { client = version.downloads.client; jarVersionId = version.id; }
-    if (version.assetIndex) assetIndex = version.assetIndex;
+    if (version.assetIndex) assetIndex = { value: version.assetIndex, sourceVersionId: version.id };
     if (version.assets !== undefined) assets = version.assets;
-    for (const library of version.libraries ?? []) libraries.set(libraryIdentity(library.name), library);
+    for (const library of version.libraries ?? []) libraries.set(libraryIdentity(library.name), { library, sourceVersionId: version.id });
     requireMetadata(libraries.size <= 10000);
     if (version.minecraftArguments !== undefined) gameArguments = tokenizeLegacyArguments(version.minecraftArguments);
     gameArguments.push(...selectArguments(version.arguments?.game ?? [], environment));
@@ -43,9 +43,9 @@ export function resolveClientVersion(targetId: string, documents: Readonly<Recor
   if (!client) throw new VersionError('CLIENT_NOT_FOUND');
   if (!mainClass) throw new VersionError('MAIN_CLASS_MISSING');
   const selected: ResolvedLibrary[] = [];
-  for (const library of libraries.values()) {
+  for (const { library, sourceVersionId } of libraries.values()) {
     if (!rulesAllow(library.rules, environment)) continue;
-    const resolved: ResolvedLibrary = { name: library.name, nativeExcludes: [...(library.extract?.exclude ?? [])] };
+    const resolved: ResolvedLibrary = { name: library.name, sourceVersionId, nativeExcludes: [...(library.extract?.exclude ?? [])] };
     if (library.downloads?.artifact) resolved.artifact = library.downloads.artifact;
     const nativeTemplate = library.natives?.[environment.os];
     if (nativeTemplate !== undefined) {
@@ -58,7 +58,7 @@ export function resolveClientVersion(targetId: string, documents: Readonly<Recor
   }
   const result: ResolvedClientVersion = { id: targetId, ancestry: chain.map(version => version.id), mainClass, type, javaMajor,
     client, jarVersionId, libraries: selected, gameArguments, jvmArguments };
-  if (assetIndex !== undefined) result.assetIndex = assetIndex;
+  if (assetIndex !== undefined) { result.assetIndex = assetIndex.value; result.assetIndexVersionId = assetIndex.sourceVersionId; }
   if (assets !== undefined) result.assets = assets;
   return result;
 }

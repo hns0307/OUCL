@@ -120,6 +120,26 @@ export class ObjectStore {
       return { ...found, sourceKey: key };
     });
   }
+  private async saveProof(digest: string, facts: ReturnType<typeof definition>): Promise<string> {
+    const key = sourceKey(facts.expected, facts.anchor); const target = this.objectFile(digest);
+    const proof: Provenance = { schemaVersion: 1, objectDigest: digest, ...facts };
+    const sources = await directory(path.dirname(target), path.basename(target) + '.sources');
+    const old = await this.proof(digest, key);
+    if (!old) {
+      const temporary = path.join(sources, `${randomUUID()}.tmp`); const handle = await open(temporary, 'wx');
+      try { await handle.writeFile(JSON.stringify(proof) + '\n'); await handle.sync(); } finally { await handle.close(); }
+      await rename(temporary, path.join(sources, `${key}.json`));
+    }
+    return key;
+  }
+  /** Rechecks existing content against another independently trusted source before recording its own proof. */
+  adopt(digest: string, expected: ExpectedArtifact, anchor: TrustAnchor): Promise<ObjectRef> {
+    return this.serial(async () => {
+      const facts = definition(expected, anchor); const bytes = await this.verify(this.objectFile(digest), facts.expected, digest);
+      const key = await this.saveProof(digest, facts); const object = { digest, size: bytes.size };
+      await this.index.remember(key, object); return { ...object, sourceKey: key };
+    });
+  }
   /** Commits only fully verified staging bytes; equal existing content is checked and shared, never overwritten. */
   commit(id: string, expected: ExpectedArtifact, anchor: TrustAnchor,
     checkpoint: (point: ObjectCheckpoint) => Promise<void> = async () => {}): Promise<ObjectRef> {
@@ -139,15 +159,7 @@ export class ObjectStore {
       }
       await chmod(target, 0o444);
       await checkpoint('object-committed');
-      const proof: Provenance = { schemaVersion: 1, objectDigest: observed.sha256, ...facts };
-      const sources = await directory(path.dirname(target), path.basename(target) + '.sources');
-      const old = await this.proof(observed.sha256, key);
-      if (!old) {
-        const temporary = path.join(sources, `${randomUUID()}.tmp`);
-        const handle = await open(temporary, 'wx');
-        try { await handle.writeFile(JSON.stringify(proof) + '\n'); await handle.sync(); } finally { await handle.close(); }
-        await rename(temporary, path.join(sources, `${key}.json`));
-      }
+      await this.saveProof(observed.sha256, facts);
       await checkpoint('proof-committed');
       const object = { digest: observed.sha256, size: observed.size };
       await this.index.remember(key, object);

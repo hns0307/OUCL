@@ -21,9 +21,11 @@ test('vanilla metadata resolves typed artifacts and arguments without mutating i
   assert.equal(resolved.mainClass, base.mainClass); assert.equal(resolved.javaMajor, 21);
   assert.deepEqual(resolved.ancestry, ['base']); assert.equal(resolved.jarVersionId, 'base');
   assert.equal(resolved.assetIndex?.id, '17'); assert.equal(resolved.assets, '17'); assert.equal(resolved.type, 'release');
+  assert.equal(resolved.assetIndexVersionId, 'base');
   assert.deepEqual(resolved.gameArguments, ['--username', '${auth_player_name}']);
   assert.deepEqual(resolved.jvmArguments, ['-cp', '${classpath}']);
   assert.equal(resolved.libraries[0]?.artifact?.sha1, artifact.sha1);
+  assert.equal(resolved.libraries[0]?.sourceVersionId, 'base');
   assert.equal(JSON.stringify(base), before);
 });
 
@@ -37,6 +39,8 @@ test('three-level inheritance overrides libraries by coordinate and finds neares
   assert.deepEqual(resolved.ancestry, ['base', 'middle', 'leaf']); assert.equal(resolved.jarVersionId, 'base');
   assert.equal(resolved.mainClass, 'custom.Main'); assert.equal(resolved.type, 'snapshot');
   assert.deepEqual(resolved.libraries.map(item => item.name), ['org.example:lib:2', 'org.example:lib:2:tests', 'org.example:lib:2@zip']);
+  assert.deepEqual(resolved.libraries.map(item => item.sourceVersionId), ['middle', 'middle', 'middle']);
+  assert.equal(resolved.assetIndexVersionId, 'base');
   assert.deepEqual(resolved.gameArguments, ['--username', '${auth_player_name}', '--middle', '--leaf']);
   assert.equal(resolveClientVersion('middle', { base, middle: { ...middle, downloads: { client: { ...client, size: 300 } } } }, environment).jarVersionId, 'middle');
 });
@@ -56,6 +60,30 @@ test('server-only input cannot provide a client or main class', () => {
   assert.throws(() => resolveClientVersion('empty', { empty: { id: 'empty', downloads: { client } } }, environment), errorCode('MAIN_CLASS_MISSING'));
   const minimal = resolveClientVersion('base', { base: { id: 'base', mainClass: 'Main', downloads: { client } } }, environment);
   assert.equal(minimal.javaMajor, 8); assert.equal(minimal.assetIndex, undefined); assert.deepEqual(minimal.libraries, []);
+  assert.equal(minimal.assetIndexVersionId, undefined);
+});
+
+test('library and asset-index provenance follows each actual declaration independently of the selected leaf', () => {
+  const native = { ...artifact, path: 'org/example/native/1/native.jar', sha1: 'd'.repeat(40) };
+  const parent = { ...base, libraries: [...base.libraries,
+    { name: 'org.example:native:1', natives: { windows: 'natives-windows' }, downloads: { classifiers: { 'natives-windows': native } } }] };
+  const middle = { id: 'middle', inheritsFrom: 'base', assetIndex: { ...base.assetIndex, id: '18' }, libraries: [
+    { name: 'org.example:lib:2', downloads: { artifact: { ...artifact, sha1: 'e'.repeat(40) } } }
+  ] };
+  const leaf = { id: 'leaf', inheritsFrom: 'middle', libraries: [
+    { name: 'org.example:leaf:1', downloads: { artifact } }
+  ] };
+  const resolved = resolveClientVersion('leaf', { base: parent, middle, leaf }, environment);
+  assert.equal(resolved.jarVersionId, 'base');
+  assert.equal(resolved.assetIndex?.id, '18'); assert.equal(resolved.assetIndexVersionId, 'middle');
+  assert.deepEqual(resolved.libraries.map(item => [item.name, item.sourceVersionId]), [
+    ['org.example:lib:2', 'middle'], ['org.example:native:1', 'base'], ['org.example:leaf:1', 'leaf']
+  ]);
+  assert.equal(resolved.libraries[1]?.native?.sha1, native.sha1);
+  const leafOverride = resolveClientVersion('leaf', { base: parent, middle, leaf: { ...leaf, assetIndex: { ...base.assetIndex, id: '19' },
+    libraries: [{ name: 'org.example:native:2', natives: { windows: 'natives-windows' }, downloads: { classifiers: { 'natives-windows': native } } }] } }, environment);
+  assert.equal(leafOverride.assetIndexVersionId, 'leaf');
+  assert.equal(leafOverride.libraries.find(item => item.name === 'org.example:native:2')?.sourceVersionId, 'leaf');
 });
 
 test('ordered rules default to deny, apply last match and distinguish feature false', () => {

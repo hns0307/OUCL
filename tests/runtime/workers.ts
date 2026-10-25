@@ -11,6 +11,7 @@ import { ObjectStore } from '../../src/services/objects/store.js';
 import { ArtifactTransfer } from '../../src/services/download/artifact-transfer.js';
 import { HttpTransfer } from '../../src/services/download/http.js';
 import { sourceKey } from '../../src/services/objects/provenance.js';
+import { DownloadCoordinator } from '../../src/services/download/coordinator.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -87,6 +88,17 @@ void app.whenReady().then(async () => {
     assert.equal(transferred.digest, objectA.digest);
     assert.equal((await client.getTransfer(sourceKey(transferSpec.expected, anchor)))?.state, 'committed');
     await physical.run(transferSpec); assert.equal(transferRequests, 2);
+    const shared = new DownloadCoordinator(physical, objects);
+    try {
+      const a = shared.request(transferSpec, { consumerId: '00000000-0000-4000-8000-000000000011' });
+      const secondSource = { ...transferSpec, expected: { ...expected, provenanceId: 'fixture:independent-source' } };
+      const b = shared.request(secondSource, { consumerId: '00000000-0000-4000-8000-000000000012' });
+      await a.cancel(); await assert.rejects(a.result, { code: 'CANCELLED' });
+      assert.equal((await b.result).digest, objectA.digest); assert.equal(transferRequests, 2);
+      assert.equal((await objects.lookup(secondSource.expected, anchor))?.digest, objectA.digest);
+    } finally { await shared.close(); }
+    const hashWorkersSpawned = pool.spawnedWorkers;
+    assert.ok(hashWorkersSpawned <= 3, 'HASH_SESSIONS_WERE_NOT_REUSED');
     await objects.close(); objects = undefined;
     await client.close(); client = undefined; await pool.close();
     console.log('OUCL_WORKERS_RESULT:' + JSON.stringify({ status: 'PASS', electron: process.versions.electron, node: process.versions.node,
@@ -94,7 +106,8 @@ void app.whenReady().then(async () => {
       hashElapsedMs, hashMatched: true, parentEventLoopTicks: ticks,
       progressEvents, cancellationJoined: true, fileHandleReleased: true, objectDeduplicated: true, provenanceSeparated: true,
       objectIndexRebuilt: true, durableTaskPreserved: true, artifactTransferVerified: true,
-      transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true }));
+      transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
+      sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

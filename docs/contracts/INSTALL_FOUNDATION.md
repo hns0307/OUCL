@@ -1,0 +1,29 @@
+# 阶段1A安装准备与共享协调
+
+本增量仍在已批准1A，落实安装计划/来源分离/有界worker方向，不新增依赖、渲染IPC或磁盘schema。最终用户目标已明确为可运行的Windows exe，至少能下载与启动MC；本模块尚不是该完整交付。
+
+## 可信元数据与纯安装计划
+
+ResolvedLibrary.sourceVersionId保存每个库实际声明版本，ResolvedClientVersion.assetIndexVersionId保存索引实际声明版本，继承覆盖不能把父制品绑定到子描述。它们仅是内部解析字段，不改变上游JSON或公开catalog结果。
+
+InstallMetadataService.prepare只接受首版Windows x64：官方描述图→核对assetIndex的SHA1、实际UTF8字节大小和实际正文SHA1→parseAssetIndex→planVanillaInstall。返回原始assetIndexBody，不重编码JSON后冒充原始摘要。索引URL是官方metadata package URL，未扩大artifact HTTP host白名单；后续执行器须把这份已验证原字节写受管staging后提交ObjectStore，避免重复或不受控下载。
+
+core/install无IO：解析最多100000个逻辑资产，验证哈希/大小/Windows相对路径/大小写与文件目录冲突；相同hash不同size拒绝。计划含去重artifacts、每份独立proof、备选元数据地址、相对views、classpath、私有native解压输入和逻辑总字节。client/library/index绑定实际声明者，asset对象绑定索引SHA1；缺失来源或来源不在继承图中拒绝，不猜叶子来源。
+
+虚拟旧资源目录与map_to_resources有显式入口计划，不能迁移/覆盖玩家数据。upstream版本名不作为本地实例目录；client.jar仅为version区域的执行器占位。现代metadata可能同时列x86/ARM64 native JAR，保留其原classpath事实，但首版解压计划仅选Windows x64，不能将不兼容DLL混入私有natives。真实解压、PE架构校验与物化尚待实现。
+
+## 活跃下载消费者
+
+DownloadCoordinator内部接PhysicalTransfer与SourceAttestor，不直接访问UI。按可信发行域、摘要算法/值、大小合并活跃内容需求，URL不能代替内容身份；不同来源合并传输后仍由ObjectStore.adopt重新核对本体并保存各自证明，不因同内容升级来源信任。相同proof每个job合并一次attestation。
+
+默认并发4、最多128个活跃job和1024个consumer，输入consumerId UUID。request返回result及pause/resume/cancel控制句柄；UI订阅退订不等于取消。A暂停/取消不影响active的B；全部暂停才中止并等物理收尾，恢复等旧attempt结束后再启动。暂停的消费者不接收完成，恢复已就绪对象前重新核对内容。最后取消等传输及本人proof写入完成；日志/证明失败优先于假取消。关闭停止接收并join物理工作和来源写入，即使其中一项失败也等待其他收尾。
+
+当前consumer/job关联只保留在内存，**没有跨进程持久任务关联/用户归属授权/公开TaskSnapshot**。物理续传元数据本身已有SQLite持久化；不能将其等同于安装任务恢复。后续Task服务应先持久化安装/consumer关联，再执行effects，并按既定任务契约接订阅、取消与重载恢复。
+
+## 持久哈希会话
+
+HashPool保持原hash/close公开API、并发1–4、32等待预算、120s限时与64MiB线程堆上限，改为复用hash-only线程。workerData为exact `{version:1,kind:hash-session}`；每个hash-job有UUID、受控绝对文件与maximumBytes，回复hash-job-progress/result/failed严格带jobId，未知字段/脚本拒绝，旧job回复不能结束新job。
+
+每个session一次只处理一个job，完成必须先关闭handle再发成功；取消活跃job终止并join该线程，之后才用替代线程处理下一job。close同时join active与idle线程，避免Node进程被空闲线程挂住。旧single hash模式保持兼容。spawnedWorkers为只读诊断，不开放给renderer。
+
+裸Node模块通过eslint no-restricted-imports.paths限制，node:*与分层目录仍用patterns；修复此前把core/path相对导入误当裸path模块的情况，测试继续拒绝真正Node/React/Electron导入。
