@@ -1,5 +1,17 @@
 # OUCL 下一对话交接
 
+## 当前有效交接：mod_loaders 暂停等待额度（2026-10-25）
+
+用户明确要求实施完整《四加载器接入与 Mod 管理修订方案》，已建立用户指定分支 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。最新指令：额度快用光时先暂停，等重置生效。调用usage工具结果5小时92%已用、周额度30%已用，预计北京时间2026-10-26 01:00:57重置（Unix1792947657）；恢复前重新核实实际额度，旧时间不能代替重置证据。
+
+本次仅完成首个基础增量，**四加载器/Mod管理及0.3.0尚未交付**：新增src/core/mods/ranges.ts三态规则、Maven严格区间与Fabric/Quilt条件；tests/mod-ranges.test.ts三组测试；docs/LOADERS_AND_MODS.md参考取舍和顺序。未安装依赖、未更改IPC/存储生产能力或版本号，仍0.2.2。没有运行游戏或触碰用户数据。
+
+验证：pnpm typecheck通过，pnpm lint通过；独立编译后node --test .test-build/tests/mod-ranges.test.js为3 PASS/0 FAIL。最初测试把^1.20.1对1.21错写为不满足，已改为满足、对2不满足，复测通过。pnpm test完整运行出现多项存储/传输失败且后续无输出，已中断，不能标完整检查通过；下一轮先复现并保留详细日志，区分环境/基线与本次变动。build尚未运行；不要以局部规则通过代替完整检查或MC验收。规则仍需按官方加载器语义补充对照测试，不能直接声称完整支持所有版本语法。
+
+TOML评估：受限网络pnpm view失败，获准网络读取后npm官方元数据smol-toml1.9.0核实：BSD-3-Clause、unpacked139963 bytes、无声明运行依赖、发布2026-09-22（上游另有1.9.1），integrity sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==。尚未完成漏洞审计/实际打包体积/新依赖批准，不安装。下一为完成评估及契约/可信Fabric与Quilt元数据，随后正式安装/启动、Forge/NeoForge spike和处理器、JAR worker双重检查/事务/UI、真实验收与0.3.0小EXE。原完整批准方案在本对话用户消息，勿缩成仅规则交付。
+
+Git保护：原始暂存OUCL-Codex-Package.zip、OUCL.txt继续保留，不纳入本次提交；显式路径add/commit --only，不push。历史1A及阶段0缺项不关闭。用户此前允许多agent仅在历史1A上下文，本轮尚未委派子agent。
+
 ## 当前有效交接：0.2.2 同级运行环境（2026-10-25）
 
 用户明确要求运行时在EXE同级准备环境，缺少下载、完整则直接启动，并美化或隐藏检查/启动界面。批准已记TASK_PLAN顶部/DECISIONS末尾。本增量交付待体验，下面0.2.1是历史系统缓存方案，不再是当前默认。
