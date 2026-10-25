@@ -373,3 +373,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 32. 正式启动任务、会话与实例按钮
 
 LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessions候选已接main/preload/实例按钮。启动复用安装器拥有者，复核关键依赖/native，真实spawn/close驱动状态；关窗口保活、明确确认停止及正常退出收尾已接。248测试246 PASS/2原有SKIP、完整检查、九能力/18方法窗口及DOM启动真实Java退出1的非执行fixture验证通过，见[报告](../../docs/validation/A1-09-launch-ui/game/GAME_REPORT.md)。实际fixture不算MC成功。新exe默认入口的真实目录/Java选择、官方下载、菜单/世界、退出重启下一直接实测；旧release不替代。
+
+## 33. 0.1.0便携exe与原生实机验收进行中
+
+`09366d1`已生成Windows x64便携目录与中文使用说明。默认exe入口smoke的9能力/18方法、无Node、正常退出0和owner释放通过；最新248测试246 PASS/2原有SKIP及完整检查通过，见[exe报告](../../docs/validation/A1-09-exe/REPORT.md)。用户明确交给代理继续验收；实际原生目录/Java17选择和生产离线档案创建通过，空根官方1.20.1下载首任务约103MB失败，保留缓存后第二任务继续。完整安装/菜单/世界/正常退出重开未验收，目标继续active，不用旧CLI菜单替代。

@@ -245,3 +245,5 @@
 执行记录：已批候选档案/Java/settings读取契约已装配main/preload/界面，242测试240 PASS/2 SKIP、完整检查和实际Electron DOM创建账户验证通过，见[界面报告](../../docs/validation/A1-09-launch-ui/PROFILE_REPORT.md)。Java仅原生选择后主进程实测，内部路径与游戏UUID不回renderer；真实native选择操作尚未自动验证。没有新增依赖、SQLite格式或后续阶段能力，继续接实际实例启动/会话及新exe。
 
 执行记录：启动/停止持久任务与session JSON、严格候选game/sessions接口及实例启动按钮已接通；复用原安装器对象拥有者，关闭窗口时保活，显式确认才强停。248测试246 PASS/2 SKIP、完整检查和正式Electron DOM启动真实JVM/预期缺主类退出1验证通过，见[启动UI报告](../../docs/validation/A1-09-launch-ui/game/GAME_REPORT.md)。新私有固定session域沿用原版本JSON/日志，未改SQLite格式/新增依赖/后续阶段；不将fixture等同MC或新exe验收，下一直接打包真实验证。
+
+执行记录：`09366d1`交付0.1.0未签名Windows x64便携exe；默认入口隔离/白名单/正常退出及最新完整检查通过，见[exe报告](../../docs/validation/A1-09-exe/REPORT.md)。用户明确答复“交给代理继续验收”；实际原生目录和Java17选择、离线档案创建完成。官方1.20.1空根下载首任务失败，缓存保留后重试进行中；不编造失败根因或将尚未完成的安装/世界/重开写成通过。授权仍限原1A，无新依赖或后续阶段。

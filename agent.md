@@ -1,5 +1,18 @@
 # OUCL 下一对话交接
 
+## 最新现场覆盖记录（2026-10-25，优先于下方历史交接）
+
+- 最新代码 `09366d1`，前序 `4571ada` 已完成档案/Java公开契约与UI，`fa67890` 已完成正式启动/停止任务与会话、实例启动按钮、关闭窗口保活及正常退出。下方“尚未公开接入”的历史描述已失效。
+- `release/OUCL-0.1.0-win32-x64/OUCL.exe` 已生成，保留整个目录运行；未签名，无安装器，无Java/Minecraft捆绑。9能力/18方法。`pnpm check` 248测试246PASS/0FAIL/2原有SKIP、类型/lint/build通过。实际默认exe入口smoke通过，正常退出0且owner释放，证据 `docs/validation/A1-09-exe/`。
+- **Goal仍active，exe真实闭环进行中。** 用户最新直接选择“交给代理继续验收”。Computer Use仅sky输入；UIA树/焦点有延迟，以新截图核对。默认exe窗口上次id68022（必须重取），已原生选择独立游戏根 `.test-build/exe-acceptance/games`、本机可信Java17并探测成功，创建生产离线档案 `OUCL 验证 / OUCL_Test1`。
+- 正式UI选择官方1.20.1，从空根实际下载，无预填旧对象。第一安装任务在约103MB失败，仅通用错误不能编造物理根因；第二次确认安装复用缓存继续，上次约230MB/702MB。先查最新窗口/任务，不因观察超时重启/删锁。完整安装、世界保存/自然退出/重开仍待实际观察。
+- 原生目录选择等待过长返回结果未知，重试正确读取已登记结果；Java原生选择成功。默认元数据位于系统Roaming/OUCL。另有隐藏临时exe profile `.test-build/exe-acceptance/profile`（localhost临时CDP，旧PID29228可能变化），无游戏业务数据，最后正常关闭收尾。
+- **纠正下方旧运行现场：57524已Unknownprocess，正常权限进程检查未找到旧verify-game-launch/official-game-retry进程。旧official-launch.json仍RUNNING，没有自然退出/世界/重开证据，不能再称它活跃。** 保留旧owner及证据，不删锁或改成通过。
+- 下一步直接完成当前exe下载→实例按钮启动→主菜单→创建验证世界→保存退出→正常关游戏/启动器→重开档案和实例→再次启动。保存脱敏证据，同步TASK_PLAN/DECISIONS/本文件并逐增量提交，审查后才goal complete。不以fixture/JVM退出1或旧CLI菜单替代。
+- Git仍保留用户两项原始暂存，不混入工程提交。完整异常owner接管/所有资产修复、受管Java供应商及8/21组合等限制不写成阶段1A全部完成。
+
+以下为历史快照，遇到上述已更新项以前文为准。
+
 更新：2026-10-25。当前代码基线 `d796371`。每次开发先读 `OUCL-Codex/docs/TASK_PLAN.md`，再读 AGENTS.md、DECISIONS.md 及关联契约。本快照不替代用户批准或真实状态。
 
 ## 目标与授权
