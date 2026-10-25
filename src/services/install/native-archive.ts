@@ -256,3 +256,28 @@ export async function readVerifiedArchiveEntry(archive: SelectedArchiveInput, se
     throw new NativeArchiveError('ARCHIVE_IO');
   }
 }
+
+/** Fully inflates one verified ZIP to detect corrupt or empty processor output. Invoke only in a bounded worker. */
+export async function validateVerifiedArchive(archive: SelectedArchiveInput): Promise<{ entries: number; bytes: number }> {
+  try {
+    if (!archive || typeof archive.file !== 'string' || !path.isAbsolute(archive.file)
+      || typeof archive.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(archive.sha256)
+      || !Number.isSafeInteger(archive.size) || archive.size < 1 || archive.size > MAX_ARCHIVE) bad();
+    await guardDirectory(path.dirname(archive.file));
+    const bytes = await readRegular(archive.file, MAX_ARCHIVE);
+    if (!bytes || bytes.length !== archive.size || createHash('sha256').update(bytes).digest('hex') !== archive.sha256) {
+      throw new NativeArchiveError('HASH_MISMATCH');
+    }
+    const entries = parse(bytes, []); let total = 0; let files = 0;
+    for (const entry of entries) {
+      total += entry.size; if (total > MAX_TOTAL) limit();
+      if (!entry.directory) { unpack(entry); files++; }
+    }
+    if (files < 1) bad();
+    return { entries: files, bytes: total };
+  } catch (error) {
+    if (error instanceof NativeArchiveError) throw error;
+    if (hasCode(error, 'UNSAFE_PATH')) unsafe();
+    throw new NativeArchiveError('ARCHIVE_IO');
+  }
+}

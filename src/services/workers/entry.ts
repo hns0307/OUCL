@@ -9,11 +9,12 @@ import { parseInstallation } from '../storage/installation.js';
 import { parseCatalogCache } from '../storage/catalog-cache.js';
 import { TransferDatabase } from '../storage/transfer-db.js';
 import { digestFile, startHashSession } from './hash-session.js';
-import { extractNativeArchives, extractSelectedArchive, NativeArchiveError, readVerifiedArchiveEntry } from '../install/native-archive.js';
+import { extractNativeArchives, extractSelectedArchive, NativeArchiveError, readVerifiedArchiveEntry, validateVerifiedArchive } from '../install/native-archive.js';
 import { parseNativeRequest } from './native-protocol.js';
 import { INSTALLER_ENTRIES, parseInstallerArchiveRequest } from './installer-archive-protocol.js';
 import { parseProcessorManifestRequest } from './processor-manifest-protocol.js';
 import { parseProcessorMainClass } from '../../core/loaders/processor-manifest.js';
+import { parseArchiveValidationRequest } from './archive-validation-protocol.js';
 import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 import { parseLaunchProfiles } from '../storage/launch-profiles.js';
 import { parseResourceLibrary } from '../storage/resources.js';
@@ -130,6 +131,15 @@ void (async () => {
       const body = await readVerifiedArchiveEntry(request, 'META-INF/MANIFEST.MF', 64 * 1024);
       port.postMessage({ version: 1, kind: 'processor-manifest-result', mainClass: parseProcessorMainClass(body) });
     } catch (error) { port.postMessage({ version: 1, kind: 'processor-manifest-failed', code: error instanceof NativeArchiveError ? error.code : 'INVALID_ARCHIVE' }); }
+    port.close();
+  }
+  else if (input.kind === 'processor-output-validate') {
+    try {
+      let request;
+      try { request = parseArchiveValidationRequest(input); } catch { throw new NativeArchiveError('INVALID_ARCHIVE'); }
+      const result = await validateVerifiedArchive(request);
+      port.postMessage({ version: 1, kind: 'processor-output-valid', ...result });
+    } catch (error) { port.postMessage({ version: 1, kind: 'processor-output-invalid', code: error instanceof NativeArchiveError ? error.code : 'ARCHIVE_IO' }); }
     port.close();
   }
   else if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'
