@@ -225,3 +225,7 @@
 执行记录：5620b0c后落实批量可信下载与精确原索引导入，152测试150 PASS/2 SKIP及正式Electron fixture验证通过，见[A1-05-install-downloads报告](../../docs/validation/A1-05-install-downloads/REPORT.md)。无新依赖、渲染IPC或持久schema；仍没有完整持久安装任务、物化/解压、Java/档案/进程/UI和最终exe验证，不标目标完成。
 
 执行记录：批量下载已提交e834de6、交接9984159；继续既定1A安全解压worker方向，新增ZIP校验、独占隔离写入及有界NativeExtractor，无新依赖/公开IPC/持久schema。168测试166 PASS/2 SKIP及官方两版native归档与Electron实测通过，见[A1-08-native-extraction报告](../../docs/validation/A1-08-native-extraction/REPORT.md)。尚无实例natives发布/完整任务恢复/游戏启动或新exe验收，继续既定授权。
+
+2026-10-25目标补充原文：“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能，下载界面可以参考MC_start文件夹里的其他启动器”。保留原1A持续批准与exe验收，新增本地下载UI交互参考许可，不复制源码素材、不启动后续阶段。
+
+执行记录：c076c47/d71213d后增加受管文件投影/明确复制回退和已有Java探测，185测试183 PASS/2环境SKIP、实际Electron投影及本机Oracle17属性验证通过；[投影报告](../../docs/validation/A1-08-file-views/REPORT.md)、[Java报告](../../docs/validation/A1-06-java-probe/REPORT.md)。无新依赖/公开IPC/持久schema，未选定新Java供应商或下载制品。完整安装事务、进程/UI和新exe仍待继续，不标完成。

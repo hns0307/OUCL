@@ -18,6 +18,7 @@ import { parseAssetIndex } from '../../src/core/install/assets.js';
 import { planVanillaInstall } from '../../src/core/install/plan.js';
 import { NativeExtractor } from '../../src/services/workers/native-extractor.js';
 import { crc32 } from 'node:zlib';
+import { FileViewService } from '../../src/services/install/file-views.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -137,6 +138,11 @@ void app.whenReady().then(async () => {
       assert.deepEqual(await readFile(path.join(nativeOutput, 'lwjgl.dll')), fixture);
     } finally { await nativeExtractor.close(); }
     await rm(nativeOutput, { recursive: true }); await rm(nativeFile);
+    const fileViews = path.join(root, 'file-views'); await mkdir(fileViews);
+    const materializer = new FileViewService(objectsDirectory, objects, pool);
+    const receipt = await materializer.materialize(fileViews, 'fixture.jar', transferSpec, transferred, { mode: 'prefer-link' });
+    assert.deepEqual(await readFile(path.join(fileViews, receipt.relativePath)), fixture);
+    assert.deepEqual(await materializer.materialize(fileViews, receipt.relativePath, transferSpec, transferred, { mode: 'prefer-link', existing: receipt }), receipt);
     const hashWorkersSpawned = pool.spawnedWorkers;
     assert.ok(hashWorkersSpawned <= 3, 'HASH_SESSIONS_WERE_NOT_REUSED');
     await objects.close(); objects = undefined;
@@ -149,7 +155,7 @@ void app.whenReady().then(async () => {
       transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
       sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
       batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true,
-      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true }));
+      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true, fileViewMode: receipt.mode, fileViewVerified: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

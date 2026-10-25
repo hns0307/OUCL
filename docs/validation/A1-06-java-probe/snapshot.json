@@ -1,0 +1,14 @@
+[
+  {
+    "path": "src/services/java/probe.ts",
+    "sha256": "f391fab051eb592bd0a02ef158c241bab8580b40981d02c03f9a8497db7fb8d9"
+  },
+  {
+    "path": "tests/java-probe.test.ts",
+    "sha256": "8beaba5ec69356a96f234633e7e87b1713d42948de50d027f2b849db66cf0b54"
+  },
+  {
+    "path": "scripts/verify-java.mjs",
+    "sha256": "36ad9fdbe6876be00ffe1b22064c7a34a4047dece9595141dc7b00adb00a28e8"
+  }
+]

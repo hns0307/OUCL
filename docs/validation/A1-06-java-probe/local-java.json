@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-25T03:38:40.930Z",
+  "major": 17,
+  "version": "17.0.12",
+  "vendor": "Oracle Corporation",
+  "architecture": "x64",
+  "os": "windows",
+  "shell": false,
+  "runtimeInstalled": false,
+  "systemSettingsChanged": false,
+  "gameLaunched": false
+}
