@@ -15,7 +15,7 @@ export interface LoaderMetadataEvidence {
   sha256: string;
 }
 export interface LoaderCatalogDocument { items: LoaderVersionSummary[]; evidence: LoaderMetadataEvidence }
-export interface LoaderProfileDocument { profile: LoaderProfile; evidence: LoaderMetadataEvidence }
+export interface LoaderProfileDocument { profile: LoaderProfile; evidence: LoaderMetadataEvidence; body: string }
 
 function safeSegment(value: string): boolean {
   return value.length >= 1 && value.length <= 160 && new RegExp(`^${SEGMENT}$`).test(value);
@@ -61,7 +61,7 @@ export class LoaderMetadataClient {
     const sourceUrl = endpoint(kind, minecraftVersion, loaderVersion);
     const document = await this.reader.read(sourceUrl);
     try {
-      return { profile: parseLoaderProfile(kind, minecraftVersion, loaderVersion, json(document.body)), evidence: { sourceUrl, sha256: document.sha256 } };
+      return { profile: parseLoaderProfile(kind, minecraftVersion, loaderVersion, json(document.body)), evidence: { sourceUrl, sha256: document.sha256 }, body: document.body };
     } catch (error) {
       if (error instanceof CatalogError) throw error;
       throw new CatalogError('UNTRUSTED_MANIFEST');
