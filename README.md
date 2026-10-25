@@ -23,7 +23,7 @@ pnpm start
 
 `pnpm test`后可运行`node scripts/verify-download.mjs`验证真实官方客户端下载、取消/重开续传和对象复用；它使用临时目录并清理，不启动游戏。证据见[A1-05传输报告](docs/validation/A1-05-transfer/REPORT.md)。
 
-推荐交付：`pnpm package:exe`生成`release/OUCL-0.2.1.exe`。只需复制这个小EXE，首次运行会从Electron官方下载安装并校验固定运行环境，之后复用本机缓存；无需手动解压、安装Node或pnpm。首次需要联网，Windows 10/11 x64需.NET Framework 4.7.2或更高。包未签名，不含Minecraft或Java；`pnpm smoke:exe`验证默认入口，`pnpm test:bootstrap`验证引导安全边界。详见[运行时分发设计](docs/BOOTSTRAP.md)。
+推荐交付：`pnpm package:exe`生成`release/OUCL-0.2.2.exe`。首次只需这个小EXE，运行时会在EXE旁的`OUCL.runtime`准备Electron；完整环境已存在则校验后直接进入应用，缺少才从官方下载安装。普通检查/启动隐藏窗口，下载或错误时显示进度/重试界面。无需手动解压、安装Node或pnpm；首次下载需要联网，Windows 10/11 x64需.NET Framework 4.7.2或更高。以后移动时同时带上EXE和OUCL.runtime即可复用。包未签名，不含Minecraft或Java；`pnpm smoke:exe`验证默认入口，`pnpm test:bootstrap`验证引导安全边界。详见[运行时分发设计及删除说明](docs/BOOTSTRAP.md)。
 
 使用顺序：设置页选择游戏目录 → 首页新建离线档案 → 下载页安装Minecraft → 左侧选择实例，在右侧启动。启动时自动检查已有Java，缺少兼容的Java 8/17/21时按Mojang官方清单下载并缓存；仍可手动选择Java。Mod等资源可在下载页搜索、选择版本和文件，下载后在资源库查看。
 

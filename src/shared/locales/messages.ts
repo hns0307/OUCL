@@ -46,7 +46,7 @@ export const MESSAGES = {
   uiSave: '保存设置',
   uiSaved: '已保存',
   uiAbout: '关于 OUCL',
-  uiVersion: 'OUCL 0.2.1 · Windows x64',
+  uiVersion: 'OUCL 0.2.2 · Windows x64',
   uiAboutDescription: '面向高校社团的 Minecraft Java 版启动器。当前提供原版离线启动与 Modrinth 资源下载。',
   uiResourceNotice: '下载至资源库，不自动安装。Mod 与光影需自行配置兼容加载器和运行组件。',
   uiSearchResources: '搜索资源名称',

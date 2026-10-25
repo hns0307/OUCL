@@ -52,5 +52,6 @@ run(compiler, ['/nologo', '/target:winexe', '/platform:x64', '/optimize+', '/utf
   `/resource:${path.join(work, 'configuration')},configuration`, `/resource:${path.join(work, 'app.manifest')},app-manifest`,
   `/resource:${path.join(work, 'runtime.manifest')},runtime-manifest`, `/resource:${path.join(work, 'app.zip')},application`, path.resolve('bootstrap/Launcher.cs')]);
 const report = { version: meta.version, output, bytes: (await stat(output)).size, sha256: createHash('sha256').update(await readFile(output)).digest('hex'), electron: version, runtimeChecksum: checksum, appHash };
-await mkdir('docs/validation/BOOTSTRAP-0.2.1', { recursive: true });
-await writeFile('docs/validation/BOOTSTRAP-0.2.1/package.json', JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));
+const evidence = `docs/validation/BOOTSTRAP-${meta.version}`;
+await mkdir(evidence, { recursive: true });
+await writeFile(path.join(evidence, 'package.json'), JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));

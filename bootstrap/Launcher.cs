@@ -19,7 +19,7 @@ internal static class Launcher {
         Arguments = args;
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new DownloadWindow());
+        using (var context = new BootstrapContext()) Application.Run(context);
     }
     internal static string TextResource(string name) {
         using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(name))) return reader.ReadToEnd();
@@ -127,10 +127,13 @@ internal static class Launcher {
         foreach (char c in text) { if (c == '\\') { slashes++; continue; } result.Append('\\', c == '"' ? slashes * 2 + 1 : slashes); result.Append(c); slashes = 0; }
         result.Append('\\', slashes * 2); return result.Append('"').ToString();
     }
-    internal static void Run(Action<string> progress, string testRoot = null) {
+    internal static string EnvironmentRoot(string executable) {
+        return Path.Combine(Path.GetDirectoryName(Path.GetFullPath(executable)), "OUCL.runtime");
+    }
+    internal static void Run(Action<string> progress, string testRoot = null, Action needsDownload = null) {
         var configuration = TextResource("configuration").Trim().Split('\n');
         string runtimeHash = configuration[0].Trim(), url = configuration[1].Trim(), appHash = configuration[2].Trim();
-        string root = testRoot ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OUCL", "desktop-cache");
+        string root = testRoot ?? EnvironmentRoot(Assembly.GetExecutingAssembly().Location);
         Guard(root); Directory.CreateDirectory(root);
         // Open-handle lock is released by Windows after a crash; it never deletes user/application leases.
         string lockFile = Path.Combine(root, "bootstrap.lock"); Guard(lockFile);
@@ -144,6 +147,7 @@ internal static class Launcher {
                 string staging = Path.Combine(root, ".download-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(staging);
                 string archive = Path.Combine(staging, "runtime.zip");
                 try {
+                    if (needsDownload != null) needsDownload();
                     Download(url, archive, progress); progress("正在校验运行环境……");
                     if (Hash(archive) != runtimeHash) throw new IOException("HASH_MISMATCH");
                     using (var stream = File.OpenRead(archive)) Extract(stream, Path.Combine(staging, "runtime"));
@@ -180,18 +184,51 @@ internal static class Launcher {
         Directory.Delete(directory, true);
     }
 }
+internal sealed class BootstrapContext : ApplicationContext {
+    readonly DownloadWindow window = new DownloadWindow();
+    internal BootstrapContext() {
+        // Create a message target without ever making the preparation window visible.
+        var handle = window.Handle;
+        window.FormClosed += (sender, args) => ExitThread();
+        Application.Idle += Begin;
+    }
+    async void Begin(object sender, EventArgs args) {
+        Application.Idle -= Begin;
+        await window.Start();
+    }
+    protected override void Dispose(bool disposing) {
+        if (disposing) { Application.Idle -= Begin; window.Dispose(); }
+        base.Dispose(disposing);
+    }
+}
 internal sealed class DownloadWindow : Form {
-    readonly Label status = new Label { Left = 24, Top = 24, Width = 440, Height = 64, Text = "准备启动 OUCL……" };
-    readonly Button retry = new Button { Left = 320, Top = 100, Width = 120, Text = "重试", Visible = false };
+    readonly Label heading = new Label { Left = 28, Top = 24, Width = 440, Height = 40, Text = "OUCL", ForeColor = System.Drawing.Color.FromArgb(26, 67, 59), Font = new System.Drawing.Font("Microsoft YaHei UI", 21, System.Drawing.FontStyle.Bold) };
+    readonly Label status = new Label { Left = 30, Top = 82, Width = 456, Height = 48, Text = "正在准备运行环境……" };
+    readonly Label detail = new Label { Left = 30, Top = 174, Width = 310, Height = 45, Text = "首次准备后，将直接进入启动器。\n运行文件保存在 EXE 同级的 OUCL.runtime。", ForeColor = System.Drawing.Color.FromArgb(105, 118, 113), Font = new System.Drawing.Font("Microsoft YaHei UI", 8.5F) };
+    readonly ProgressBar progress = new ProgressBar { Left = 30, Top = 142, Width = 456, Height = 6, Style = ProgressBarStyle.Marquee, MarqueeAnimationSpeed = 24 };
+    readonly Button retry = new Button { Left = 360, Top = 178, Width = 126, Height = 34, Text = "重试", Visible = false, FlatStyle = FlatStyle.Flat, BackColor = System.Drawing.Color.FromArgb(33, 104, 85), ForeColor = System.Drawing.Color.White };
+    readonly Button cancel = new Button { Left = 360, Top = 178, Width = 126, Height = 34, Text = "取消", FlatStyle = FlatStyle.Flat, BackColor = System.Drawing.Color.White };
     bool working;
     internal DownloadWindow() {
-        Text = "OUCL"; ClientSize = new System.Drawing.Size(480, 150); FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; StartPosition = FormStartPosition.CenterScreen;
-        Controls.Add(status); Controls.Add(retry); retry.Click += async (sender, args) => await Start(); Shown += async (sender, args) => await Start();
-        FormClosing += (sender, args) => { if (working) { Launcher.Cancel.Cancel(); status.Text = "正在取消，请稍候……"; args.Cancel = true; } };
+        Text = "OUCL · 准备运行环境"; ClientSize = new System.Drawing.Size(516, 240); FormBorderStyle = FormBorderStyle.FixedSingle; MaximizeBox = false; MinimizeBox = false; StartPosition = FormStartPosition.CenterScreen;
+        BackColor = System.Drawing.Color.FromArgb(246, 248, 245); Font = new System.Drawing.Font("Microsoft YaHei UI", 10F); AutoScaleMode = AutoScaleMode.Dpi;
+        Controls.AddRange(new Control[] { heading, status, detail, progress, retry, cancel });
+        retry.FlatAppearance.BorderSize = 0; cancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(216, 225, 219);
+        retry.Click += async (sender, args) => await Start(); cancel.Click += (sender, args) => Close();
+        FormClosing += (sender, args) => { if (working) { Launcher.Cancel.Cancel(); status.Text = "正在取消，请稍候……"; cancel.Enabled = false; args.Cancel = true; } };
     }
-    async Task Start() {
-        working = true; retry.Visible = false;
-        try { await Task.Run(() => Launcher.Run(text => BeginInvoke((Action)(() => status.Text = text)))); working = false; Close(); }
-        catch { working = false; if (Launcher.Cancel.IsCancellationRequested) { Close(); return; } status.Text = "准备失败。请检查网络、磁盘空间，或确认另一个 OUCL 启动准备已结束。可重试，原有游戏数据不受影响。"; retry.Visible = true; }
+    internal async Task Start() {
+        working = true; retry.Visible = false; cancel.Visible = true; progress.Visible = true;
+        try {
+            await Task.Run(() => Launcher.Run(text => BeginInvoke((Action)(() => status.Text = text)), null,
+                () => BeginInvoke((Action)(() => { status.Text = "首次使用，正在下载运行环境……"; if (!Visible) Show(); }))));
+            working = false; Close();
+        }
+        catch (Exception error) {
+            working = false; if (Launcher.Cancel.IsCancellationRequested) { Close(); return; }
+            status.Text = error is UnauthorizedAccessException ? "无法写入同级目录，请将 EXE 放到可写文件夹后重试。" : "准备未完成，请检查网络、磁盘空间，或等待另一个 OUCL 完成准备后重试。";
+            detail.Text = "已有游戏和账户数据不会被修改。"; progress.Visible = false; cancel.Visible = false; retry.Visible = true;
+            if (!Visible) Show();
+        }
     }
 }

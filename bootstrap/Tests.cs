@@ -18,8 +18,17 @@ internal static class BootstrapTests {
         catch (TargetInvocationException ex) { refused = ex.InnerException is IOException; }
         Assert(refused);
     }
-    static void Main(string[] args) {
+    [STAThread] static void Main(string[] args) {
         string root = Path.GetFullPath(args[0]); Directory.CreateDirectory(root);
+        Assert(Launcher.EnvironmentRoot(Path.Combine(root, "portable", "OUCL.exe")) == Path.Combine(root, "portable", "OUCL.runtime"));
+        string originalDirectory = Environment.CurrentDirectory;
+        Environment.CurrentDirectory = root;
+        Assert(Launcher.EnvironmentRoot(Path.Combine(root, "elsewhere", "OUCL.exe")) == Path.Combine(root, "elsewhere", "OUCL.runtime"));
+        Environment.CurrentDirectory = originalDirectory;
+        using (var context = new BootstrapContext()) {
+            var window = (DownloadWindow)typeof(BootstrapContext).GetField("window", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);
+            Assert(window.IsHandleCreated && !window.Visible);
+        }
         Reject(Path.Combine(root, "traversal"), "../escape"); Reject(Path.Combine(root, "absolute"), "/escape");
         Reject(Path.Combine(root, "drive"), "C:/escape"); Reject(Path.Combine(root, "ads"), "file:stream");
         Reject(Path.Combine(root, "reserved"), "CON.txt"); Reject(Path.Combine(root, "alias"), "file.");
@@ -32,6 +41,13 @@ internal static class BootstrapTests {
         Assert(!(bool)Invoke("Verify", valid, manifest)); Assert(!File.Exists(Path.Combine(root, "escape")));
         Assert((string)Invoke("Quote", "D:\\space path\\") == "\"D:\\space path\\\\\"");
         Assert((string)Invoke("Quote", "a\"b") == "\"a\\\"b\"");
+        string cancelledStaging = Path.Combine(root, ".download-cancel-test");
+        Directory.CreateDirectory(cancelledStaging); Launcher.Cancel.Cancel();
+        bool cancelled = false;
+        try { using (var stream = Zip("runtime/electron.exe")) Invoke("Extract", stream, cancelledStaging); }
+        catch (TargetInvocationException ex) { cancelled = ex.InnerException is OperationCanceledException; }
+        Assert(cancelled && !File.Exists(Path.Combine(cancelledStaging, "runtime/electron.exe")));
+        Invoke("SafeCleanup", root, cancelledStaging); Assert(!Directory.Exists(cancelledStaging));
         Console.WriteLine("PASS " + checks + " bootstrap archive/hash/quoting checks");
     }
 }
