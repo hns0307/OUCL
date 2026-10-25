@@ -1,0 +1,15 @@
+{
+  "status": "RUNNING",
+  "fixture": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "instanceId": "58ffe787-b717-522f-a971-79c730e531fa",
+  "sessionId": "22c7e249-5eee-4381-a108-fb9fb93d04eb",
+  "spawnObserved": true,
+  "dependenciesReverified": 66,
+  "nativeTreeReverified": true,
+  "accountIsValidationFixture": true,
+  "productionAccountPolicyFrozen": false,
+  "menuVisuallyVerified": false,
+  "worldVisuallyVerified": false
+}

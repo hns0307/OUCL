@@ -357,3 +357,7 @@ e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依
 ## 28. 官方完整安装与重开规模修复
 
 1b5a116后实际官方1.20.1安装3,641制品/735,814,641字节、私有native与完整实例manifest通过，见[报告](../../docs/validation/A1-08-official-install/REPORT.md)。实际重开揭示190MB历史日志导致128MiB worker OOM，独立副本复现后改为流式历史校验和摘要映射；相同副本原限制下恢复通过，新增超128MiB日志回归。完整233测试231 PASS/2原有SKIP、类型/lint/build通过。旧异常owner不抢占，新独立根重新校验缓存并安装通过。启动参数/进程服务同时推进，Java/账户与启动UI、新exe及完整异常接管仍未完成。
+
+## 29. 实际游戏主菜单与D-20冻结
+
+纯LaunchPlan和GameProcessService（gameDir锁、Java复核、真实spawn/close、确认强停及固定里程碑）通过11项新测试。正式源码服务重开官方实例，复核66启动依赖/native后实际运行1.20.1+Java17，Computer Use主菜单截图见[报告](../../docs/validation/A1-08-official-launch/REPORT.md)；用户操作窗口后停止自动输入，世界、自然退出/再次启动未证明。用户明确批准D-20推荐规则：3–16位ASCII字母/数字/下划线、OfflinePlayer UUID v3永久保存、显示名分离、游戏名改名新档案。下一直接接Java/离线档案、启动/会话任务与UI、新exe实测，不再重复询问相同D-20规则。

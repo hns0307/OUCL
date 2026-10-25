@@ -233,3 +233,9 @@
 执行记录：162317e/cf3d2e8后落实已批实例JSON提交/任务日志方向及候选实例/任务契约，保存原始官方输入与实际规则环境，串联下载→投影→私有native→JSON提交，接入main/preload/实际安装确认、进度与实例UI。221测试219 PASS/2 SKIP、正式Electron记录、DOM两次实际安装fixture与官方目录窗口验证见[A1-08-installer报告](../../docs/validation/A1-08-installer/REPORT.md)。没有新增依赖/更改SQLite schema，新增固定私有记录域与既定公开候选exact schema；整批真实游戏、启动和新exe未验证。崩溃遗留owner仍不自动接管，未扩张阶段或完成声明。
 
 执行记录：官方1.20.1整批3,641制品/735,814,641字节及实例manifest落盘通过。重开实际大日志触发128MiB worker OOM，已独立复现并修正为流式历史校验；233测试231 PASS/2 SKIP及原内存限制下大日志恢复通过，见[官方安装报告](../../docs/validation/A1-08-official-install/REPORT.md)。不删日志、不提高worker限制、不改schema或自动移除旧owner；新的独立验证根重新校验缓存并安装。既定1A授权继续，尚无新exe交付。
+
+## 2026-10-25 D-20离线身份细节明确批准
+
+用户对具体规则问题直接答复“批准推荐兼容规则”。状态：**APPROVED**。游戏名限3–16位ASCII英文字母、数字、下划线；按UTF-8的`OfflinePlayer:<gameName>`执行UUID v3算法生成并永久保存（MD5只用于兼容身份，非安全校验）；改游戏名创建新档案，中文显示昵称独立保存，改昵称不改游戏UUID。此记录冻结此前D-20字符/长度与UUID算法待决，历史PENDING保留但不覆盖本批准；不引入正版身份查询或认证绕过。
+
+执行记录：纯LaunchPlan与目录排他GameProcessService及11项新测试通过，完整233测试检查通过。正式源码服务实际启动官方1.20.1、Java17，并由Computer Use观察主菜单，见[启动报告](../../docs/validation/A1-08-official-launch/REPORT.md)。用户操作游戏窗口后停止键鼠自动化；世界、退出/重启及新exe仍未验收。生产离线档案与Java选择/游戏任务/会话UI下一步依据上述D-20批准接入。
