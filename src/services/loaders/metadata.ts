@@ -1,9 +1,11 @@
-import { parseLoaderCatalog, parseLoaderProfile } from '../../core/loaders/metadata.js';
+import { parseInstallerCatalog, parseLoaderCatalog, parseLoaderProfile } from '../../core/loaders/metadata.js';
 import type { LoaderProfile, LoaderVersionSummary } from '../../core/loaders/types.js';
+import type { LoaderKind } from '../../core/loaders/types.js';
 import { CatalogError } from '../catalog/transport.js';
 import type { MetadataReader } from '../catalog/transport.js';
 
 type MetadataKind = 'fabric' | 'quilt';
+type CatalogKind = LoaderKind;
 const SEGMENT = '[a-zA-Z0-9_.+-]+';
 const ENDPOINTS: Record<MetadataKind, { origin: string; api: string }> = {
   fabric: { origin: 'https://meta.fabricmc.net', api: 'v2' },
@@ -29,7 +31,8 @@ export function isOfficialLoaderMetadataUrl(value: string): boolean {
   for (const { origin, api } of Object.values(ENDPOINTS)) {
     if (url.origin === origin && new RegExp(`^/${api}/versions/loader/${SEGMENT}(?:/${SEGMENT}/profile/json)?$`).test(url.pathname)) return true;
   }
-  return false;
+  return url.href === 'https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json'
+    || url.href === 'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge';
 }
 
 function endpoint(kind: MetadataKind, minecraftVersion: string, loaderVersion?: string): string {
@@ -38,19 +41,31 @@ function endpoint(kind: MetadataKind, minecraftVersion: string, loaderVersion?: 
   return `${source.origin}/${source.api}/versions/loader/${minecraftVersion}${loaderVersion === undefined ? '' : `/${loaderVersion}/profile/json`}`;
 }
 
+function catalogEndpoint(kind: CatalogKind, minecraftVersion: string): string {
+  if (!safeSegment(minecraftVersion)) throw new CatalogError('INVALID_ARGUMENT');
+  if (kind === 'forge') return 'https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json';
+  if (kind === 'neoforge') {
+    if (minecraftVersion !== '1.21.1') throw new CatalogError('INVALID_ARGUMENT');
+    return 'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge';
+  }
+  return endpoint(kind, minecraftVersion);
+}
+
 function json(body: string): unknown {
   try { return JSON.parse(body) as unknown; } catch { throw new CatalogError('UNTRUSTED_MANIFEST'); }
 }
 
-/** Reads bounded official Fabric/Quilt documents; it performs no version selection or installation. */
+/** Reads bounded official loader catalogs and Fabric/Quilt profiles; it performs no installation. */
 export class LoaderMetadataClient {
   constructor(private readonly reader: MetadataReader) {}
 
-  async catalog(kind: MetadataKind, minecraftVersion: string): Promise<LoaderCatalogDocument> {
-    const sourceUrl = endpoint(kind, minecraftVersion);
+  async catalog(kind: CatalogKind, minecraftVersion: string): Promise<LoaderCatalogDocument> {
+    const sourceUrl = catalogEndpoint(kind, minecraftVersion);
     const document = await this.reader.read(sourceUrl);
     try {
-      return { items: parseLoaderCatalog(kind, minecraftVersion, json(document.body)), evidence: { sourceUrl, sha256: document.sha256 } };
+      const value = json(document.body);
+      return { items: kind === 'fabric' || kind === 'quilt' ? parseLoaderCatalog(kind, minecraftVersion, value)
+        : parseInstallerCatalog(kind, minecraftVersion, value), evidence: { sourceUrl, sha256: document.sha256 } };
     } catch (error) {
       if (error instanceof CatalogError) throw error;
       throw new CatalogError('UNTRUSTED_MANIFEST');

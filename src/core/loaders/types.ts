@@ -3,11 +3,11 @@ import type { ClientVersion, Rule, VersionArgument } from '../version/types.js';
 export type LoaderKind = 'fabric' | 'quilt' | 'forge' | 'neoforge';
 
 export interface LoaderVersionSummary {
-  kind: Extract<LoaderKind, 'fabric' | 'quilt'>;
+  kind: LoaderKind;
   minecraftVersion: string;
   loaderVersion: string;
-  loaderCoordinate: string;
-  intermediaryCoordinate: string;
+  loaderCoordinate?: string;
+  intermediaryCoordinate?: string;
   stable: boolean;
 }
 

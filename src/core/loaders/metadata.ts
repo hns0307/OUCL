@@ -1,6 +1,7 @@
 import type { Rule, VersionArgument } from '../version/types.js';
 import { identifier, parseClientVersion, record, requireMetadata, VersionError } from '../version/validation.js';
 import type { LoaderArtifact, LoaderProfile, LoaderVersionSummary } from './types.js';
+import type { InstallerLoaderKind } from './types.js';
 
 type ProfileKind = LoaderProfile['kind'];
 
@@ -57,6 +58,31 @@ export function parseLoaderCatalog(
         : (loader.stable as boolean | undefined) ?? !/(?:^|[.+-])(alpha|beta|rc|snapshot)(?:[.+-]|$)/i.test(loader.version as string)
     };
   });
+}
+
+function numericDescending(left: string, right: string): number {
+  const a = left.split('.').map(Number); const b = right.split('.').map(Number);
+  for (let index = 0; index < Math.max(a.length, b.length); index++) {
+    const difference = (b[index] ?? -1) - (a[index] ?? -1); if (difference !== 0) return difference;
+  }
+  return left < right ? 1 : left > right ? -1 : 0;
+}
+
+/** Parses the fixed official Forge promotions or NeoForge Maven release catalog without claiming compatibility. */
+export function parseInstallerCatalog(kind: InstallerLoaderKind, minecraftVersion: string, value: unknown): LoaderVersionSummary[] {
+  requireMetadata((kind === 'forge' || kind === 'neoforge') && identifier(minecraftVersion) && record(value));
+  if (kind === 'forge') {
+    requireMetadata(record(value.promos) && Object.keys(value.promos).length <= 4096);
+    const recommended = value.promos[`${minecraftVersion}-recommended`]; const latest = value.promos[`${minecraftVersion}-latest`];
+    requireMetadata((recommended === undefined || boundedText(recommended, 160)) && (latest === undefined || boundedText(latest, 160)));
+    const versions = [...new Set([recommended, latest].filter((item): item is string => typeof item === 'string'))];
+    requireMetadata(versions.length >= 1 && versions.every(identifier));
+    return versions.map(loaderVersion => ({ kind, minecraftVersion, loaderVersion, stable: loaderVersion === recommended }));
+  }
+  requireMetadata(minecraftVersion === '1.21.1' && value.isSnapshot === false && Array.isArray(value.versions) && value.versions.length <= 4096);
+  const versions = value.versions.filter((item: unknown): item is string => typeof item === 'string' && /^21\.1\.\d+$/.test(item));
+  requireMetadata(versions.length >= 1 && versions.length <= 512 && new Set(versions).size === versions.length);
+  return versions.sort(numericDescending).map(loaderVersion => ({ kind, minecraftVersion, loaderVersion, stable: true }));
 }
 
 function coordinatePath(coordinate: string): string {

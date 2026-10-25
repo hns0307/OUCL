@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseLoaderCatalog, parseLoaderProfile } from '../src/core/loaders/metadata.js';
+import { parseInstallerCatalog, parseLoaderCatalog, parseLoaderProfile } from '../src/core/loaders/metadata.js';
 
 const catalogEntry = (version = '0.20.1') => ({
   loader: { maven: `net.fabricmc:fabric-loader:${version}`, version, stable: true },
@@ -52,4 +52,21 @@ test('profiles reject identity substitution, unsafe repositories and partial che
   assert.throws(() => parseLoaderProfile('quilt', '1.20.1', '0.29.2', {
     ...base, libraries: [{ name: 'org.quiltmc:quilt-loader:0.29.2', url: 'https://maven.quiltmc.org/', sha1: 'a'.repeat(40) }]
   }));
+});
+
+test('Forge promotions preserve Recommended priority without turning Latest into stable', () => {
+  assert.deepEqual(parseInstallerCatalog('forge', '1.20.1', { promos: {
+    '1.20.1-recommended': '47.4.28', '1.20.1-latest': '47.4.29', '1.19.4-latest': '45.4.0'
+  } }), [
+    { kind: 'forge', minecraftVersion: '1.20.1', loaderVersion: '47.4.28', stable: true },
+    { kind: 'forge', minecraftVersion: '1.20.1', loaderVersion: '47.4.29', stable: false },
+  ]);
+  assert.equal(parseInstallerCatalog('forge', '1.20.1', { promos: { '1.20.1-latest': '47.4.29' } })[0]?.stable, false);
+});
+
+test('NeoForge release catalog filters the exact 1.21.1 series and sorts deterministically', () => {
+  assert.deepEqual(parseInstallerCatalog('neoforge', '1.21.1', { isSnapshot: false,
+    versions: ['21.1.9', '21.1.10', '21.2.0-beta', '21.1.8-beta', '20.4.250'] }).map(item => item.loaderVersion), ['21.1.10', '21.1.9']);
+  assert.throws(() => parseInstallerCatalog('neoforge', '1.21.2', { isSnapshot: false, versions: ['21.1.10'] }));
+  assert.throws(() => parseInstallerCatalog('neoforge', '1.21.1', { isSnapshot: true, versions: ['21.1.10'] }));
 });
