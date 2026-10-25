@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { mkdir, open, rm, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -16,6 +16,8 @@ import { InstallDownloadService } from '../../src/services/install/downloads.js'
 import { resolveClientVersion } from '../../src/core/version/resolve.js';
 import { parseAssetIndex } from '../../src/core/install/assets.js';
 import { planVanillaInstall } from '../../src/core/install/plan.js';
+import { NativeExtractor } from '../../src/services/workers/native-extractor.js';
+import { crc32 } from 'node:zlib';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -119,6 +121,22 @@ void app.whenReady().then(async () => {
       const result = await batch.run(prepared); batchArtifactsVerified = result.objects.size;
       assert.equal(batchArtifactsVerified, 2); await batch.run(prepared); assert.equal(batchNetworkRequests, 1);
     } finally { await batchCoordinator.close(); }
+    const nativeName = Buffer.from('lwjgl.dll'); const nativeCrc = crc32(fixture);
+    const local = Buffer.alloc(30); local.writeUInt32LE(0x04034b50); local.writeUInt16LE(20, 4);
+    local.writeUInt32LE(nativeCrc, 14); local.writeUInt32LE(fixture.length, 18); local.writeUInt32LE(fixture.length, 22); local.writeUInt16LE(nativeName.length, 26);
+    const central = Buffer.alloc(46); central.writeUInt32LE(0x02014b50); central.writeUInt16LE(20, 4); central.writeUInt16LE(20, 6);
+    central.writeUInt32LE(nativeCrc, 16); central.writeUInt32LE(fixture.length, 20); central.writeUInt32LE(fixture.length, 24); central.writeUInt16LE(nativeName.length, 28);
+    const end = Buffer.alloc(22); end.writeUInt32LE(0x06054b50); end.writeUInt16LE(1, 8); end.writeUInt16LE(1, 10);
+    end.writeUInt32LE(central.length + nativeName.length, 12); end.writeUInt32LE(local.length + nativeName.length + fixture.length, 16);
+    const nativeBytes = Buffer.concat([local, nativeName, fixture, central, nativeName, end]);
+    const nativeFile = path.join(root, 'native-fixture.jar'); await writeFile(nativeFile, nativeBytes);
+    const nativeOutput = path.join(root, 'native-workspace'); await mkdir(nativeOutput);
+    const nativeExtractor = new NativeExtractor(entry);
+    try {
+      assert.deepEqual(await nativeExtractor.run(nativeOutput, [{ file: nativeFile, sha256: createHash('sha256').update(nativeBytes).digest('hex'), size: nativeBytes.length, exclude: [] }]), { files: 1, bytes: fixture.length });
+      assert.deepEqual(await readFile(path.join(nativeOutput, 'lwjgl.dll')), fixture);
+    } finally { await nativeExtractor.close(); }
+    await rm(nativeOutput, { recursive: true }); await rm(nativeFile);
     const hashWorkersSpawned = pool.spawnedWorkers;
     assert.ok(hashWorkersSpawned <= 3, 'HASH_SESSIONS_WERE_NOT_REUSED');
     await objects.close(); objects = undefined;
@@ -130,7 +148,8 @@ void app.whenReady().then(async () => {
       objectIndexRebuilt: true, durableTaskPreserved: true, artifactTransferVerified: true,
       transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
       sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
-      batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true }));
+      batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true,
+      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

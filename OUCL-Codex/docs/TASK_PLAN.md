@@ -340,3 +340,7 @@ A1-04a–d是原A1-04的拆分，父任务只有四项都验收通过才完成�
 ## 24. 批量可信对象下载
 
 基于5620b0c新增InstallDownloadService和精确索引导入；默认4条lane、逐份来源证明、失败/取消只收尾本批且等待commit，不关闭共享协调器。完整152测试150 PASS/0 FAIL/2环境SKIP及正式Electron fixture验证通过，见[报告](../../docs/validation/A1-05-install-downloads/REPORT.md)。没有完整游戏安装、实例物化或exe启动结果；下一继续持久任务/物化/安全解压及Java/进程UI。
+
+## 25. native安全解压基础
+
+e834de6后新增隔离workspace ZIP校验与专用有界解压worker，无新依赖/公开IPC/schema。完整168测试166 PASS/0 FAIL/2既有环境SKIP、正式Electron及官方1.20.1/1.12.2 native归档实测通过，见[报告](../../docs/validation/A1-08-native-extraction/REPORT.md)。没有向实例发布natives、玩家目录改动或运行游戏，不将其等同A1-08/09整体完成。下一为受管视图/持久安装任务、Java/离线档案/进程UI及实际exe交付。

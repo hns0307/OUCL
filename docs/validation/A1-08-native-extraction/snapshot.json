@@ -1,0 +1,38 @@
+[
+  {
+    "path": "src/services/install/native-archive.ts",
+    "sha256": "74432354f365aa70e5cde4d7069165fad22d7fae66b040bb02189d2e5dbbd933"
+  },
+  {
+    "path": "src/services/workers/native-extractor.ts",
+    "sha256": "946bb261ae5c42393680cddeca1491210e281466be5a4f698cb2ac5aa8814307"
+  },
+  {
+    "path": "src/services/workers/native-protocol.ts",
+    "sha256": "bf225b3caa1a1ee1fad3c2734ac9a0a35d295bf2b1481d7d3aacd725ac2ba4d0"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "9b17fed3b3b16c115c286615fead23b626a96a439769ed46a46de3a09292c151"
+  },
+  {
+    "path": "tests/native-archive.test.ts",
+    "sha256": "bd550b7b05788c1cff755d5c117e9d7016cca1202fcd2c51f640337a703f4b6c"
+  },
+  {
+    "path": "tests/native-extractor.test.ts",
+    "sha256": "e21e6912a2faa7f7b8fb173498be1d27ff665356d181f7f228fe71e19d688291"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "871b0b7b76857f85a48c5cd30667cc0442af433cae6a28ccaf873c2021c5ac54"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "7bbe86aeb93e1606d60d791d2f4278304615844177c5525ce52fd40c9b59f473"
+  },
+  {
+    "path": "scripts/verify-native-archives.mjs",
+    "sha256": "3534ccae9e1d0b23250dfb8886fe7ca372ae3cbde227a3279aed04d2c8cc0082"
+  }
+]

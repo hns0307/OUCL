@@ -9,6 +9,8 @@ import { parseInstallation } from '../storage/installation.js';
 import { parseCatalogCache } from '../storage/catalog-cache.js';
 import { TransferDatabase } from '../storage/transfer-db.js';
 import { digestFile, startHashSession } from './hash-session.js';
+import { extractNativeArchives, NativeArchiveError } from '../install/native-archive.js';
+import { parseNativeRequest } from './native-protocol.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -72,7 +74,16 @@ async function hashFile(file: string, maximumBytes: number): Promise<void> {
 void (async () => {
   const input: unknown = workerData;
   if (typeof input !== 'object' || input === null || !('version' in input) || input.version !== 1 || !('kind' in input)) throw new WorkerError('INVALID_MESSAGE');
-  if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'
+  if (input.kind === 'native-extract') {
+    try {
+      let request;
+      try { request = parseNativeRequest(input); } catch { throw new NativeArchiveError('INVALID_ARCHIVE'); }
+      const result = await extractNativeArchives(request.destination, request.archives);
+      port.postMessage({ version: 1, kind: 'native-result', ...result });
+    } catch (error) { port.postMessage({ version: 1, kind: 'native-failed', code: error instanceof NativeArchiveError ? error.code : 'ARCHIVE_IO' }); }
+    port.close();
+  }
+  else if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'
     && 'directory' in input && typeof input.directory === 'string') await storage(input.directory);
   else if (input.kind === 'hash-session' && Object.keys(input).sort().join(',') === 'kind,version') startHashSession(port);
   else if (input.kind === 'hash' && Object.keys(input).sort().join(',') === 'file,kind,maximumBytes,version'

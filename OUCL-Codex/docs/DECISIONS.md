@@ -223,3 +223,5 @@
 执行记录：在60e91f8/b739dd4后，整合暂停保留的安装准备与活跃共享协调代码；144测试和真实官方索引/正式Electron验证见[A1-05-install-plan报告](../../docs/validation/A1-05-install-plan/REPORT.md)。仅内部来源字段、无IO计划和既有worker职责优化，没有新依赖、公开IPC或磁盘schema。consumer持久关联与真实安装启动及exe交付仍未完成，继续同一1A授权。
 
 执行记录：5620b0c后落实批量可信下载与精确原索引导入，152测试150 PASS/2 SKIP及正式Electron fixture验证通过，见[A1-05-install-downloads报告](../../docs/validation/A1-05-install-downloads/REPORT.md)。无新依赖、渲染IPC或持久schema；仍没有完整持久安装任务、物化/解压、Java/档案/进程/UI和最终exe验证，不标目标完成。
+
+执行记录：批量下载已提交e834de6、交接9984159；继续既定1A安全解压worker方向，新增ZIP校验、独占隔离写入及有界NativeExtractor，无新依赖/公开IPC/持久schema。168测试166 PASS/2 SKIP及官方两版native归档与Electron实测通过，见[A1-08-native-extraction报告](../../docs/validation/A1-08-native-extraction/REPORT.md)。尚无实例natives发布/完整任务恢复/游戏启动或新exe验收，继续既定授权。
