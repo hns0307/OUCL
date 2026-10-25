@@ -8,6 +8,8 @@
 
 2026-10-25 新增明确批准：用户直接要求实施《四加载器接入与 Mod 管理修订方案》，分支 `mod_loaders`。当前 G2 范围扩展为 Fabric/Quilt/Forge/NeoForge、隔离实例、版本化加载器/实例/Mod 契约与存储、JAR 声明和平台双重检查、确认后依赖下载，以及未来服务端分发契约/测试适配器（不连接后台）。代表矩阵为前三种 1.20.1/Java17、NeoForge 1.21.1/Java21。逐增量验证提交，最终目标 0.3.0 小 EXE；此前历史缺项保持。新增 TOML 解析依赖仍须先完成评估。下表及历史段落中的“加载器未授权”仅为此前范围，不覆盖本次批准。
 
+2026-10-26实施进度：Fabric/Quilt 已完成官方目录/profile/Maven 证明、原版继承合成、实例记录v2、共享下载/物化/取消/恢复事务，以及 `loaders.v1`、`instances.v2` 和下载页选择界面；隔离fixture安装、重开启动链与Electron界面烟测通过。候选继续标记“未验证”，因为官方1.20.1真实安装、主菜单和测试Mod尚未跑完。Forge/NeoForge处理器、Mod双重检查/依赖事务、完整矩阵及0.3.0仍未交付，阶段1B/1C不得标完成。
+
 2026-10-25当前增量0.2.2：用户明确批准EXE同级OUCL.runtime环境缓存，缺少下载、完整则直接启动；隐藏普通检查/启动，仅下载/错误显示界面。已交付229KiB EXE，待用户体验；262测试260 PASS/0 FAIL/2原有SKIP、19原生测试、真实冷/热启动同级缓存验证通过。证据见根docs/validation/BOOTSTRAP-0.2.2/REPORT.md；不迁移/删除旧数据，批准见DECISIONS末尾。
 
 2026-10-25新增量：用户明确批准小EXE内置应用、首次下载并校验Electron，启动游戏时搜索兼容Java、缺少则按Mojang清单下载缓存。本次0.2.1已交付，待用户体验验收；小EXE227KiB，262测试260 PASS/0 FAIL/2原有SKIP、14引导测试、真实官方Electron/Java与重开验证通过，证据见根docs/validation/BOOTSTRAP-0.2.1/REPORT.md。历史缺项保持；批准原文见DECISIONS末尾。保留既有业务和用户数据，不自动push/发布。

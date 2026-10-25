@@ -4,11 +4,11 @@
 
 用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26 01:04已通过账户工具确认5小时窗口实际重置（已用1%，不再沿用旧时间推断），恢复开发。接近5小时额度剩余10%时仍须保存、提交并暂停等待下次实际重置。
 
-当前提交：164daf3为Mod版本三态规则；fefe1e1/50f96d8为Fabric/Quilt严格解析和官方端点；b47fbfd为`loaders.v1`/`instances.v2`未公开契约；eab9cdb为官方Maven sidecar→可信下载计划；6ccba5a为加载器与原版继承合成；c0f09ab为实例记录v2/旧原版按需规范化；b08b657为原版+profile+sidecar完整元数据编排。profile固定核对加载器/MC身份、入口、Maven坐标和仓库；内联SHA-1必须同时有大小，缺失则明确要求同官方Maven sidecar，不用本地摘要冒充上游证明。每个加载器库保留自身profile或sidecar来源，原版来源不被替换。**四加载器实际安装、Mod管理、0.3.0及实机矩阵仍未交付**，版本仍为0.2.2；尚未运行游戏或触碰用户游戏数据。
+当前提交：164daf3为Mod版本三态规则；fefe1e1/50f96d8为Fabric/Quilt严格解析和官方端点；b47fbfd为`loaders.v1`/`instances.v2`契约；eab9cdb为官方Maven sidecar→可信下载计划；6ccba5a为加载器与原版继承合成；c0f09ab为实例记录v2/旧原版按需规范化；b08b657为原版+profile+sidecar完整元数据编排；bdfeda7为Fabric/Quilt共享下载、物化、取消、恢复及启动复验事务；e86caf3公开`loaders.v1`；00ae76b公开`instances.v2`；d7ffa4c接入下载页加载器选择与实例标识。profile固定核对加载器/MC身份、入口、Maven坐标和仓库；内联SHA-1必须同时有大小，缺失则明确要求同官方Maven sidecar，不用本地摘要冒充上游证明。每个加载器库保留自身profile或sidecar来源，原版来源不被替换。**四加载器完整交付、Mod管理、0.3.0及实机矩阵仍未交付**，版本仍为0.2.2；尚未运行游戏或触碰用户游戏数据。
 
-依赖评估已完成：smol-toml 1.9.0，BSD-3-Clause，npm解包139963字节、无声明运行依赖；生产依赖audit 0漏洞，许可证检查128包无待审，记录在docs/DEPENDENCIES.md及licenses.json。各增量均通过typecheck、lint、build；最新合成/元数据针对性测试25项及5项分别通过，实例迁移边界6项通过。完整`pnpm test`在受限执行环境复现多项原有SQLite/传输`OBJECT_IO`失败后中断，不能标整库通过；历史记录表明此类测试需要正常权限/工作区TEMP，最终交付前须保存详细结果并在适当环境跑完整`pnpm check`。
+依赖评估已完成：smol-toml 1.9.0，BSD-3-Clause，npm解包139963字节、无声明运行依赖；生产依赖audit 0漏洞，许可证检查128包无待审，记录在docs/DEPENDENCIES.md及licenses.json。Fabric/Quilt事务相关的隔离安装、取消、重开和启动链测试20/20通过；公共契约/握手目标测试、typecheck、lint、build及隔离Electron smoke通过，后者确认27方法/12能力和原版/Fabric/Quilt三选项。完整`pnpm test`本轮在受限执行环境再次出现多项既有SQLite/传输失败并长时间不结束，已中断，不能标整库通过；最终交付前须在正常权限与隔离TEMP环境保存完整`pnpm check`结果。
 
-下一最小增量：扩展实例安装元数据持久格式，接入Fabric/Quilt现有下载/物化/取消/恢复事务并生成可启动实例，完成后才公开`loaders.v1`/`instances.v2`与UI；随后按批准顺序完成Forge/NeoForge独立安装器处理、JAR worker双重检查/依赖确认事务、真实验收和0.3.0小EXE。不要把纯规则或元数据适配称为加载器交付。
+下一最小增量：先做Forge/NeoForge独立安装器spike，固定代表版本、官方制品与处理器输入输出，再将各自客户端处理器编排接入相同暂存/取消/提交事务；随后完成JAR worker双重检查/依赖确认事务、四加载器真实验收和0.3.0小EXE。Fabric/Quilt虽已有完整代码路径，尚无真实官方游戏/测试Mod证据，不能标阶段完成。
 
 Git保护：原始暂存OUCL-Codex-Package.zip、OUCL.txt继续保留，不纳入本次提交；显式路径add/commit --only，不push。历史1A及阶段0缺项不关闭。用户此前允许多agent仅在历史1A上下文，本轮尚未委派子agent。
 
