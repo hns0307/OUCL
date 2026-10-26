@@ -63,3 +63,30 @@ test('metadata client redacts malformed documents and refuses unsafe identifiers
   await assert.rejects(client.catalog('fabric', '../secret'), { code: 'INVALID_ARGUMENT' });
   await assert.rejects(client.profile('fabric', '1.20.1', '0.20.1?x'), { code: 'INVALID_ARGUMENT' });
 });
+
+test('background loader profiles retry only bounded transport unavailability', async () => {
+  const { CatalogError } = await import('../src/services/catalog/transport.js'); let calls=0;
+  const client = new LoaderMetadataClient({ read: async () => {
+    calls++; if(calls<3)throw new CatalogError('CATALOG_UNAVAILABLE');
+    return {body:JSON.stringify({id:'fabric-loader-0.20.1-1.20.1',inheritsFrom:'1.20.1',mainClass:'net.fabricmc.loader.impl.launch.knot.KnotClient',arguments:{game:[],jvm:[]},libraries:[{name:'net.fabricmc:fabric-loader:0.20.1',url:'https://maven.fabricmc.net/'}]}),sha1:'1'.repeat(40),sha256:'2'.repeat(64)};
+  }});
+  assert.equal((await client.profile('fabric','1.20.1','0.20.1')).profile.loaderVersion,'0.20.1');assert.equal(calls,3);
+});
+test('untrusted responses and invalid profiles are never retried', async () => {
+  const { CatalogError } = await import('../src/services/catalog/transport.js');let calls=0;
+  const untrusted = new LoaderMetadataClient({read:async()=>{calls++;throw new CatalogError('UNTRUSTED_MANIFEST');}});
+  await assert.rejects(untrusted.profile('fabric','1.20.1','0.20.1'),{code:'UNTRUSTED_MANIFEST'});assert.equal(calls,1);
+  calls=0;const malformed = new LoaderMetadataClient({read:async()=>{calls++;return {body:'{}',sha1:'1'.repeat(40),sha256:'2'.repeat(64)};}});
+  await assert.rejects(malformed.profile('fabric','1.20.1','0.20.1'),{code:'UNTRUSTED_MANIFEST'});assert.equal(calls,1);
+});
+test('loader profile transport retry budget is exactly three', async () => {
+  const { CatalogError } = await import('../src/services/catalog/transport.js');let calls=0;
+  const client=new LoaderMetadataClient({read:async()=>{calls++;throw new CatalogError('CATALOG_UNAVAILABLE');}});
+  await assert.rejects(client.profile('fabric','1.20.1','0.20.1'),{code:'CATALOG_UNAVAILABLE'});assert.equal(calls,3);
+});
+test('cancelled loader profile cannot start another retry', async () => {
+  const { CatalogError } = await import('../src/services/catalog/transport.js');let calls=0;const abort=new AbortController();
+  const client=new LoaderMetadataClient({read:async()=>{calls++;abort.abort();throw new CatalogError('CATALOG_UNAVAILABLE');}});
+  await assert.rejects(client.profile('fabric','1.20.1','0.20.1',abort.signal),{code:'CATALOG_UNAVAILABLE'});assert.equal(calls,1);
+  await assert.rejects(client.profile('fabric','1.20.1','0.20.1',abort.signal),{code:'CATALOG_UNAVAILABLE'});assert.equal(calls,1);
+});

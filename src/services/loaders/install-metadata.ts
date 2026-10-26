@@ -45,7 +45,7 @@ export class LoaderInstallMetadataService {
     try {
       const [base, loader] = await Promise.all([
         this.vanilla.prepare(minecraftVersion, environment),
-        this.metadata.profile(kind, minecraftVersion, loaderVersion)
+        this.metadata.profile(kind, minecraftVersion, loaderVersion, signal)
       ]);
       if (signal?.aborted) throw new CatalogError('CATALOG_UNAVAILABLE');
       const libraries = await this.maven.plan(loader.profile, loader.evidence, signal);

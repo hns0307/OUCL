@@ -411,3 +411,5 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 2026-10-26下载优化已在main7fab3b1/9ac0895/8fd3edd/1bfb8c5/d2521bb独立实现及0.2.3验收；精确同步mod_loaders保留所有加载器/Mod能力。397测试395通过/0失败/2原有SKIP、真实下载设置保存重开、Electron32方法/14能力通过。原下载WIP经SHA256保存在.test-build/download-wip-preserved-20261026/，原两份暂存资料不动；公网严格分段缺项保持。现恢复原四加载器/Mod明确授权，0.3.0未交付。证据docs/validation/DOWNLOADS-mod/REPORT.md。
 
 2026-10-26恢复原计划的纯逻辑前置：已选平台依赖图校验（32层/256项目、所有固定版本约束、来路证据、循环、已安装精确复用/不升级、未知身份/多文件保留未知）已实现。405测试403PASS/0FAIL/2原有SKIP及完整检查通过，契约docs/contracts/MOD_DEPENDENCY_GRAPH.md；无新IPC/持久格式/依赖/实例写入。候选递归查询、确认事务及0.3.0仍未完成。
+
+2026-10-26真实诊断捕获Fabric profile UND_ERR_CONNECT_TIMEOUT（此前独立同址读取通过），Quilt profile/Maven亦有连接超时。后台profile只对CATALOG_UNAVAILABLE最多3次有限重试，不可信/坏元数据不重试，取消不开始下一次；无新依赖/IPC/存储格式。409测试407PASS/0FAIL/2原有SKIP及完整检查通过。Fabric已进入实际字节下载，官方一次JAR超时保留缓存；BMCLAPI再次尝试已全量校验进入物化，最终ready及菜单仍待。证据docs/validation/LOADERS-NETWORK-20261026/REPORT.md；不关闭四加载器矩阵或0.3.0。

@@ -1,0 +1,284 @@
+{
+  "results": [
+    {
+      "kind": "fabric",
+      "version": "0.16.14",
+      "status": "PASS",
+      "libraries": 8,
+      "totalBytes": 3870656
+    },
+    {
+      "kind": "quilt",
+      "version": "0.29.2",
+      "status": "FAIL",
+      "stage": "maven",
+      "code": "NETWORK_FAILED"
+    }
+  ],
+  "observations": [
+    {
+      "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.1/0.16.14/profile/json",
+      "method": "GET",
+      "status": 200,
+      "length": null,
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.16.14/fabric-loader-0.16.14.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.16.14/fabric-loader-0.16.14.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "1416842",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "573365",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://meta.quiltmc.org/v3/versions/loader/1.20.1/0.29.2/profile/json",
+      "method": "GET",
+      "status": 200,
+      "length": "1502",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/sponge-mixin/0.16.3+mixin.0.8.7/sponge-mixin-0.16.3+mixin.0.8.7.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-json5/1.0.4+final/quilt-json5-1.0.4+final.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-json5/1.0.4+final/quilt-json5-1.0.4+final.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "25897",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/sponge-mixin/0.16.3+mixin.0.8.7/sponge-mixin-0.16.3+mixin.0.8.7.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "1504156",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "73498",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-util/9.8/asm-util-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-util/9.8/asm-util-9.8.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "94559",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-config/1.3.1/quilt-config-1.3.1.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-config/1.3.1/quilt-config-1.3.1.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "155315",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-loader/0.29.2/quilt-loader-0.29.2.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm/9.8/asm-9.8.jar.sha1",
+      "method": "GET",
+      "error": 20
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.jar",
+      "method": "HEAD",
+      "error": 20
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar",
+      "method": "HEAD",
+      "error": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "35151",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/hashed/1.20.1/hashed-1.20.1.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-loader/0.29.2/quilt-loader-0.29.2.jar",
+      "method": "HEAD",
+      "error": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/hashed/1.20.1/hashed-1.20.1.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "798778",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-loader/0.29.2/quilt-loader-0.29.2.jar.sha1",
+      "method": "GET",
+      "status": 200,
+      "length": "40",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "573365",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-loader/0.29.2/quilt-loader-0.29.2.jar",
+      "method": "HEAD",
+      "status": 200,
+      "length": "3055017",
+      "encoding": null,
+      "location": null
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm/9.8/asm-9.8.jar.sha1",
+      "method": "GET",
+      "error": 20
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar",
+      "method": "HEAD",
+      "error": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm/9.8/asm-9.8.jar.sha1",
+      "method": "GET",
+      "error": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar.sha1",
+      "method": "GET",
+      "error": 20
+    }
+  ]
+}

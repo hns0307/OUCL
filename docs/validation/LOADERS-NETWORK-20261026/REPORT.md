@@ -1,0 +1,11 @@
+# Fabric/Quilt官方网络诊断（2026-10-26）
+
+恢复原四加载器/Mod计划，使用已有固定官方元数据与Maven校验，不改变信任边界。probe-concurrency4.json表明Fabric官方profile和8库证明全部可读，Quilt官方profile可读，但Maven部分HEAD/sha1连接超时；随后单并发probe.json中Fabric再次通过，而Quilt profile发生UND_ERR_CONNECT_TIMEOUT，不能归因为确定解析错误或声称调整并发已修好。
+
+新独立测试根official-loader-1bwU65，只复制本轮main下载回归根的不可变objects并重建索引，绝不读取用户游戏数据。实际安装trace精确捕获meta.fabricmc.net官方profile连接超时，Mojang版本/资产清单均200，因此此前CATALOG_UNAVAILABLE有本次可证的具体来源。旧失败不一概归因相同。
+
+修复仅针对后台Fabric/Quilt profile读取：CATALOG_UNAVAILABLE最多3次，每次沿用12秒reader限制；不可信/坏JSON/非法身份不重试，任务取消后不再开始下一次。当前在途读取仍按既有reader超时收尾，不宣称瞬时取消。目录catalog行为不变，无新IPC/依赖/磁盘格式。
+
+409项407PASS/0FAIL/2原有SKIP，类型/lint/build通过；新增4项测试验证暂时失败成功、坏数据不重试、预算恰3次、取消阻止后续请求。测试入口新增可选公开host/path固定错误码trace，未写生产原始日志；新增测试源选项official/bmclapi，不能接受任意URL。
+
+修复后实际官方安装已进入downloading，但asm-commons官方GET连接超时，任务未完成、缓存保留。再次选已批准BMCLAPI加速（官方profile/摘要仍是信任根）后，已下载校验739685297字节并进入materializing，最终ready/启动待证据；不能提前标Fabric或Quilt游戏矩阵通过。

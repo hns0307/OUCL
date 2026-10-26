@@ -13,10 +13,28 @@ import { LoaderInstallMetadataService } from '../../src/services/loaders/install
 import { LoaderMavenResolver } from '../../src/services/loaders/maven.js';
 import { ProfileService } from '../../src/services/launch/profiles.js';
 import { JavaRuntimeService } from '../../src/services/java/runtime.js';
+import { DEFAULT_DOWNLOAD_PREFERENCES } from '../../src/shared/contracts/download-preferences.js';
 
 const kind = process.env.OUCL_LOADER_TEST_KIND ?? 'forge';
 if (!['fabric', 'quilt', 'forge', 'neoforge'].includes(kind)) throw new Error('INVALID_TEST_KIND');
 const loaderKind = kind as 'fabric' | 'quilt' | 'forge' | 'neoforge';
+if (process.env.OUCL_LOADER_NETWORK_TRACE === '1') {
+  const request = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
+    const source = { host: url.hostname, path: url.pathname, method: init?.method ?? 'GET' };
+    try {
+      const response = await request(input, init);
+      console.log(JSON.stringify({ event: 'test-network-response', ...source, status: response.status,
+        length: response.headers.get('content-length'), encoding: response.headers.get('content-encoding') }));
+      return response;
+    } catch (error) {
+      const cause = error instanceof Error && error.cause && typeof error.cause === 'object' && 'code' in error.cause ? error.cause.code : null;
+      console.log(JSON.stringify({ event: 'test-network-error', ...source, code: typeof cause === 'string' ? cause : 'NETWORK_FAILED' }));
+      throw error;
+    }
+  };
+}
 const minecraftVersion = kind === 'neoforge' ? '1.21.1' : '1.20.1';
 const loaderVersion = { fabric: '0.16.14', quilt: '0.29.2', forge: '47.4.28', neoforge: '21.1.265' }[loaderKind];
 const reuse = process.env.OUCL_LOADER_TEST_WORKSPACE;
@@ -33,7 +51,8 @@ const reader = new OfficialMetadataReader(); const vanilla = new InstallMetadata
 const catalog = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
 const service: InstallerService = new InstallerService(storage, entry, vanilla, new LoaderInstallMetadataService(vanilla, catalog, new LoaderMavenResolver()),
   new InstallerPreparationService(vanilla, catalog, new InstallerArtifactResolver()),
-  async (major, consumer, signal): Promise<string> => (await java.ensure(major, consumer, signal)).executable);
+  async (major, consumer, signal): Promise<string> => (await java.ensure(major, consumer, signal)).executable,
+  () => ({ ...DEFAULT_DOWNLOAD_PREFERENCES, source: process.env.OUCL_LOADER_DOWNLOAD_SOURCE === 'bmclapi' ? 'bmclapi' : 'official' }));
 const profiles = new ProfileService(storage); const java: JavaRuntimeService = new JavaRuntimeService(profiles, service);
 console.log(JSON.stringify({ event: 'test-started', kind, minecraftVersion, loaderVersion, workspace }));
 try {

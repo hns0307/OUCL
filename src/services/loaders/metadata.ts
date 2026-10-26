@@ -72,9 +72,17 @@ export class LoaderMetadataClient {
     }
   }
 
-  async profile(kind: MetadataKind, minecraftVersion: string, loaderVersion: string): Promise<LoaderProfileDocument> {
+  async profile(kind: MetadataKind, minecraftVersion: string, loaderVersion: string, signal?: AbortSignal): Promise<LoaderProfileDocument> {
     const sourceUrl = endpoint(kind, minecraftVersion, loaderVersion);
-    const document = await this.reader.read(sourceUrl);
+    // This runs in an admitted background install task. Retry only transport unavailability,
+    // never malformed/untrusted metadata, and keep the reader's timeout for every attempt.
+    let document: Awaited<ReturnType<MetadataReader['read']>> | undefined;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (signal?.aborted) throw new CatalogError('CATALOG_UNAVAILABLE');
+      try { document = await this.reader.read(sourceUrl); break; }
+      catch (error) { if (!(error instanceof CatalogError) || error.code !== 'CATALOG_UNAVAILABLE' || attempt === 2) throw error; }
+    }
+    if (!document) throw new CatalogError('CATALOG_UNAVAILABLE');
     try {
       return { profile: parseLoaderProfile(kind, minecraftVersion, loaderVersion, json(document.body)), evidence: { sourceUrl, sha256: document.sha256 }, body: document.body };
     } catch (error) {
