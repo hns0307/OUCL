@@ -22,6 +22,10 @@
 
 NeoForge会话`34d44c9e-9d54-4ee4-b120-71e1e31c3cdf`看到主菜单后Quit Game退出0；会话`ca8ec273-f793-464f-be69-d71053e94925`再次看到主菜单，但点击Quit Game后退出码为3221226505（0xC0000409）。截图`neoforge-menu.png`、`neoforge-menu-relaunch.png`。第二次正常退出验收失败，原生日志与现场保留待排查，不推测根因，不标完整运行通过。退出后监督进程与存储均已正常收尾，没有遗留测试游戏进程。
 
+额度重置后原实例未改启动参数，连续重试会话`1823b4cf-1c9f-462c-acc5-24f252816479`和`4b43e4c0-9db8-4a95-8c3a-e6974b453f10`均看到主菜单并通过Quit Game退出0，截图`neoforge-menu-retest.png`及`neoforge-menu-retest-relaunch.png`。按原失败时段筛选Windows应用错误事件未找到Java崩溃条目；原失败未定位，保留为已知间歇退出问题，不能以重试抹掉。
+
+真实安装/启动入口现接受四种加载器，固定Fabric0.16.14、Quilt0.29.2/MC1.20.1。Fabric首次扩展入口缺少元数据服务装配，未开始下载即失败，已补齐；随后Fabric与Quilt都在metadata阶段失败，尚未形成ready实例。Fabric分阶段诊断确认官方profile有效，Maven证明请求NETWORK_FAILED；不改用镜像或本地摘要绕过。入口`pnpm typecheck`通过，真实Fabric/Quilt安装仍待补证。
+
 真实失败也保留：两次下载分别在约79MB和748MB处遇到 `NETWORK_FAILED`；另有目录网络请求 `CATALOG_UNAVAILABLE`。一轮处理器因旧128KiB日志总量限制触发 `OUTPUT_LIMIT`，没有发布ready。修正为32MiB累计限制，原始文本只排空不保存，复测通过；网络元数据仅针对固定网络错误最多尝试三次。所有失败暂存和已验证对象保留。
 
 ## 自动化验证

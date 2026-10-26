@@ -9,13 +9,16 @@ import { InstallerService } from '../../src/services/install/installer.js';
 import { LoaderMetadataClient, isOfficialLoaderMetadataUrl } from '../../src/services/loaders/metadata.js';
 import { InstallerPreparationService } from '../../src/services/loaders/installer-preparation.js';
 import { InstallerArtifactResolver } from '../../src/services/loaders/installer-artifact.js';
+import { LoaderInstallMetadataService } from '../../src/services/loaders/install-metadata.js';
+import { LoaderMavenResolver } from '../../src/services/loaders/maven.js';
 import { ProfileService } from '../../src/services/launch/profiles.js';
 import { JavaRuntimeService } from '../../src/services/java/runtime.js';
 
 const kind = process.env.OUCL_LOADER_TEST_KIND ?? 'forge';
-if (kind !== 'forge' && kind !== 'neoforge') throw new Error('INVALID_TEST_KIND');
-const minecraftVersion = kind === 'forge' ? '1.20.1' : '1.21.1';
-const loaderVersion = kind === 'forge' ? '47.4.28' : '21.1.265';
+if (!['fabric', 'quilt', 'forge', 'neoforge'].includes(kind)) throw new Error('INVALID_TEST_KIND');
+const loaderKind = kind as 'fabric' | 'quilt' | 'forge' | 'neoforge';
+const minecraftVersion = kind === 'neoforge' ? '1.21.1' : '1.20.1';
+const loaderVersion = { fabric: '0.16.14', quilt: '0.29.2', forge: '47.4.28', neoforge: '21.1.265' }[loaderKind];
 const reuse = process.env.OUCL_LOADER_TEST_WORKSPACE;
 const workspace = reuse ? path.resolve(reuse) : await mkdtemp(path.resolve('.test-build/official-loader-'));
 if (path.dirname(workspace) !== path.resolve('.test-build') || !/^official-loader-[A-Za-z0-9]+$/.test(path.basename(workspace))) throw new Error('INVALID_TEST_WORKSPACE');
@@ -28,7 +31,7 @@ const rootId = registration?.data.rootId ?? randomUUID();
 if (!registration) await storage.createInstallation({ rootId, dataDirectory: games });
 const reader = new OfficialMetadataReader(); const vanilla = new InstallMetadataService(new CatalogService(reader, storage), reader);
 const catalog = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
-const service: InstallerService = new InstallerService(storage, entry, vanilla, undefined,
+const service: InstallerService = new InstallerService(storage, entry, vanilla, new LoaderInstallMetadataService(vanilla, catalog, new LoaderMavenResolver()),
   new InstallerPreparationService(vanilla, catalog, new InstallerArtifactResolver()),
   async (major, consumer, signal): Promise<string> => (await java.ensure(major, consumer, signal)).executable);
 const profiles = new ProfileService(storage); const java: JavaRuntimeService = new JavaRuntimeService(profiles, service);
@@ -43,7 +46,7 @@ try {
     console.log(JSON.stringify({ event: 'official-reopen-offline-verified', kind, instanceId: instance.instanceId, workspace }));
   } else {
   const accepted = await service.createLoader(randomUUID(), { rootId, mcVersionId: minecraftVersion, displayName: `Official ${kind} verification`,
-    isolation: 'on', loader: { kind, version: loaderVersion } });
+    isolation: 'on', loader: { kind: loaderKind, version: loaderVersion } });
   let previous = ''; const deadline = Date.now() + 30 * 60 * 1000;
   for (;;) {
     const task = await service.task(rootId, accepted.taskId);
@@ -53,7 +56,8 @@ try {
     if (['completed', 'failed', 'cancelled', 'needsRecovery'].includes(task.task.execution.state)) {
       if (task.task.execution.state !== 'completed' || !task.instance) throw new Error('OFFICIAL_INSTALL_FAILED');
       const record = await storage.readInstance(task.instance.instanceId);
-      if (record?.data.metadata?.loader?.kind !== kind || !('processors' in record.data.metadata.loader)) throw new Error('PROCESSOR_EVIDENCE_MISSING');
+      if (record?.data.metadata?.loader?.kind !== kind) throw new Error('LOADER_EVIDENCE_MISSING');
+      if ((kind === 'forge' || kind === 'neoforge') && !('processors' in record.data.metadata.loader)) throw new Error('PROCESSOR_EVIDENCE_MISSING');
       await service.prepareLaunch(task.instance.instanceId, record.revision, new AbortController().signal);
       console.log(JSON.stringify({ event: 'official-install-verified', kind, instanceId: task.instance.instanceId, workspace })); break;
     }

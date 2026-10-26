@@ -15,7 +15,7 @@ import { LaunchService } from '../../src/services/launch/service.js';
 const workspace = path.resolve(process.env.OUCL_LOADER_TEST_WORKSPACE ?? '');
 if (path.dirname(workspace) !== path.resolve('.test-build') || !/^official-loader-[A-Za-z0-9]+$/.test(path.basename(workspace))) throw new Error('INVALID_TEST_WORKSPACE');
 const kind = process.env.OUCL_LOADER_TEST_KIND ?? 'forge';
-if (kind !== 'forge' && kind !== 'neoforge') throw new Error('INVALID_TEST_KIND');
+if (!['fabric', 'quilt', 'forge', 'neoforge'].includes(kind)) throw new Error('INVALID_TEST_KIND');
 const entry = path.resolve('dist/workers/entry.cjs'); const storage = await StorageClient.open(entry, path.join(workspace, 'metadata'));
 const registration = await storage.readInstallation();
 if (!registration || registration.data.dataDirectory !== path.join(workspace, 'games')) throw new Error('INVALID_TEST_ROOT');
