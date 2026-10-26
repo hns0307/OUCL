@@ -6,6 +6,8 @@
 
 ### 当前授权范围（每次开发首先核对）
 
+2026-10-26最新补证：4d96fe3完成Forge/NeoForge各两次实际FerriteCore加载、Mods菜单观察及退出0；NeoForge此前一次间歇退出异常仍未定位，保留记录。7a37b3a/67b8495接入真实Modrinth文件哈希来源、固定前置/冲突证据；83821aa按实际MANIFEST解析固定jarVersion。当前已验证真实实例双重扫描（扫描→平台哈希关联→再次完整扫描），复验官方语言加载器对象后，两实例已知声明及平台均satisfied；完整366项364通过/0失败/2原有跳过。仍无公开mods.v1/UI、依赖递归确认事务和0.3.0EXE，Fabric/Quilt官方安装仍受网络失败影响；继续已批范围，不标完整交付。
+
 2026-10-26最新Mod增量：f6cb194/5efa1b0/4a5d39f已实现有界worker读取并解析四种JAR声明；d232058按官方规则修正Fabric/Quilt范围；7652596本地声明检查支持禁用、多Mod/别名、运行环境/普通依赖和冲突，未知条件不判通过。只读实例Mod扫描及真实测试根目录定位已实现，完整350项348通过/0失败/2原有跳过；dc6d8b2补官方Maven证明三次有限网络重试，Fabric仍网络失败，未完成真实安装。尚无公开Mod IPC/UI、平台双重校验或确认安装事务；0.3.0目标未交付，继续既定批准。边界与证据见根docs/contracts/MOD_ARCHIVES.md。
 
 2026-10-26后续增量：02e9aeb扩展四加载器真实测试入口；NeoForge原实例连续两次重试正常退出0，原间歇退出失败未定位，保留结论。Fabric/Quilt真实安装受官方元数据/Maven请求失败影响，未完成。本轮有界Mod JAR worker已实现并通过完整329测试（327通过、0失败、2原有跳过）及真实NeoForge官方JAR只读扫描，边界见根docs/contracts/MOD_ARCHIVES.md；尚无modId/依赖解析或Mod安装UI，不算Mod管理交付。

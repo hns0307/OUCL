@@ -35,7 +35,7 @@ async function stamp(file: string): Promise<FileStamp> {
 /** Reads a single instance at a time. The resolver is main-process-owned and never accepts a renderer path. */
 export class ModInventoryService {
   private active = false;
-  constructor(private readonly context: (instanceId: string) => Promise<ModInventoryContext>, private readonly scanner: Pick<ModArchiveReader, 'read'>) {}
+  constructor(private readonly context: (instanceId: string, signal?: AbortSignal) => Promise<ModInventoryContext>, private readonly scanner: Pick<ModArchiveReader, 'read'>) {}
 
   /** A stable observation, not an installation authorization; commit must independently rehash every planned file. */
   async scan(instanceId: string, expectedRevision: number, signal?: AbortSignal): Promise<ModInventory> {
@@ -43,7 +43,7 @@ export class ModInventoryService {
     if (this.active) throw new ModInventoryError('SCAN_BUSY'); this.active = true;
     const check = (): void => { if (signal?.aborted) throw new ModInventoryError('CANCELLED'); };
     try {
-      check(); const context = await this.context(instanceId.toLowerCase()); check();
+      check(); const context = await this.context(instanceId.toLowerCase(), signal); check();
       if (context.instanceId !== instanceId.toLowerCase() || context.revision !== expectedRevision) throw new ModInventoryError('REVISION_CONFLICT');
       await guardDirectory(path.dirname(context.modsDirectory));
       const names = await this.names(context.modsDirectory, check); const items: ModInventoryItem[] = []; const stamps = new Map<string, FileStamp>();
@@ -72,7 +72,7 @@ export class ModInventoryService {
       check();
       if (digest(names) !== digest(await this.names(context.modsDirectory, check))) throw new ModInventoryError('FILES_CHANGED');
       for (const filename of names) { check(); if (digest(stamps.get(filename)) !== digest(await stamp(path.join(context.modsDirectory, filename)))) throw new ModInventoryError('FILES_CHANGED'); }
-      const latest = await this.context(instanceId.toLowerCase()); check();
+      const latest = await this.context(instanceId.toLowerCase(), signal); check();
       if (digest(latest) !== digest(context)) throw new ModInventoryError('REVISION_CONFLICT');
       const fingerprint = digest({ instanceId: context.instanceId, revision: expectedRevision, items: items.map(item => ({
         fileId: item.fileId, filename: item.filename, enabled: item.enabled, size: item.size, sha256: item.sha256, issues: item.issues })) });

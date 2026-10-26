@@ -15,3 +15,9 @@
 双重检查增量：纯`checkPlatformMods`将实际SHA-512、SHA-1、大小、目标MC/加载器及客户端适用性同平台具体版本对比，冲突附项目/版本及前置身份。平台版本号不替代真实mod版本。禁用文件不满足平台前置；同项目重复版本明确报错，固定version_id不退化为同项目任意版本。未命中来源、Quilt未获平台声明的Fabric兼容组合、未解析内嵌项目和仅文件名身份保留未知。存在未识别本地/内嵌内容时，不断言必定缺少项目并重复自动下载。360项完整检查358通过/0失败/2原有跳过；此增量不创建安装计划、不写文件，尚无公开Mod IPC/UI。
 
 后续真实游戏已完成FerriteCore在独立Forge与NeoForge实例各两次Mods菜单观察与退出0，证据见LOADERS-0.3.0/REPORT.md；不把该测试夹具供应当作玩家确认事务完成。
+
+主进程双重检查编排：`ModInspectionService`先读实际库存，按64哈希分批向官方平台查具体版本，再次完整读取库存并比较指纹及环境修订。网络期间文件变化立即使结果失效；平台失败明确附代码和未知，不抹除本地报告；取消/并发受控，结果不授权写入。364项完整检查362通过/0失败/2原有跳过。本轮独立Forge及NeoForge实例的FerriteCore实际SHA-512均成功关联uXXizFIs/DG5Fn9Sz及uXXizFIs/x7kQWVju，无平台请求失败；此时语言加载器尚未测量，local及combined均如实为unknown（LANGUAGE_REQUIREMENT）。复现入口official-mod-inventory.ts加OUCL_MOD_TEST_PLATFORM=1，仅测试根可用。
+
+语言证据补齐：限定已验证代表系列，Forge1.20.1/47.x从官方javafmllanguage/lowcodelanguage精确路径识别其主版本47（符合Forge文档定义）；NeoForge1.21.1/21.1.x从独立官方fancymodloader/loader/4.0.x精确路径取得完整FML版本，不从NeoForge21.1.x或MANIFEST4.0猜测。每次入上下文前在worker中重新读取共享实际对象，强制SHA-1=官方库规格、SHA-256=受管对象、大小一致。未知系列/组件保持未知，错误对象停止检查。实际debug.log分别报告javafml/lowcodefml=47及4.0.45，证明与本次对象映射一致；来源依据[Forge语言版本定义](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/)和本轮官方组件/运行证据，不执行额外Java代码来探测语言版本。
+
+随后同一两个实际FerriteCore文件再次完整双重检查：Forge/DG5Fn9Sz、NeoForge/x7kQWVju的local=satisfied、combined=satisfied、localIssues=[]、platformFailures=[]，源版本均matched。检查通过仅代表这些已知声明满足，不扩大真实游戏或其他组合承诺。完整366项364通过/0失败/2原有跳过，核心99.02%行/96.98%分支/99.54%函数；日志.test-build/mod-runtime-evidence-check.log。

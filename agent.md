@@ -2,6 +2,10 @@
 
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
+后续最新覆盖：4c568e1只读库存、7a37b3a Modrinth真实SHA512/候选适配、83821aa实际MANIFEST固定jarVersion、4d96fe3 Forge/NeoForge测试Mod各两次真实Mods菜单与退出0、67b8495双重证据规则。当前继续双重检查编排及语言对象复验（本次提交hash以git log为准），最新完整366测试364 PASS/0 FAIL/2原有SKIP，99.02%行/96.98%分支/99.54%函数。真实两个实例均已按SHA512关联FerriteCore项目uXXizFIs，版本分别DG5Fn9Sz与x7kQWVju；实际JAR版本6.0.1/7.0.3，受控语言对象复验后javafml为47/4.0.45，local和combined均satisfied，平台失败=[]。证据MOD_PLATFORM.md、LOADERS-0.3.0/REPORT.md，日志.test-build/mod-runtime-evidence-check.log。最近quota41%（之后还需再查），窗口1793014620；不是暂停状态。
+
+下一最小增量明确为把现有只读库存/双重检查接持久任务与mods.v1、实际界面，再实现依赖图/确认下载/事务。当前没有公开Mod IPC/UI。任务须复用既有幂等/进度订阅/取消/重连，不把长扫描塞进会超时的同步IPC。要先定义公开DTO/错误/schema/超时，再实现主进程与preload/UI；任务结果需版本化保存、未知格式停写。Java仍不自动推断，Java要求缺确切测量时保持unknown；语言测量只对代表系列及官方组件事实开放。JarJar选择及Quilt复杂条件仍未知，不伪装已完成。实际两个测试实例现在各有一个手动供应测试Mod，不能再称空Mod目录；供应入口只是tests/runtime/official-loader-test-mod.ts，不是产品安装事务。
+
 最新进度覆盖下文旧暂停快照：额度已实际重置，最近5小时已用24%、周4%、resetsAt=1793014620，当前可继续既定授权，不需等旧窗口。02e9aeb记录NeoForge不改参数连续两次主菜单/退出0，旧3221226505间歇失败仍未定位。Fabric0.16.14/Quilt0.29.2官方安装入口已扩展；Fabric有效官方profile已读到，但Maven证明网络持续失败，dc6d8b2三次有限重试后仍CATALOG_UNAVAILABLE；Quilt亦metadata失败，暂没有ready。不要将网络失败改成信任成功或切镜像。
 
 本轮新实现：f6cb194有界只读JAR worker；d232058修复Fabric caret0.x/tilde及不支持运算符语义；5efa1b0四声明纯解析；4a5d39f实际worker内JSON/TOML解释与回复复验；7652596本地兼容报告；随后只读实例库存IO（以git log最新提交为准）。详见docs/contracts/MOD_ARCHIVES.md。生产worker在真实NeoForge官方共享对象读到neoforge21.1.265/javafml[3,]；对象SHA256 c12cf1a6cb0aa7792b13174b06088a4f54d8bcc92f6a32fcb03310b456936847。完整最新pnpm check350项348通过/0失败/2原有跳过，核心99.10%行/96.82%分支/99.50%函数；日志.test-build/mod-inventory-check.log。运行测试入口tests/runtime/official-mod-inventory.ts已验证本轮独立Forge/NeoForge实例目录及空Mod库存，不创建玩家文件。
