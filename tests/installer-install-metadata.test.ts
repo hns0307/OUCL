@@ -5,7 +5,11 @@ import { parseAssetIndex } from '../src/core/install/assets.js';
 import { planVanillaInstall } from '../src/core/install/plan.js';
 import { resolveClientVersion } from '../src/core/version/resolve.js';
 import { sourceKey } from '../src/services/objects/provenance.js';
-import { assembleInstallerMetadata } from '../src/services/loaders/installer-install-metadata.js';
+import { assembleInstallerMetadata, rebuildPreparedInstallerPlan } from '../src/services/loaders/installer-install-metadata.js';
+import { InstallerPreparationService } from '../src/services/loaders/installer-preparation.js';
+import { mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { tmpdir } from 'node:os';
 
 const sha1 = (body: string): string => createHash('sha1').update(body).digest('hex');
 const assetsBody = JSON.stringify({ objects: {} }); const assetsSha1 = sha1(assetsBody);
@@ -17,7 +21,7 @@ const baseVersion = resolveClientVersion('1.20.1', { '1.20.1': baseValue }, envi
 const base = { version: baseVersion, assets, plan: planVanillaInstall(baseVersion, { '1.20.1': sha1(baseBody) }, assets),
   metadataSha1ByVersion: { '1.20.1': sha1(baseBody) }, assetIndexBody: assetsBody, versionDocuments: { '1.20.1': baseBody } };
 
-test('assembler binds extracted documents and every library to the verified installer choice', () => {
+test('assembler binds extracted documents and every library to the verified installer choice', async () => {
   const tool = { name: 'net.minecraftforge:installertools:1', downloads: { artifact: { path: 'net/minecraftforge/installertools/1/installertools-1.jar',
     url: 'https://maven.minecraftforge.net/net/minecraftforge/installertools/1/installertools-1.jar', sha1: '2'.repeat(40), size: 20 } } };
   const tools = [tool, ...['jarsplitter', 'ForgeAutoRenamingTool', 'binarypatcher'].map((name, index) => ({ name: `net.minecraftforge:${name}:1${name === 'ForgeAutoRenamingTool' ? ':all' : ''}`,
@@ -47,6 +51,25 @@ test('assembler binds extracted documents and every library to the verified inst
     { sourceUrl: spec.url, spec, catalogSha256: catalog.evidence.sha256 }, { digest: '7'.repeat(64), size: 100, sourceKey: sourceKey(spec.expected, spec.anchor) }, profileBody, versionBody);
   assert.equal(result.loader.libraries.length, 5); assert.equal(result.loader.libraries[0]?.spec.anchor.digest, result.loader.profileSha256);
   assert.equal(result.version.mainClass, 'cpw.mods.bootstraplauncher.BootstrapLauncher');
+  const rebuilt = rebuildPreparedInstallerPlan({ ...result, plan: { ...result.plan, artifacts: [], views: [] } });
+  assert.equal(rebuilt.artifacts.length, result.plan.artifacts.length);
+  const root = await mkdtemp(path.join(tmpdir(), 'oucl-installer-prepare-'));
+  try {
+    const object = result.loader.installer.object; const calls: string[] = [];
+    const preparation = new InstallerPreparationService({ prepare: async () => base }, { catalog: async () => catalog },
+      { resolve: async () => ({ sourceUrl: spec.url, spec, catalogSha256: catalog.evidence.sha256 }) });
+    const prepared = await preparation.prepare('forge', '1.20.1', '47.4.28', environment, '00000000-0000-4000-8000-000000000001', {
+      dataDirectory: root, objects: { lookup: async () => object },
+      coordinator: { request: (_spec, options) => { calls.push(options.consumerId); return { id: options.consumerId, result: Promise.resolve(object),
+        state: () => 'completed', cancel: async () => {}, pause: async () => {}, resume: async () => {} }; } },
+      views: { materialize: async (_directory, relative, _spec, reference, options) => { assert.equal(options.mode, 'copy');
+        return { relativePath: relative, objectDigest: reference.digest, size: reference.size, mode: 'copy' }; } },
+      extractor: { run: async destination => { await writeFile(path.join(destination, 'install_profile.json'), profileBody);
+        await writeFile(path.join(destination, 'version.json'), versionBody); return { files: 3, bytes: 100 }; } },
+    }, new AbortController().signal);
+    assert.deepEqual(prepared.metadata.loader, result.loader); assert.equal(calls.length, 1);
+    assert.equal(path.dirname(prepared.workspace), path.join(await realpath(root), 'staging/loader-installers'));
+  } finally { assert.equal(path.dirname(root), path.resolve(tmpdir())); await rm(root, { recursive: true, force: true }); }
   assert.throws(() => assembleInstallerMetadata('forge', '1.20.1', '47.4.28', environment, base, catalog,
     { sourceUrl: spec.url, spec, catalogSha256: '0'.repeat(64) }, { digest: '7'.repeat(64), size: 100, sourceKey: sourceKey(spec.expected, spec.anchor) }, profileBody, versionBody));
 });

@@ -5,6 +5,8 @@ import type { PlannedArtifact, VanillaInstallPlan } from '../../core/install/pla
 import type { PreparedInstallMetadata } from '../catalog/install-metadata.js';
 import type { PreparedLoaderMetadata } from '../loaders/install-metadata.js';
 import { rebuildPreparedLoaderPlan } from '../loaders/install-metadata.js';
+import { rebuildPreparedInstallerPlan } from '../loaders/installer-install-metadata.js';
+import type { PreparedInstallerMetadata } from '../loaders/installer-install-metadata.js';
 import type { DownloadCoordinator } from '../download/coordinator.js';
 import { CoordinatorError } from '../download/coordinator.js';
 import { DownloadError } from '../download/types.js';
@@ -16,6 +18,9 @@ export interface InstallDownloadProgress {
 }
 export interface DownloadedInstall { plan: VanillaInstallPlan; objects: ReadonlyMap<string, ObjectRef> }
 type InstallObjects = Pick<ObjectStore, 'lookup' | 'createStaging' | 'commit' | 'discardStaging' | 'adopt'>;
+function installerMetadata(value: PreparedInstallMetadata | PreparedLoaderMetadata | PreparedInstallerMetadata): value is PreparedInstallerMetadata {
+  return 'loader' in value && (value.loader.kind === 'forge' || value.loader.kind === 'neoforge');
+}
 
 /** Executes bounded live installation downloads; durable installation/task associations belong to the task service. */
 export class InstallDownloadService {
@@ -25,7 +30,7 @@ export class InstallDownloadService {
   }
 
   /** Returns only after every artifact and independent proof is committed, or all owned consumers have joined. */
-  async run(metadata: PreparedInstallMetadata | PreparedLoaderMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
+  async run(metadata: PreparedInstallMetadata | PreparedLoaderMetadata | PreparedInstallerMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
     const controller = new AbortController(); const abort = (): void => controller.abort();
     options.signal?.addEventListener('abort', abort, { once: true });
     if (options.signal?.aborted) controller.abort();
@@ -34,7 +39,8 @@ export class InstallDownloadService {
       const body = metadata.assetIndexBody;
       let rawAssets: unknown;
       try { rawAssets = JSON.parse(body) as unknown; } catch { throw new DownloadError('INVALID_TRANSFER'); }
-      const plan = 'loader' in metadata ? rebuildPreparedLoaderPlan({ ...metadata, assets: parseAssetIndex(rawAssets) })
+      const plan = installerMetadata(metadata) ? rebuildPreparedInstallerPlan({ ...metadata, assets: parseAssetIndex(rawAssets) })
+        : 'loader' in metadata ? rebuildPreparedLoaderPlan({ ...metadata, assets: parseAssetIndex(rawAssets) })
         : planVanillaInstall(metadata.version, metadata.metadataSha1ByVersion, parseAssetIndex(rawAssets));
       const index = metadata.version.assetIndex;
       const indexView = plan.views.find(view => view.area === 'assets' && view.path === `indexes/${index?.id}.json`);

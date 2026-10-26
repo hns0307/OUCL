@@ -6,11 +6,20 @@ import type { PreparedInstallMetadata } from '../catalog/install-metadata.js';
 import type { ObjectRef } from '../objects/store.js';
 import { sourceKey } from '../objects/provenance.js';
 import type { PersistedInstallerLoaderMetadata } from '../storage/instance-records.js';
-import { composeInstallerInstall } from './installer-compose.js';
+import { composeInstallerInstall, parseStoredInstallerProfile } from './installer-compose.js';
 import type { InstallerArtifactDocument } from './installer-artifact.js';
 import type { LoaderCatalogDocument } from './metadata.js';
 
-export interface PreparedInstallerMetadata extends PreparedInstallMetadata { loader: PersistedInstallerLoaderMetadata }
+export interface PreparedInstallerMetadata extends PreparedInstallMetadata { loader: PersistedInstallerLoaderMetadata; environment: VersionEnvironment }
+
+/** Rebuilds download facts from retained documents instead of trusting a mutable plan. */
+export function rebuildPreparedInstallerPlan(metadata: PreparedInstallerMetadata) {
+  const loader = metadata.loader;
+  const profile = parseStoredInstallerProfile(loader.kind, metadata.version.ancestry[0] ?? '', loader.version,
+    loader.profileBody, loader.profileSha256, loader.versionBody, loader.versionSha256);
+  return composeInstallerInstall({ baseVersionDocuments: metadata.versionDocuments, baseMetadataSha1ByVersion: metadata.metadataSha1ByVersion,
+    assets: metadata.assets, profile, profileSha256: loader.profileSha256, environment: metadata.environment }).plan;
+}
 
 /** Builds the durable installer checkpoint only from a selected official candidate and verified installer object. */
 export function assembleInstallerMetadata(kind: InstallerLoaderKind, minecraftVersion: string, loaderVersion: string,
@@ -33,5 +42,5 @@ export function assembleInstallerMetadata(kind: InstallerLoaderKind, minecraftVe
     profileBody, profileSha256, versionBody, versionSha256, libraries: profile.libraries.map(library => ({ path: library.path, spec: {
       url: library.url, expected: { algorithm: 'sha1', digest: library.sha1, size: library.size, provenanceId: `loader:${kind}:${library.sha1}` },
       anchor: { kind: 'loader-profile', algorithm: 'sha256', digest: profileSha256 } } })) };
-  return { ...base, version: composed.version, plan: composed.plan, loader };
+  return { ...base, version: composed.version, plan: composed.plan, loader, environment };
 }
