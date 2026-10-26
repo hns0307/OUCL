@@ -63,6 +63,7 @@ export function parseJsonModDeclarations(format: 'fabric' | 'quilt', body: strin
         }
       }
     }
+    if (mod.dependencies.length > 256) return emptyDeclarations(format, 'DECLARATION_LIMIT');
     return result;
   } catch { return emptyDeclarations(format, 'MALFORMED_DECLARATION'); }
 }

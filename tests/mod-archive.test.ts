@@ -9,6 +9,8 @@ import { inspectModArchiveBytes } from '../src/services/install/native-archive.j
 import { ModArchiveReader } from '../src/services/workers/mod-archive-reader.js';
 import { parseModArchiveReply, parseModArchiveRequest } from '../src/services/workers/mod-archive-protocol.js';
 import { modZip } from './fixtures/mod-zip.js';
+import { parseModDeclarationFacts } from '../src/services/workers/mod-declarations-protocol.js';
+import { parseJsonModDeclarations } from '../src/core/mods/json-declarations.js';
 const entry = new URL('../src/services/workers/entry.js', import.meta.url);
 const fake = new URL('./fixtures/mod-worker.js', import.meta.url);
 
@@ -28,9 +30,32 @@ test('local JAR worker returns real hashes, exact four declarations and nested e
   assert.equal(result.sha1, hash(bytes, 'sha1')); assert.equal(result.sha256, hash(bytes)); assert.equal(result.sha512, hash(bytes, 'sha512'));
   assert.equal(result.size, bytes.length); assert.equal(result.archives.length, 2);
   assert.equal(result.archives[0]!.documents.length, 6); assert.equal(result.archives[1]!.sha256, hash(inner));
+  assert.deepEqual(result.archives[0]!.declarations.map(item => item.format), ['fabric', 'quilt', 'forge', 'neoforge']);
   assert.deepEqual(result.archives[1]!.entries, ['nested/a.jar']); assert.deepEqual(await readdir(path.dirname(target)), before);
   const reply = parseModArchiveReply({ version: 1, kind: 'mod-archive-result', result });
   assert.equal(reply.kind, 'mod-archive-result'); if (reply.kind === 'mod-archive-result') assert.deepEqual(reply.result, result);
+});
+
+test('declaration interpretation runs inside the worker and its private facts are independently validated', async () => {
+  const target = await file(modZip([['fabric.mod.json', JSON.stringify({ schemaVersion: 1, id: 'actual_mod', version: '2', depends: { java: '>=17' } })],
+    ['META-INF/mods.toml', 'modLoader="javafml"\nloaderVersion="[47,)"\n[[mods]]\nmodId="first_mod"\nversion="1"\n[[mods]]\nmodId="second_mod"\nversion="${file.jarVersion}"']]));
+  const result = await new ModArchiveReader(entry).read(target);
+  assert.equal(result.archives[0]!.declarations[0]!.mods[0]!.id, 'actual_mod');
+  assert.equal(result.archives[0]!.declarations[1]!.mods.length, 2);
+  assert.equal(result.archives[0]!.declarations[1]!.mods[1]!.version, null);
+  const facts = parseJsonModDeclarations('fabric', JSON.stringify({ schemaVersion: 1, id: 'actual_mod', version: '2', depends: { java: '>=17' } }));
+  assert.deepEqual(parseModDeclarationFacts(facts), facts);
+  const mod = facts.mods[0]!; const dependency = mod.dependencies[0]!;
+  for (const value of [{ ...facts, script: 'run' }, { ...facts, format: 'unknown' }, { ...facts, nested: ['../escape.jar'] },
+    { ...facts, language: { id: 'loader', range: 7 } }, { ...facts, issues: ['path/private'] },
+    { ...facts, mods: [{ ...mod, id: 'bad:id' }] }, { ...facts, mods: [{ ...mod, client: {} }] },
+    { ...facts, mods: [{ ...mod, provides: [{ id: 'other_mod', version: '${version}' }] }] },
+    { ...facts, mods: [{ ...mod, dependencies: [{ ...dependency, kind: {} }] }] },
+    { ...facts, mods: [{ ...mod, dependencies: [{ ...dependency, range: { all: [] } }] }] }]) assert.throws(() => parseModDeclarationFacts(value));
+  const node = result.archives[0]!;
+  for (const declarations of [[], [facts, facts], [{ ...facts, format: 'quilt' }]]) {
+    assert.throws(() => parseModArchiveReply({ version: 1, kind: 'mod-archive-result', result: { ...result, archives: [{ ...node, declarations }] } }));
+  }
 });
 
 test('scanner refuses corrupt class CRCs, unsafe identities, malformed ZIPs and invalid UTF8', async () => {

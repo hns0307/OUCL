@@ -3,6 +3,7 @@ import { exactObject } from '../../shared/contracts/handshake.js';
 import { installRelativePath } from '../../core/install/assets.js';
 import { MOD_ARCHIVE_CODES, MOD_DOCUMENTS } from '../mods/archive.js';
 import type { ModArchiveCode, ModArchiveScan } from '../mods/archive.js';
+import { parseModDeclarationFacts } from './mod-declarations-protocol.js';
 
 export interface ModArchiveRequest { version: 1; kind: 'mod-archive'; file: string }
 export type ModArchiveReply = { version: 1; kind: 'mod-archive-result'; result: ModArchiveScan }
@@ -29,9 +30,10 @@ export function parseModArchiveReply(value: unknown): ModArchiveReply {
     || !Array.isArray(result.archives) || result.archives.length < 1 || result.archives.length > 64) invalid();
   let total = 0; const seen = new Set<string>();
   for (const [index, archive] of result.archives.entries()) {
-    if (!exactObject(archive, ['entries', 'sha256', 'documents']) || !digest(archive.sha256, 64)
+    if (!exactObject(archive, ['entries', 'sha256', 'documents', 'declarations']) || !digest(archive.sha256, 64)
       || !Array.isArray(archive.entries) || archive.entries.length > 4 || (index === 0) !== (archive.entries.length === 0)
-      || !Array.isArray(archive.documents) || archive.documents.length > MOD_DOCUMENTS.length) invalid();
+      || !Array.isArray(archive.documents) || archive.documents.length > MOD_DOCUMENTS.length
+      || !Array.isArray(archive.declarations) || archive.declarations.length > 4) invalid();
     for (const entry of archive.entries) {
       if (typeof entry !== 'string' || entry.length > 4096 || !entry.endsWith('.jar')) invalid();
       try { installRelativePath(entry); } catch { invalid(); }
@@ -46,6 +48,14 @@ export function parseModArchiveReply(value: unknown): ModArchiveReply {
         || typeof document.body !== 'string' || Buffer.byteLength(document.body) > 1024 ** 2) invalid();
       names.add(document.name); total += Buffer.byteLength(document.body); if (total > 4 * 1024 ** 2) invalid();
     }
+    const formats = new Set<string>();
+    for (const declaration of archive.declarations) {
+      const facts = parseModDeclarationFacts(declaration);
+      const name = { fabric: 'fabric.mod.json', quilt: 'quilt.mod.json', forge: 'META-INF/mods.toml', neoforge: 'META-INF/neoforge.mods.toml' }[facts.format];
+      if (formats.has(facts.format) || !names.has(name)) invalid(); formats.add(facts.format);
+    }
+    if (formats.size !== [...names].filter(name => name.endsWith('mods.toml') || name.endsWith('mod.json')).length) invalid();
   }
+  try { if (Buffer.byteLength(JSON.stringify(result)) > 8 * 1024 ** 2) invalid(); } catch { invalid(); }
   return value as unknown as ModArchiveReply;
 }

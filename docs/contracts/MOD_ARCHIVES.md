@@ -12,6 +12,8 @@
 
 四类声明依据[Fabric规范](https://wiki.fabricmc.net/documentation:fabric_mod_json_spec)、[Quilt规范](https://github.com/QuiltMC/rfcs/blob/main/specification/0002-quilt.mod.json.md)、[Forge1.20.1文档](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/)、[NeoForge1.21.1文档](https://docs.neoforged.net/docs/1.21.1/gettingstarted/modfiles/)。只提取事实设计，未复制源码或第三方夹具。
 
+worker接入补充：上述四解析器现由有界扫描worker执行，各归档返回声明事实与原文对应；主进程只做受限形状、字段、范围树、格式/文档对应关系验证，不重复执行TOML解析。结构化结果总量最多8MiB，Fabric/Quilt单文档全部关系最多256条。完整pnpm check338项/336通过/0失败/2原有跳过；正式构建worker读取同一真实NeoForge对象，识别id=neoforge、version=21.1.265、language=javafml、range=[3,]。JarJar原文已读取但选择/版本冲突尚未解析，不能把所有发现的嵌套JAR当成满足依赖。尚无Mod列表/检查/安装公开入口。
+
 范围语义复核修正：Fabric的caret即使在0.x也按主版本边界，tilde按主次版本保留，排除下一系列的预发布；不使用npm的0.x特殊规则。Fabric空格AND、数组OR；Quilt使用数组OR或any/all对象，单个版本表达式不擅自解释成多条件。`||`、`&&`与拆开的运算符作为不支持语法返回unknown。依据[Fabric规范](https://wiki.fabricmc.net/documentation:fabric_mod_json_spec)、[固定0.16.14运算符](https://github.com/FabricMC/fabric-loader/blob/0.16.14/src/main/java/net/fabricmc/loader/api/metadata/version/VersionComparisonOperator.java)及[Quilt规范](https://github.com/QuiltMC/rfcs/blob/main/specification/0002-quilt.mod.json.md)独立修正，不复制代码。完整检查330项/328通过/0失败/2原有跳过。
 
 验证：完整`pnpm check`329项/327通过/0失败/2原有环境跳过，类型、lint及构建通过。新增测试覆盖四类声明、嵌套树/摘要、CRC损坏、非法路径、重复项、非UTF8、无声明、目录/缺文件、条目/展开/深度/数量限制、伪造回复、并发拒绝、取消、超时、崩溃及空回复。生产构建worker读取本轮独立测试根的NeoForge21.1.265官方共享对象成功：3,559,126字节、SHA-256 `c12cf1a6cb0aa7792b13174b06088a4f54d8bcc92f6a32fcb03310b456936847`，识别NeoForge TOML、jarjar声明与两个内嵌JAR；先对链接视图扫描返回UNSAFE_ARCHIVE符合边界，测试显式选择受管真实对象后成功。
