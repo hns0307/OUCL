@@ -57,8 +57,9 @@ test('assembler binds extracted documents and every library to the verified inst
   assert.equal(rebuilt.artifacts.length, result.plan.artifacts.length);
   const root = await mkdtemp(path.join(tmpdir(), 'oucl-installer-prepare-'));
   try {
-    const object = result.loader.installer.object; const calls: string[] = [];
-    const preparation = new InstallerPreparationService({ prepare: async () => base }, { catalog: async () => catalog },
+    const object = result.loader.installer.object; const calls: string[] = []; let catalogAttempts = 0;
+    const preparation = new InstallerPreparationService({ prepare: async () => base }, { catalog: async () => {
+      if (catalogAttempts++ === 0) throw Object.assign(new Error('network fixture'), { code: 'CATALOG_UNAVAILABLE' }); return catalog; } },
       { resolve: async () => ({ sourceUrl: spec.url, spec, catalogSha256: catalog.evidence.sha256 }) });
     const prepared = await preparation.prepare('forge', '1.20.1', '47.4.28', environment, '00000000-0000-4000-8000-000000000001', {
       dataDirectory: root, objects: { lookup: async () => object },
@@ -70,6 +71,7 @@ test('assembler binds extracted documents and every library to the verified inst
         await writeFile(path.join(destination, 'version.json'), versionBody); return { files: 3, bytes: 100 }; } },
     }, new AbortController().signal);
     assert.deepEqual(prepared.metadata.loader, result.loader); assert.equal(calls.length, 1);
+    assert.equal(catalogAttempts, 2);
     assert.equal(path.dirname(prepared.workspace), path.join(await realpath(root), 'staging/loader-installers'));
     const copies: string[] = [];
     const processorPlan = await prepareProcessorWorkspace(prepared.metadata, { plan: rebuilt,

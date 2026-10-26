@@ -7,7 +7,7 @@ import type { DownloadCoordinator } from '../download/coordinator.js';
 import type { ObjectStore, ObjectRef } from '../objects/store.js';
 import type { FileViewService } from '../install/file-views.js';
 import { ensureChildDirectory } from '../install/instance-files.js';
-import { guardDirectory, readRegular } from '../storage/files.js';
+import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
 import type { InstallerArchiveExtractor } from '../workers/installer-archive-extractor.js';
 import type { PersistedInstallerLoaderMetadata } from '../storage/instance-records.js';
 import type { LoaderMetadataClient } from './metadata.js';
@@ -28,6 +28,14 @@ export interface InstallerPreparationRuntime {
 export interface ExtractedInstaller { workspace: string; profileBody: string; versionBody: string }
 const cancelled = (signal: AbortSignal): void => { if (signal.aborted) throw new InstallerPreparationError('CANCELLED'); };
 
+async function metadataRequest<T>(work: () => Promise<T>, signal: AbortSignal): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    cancelled(signal);
+    try { return await work(); }
+    catch (error) { cancelled(signal); if (attempt >= 2 || !hasCode(error, 'CATALOG_UNAVAILABLE') && !hasCode(error, 'NETWORK_FAILED')) throw error; }
+  }
+}
+
 async function document(file: string): Promise<string> {
   const bytes = await readRegular(file, 2 * 1024 ** 2);
   if (!bytes || !bytes.length) throw new InstallerPreparationError('INVALID_INSTALLER_METADATA');
@@ -37,6 +45,7 @@ async function document(file: string): Promise<string> {
 
 /** Reuses the existing object owner; failed workspaces remain private recovery material. */
 export class InstallerPreparationService {
+  private extractionTail: Promise<void> = Promise.resolve();
   constructor(private readonly vanilla: Pick<InstallMetadataService, 'prepare'>,
     private readonly catalogs: Pick<LoaderMetadataClient, 'catalog'>,
     private readonly artifacts: Pick<InstallerArtifactResolver, 'resolve'>) {}
@@ -44,8 +53,8 @@ export class InstallerPreparationService {
   async prepare(kind: InstallerLoaderKind, minecraftVersion: string, loaderVersion: string, environment: VersionEnvironment,
     consumerId: string, runtime: InstallerPreparationRuntime, signal: AbortSignal) {
     cancelled(signal);
-    const catalog = await this.catalogs.catalog(kind, minecraftVersion); cancelled(signal);
-    const artifact = await this.artifacts.resolve(kind, minecraftVersion, loaderVersion, catalog, signal); cancelled(signal);
+    const catalog = await metadataRequest(() => this.catalogs.catalog(kind, minecraftVersion), signal); cancelled(signal);
+    const artifact = await metadataRequest(() => this.artifacts.resolve(kind, minecraftVersion, loaderVersion, catalog, signal), signal); cancelled(signal);
     const object = await runtime.coordinator.request(artifact.spec, { consumerId, signal }).result; cancelled(signal);
     const extracted = await this.extract({ sourceUrl: artifact.sourceUrl, spec: artifact.spec, object }, runtime, signal);
     const base = await this.vanilla.prepare(minecraftVersion, environment); cancelled(signal);
@@ -71,7 +80,11 @@ export class InstallerPreparationService {
     const workspace = await mkdtemp(path.join(parent, 'preparing-')); await guardDirectory(workspace); cancelled(signal);
     await runtime.views.materialize(workspace, 'installer.jar', installer.spec, verified, { mode: 'copy', signal }); cancelled(signal);
     const destination = await ensureChildDirectory(workspace, 'installer');
-    await runtime.extractor.run(destination, { file: path.join(workspace, 'installer.jar'), sha256: verified.digest, size: verified.size }, { signal }); cancelled(signal);
+    const extraction = this.extractionTail.then(async () => {
+      cancelled(signal);
+      await runtime.extractor.run(destination, { file: path.join(workspace, 'installer.jar'), sha256: verified.digest, size: verified.size }, { signal });
+    });
+    this.extractionTail = extraction.catch(() => {}); await extraction; cancelled(signal);
     const profileBody = await document(path.join(destination, 'install_profile.json'));
     const versionBody = await document(path.join(destination, 'version.json')); cancelled(signal);
     return { workspace, profileBody, versionBody };

@@ -50,7 +50,9 @@ test('refuses existing outputs, wrong hashes and excessive child output', async 
     start: () => { queueMicrotask(() => completed.close(0)); return completed as unknown as ChildProcessWithoutNullStreams; } });
   await assert.rejects(wrongHash.run('java.exe', 17, plan()), error => error instanceof ProcessorExecutionError && error.code === 'OUTPUT_INVALID');
   const child = new FakeChild(); const overflow = new InstallerProcessorExecutor({ probe: { probe: async () => runtime }, hash: { hash: async () => ({ size: 1, sha1: '0'.repeat(40), sha256: 'b'.repeat(64) }) },
-    validateArchive: async () => {}, inspect: async () => 'missing', start: () => { queueMicrotask(() => { child.stdout.write(Buffer.alloc(128 * 1024 + 1)); child.close(null, 'SIGTERM'); }); return child as unknown as ChildProcessWithoutNullStreams; } });
+    validateArchive: async () => {}, inspect: async () => 'missing', start: () => { queueMicrotask(() => {
+      const chunk = Buffer.alloc(64 * 1024); for (let index = 0; index < 513; index++) child.stdout.write(chunk);
+      child.close(null, 'SIGTERM'); }); return child as unknown as ChildProcessWithoutNullStreams; } });
   await assert.rejects(overflow.run('java.exe', 17, plan()), error => error instanceof ProcessorExecutionError && error.code === 'OUTPUT_LIMIT');
 });
 

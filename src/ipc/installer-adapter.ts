@@ -35,6 +35,8 @@ const code = (error: unknown): InstanceCode => {
   return 'UNAVAILABLE';
 };
 function stage(value: TaskView): InstallStage {
+  if (value.stage === 'installer') return 'metadata';
+  if (value.stage === 'processors') return 'materializing';
   if (STAGES.includes(value.stage as InstallStage)) return value.stage as InstallStage;
   switch (value.task.execution.state) {
     case 'queued': return 'queued';

@@ -407,6 +407,12 @@ export class InstallerService {
       });
       this.fileTail = work.catch(() => {}); await work;
     } catch (error) {
+      const diagnosticCodes = ['CANCELLED', 'NEEDS_RECOVERY', 'INVALID_METADATA', 'UNTRUSTED_MANIFEST', 'CATALOG_UNAVAILABLE', 'NETWORK_FAILED', 'BAD_RESPONSE',
+        'HASH_MISMATCH', 'INVALID_ARCHIVE', 'UNSAFE_ARCHIVE', 'ARCHIVE_LIMIT', 'ARCHIVE_IO', 'JAVA_INCOMPATIBLE', 'PROCESSOR_FAILED',
+        'PROCESSOR_TIMEOUT', 'OUTPUT_LIMIT', 'OUTPUT_INVALID', 'INVALID_PROCESSOR_PLAN', 'INVALID_PROCESSOR_INPUT', 'INVALID_INSTALLER_METADATA'];
+      const diagnostic = typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string'
+        && diagnosticCodes.includes(error.code) ? error.code : 'INSTALL_FAILED';
+      console.warn(JSON.stringify({ level: 'warn', event: 'instance-install-failed', stage: live.stage, code: diagnostic }));
       await live.progressWrite?.catch(() => {}); await live.changes;
       const cancelled = !live.failure && hasCode(error, 'CANCELLED');
       try {

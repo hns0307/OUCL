@@ -23,7 +23,8 @@ interface Dependencies {
   inspect?: (file: string) => Promise<'missing' | 'file' | 'other'>;
   prepareMojangMappings?: (command: ProcessorCommandPlan, signal?: AbortSignal) => Promise<void>;
 }
-const MAX_OUTPUT_BYTES = 128 * 1024;
+// ART reports classes individually. Drain without retaining raw text, but still stop an unbounded producer.
+const MAX_OUTPUT_BYTES = 32 * 1024 ** 2;
 const MAX_ARTIFACT_BYTES = 1024 ** 3;
 
 async function inspect(file: string): Promise<'missing' | 'file' | 'other'> {

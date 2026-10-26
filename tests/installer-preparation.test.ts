@@ -70,3 +70,16 @@ test('reopen refuses changed object identity and cancellation before extraction'
     assert.equal(f.stats(), 0);
   } finally { await f.close(); }
 });
+
+test('concurrent preparations serialize the shared one-shot extractor', async () => {
+  const f = await fixture(); let active = 0; let peak = 0;
+  try {
+    const runtime = { ...f.runtime, extractor: { run: async (...args: Parameters<typeof f.runtime.extractor.run>) => {
+      active++; peak = Math.max(peak, active);
+      try { await new Promise(resolve => setTimeout(resolve, 20)); return await f.runtime.extractor.run(...args); }
+      finally { active--; }
+    } } };
+    await Promise.all([f.service.reopen(f.loader, runtime, new AbortController().signal), f.service.reopen(f.loader, runtime, new AbortController().signal)]);
+    assert.equal(peak, 1); assert.equal(f.stats(), 2);
+  } finally { await f.close(); }
+});
