@@ -85,4 +85,7 @@ test('instance and nested limits report unknown rather than silently truncating 
   const crowded = Array.from({ length: 256 }, (_, i) => file(`mod_${i}`, { depends: Object.fromEntries(Array.from({ length: 32 }, (_, j) => [`missing_${j}`, '*'])) }));
   const report = checkLocalMods(crowded, environment); assert.equal(report.issues.length, 4096);
   assert.equal(report.issues.at(-1)!.code, 'REPORT_LIMIT'); assert.equal(report.state, 'unsatisfied');
+  const aliases = Array.from({ length: 17 }, (_, i) => file(`alias_mod_${i}`, { provides: Array(128).fill('same_alias') }));
+  const duplicates = checkLocalMods(aliases, environment); assert.equal(duplicates.state, 'unsatisfied');
+  assert.ok(duplicates.issues.every(issue => issue.actual.length <= 16));
 });

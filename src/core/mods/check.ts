@@ -36,7 +36,7 @@ export function checkLocalMods(files: readonly LocalModFile[], environment: ModE
       ?? (environment.loader === 'quilt' ? archive.declarations.find(item => item.format === 'fabric') : undefined);
   };
   const compare = (range: ModRange | null, version: string | null | undefined, format: ModFormat): Compatibility => {
-    if (range === null || version === null || version === undefined) return 'unknown';
+    if (range === null || typeof version !== 'string') return 'unknown';
     return matchesModRange(range, version, format === 'forge' || format === 'neoforge' ? 'maven' : format);
   };
   if (files.length > 256) add('unknown', 'INSTANCE_MOD_LIMIT', '');
@@ -66,7 +66,8 @@ export function checkLocalMods(files: readonly LocalModFile[], environment: ModE
         providers.push({ fileId: file.fileId, id: mod.id, ownerId: mod.id, version: mod.version, via });
         for (const alias of mod.provides) providers.push({ fileId: file.fileId, id: alias.id, ownerId: mod.id, version: alias.version, via });
         if (facts.language) {
-          const actual = environment.languageVersions[facts.language.id]; const outcome = compare(facts.language.range, actual, facts.format);
+          const actual = Object.hasOwn(environment.languageVersions, facts.language.id) ? environment.languageVersions[facts.language.id] : undefined;
+          const outcome = compare(facts.language.range, actual, facts.format);
           if (outcome !== 'satisfied') add(outcome === 'unknown' ? 'unknown' : 'error', 'LANGUAGE_REQUIREMENT', file.fileId, mod.id,
             facts.language.id, facts.language.range, actual ? [actual] : [], via);
         }
@@ -85,8 +86,10 @@ export function checkLocalMods(files: readonly LocalModFile[], environment: ModE
   const byId = new Map<string, ModProvider[]>();
   for (const provider of providers) { const group = byId.get(provider.id) ?? []; group.push(provider); byId.set(provider.id, group); }
   for (const [id, group] of byId) {
-    if (group.length > 1 || RUNTIME_IDS.has(id)) for (const provider of group) add('error', 'DUPLICATE_MOD_ID', provider.fileId, provider.ownerId, id, null,
-      group.map(item => item.version ?? '?'), provider.via);
+    if (group.length > 1 || RUNTIME_IDS.has(id)) {
+      const actual = group.slice(0, 16).map(item => item.version ?? '?');
+      for (const provider of group) add('error', 'DUPLICATE_MOD_ID', provider.fileId, provider.ownerId, id, null, actual, provider.via);
+    }
   }
   for (const { fileId, mod, format, via } of mods) {
     for (const dependency of mod.dependencies) {
