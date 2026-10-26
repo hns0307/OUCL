@@ -187,3 +187,12 @@ test('real backing-path removal/replacement is refused while the cached handle e
   } finally { if (replacement) await unlink(file); await rename(moved, file); }
   assert.equal(f.ledger!.get(key)?.revision, 1);
 }));
+
+test('transport source changes require a validator-free zero checkpoint', async () => fixture(async f => {
+  f.ledger!.set(0, initial());
+  const partial = { ...initial(), revision: 2, bytesDone: 4, etag: '"official"' };
+  f.ledger!.set(1, partial);
+  assert.throws(() => f.ledger!.set(2, { ...partial, revision: 3, transportSource: 'bmclapi' }), { code: 'INVALID_RECORD' });
+  f.ledger!.set(2, { ...initial(), revision: 3, transportSource: 'bmclapi' });
+  assert.equal(f.ledger!.get(key)?.bytesDone, 0);
+}));

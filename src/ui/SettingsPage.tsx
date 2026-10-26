@@ -3,9 +3,10 @@ import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
 import { RootSettings } from './RootSettings.js';
 import { useLauncher } from './launcher-state.js';
+import { DownloadSettings } from './DownloadSettings.js';
 
 /** Saves real launch preferences and native Java selections with conflict recovery. */
-export function SettingsPage({ enabled, rootsEnabled }: { enabled: boolean; rootsEnabled: boolean }) {
+export function SettingsPage({ enabled, rootsEnabled, downloadsEnabled }: { enabled: boolean; rootsEnabled: boolean; downloadsEnabled: boolean }) {
   const { settings, refreshSettings, setRoot } = useLauncher();
   const [memory, setMemory] = useState(2048); const [isolation, setIsolation] = useState(true); const [revision, setRevision] = useState(0);
   const [saving, setSaving] = useState(false); const [choosing, setChoosing] = useState(false); const [saved, setSaved] = useState(false);
@@ -32,6 +33,7 @@ export function SettingsPage({ enabled, rootsEnabled }: { enabled: boolean; root
       <label className="setting-row"><span><strong>{MESSAGES.uiDefaultIsolation}</strong><small>{MESSAGES.uiIsolationHint}</small></span><input type="checkbox" checked={isolation} onChange={e => { setIsolation(e.target.checked); setSaved(false); }} /></label>
       <div className="save-row"><button disabled={!enabled || !settings || saving || !Number.isSafeInteger(memory) || memory < 512 || memory > 65536} onClick={() => { void save(); }}>{saving ? MESSAGES.uiSaving : MESSAGES.uiSave}</button><span role="status" className="success">{saved ? MESSAGES.uiSaved : ''}</span></div>
     </section><section className="panel"><div className="section-heading"><span className="section-number">04</span><h2>{MESSAGES.uiAbout}</h2></div><p>{MESSAGES.uiVersion}</p><p className="muted">{MESSAGES.uiAboutDescription}</p><p className="muted small">{MESSAGES.gameKeepAlive}</p></section>
+    <DownloadSettings enabled={downloadsEnabled} />
     {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}
   </div>;
 }

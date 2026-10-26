@@ -4,7 +4,7 @@ import type { ObjectStore } from '../objects/store.js';
 import { hasCode } from '../storage/files.js';
 import { DownloadError, isArtifactUrl, parseTransferRecord } from './types.js';
 import type { DownloadSpec, TransferOptions, TransferRecord } from './types.js';
-import type { HttpTransfer } from './http.js';
+export interface ArtifactTransport { run(file: string, record: TransferRecord, checkpoint: import('./types.js').TransferCheckpoint, options?: TransferOptions): Promise<TransferRecord> }
 
 export interface TransferJournal {
   getTransfer(key: string): Promise<TransferRecord | undefined>;
@@ -14,7 +14,7 @@ export interface TransferJournal {
 /** Runs one physical transfer per identity, independently of installer consumers and renderer subscriptions. */
 export class ArtifactTransfer {
   private readonly active = new Set<string>();
-  constructor(private readonly http: HttpTransfer, private readonly journal: TransferJournal, private readonly objects: ObjectStore) {}
+  constructor(private readonly http: ArtifactTransport, private readonly journal: TransferJournal, private readonly objects: ObjectStore) {}
 
   /** Downloads official anchored bytes, resumes a durable prefix and verifies before shared-object commit. */
   async run(spec: DownloadSpec, options: TransferOptions = {}): Promise<ObjectRef> {
@@ -54,7 +54,18 @@ export class ArtifactTransfer {
       record = await this.http.run(file, record, (revision, next) => this.journal.saveTransfer(revision, next), options);
       if (options.signal?.aborted) throw new DownloadError('CANCELLED');
       // Once object commit begins, cancellation cannot undo shared immutable bytes/provenance.
-      const object = await this.objects.commit(record.stagingId, canonical.expected, canonical.anchor);
+      let object: ObjectRef;
+      try { object = await this.objects.commit(record.stagingId, canonical.expected, canonical.anchor); }
+      catch (error) {
+        if (!hasCode(error, 'HASH_MISMATCH') || record.transportSource !== 'bmclapi') throw error;
+        // A mirror can supply bytes, never trust. Retry once from zero against the official source.
+        const base = { ...record }; delete base.etag; delete base.lastModified;
+        const reset = parseTransferRecord({ ...base, transportSource: 'official', revision: record.revision + 1, bytesDone: 0, state: 'partial' });
+        await this.journal.saveTransfer(record.revision, reset); record = reset;
+        record = await this.http.run(file, record, (revision, next) => this.journal.saveTransfer(revision, next), { ...options, officialOnly: true });
+        if (options.signal?.aborted) throw new DownloadError('CANCELLED');
+        object = await this.objects.commit(record.stagingId, canonical.expected, canonical.anchor);
+      }
       const committed = parseTransferRecord({ ...record, revision: record.revision + 1, state: 'committed', objectDigest: object.digest });
       await this.journal.saveTransfer(record.revision, committed);
       return object;

@@ -13,3 +13,5 @@
 镜像路由依据：[BMCLAPI官方文档](https://bmclapidoc.bangbang93.com/)的assets/maven映射、可见来源要求和归属说明。2026-10-26实测BMCLAPI guava31.1-jre路由为302→mirrors.cernet.edu.cn→mirrors.qlu.edu.cn→200；仅HTTPS且固定受控主机集合，未知节点回退官方，禁止任意跳转。不要加入已关闭或未验证的镜像。
 
 旧Fabric/Quilt本轮重试均metadata/CATALOG_UNAVAILABLE，三个官方端点独立探测200；尚未定位，不因下载优化提案而标为安装通过。
+
+main:d2521bb限定实现已同步本分支：实际运行时/设置UI/有界源传输可用，397项395通过/0失败/2原有跳过、真实Electron32方法14能力与下载设置独立重开通过。以docs/validation/DOWNLOADS-mod/REPORT.md为本分支证据；main的公网官方ETag/If-Range条件缺项保持安全单流回退，不宣称公网分段性能通过。安装器保留全部加载器/Mod装配，无新包。原WIP按SHA256保留，原始两份暂存排除。

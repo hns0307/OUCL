@@ -19,7 +19,10 @@ import { NativeExtractor } from '../workers/native-extractor.js';
 import { ObjectStore } from '../objects/store.js';
 import { DownloadCoordinator } from '../download/coordinator.js';
 import { ArtifactTransfer } from '../download/artifact-transfer.js';
-import { HttpTransfer } from '../download/http.js';
+import { SourceTransfer } from '../download/source-transfer.js';
+import { RequestBudget } from '../download/request-budget.js';
+import { DEFAULT_DOWNLOAD_PREFERENCES } from '../../shared/contracts/download-preferences.js';
+import type { DownloadPreferences } from '../../shared/contracts/download-preferences.js';
 import type { InstallMetadataService, PreparedInstallMetadata } from '../catalog/install-metadata.js';
 import type { LoaderInstallMetadataService, PreparedLoaderMetadata } from '../loaders/install-metadata.js';
 import { parseStoredLoaderProfile } from '../loaders/install-metadata.js';
@@ -100,9 +103,11 @@ export class InstallerService {
   private fileTail: Promise<void> = Promise.resolve();
   private closed = false;
   private closing?: Promise<void>;
+  private readonly requestBudget = new RequestBudget();
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService,
     private readonly loaderMetadata?: LoaderInstallMetadataService, private readonly installerPreparation?: InstallerPreparationService,
-    private readonly processorJava?: (major: 17 | 21, consumerId: string, signal: AbortSignal) => Promise<string>) {}
+    private readonly processorJava?: (major: 17 | 21, consumerId: string, signal: AbortSignal) => Promise<string>,
+    private readonly downloadPreferences: () => Readonly<DownloadPreferences> = () => DEFAULT_DOWNLOAD_PREFERENCES) {}
 
   /** Publishes an immutable, content-addressed official JVM only after all files verify. Never overwrites an existing runtime. */
   async prepareJava(pack: JavaPackage, consumerId: string, signal: AbortSignal): Promise<string> {
@@ -151,8 +156,9 @@ export class InstallerService {
       const hashes = new HashPool(this.entry); const extractor = new NativeExtractor(this.entry); const installerExtractor = new InstallerArchiveExtractor(this.entry);
       try {
         const objects = await ObjectStore.open(store, this.storage, hashes);
-        const coordinator = new DownloadCoordinator(new ArtifactTransfer(new HttpTransfer(), this.storage, objects), objects);
-        return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects), views: new FileViewService(store, objects, hashes) };
+        const concurrency = (): number => this.downloadPreferences().fileConcurrency;
+        const coordinator = new DownloadCoordinator(new ArtifactTransfer(new SourceTransfer(this.downloadPreferences, fetch, this.requestBudget), this.storage, objects), objects, concurrency);
+        return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects, concurrency), views: new FileViewService(store, objects, hashes) };
       } catch (error) { await hashes.close(); await extractor.close(); await installerExtractor.close(); throw error; }
     })();
     return this.runtime;

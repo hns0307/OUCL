@@ -142,6 +142,7 @@ export class TransferDatabase {
           || previous.state === 'complete' && record.state === 'partial' && record.bytesDone !== 0
           || record.bytesDone < previous.bytesDone && record.bytesDone !== 0
           || previous.url !== record.url && (record.state !== 'partial' || record.bytesDone !== 0 || record.etag !== undefined || record.lastModified !== undefined)
+          || previous.transportSource !== record.transportSource && (record.state !== 'partial' || record.bytesDone !== 0 || record.etag !== undefined || record.lastModified !== undefined)
           || previous.bytesDone > 0 && record.bytesDone > 0 && (previous.etag !== record.etag || previous.lastModified !== record.lastModified);
         if (invalid) throw new StorageError('INVALID_RECORD');
       }

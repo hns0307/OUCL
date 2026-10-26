@@ -407,3 +407,5 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 34. 用户实测确认与exe交付
 
 2026-10-25用户明确反馈“我经过实测，已经可以了，接下来就是给我一个可以直接运行的EXE，并进行提交”。本次简易下载/启动目标按用户实测确认交付0.1.0便携exe及完整目录zip；源码/打包脚本/验证记录本地提交，二进制保留release不入源码Git。交接agent.md同步。代理未观察的世界/再次启动仍不补写通过；整个阶段1A其余缺项不随此次目标交付自动完成，不自动进入后续阶段。
+
+2026-10-26下载优化已在main7fab3b1/9ac0895/8fd3edd/1bfb8c5/d2521bb独立实现及0.2.3验收；精确同步mod_loaders保留所有加载器/Mod能力。397测试395通过/0失败/2原有SKIP、真实下载设置保存重开、Electron32方法/14能力通过。原下载WIP经SHA256保存在.test-build/download-wip-preserved-20261026/，原两份暂存资料不动；公网严格分段缺项保持。现恢复原四加载器/Mod明确授权，0.3.0未交付。证据docs/validation/DOWNLOADS-mod/REPORT.md。

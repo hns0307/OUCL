@@ -9,7 +9,7 @@ interface Timeouts { headersMs?: number; idleMs?: number }
 interface Validators { etag?: string; lastModified?: string }
 const CHECKPOINT_BYTES = 1024 * 1024;
 
-function diskError(error: unknown): DownloadError {
+export function diskError(error: unknown): DownloadError {
   if (error instanceof DownloadError) return error;
   if (hasCode(error, 'ENOSPC')) return new DownloadError('DISK_FULL');
   if (hasCode(error, 'UNSAFE_PATH') || hasCode(error, 'ENOENT')) return new DownloadError('NEEDS_RECOVERY');
@@ -34,7 +34,8 @@ function contentLength(response: Response): number | undefined {
   if (!/^\d+$/.test(text) || !Number.isSafeInteger(Number(text))) throw new DownloadError('BAD_RESPONSE');
   return Number(text);
 }
-async function writableStaging(file: string, bytesDone: number): Promise<FileHandle> {
+/** Opens only the owned regular staging file and discards any non-durable tail. */
+export async function writableStaging(file: string, bytesDone: number): Promise<FileHandle> {
   try {
     await guardDirectory(path.dirname(file)); const before = await lstat(file);
     if (!before.isFile() || before.isSymbolicLink() || before.size < bytesDone) throw new DownloadError('NEEDS_RECOVERY');

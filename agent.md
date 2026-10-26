@@ -179,3 +179,5 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 ## Git保护
 
 用户原始暂存 OUCL-Codex-Package.zip、OUCL.txt 必须保留且不纳入工程提交。使用显式路径add和commit --only，Conventional Commits，user.name Li ZeRui；不git add .、reset或push。release、.test-build、node_modules忽略是有意设计。新打包版本使用新目录，避免覆盖已验证产物。
+
+2026-10-26main独立实现并验证后已精确同步mod_loaders：397项395PASS/0FAIL/2原有SKIP、实际下载设置保存重开、32方法14能力Electron通过。完整main证据/0.2.3EXE在D:/MC_start/OUCL-download-main，main:d2521bb；本分支不改为0.2.3交付、不抹加载器/Mod能力。原WIP按SHA256保存在.test-build/download-wip-preserved-20261026/，两份原始资料仍暂存且排除提交。原版重开通用缓存修复本分支此前807e85c已存在；公网严格分段仍因官方ETag/If-Range不满足而回退，不把它写通过。现恢复F/Q失败诊断与Mod原目标。

@@ -1,4 +1,6 @@
 import { ResourceService } from '../services/resources/service.js';
+import { DEFAULT_DOWNLOAD_PREFERENCES } from '../shared/contracts/download-preferences.js';
+import type { DownloadPreferences } from '../shared/contracts/download-preferences.js';
 import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../shared/contracts/resources.js';
 import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
 import { handleResources } from '../ipc/resources.js';
@@ -60,6 +62,8 @@ const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 let resources: ResourceService | undefined;
+let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
+let downloadPreferencesRevision = 0;
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
@@ -116,11 +120,14 @@ else void app.whenReady().then(async () => {
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const vanillaMetadata = new InstallMetadataService(catalog, reader);
+    const initialSettings = await storage.readSettings();
+    downloadPreferences = initialSettings?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
+    downloadPreferencesRevision = initialSettings?.revision ?? 0;
     const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
     const service: InstallerService = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
       new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver()),
       new InstallerPreparationService(vanillaMetadata, loaderClient, new InstallerArtifactResolver()),
-      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable);
+      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable, () => downloadPreferences);
     const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service);
     await service.initialize(); installer = service;
     loaders = new LoaderService(loaderClient, service);
@@ -145,7 +152,7 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
   });
   for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
@@ -191,7 +198,7 @@ else void app.whenReady().then(async () => {
       })();
       javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
       return selection;
-    });
+    }, (preferences, revision) => { if (revision >= downloadPreferencesRevision) { downloadPreferences = Object.freeze({ ...preferences }); downloadPreferencesRevision = revision; } });
     return dispatch(selected, payload, requestId);
   }));
   for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
@@ -233,3 +240,4 @@ app.on('before-quit', event => {
     installerAdapter?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });
+

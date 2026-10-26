@@ -1,4 +1,9 @@
 export const MESSAGES = {
+  downloadSettings: '下载设置', downloadSource: '下载源', downloadOfficial: '官方源（默认）', downloadMirror: 'BMCLAPI 加速源',
+  downloadAttribution: '镜像加速由 BMCLAPI（bangbang93）提供；文件仍按官方摘要完整校验。',
+  downloadFileConcurrency: '同时下载文件数', downloadConnections: '单文件连接数',
+  downloadConcurrencyHint: '范围 1–8，默认 4；总连接最多 16，同主机最多 8。',
+  downloadRangeHint: '官方大文件支持时分段下载；BMCLAPI 使用多文件并发。新设置应用于后续文件。',
   modsTitle: '实例模组', modsReadList: '读取列表', modsCheck: '一键检查', modsChecking: '正在检查模组',
   modsCheckCompleted: '检查完成', modsCheckFailed: '检查失败', modsCheckCancelled: '检查已取消', modsCheckRecovery: '检查任务需要恢复',
   modsReadOnlyHint: '读取真实文件与模组声明；一键检查同时核对 Modrinth 来源和依赖。',
@@ -219,3 +224,4 @@ export const MOD_ISSUE_MESSAGES: Readonly<Record<string, string>> = {
   ARCHIVE_LIMIT: 'JAR 条目、解压量或嵌套层数超过上限。', INVALID_ARCHIVE: 'JAR 文件损坏或结构无法识别。',
   UNSAFE_ARCHIVE: 'JAR 包含不安全的条目结构。', SCAN_TIMEOUT: 'JAR 读取超过时间限制。', ARCHIVE_IO: '无法完整读取文件。',
 };
+

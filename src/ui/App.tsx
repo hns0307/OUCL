@@ -61,8 +61,9 @@ export function App() {
         <div hidden={downloadTab !== 'minecraft'}><div className="download-note"><span className="source-badge">Mojang</span><p>{MESSAGES.uiVanillaDownloadHint}</p></div><div className="install-layout"><VersionCatalog enabled={has('catalog.v1')} selected={versionId} onSelect={setVersionId} /><InstallPanel enabled={has('instances.v1')} loadersEnabled={has('loaders.v1')} rootId={state.rootId} versionId={versionId} /></div></div>
         <div hidden={downloadTab === 'minecraft'}><ResourceBrowser enabled={has('resources.v1') && state.page === 'downloads' && downloadTab !== 'minecraft'} kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
       </div>
-      <div hidden={state.page !== 'announcements'}><AnnouncementsPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} /></div>
+      <div hidden={state.page !== 'announcements'}><AnnouncementsPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
       <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.2.2</span></footer>
     </main></div>
   </div>;
 }
+

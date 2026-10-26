@@ -24,9 +24,10 @@ export interface TransferRecord extends DownloadSpec {
   etag?: string;
   lastModified?: string;
   objectDigest?: string;
+  transportSource?: 'official' | 'bmclapi';
 }
 export type TransferCheckpoint = (expectedRevision: number, next: TransferRecord) => Promise<void>;
-export interface TransferOptions { signal?: AbortSignal; onProgress?: (done: number, total: number) => void }
+export interface TransferOptions { signal?: AbortSignal; onProgress?: (done: number, total: number) => void; officialOnly?: boolean }
 
 /** Restricts first-party Minecraft artifact transport; redirects, query credentials and arbitrary hosts are excluded. */
 export function isArtifactUrl(value: string): boolean {
@@ -42,7 +43,7 @@ export function parseTransferRecord(value: unknown): TransferRecord {
   try {
     if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new DownloadError('INVALID_TRANSFER');
     const row = value as Record<string, unknown>;
-    const optional = ['etag', 'lastModified', 'objectDigest'].filter(key => Object.hasOwn(row, key));
+    const optional = ['etag', 'lastModified', 'objectDigest', 'transportSource'].filter(key => Object.hasOwn(row, key));
     if (!exactObject(row, ['url', 'expected', 'anchor', 'key', 'stagingId', 'revision', 'bytesDone', 'state', ...optional])
       || typeof row.url !== 'string' || !isArtifactUrl(row.url) || typeof row.key !== 'string' || !/^[a-f0-9]{64}$/.test(row.key)
       || typeof row.stagingId !== 'string' || !UUID_PATTERN.test(row.stagingId)
@@ -56,10 +57,12 @@ export function parseTransferRecord(value: unknown): TransferRecord {
       || row.lastModified !== undefined && (typeof row.lastModified !== 'string' || row.lastModified.length > 80
         || !Number.isFinite(Date.parse(row.lastModified)) || new Date(row.lastModified).toUTCString() !== row.lastModified)
       || row.objectDigest !== undefined && (typeof row.objectDigest !== 'string' || !/^[a-f0-9]{64}$/.test(row.objectDigest))
+      || row.transportSource !== undefined && row.transportSource !== 'official' && row.transportSource !== 'bmclapi'
       || (row.state === 'committed') !== (row.objectDigest !== undefined)) throw new DownloadError('INVALID_TRANSFER');
     return { ...facts, url: row.url, key: row.key, stagingId: row.stagingId, revision: row.revision, bytesDone: row.bytesDone,
       state: row.state as TransferRecord['state'], ...(row.etag === undefined ? {} : { etag: row.etag as string }),
       ...(row.lastModified === undefined ? {} : { lastModified: row.lastModified as string }),
+      ...(row.transportSource === undefined ? {} : { transportSource: row.transportSource as 'official' | 'bmclapi' }),
       ...(row.objectDigest === undefined ? {} : { objectDigest: row.objectDigest as string }) };
   } catch { throw new DownloadError('INVALID_TRANSFER'); }
 }

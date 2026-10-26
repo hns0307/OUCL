@@ -307,3 +307,6 @@ h1{font-size:25px}
 .mod-files dd{margin:5px 0 12px;overflow-wrap:anywhere;font-family:monospace}
 .mods-panel code{overflow-wrap:anywhere}
 
+.download-settings{scroll-margin-top:90px}
+.download-settings .setting-row>strong{flex:1;min-width:90px}
+.download-settings .setting-row select{width:min(55%,280px);margin-top:0}
