@@ -21,12 +21,12 @@ test('Fabric predicates, prereleases, opaque versions and Quilt any/all retain d
   }
   assert.equal(matches('^1.20.1', '1.21', 'fabric'), 'satisfied');
   assert.equal(matches('^1.20.1', '2', 'fabric'), 'unsatisfied');
-  for (const [range, version, outcome] of [['^0.15.2', '0.16', 'unsatisfied'], ['^0.0.0', '0.0.1', 'unsatisfied'],
-    ['~1', '1.9', 'satisfied'], ['=1.0', '1', 'satisfied'], ['>1', '2', 'satisfied'], ['<1', '2', 'unsatisfied'],
+  for (const [range, version, outcome] of [['^0.15.2', '0.16', 'satisfied'], ['^0.0.0', '0.0.1', 'satisfied'],
+    ['~1', '1.9', 'unsatisfied'], ['=1.0', '1', 'satisfied'], ['>1', '2', 'satisfied'], ['<1', '2', 'unsatisfied'],
     ['<=1', '1', 'satisfied'], ['>=1-beta.2', '1-beta.10', 'satisfied'], ['>=1-beta', '1', 'satisfied'],
     ['>=1-beta', '1-alpha', 'unsatisfied'], ['>1-a.1', '1-a', 'unsatisfied'], ['>1-1', '1-a', 'satisfied'],
     ['=24w14a', '24w14a', 'satisfied'], ['>24w14a', '24w15a', 'unknown'], ['>=1.x', '1.2', 'unknown'], ['*', '24w14a', 'satisfied'],
-    ['1 || 2', '2', 'satisfied'], ['>=1 && <2', '2', 'unsatisfied']]) assert.equal(matches(range, version!, 'fabric'), outcome, range);
+    ['1 || 2', '2', 'unknown'], ['>=1 && <2', '2', 'unknown']]) assert.equal(matches(range, version!, 'fabric'), outcome, range);
   assert.equal(matches('1.2', '1.3', 'quilt'), 'satisfied');
   assert.equal(matches('1.2', '1.3', 'fabric'), 'unsatisfied');
   assert.equal(matches({ all: [{ any: ['1', '2'] }, '<2'] }, '1.5', 'quilt'), 'satisfied');
@@ -38,6 +38,19 @@ test('Fabric predicates, prereleases, opaque versions and Quilt any/all retain d
   assert.equal(matches('1', '', 'fabric'), 'unknown');
   assert.equal(matches('1', '1', 'fabric', 17), 'unknown');
   assert.equal(matches('>=99999999999999999999999', '1', 'fabric'), 'unknown');
+});
+test('loader shorthand bounds exclude the next series prereleases and preserve unsupported syntax', () => {
+  for (const dialect of ['fabric', 'quilt'] as const) {
+    assert.equal(matches('^0.15.2', '0.99', dialect), 'satisfied');
+    assert.equal(matches('^0.15.2', '1.0-alpha', dialect), 'unsatisfied');
+    assert.equal(matches('~1.2', '1.3-alpha', dialect), 'unsatisfied');
+    assert.equal(matches('~1', '1.0.5', dialect), 'satisfied');
+    assert.equal(matches('>= 1', '2', dialect), 'unknown');
+    assert.equal(matches('1 || 2', '2', dialect), 'unknown');
+  }
+  assert.equal(matches('>=1 <2', '1.5', 'fabric'), 'satisfied');
+  assert.equal(matches('>=1 <2', '1.5', 'quilt'), 'unknown');
+  assert.equal(matches({ all: ['>=1', '<2'] }, '1.5', 'quilt'), 'satisfied');
 });
 test('three-valued aggregation never loses unresolved constraints', () => {
   assert.equal(allCompatibility(['satisfied', 'unknown']), 'unknown');

@@ -52,11 +52,11 @@ function predicate(value: string, version: string): Compatibility {
     case '<': return result(order < 0);
     case '<=': return result(order <= 0);
     case '~': case '^': {
-      const parts = [...expected.parts];
-      const nonzero = parts.findIndex(part => part !== 0);
-      const index = operator === '~' ? Math.min(1, parts.length - 1) : nonzero < 0 ? parts.length - 1 : nonzero;
-      const upper = parts.slice(0, index + 1); upper[index] = upper[index]! + 1;
-      return result(order >= 0 && compare(actual, { parts: upper, prerelease: [] }) < 0);
+      // Fabric/Quilt caret retains the major even for 0.x; tilde retains major+minor.
+      // Compare the retained components directly, excluding the next series' prereleases too.
+      const count = operator === '~' ? 2 : 1;
+      return result(order >= 0 && Array.from({ length: count }, (_, index) => index)
+        .every(index => (actual.parts[index] ?? 0) === (expected.parts[index] ?? 0)));
     }
     default: return 'unknown';
   }
@@ -100,8 +100,8 @@ export function matchesModRange(range: unknown, version: string, dialect: RangeD
   if (typeof range !== 'string' || !range.trim() || range.length > 2048) return 'unknown';
   const text = range.trim(); if (text === '*') return 'satisfied';
   if (dialect === 'maven') return maven(text, version);
-  if (text.includes('||')) return anyCompatibility(text.split('||').map(part => matchesModRange(part, version, dialect, depth + 1)));
-  if (text.includes('&&')) return allCompatibility(text.split('&&').map(part => matchesModRange(part, version, dialect, depth + 1)));
-  const tokens = text.replace(/(>=|<=|>|<|=|~|\^)\s+/g, '$1').split(/\s+/);
+  if (text.includes('|') || text.includes('&') || /[><=~^]\s/.test(text)) return 'unknown';
+  const tokens = text.split(/\s+/);
+  if (dialect === 'quilt' && tokens.length > 1) return 'unknown';
   return allCompatibility(tokens.map(token => predicate(dialect === 'quilt' && numeric(token) ? '^' + token : token, version)));
 }
