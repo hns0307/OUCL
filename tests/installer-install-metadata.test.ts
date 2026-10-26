@@ -10,11 +10,13 @@ import { InstallerPreparationService } from '../src/services/loaders/installer-p
 import { mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
+import { clientMappingsSpec, prepareProcessorWorkspace } from '../src/services/loaders/processor-workspace.js';
 
 const sha1 = (body: string): string => createHash('sha1').update(body).digest('hex');
 const assetsBody = JSON.stringify({ objects: {} }); const assetsSha1 = sha1(assetsBody);
 const baseValue = { id: '1.20.1', mainClass: 'vanilla.Main', type: 'release', javaVersion: { majorVersion: 17 }, libraries: [],
-  downloads: { client: { url: 'https://piston-data.mojang.com/client.jar', sha1: '1'.repeat(40), size: 10 } },
+  downloads: { client: { url: 'https://piston-data.mojang.com/client.jar', sha1: '1'.repeat(40), size: 10 },
+    client_mappings: { url: `https://piston-data.mojang.com/v1/objects/${'9'.repeat(40)}/client.txt`, sha1: '9'.repeat(40), size: 40 } },
   assetIndex: { id: 'assets', url: 'https://piston-meta.mojang.com/assets.json', sha1: assetsSha1, size: Buffer.byteLength(assetsBody) } };
 const baseBody = JSON.stringify(baseValue); const environment = { os: 'windows' as const, arch: 'x64' as const, osVersion: '10', features: {} };
 const baseVersion = resolveClientVersion('1.20.1', { '1.20.1': baseValue }, environment); const assets = parseAssetIndex(JSON.parse(assetsBody) as unknown);
@@ -69,6 +71,18 @@ test('assembler binds extracted documents and every library to the verified inst
     }, new AbortController().signal);
     assert.deepEqual(prepared.metadata.loader, result.loader); assert.equal(calls.length, 1);
     assert.equal(path.dirname(prepared.workspace), path.join(await realpath(root), 'staging/loader-installers'));
+    const copies: string[] = [];
+    const processorPlan = await prepareProcessorWorkspace(prepared.metadata, { plan: rebuilt,
+      objects: new Map(rebuilt.artifacts.map(item => [item.artifactId, { digest: '7'.repeat(64), size: item.size, sourceKey: '8'.repeat(64) }])) },
+    prepared.workspace, { materialize: async (_root, relative, _spec, reference, options) => {
+      copies.push(relative); assert.equal(options.mode, 'copy'); return { relativePath: relative, objectDigest: reference.digest, size: reference.size, mode: 'copy' };
+    } }, { read: async input => input.file.includes('ForgeAutoRenamingTool') ? 'net.minecraftforge.fart.Main'
+      : input.file.includes('jarsplitter') ? 'net.minecraftforge.jarsplitter.ConsoleTool'
+        : input.file.includes('binarypatcher') ? 'net.minecraftforge.binarypatcher.ConsoleTool' : 'net.minecraftforge.installertools.ConsoleTool' }, new AbortController().signal);
+    assert.equal(processorPlan.commands.length, 6); assert.equal(copies.length, tools.length + 2);
+    assert.ok(copies.includes('minecraft/client.jar'));
+    assert.equal(clientMappingsSpec(result).expected.digest, '9'.repeat(40));
+    assert.throws(() => clientMappingsSpec({ ...result, metadataSha1ByVersion: { '1.20.1': '0'.repeat(40) } }));
   } finally { assert.equal(path.dirname(root), path.resolve(tmpdir())); await rm(root, { recursive: true, force: true }); }
   assert.throws(() => assembleInstallerMetadata('forge', '1.20.1', '47.4.28', environment, base, catalog,
     { sourceUrl: spec.url, spec, catalogSha256: '0'.repeat(64) }, { digest: '7'.repeat(64), size: 100, sourceKey: sourceKey(spec.expected, spec.anchor) }, profileBody, versionBody));

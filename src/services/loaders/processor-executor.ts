@@ -21,6 +21,7 @@ interface Dependencies {
   validateArchive: (file: string, sha256: string, size: number, signal?: AbortSignal) => Promise<void>;
   start?: (file: string, args: string[], options: { cwd: string; env: NodeJS.ProcessEnv; shell: false; windowsHide: true; stdio: 'pipe' }) => ChildProcessWithoutNullStreams;
   inspect?: (file: string) => Promise<'missing' | 'file' | 'other'>;
+  prepareMojangMappings?: (command: ProcessorCommandPlan, signal?: AbortSignal) => Promise<void>;
 }
 const MAX_OUTPUT_BYTES = 128 * 1024;
 const MAX_ARTIFACT_BYTES = 1024 ** 3;
@@ -50,7 +51,11 @@ export class InstallerProcessorExecutor {
     for (const command of plan.commands) {
       cancel();
       for (const output of command.outputs) if (await this.inspect(output.file) !== 'missing') throw new ProcessorExecutionError('OUTPUT_INVALID');
-      await this.execute(executable, plan.workspace, command, signal); cancel();
+      if (command.role === 'download-mojang-mappings') {
+        if (!this.dependencies.prepareMojangMappings) throw new ProcessorExecutionError('INVALID_PROCESSOR_PLAN');
+        await this.dependencies.prepareMojangMappings(command, signal);
+      } else await this.execute(executable, plan.workspace, command, signal);
+      cancel();
       const outputs: ProcessorOutputEvidence[] = [];
       for (const output of command.outputs) {
         let result: HashResult; try { result = await this.dependencies.hash.hash(output.file, { maximumBytes: MAX_ARTIFACT_BYTES,

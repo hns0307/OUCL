@@ -53,3 +53,13 @@ test('refuses existing outputs, wrong hashes and excessive child output', async 
     validateArchive: async () => {}, inspect: async () => 'missing', start: () => { queueMicrotask(() => { child.stdout.write(Buffer.alloc(128 * 1024 + 1)); child.close(null, 'SIGTERM'); }); return child as unknown as ChildProcessWithoutNullStreams; } });
   await assert.rejects(overflow.run('java.exe', 17, plan()), error => error instanceof ProcessorExecutionError && error.code === 'OUTPUT_LIMIT');
 });
+
+test('Mojang mappings must use the trusted preparation callback and never spawn a networking tool', async () => {
+  const input = plan(); input.commands[0]!.role = 'download-mojang-mappings';
+  let downloaded = 0; let spawned = 0;
+  const dependencies = { probe: { probe: async () => runtime }, hash: { hash: async () => ({ size: 10, sha1: 'a'.repeat(40), sha256: 'b'.repeat(64) }) },
+    validateArchive: async () => {}, inspect: async () => 'missing' as const, start: () => { spawned++; return new FakeChild() as unknown as ChildProcessWithoutNullStreams; } };
+  await assert.rejects(new InstallerProcessorExecutor(dependencies).run('java.exe', 17, input), { code: 'INVALID_PROCESSOR_PLAN' });
+  await new InstallerProcessorExecutor({ ...dependencies, prepareMojangMappings: async () => { downloaded++; } }).run('java.exe', 17, input);
+  assert.equal(downloaded, 1); assert.equal(spawned, 0);
+});
