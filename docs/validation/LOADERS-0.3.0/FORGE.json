@@ -18,7 +18,9 @@
   "normalExit": "passed; exitCode=0",
   "relaunchMenu": "passed",
   "relaunchNormalExit": "passed; exitCode=0",
-  "testMod": "not-tested",
+  "testMod": "passed; FerriteCore 6.0.1; two actual Mods-menu observations and normal exits 0",
+  "testModVersionId": "DG5Fn9Sz",
+  "testModSha256": "9c2c9396a49e796d88497758caa4637d2bcbb433c318e2dd9cebcffbaf0f6c54",
   "outputs": [
     { "role": "extract-mappings", "size": 5653149, "sha256": "19ae000175bfb58e5b26406c31a0e501bfb40000b078fee2f00ea60a8c7ed453" },
     { "role": "download-mojang-mappings", "size": 8001795, "sha1": "6c48521eed01fe2e8ecdadbd5ae348415f3c47da", "sha256": "67bfc33ef0c7103f002d6ac134f8eddd3d67e2ce45d266e83816d1a2e2c9b01d" },

@@ -18,7 +18,9 @@
   "normalExit": "passed; exitCode=0",
   "relaunchMenu": "passed",
   "relaunchNormalExit": "failed; exitCode=3221226505",
-  "testMod": "not-tested",
+  "testMod": "passed; FerriteCore 7.0.3; two actual Mods-menu observations and normal exits 0; earlier intermittent exit failure retained",
+  "testModVersionId": "x7kQWVju",
+  "testModSha256": "d87ea28262715ebff45b8a82d493e6b468e7a4521bc021df5d88302196d030a8",
   "outputProof": "local-computation; not upstream authentication",
   "outputs": [
     { "role": "extract-mappings", "size": 5601343, "sha256": "8081431dcb7c2428db07582db7135be739fa50b123103b3eaf14b2ae16ea37a6" },

@@ -8,7 +8,7 @@
 
 官方安装器 SHA-1/大小和 Maven sidecar 均验证通过；原版/运行库/处理器输入全部经共享下载校验，计划751,348,666字节。六步客户端链已实际完成，其中 Mojang mappings 由OUCL按原始Mojang版本描述的SHA-1/大小下载，未让Java工具自行下载。
 
-最终实例 `07ee75a2-fa9f-5969-86bd-01bcdb478dfb` 为ready、修订64。再次执行 `prepareLaunch`，重新核验安装器对象及提取文档、已发布下载依赖、全部七个派生产物、native和实例记录，通过。摘要见 `FORGE.json`。后续真实主菜单、游戏内退出0、再次主菜单、再次游戏内退出0均通过，截图`forge-menu.png`及`forge-menu-relaunch.png`；仍未加载额外测试Mod，因此Forge完整矩阵未完成。
+最终实例 `07ee75a2-fa9f-5969-86bd-01bcdb478dfb` 为ready、修订64。再次执行 `prepareLaunch`，重新核验安装器对象及提取文档、已发布下载依赖、全部七个派生产物、native和实例记录，通过。摘要见 `FORGE.json`。真实主菜单、游戏内退出0、再次主菜单、再次游戏内退出0均通过，截图`forge-menu.png`及`forge-menu-relaunch.png`；随后额外测试Mod验证见下节。
 
 官方NeoForge21.1.265/MC1.21.1/Java21也已实际完成939,575,527字节计划、六步客户端链与七项产物校验，实例 `44b298d7-9351-5f8e-b68f-3112437e1d23` 为ready、修订69。摘要见`NEOFORGE.json`；该profile没有上游产物SHA-1，因此本地SHA-256明确只作派生证据。
 
@@ -26,6 +26,16 @@ NeoForge会话`34d44c9e-9d54-4ee4-b120-71e1e31c3cdf`看到主菜单后Quit Game�
 
 真实安装/启动入口现接受四种加载器，固定Fabric0.16.14、Quilt0.29.2/MC1.20.1。Fabric首次扩展入口缺少元数据服务装配，未开始下载即失败，已补齐；随后Fabric与Quilt都在metadata阶段失败，尚未形成ready实例。Fabric分阶段诊断确认官方profile有效，Maven证明请求NETWORK_FAILED；不改用镜像或本地摘要绕过。入口`pnpm typecheck`通过，真实Fabric/Quilt安装仍待补证。
 
+## 额外测试Mod真实加载
+
+使用本轮独立测试根与MIT许可FerriteCore项目uXXizFIs，固定Forge版本DG5Fn9Sz/6.0.1、NeoForge版本x7kQWVju/7.0.3。`official-loader-test-mod.ts`仅允许`.test-build/official-loader-*`，复验实例修订与已记录会话空闲后经现有可信对象下载供应测试文件，实际SHA-1/SHA-512、大小及JAR声明均核验。目标采用COPYFILE_EXCL，已有不同内容停止，不覆盖。该入口是测试夹具供应，不是已完成的玩家确认安装事务。
+
+Forge首次Mod下载NETWORK_FAILED，重试后通过。会话`478ff484-da43-493c-86a4-2e0072722f3b`和`402e97c2-0586-47be-a700-ffab952e9d5c`均实际打开Mods列表，显示Ferrite Core6.0.1，然后Quit Game退出0。截图`forge-ferritecore-mods.png`及`forge-ferritecore-mods-relaunch.png`。实际JAR SHA-256为9c2c9396a49e796d88497758caa4637d2bcbb433c318e2dd9cebcffbaf0f6c54。
+
+NeoForge会话`6e6aa84e-4827-4cab-ba0f-4df6be7e91c9`和`c2a69f5a-a2cd-413c-bc6d-0c285356d5cf`均实际打开Mods列表，显示Ferrite Core7.0.3，然后Quit Game退出0。截图`neoforge-ferritecore-mods.png`及`neoforge-ferritecore-mods-relaunch.png`。实际JAR SHA-256为d87ea28262715ebff45b8a82d493e6b468e7a4521bc021df5d88302196d030a8。前述不带Mod时一次原生退出失败未定位，历史保留；本轮带Mod两次通过不抹去该问题。所有本轮测试游戏与监督进程均已结束。
+
+声明解析按同一实际MANIFEST解析固定`${file.jarVersion}`，没有拿平台版本号替代；FerriteCore的普通Mod/Java/FML要求继续以真实声明为依据，平台依赖数组为空不代表本地无运行环境要求。最新完整pnpm check355项/353通过/0失败/2原有跳过，核心99.12%行/96.88%分支/99.50%函数；日志暂存`.test-build/mod-manifest-check.log`。只读库存、平台适配及声明检查的逐增量证据见docs/contracts/MOD_ARCHIVES.md和MOD_PLATFORM.md，公开Mod事务/UI仍未完成。
+
 真实失败也保留：两次下载分别在约79MB和748MB处遇到 `NETWORK_FAILED`；另有目录网络请求 `CATALOG_UNAVAILABLE`。一轮处理器因旧128KiB日志总量限制触发 `OUTPUT_LIMIT`，没有发布ready。修正为32MiB累计限制，原始文本只排空不保存，复测通过；网络元数据仅针对固定网络错误最多尝试三次。所有失败暂存和已验证对象保留。
 
 ## 自动化验证
@@ -38,6 +48,6 @@ NeoForge会话`34d44c9e-9d54-4ee4-b120-71e1e31c3cdf`看到主菜单后Quit Game�
 
 四种加载器的公共查询/创建入口和下载页已接入；Forge仅开放MC1.20.1系列，NeoForge仅开放MC1.21.1系列，其他组合明确返回尚未接入。新加载器实例固定隔离，所有候选仍标记运行未验证。独立Electron烟测确认27方法/12能力、原版+四加载器选项、无根时禁止安装、四页、设置保存/冲突及小窗口布局通过。
 
-先排查NeoForge重开后的非零退出，再补Fabric/Quilt真实矩阵、四加载器额外测试Mod、Mod检查与确认安装事务及0.3.0交付。
+NeoForge原间歇非零退出继续保留待定位；Forge/NeoForge额外测试Mod两次通过，继续Fabric/Quilt真实矩阵、Mod双重检查与确认安装事务及0.3.0交付。
 
 复现入口：先 `pnpm build`，将 `tests/runtime/official-loader-install.ts` 用esbuild打包为Node ESM，再运行。默认新建独立根并验证Forge；`OUCL_LOADER_TEST_KIND=neoforge`验证NeoForge，`OUCL_LOADER_TEST_WORKSPACE`只接受仓库`.test-build/official-loader-*`下已有的测试根以复用可信缓存。测试保留所有材料，不清空已有实例。
