@@ -17,7 +17,7 @@ export function parseArchiveValidationRequest(value: unknown): ArchiveValidation
 }
 export function parseArchiveValidationReply(value: unknown): ArchiveValidationReply {
   if (exactObject(value, ['version', 'kind', 'entries', 'bytes']) && value.version === 1 && value.kind === 'processor-output-valid'
-    && typeof value.entries === 'number' && Number.isSafeInteger(value.entries) && value.entries >= 1 && value.entries <= 4096
+    && typeof value.entries === 'number' && Number.isSafeInteger(value.entries) && value.entries >= 1 && value.entries <= 65534
     && typeof value.bytes === 'number' && Number.isSafeInteger(value.bytes) && value.bytes >= 1 && value.bytes <= 256 * 1024 ** 2) return value as ArchiveValidationReply;
   if (exactObject(value, ['version', 'kind', 'code']) && value.version === 1 && value.kind === 'processor-output-invalid'
     && typeof value.code === 'string' && NATIVE_CODES.includes(value.code as NativeCode)) return value as ArchiveValidationReply;

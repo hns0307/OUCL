@@ -52,7 +52,7 @@ function excludes(values: readonly string[]): string[] {
     return value;
   });
 }
-function parse(bytes: Buffer, exclude: readonly string[]): Entry[] {
+function parse(bytes: Buffer, exclude: readonly string[], maximumEntries = MAX_ENTRIES): Entry[] {
   if (bytes.length < 22) bad();
   let end = -1;
   for (let offset = bytes.length - 22; offset >= Math.max(0, bytes.length - 22 - 65535); offset--) {
@@ -62,7 +62,7 @@ function parse(bytes: Buffer, exclude: readonly string[]): Entry[] {
   const count = bytes.readUInt16LE(end + 10); const centralSize = bytes.readUInt32LE(end + 12); const central = bytes.readUInt32LE(end + 16);
   if (bytes.readUInt16LE(end + 4) !== 0 || bytes.readUInt16LE(end + 6) !== 0 || bytes.readUInt16LE(end + 8) !== count
     || count === 0xffff || centralSize === 0xffffffff || central === 0xffffffff || central + centralSize !== end) bad();
-  if (count > MAX_ENTRIES) limit();
+  if (count > maximumEntries) limit();
   const entries: Entry[] = []; const names = new Set<string>(); const excluded = excludes(exclude); let cursor = central;
   for (let i = 0; i < count; i++) {
     if (cursor + 46 > end || bytes.readUInt32LE(cursor) !== 0x02014b50) bad();
@@ -268,7 +268,7 @@ export async function validateVerifiedArchive(archive: SelectedArchiveInput): Pr
     if (!bytes || bytes.length !== archive.size || createHash('sha256').update(bytes).digest('hex') !== archive.sha256) {
       throw new NativeArchiveError('HASH_MISMATCH');
     }
-    const entries = parse(bytes, []); let total = 0; let files = 0;
+    const entries = parse(bytes, [], 65534); let total = 0; let files = 0;
     for (const entry of entries) {
       total += entry.size; if (total > MAX_TOTAL) limit();
       if (!entry.directory) { unpack(entry); files++; }

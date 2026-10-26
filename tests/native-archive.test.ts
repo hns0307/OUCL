@@ -5,13 +5,20 @@ import { mkdtemp, mkdir, readFile, readdir, rm, symlink, unlink, writeFile } fro
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { crc32, deflateRawSync } from 'node:zlib';
-import { extractNativeArchives } from '../src/services/install/native-archive.js';
+import { extractNativeArchives, validateVerifiedArchive } from '../src/services/install/native-archive.js';
 import type { NativeArchiveInput } from '../src/services/install/native-archive.js';
 
 interface ZipEntry {
   name: string | Buffer; body?: Buffer; deflate?: boolean; flags?: number; crc?: number; declaredSize?: number;
   external?: number; extra?: Buffer; suffix?: Buffer;
 }
+
+test('processor JAR validation permits class counts above native limits while retaining ZIP checks', async () => fixture(async (_root, output, archive) => {
+  const input = await archive(zip(Array.from({ length: 5000 }, (_, index) => ({ name: `classes/Type${index}.class`, body: Buffer.from('class fixture') }))));
+  assert.deepEqual(await validateVerifiedArchive(input), { entries: 5000, bytes: 65000 });
+  await assert.rejects(extractNativeArchives(output, [input]), { code: 'ARCHIVE_LIMIT' });
+  const empty = await archive(zip([])); await assert.rejects(validateVerifiedArchive(empty), { code: 'INVALID_ARCHIVE' });
+}));
 
 test('actual linked source parents and destination directories never redirect native extraction', async () => fixture(async (root, output, archive) => {
   const input = await archive(zip([{ name: 'native.dll', body: Buffer.from('fixture') }]));
