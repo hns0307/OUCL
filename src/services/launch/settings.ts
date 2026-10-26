@@ -4,6 +4,18 @@ import type { StorageClient } from '../workers/storage-client.js';
 import type { LaunchSettings } from '../storage/settings.js';
 import { ProfileContractError } from '../../shared/contracts/profiles.js';
 import { WorkerError } from '../workers/protocol.js';
+import { isDownloadPreferences } from '../../shared/contracts/download-preferences.js';
+import type { DownloadPreferences } from '../../shared/contracts/download-preferences.js';
+
+/** CAS-updates only download preferences, preserving legacy launch settings and unknown-version refusal. */
+export async function configureDownloads(storage: Pick<StorageClient, 'readSettings' | 'writeSettings'>, expectedRevision: number,
+  preferences: DownloadPreferences): Promise<{ revision: number; data: LaunchSettings }> {
+  if (!isDownloadPreferences(preferences)) throw new ProfileContractError('INVALID_ARGUMENT');
+  const current = await storage.readSettings();
+  if ((current?.revision ?? 0) !== expectedRevision) throw new ProfileContractError('REVISION_CONFLICT');
+  try { return await storage.writeSettings(expectedRevision, parseSettings({ ...(current?.data ?? DEFAULT_SETTINGS), downloads: preferences })); }
+  catch (error) { if (error instanceof WorkerError && error.code === 'REVISION_CONFLICT') throw new ProfileContractError('REVISION_CONFLICT'); throw error; }
+}
 
 /** Validates capacity before CAS commit; no running process or existing game directory is changed. */
 export async function updateSettings(storage: Pick<StorageClient, 'readSettings' | 'writeSettings'>, expectedRevision: number,

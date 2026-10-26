@@ -1,5 +1,17 @@
 # OUCL 下一对话交接
 
+## 最新优先：下载源设置与多线程（2026-10-26）
+
+用户最新明确要求先做下载源设置（官方/镜像）、参考PCL优化多线程，完成这些再继续原工作；TASK_PLAN/DECISIONS顶部已记真实授权。6948e7e为Mod只读UI完整检查点（真实UI证据已交付仓库），原Mod依赖事务尚未实现。自动化prompt已按最新优先级更新并保留其现有PAUSED状态，未擅自激活；本轮人工指令继续开发。
+
+当前下载偏好第一增量：shared/contracts/download-preferences.ts，formatVersion1/source official|bmclapi/fileConcurrency1..8/connectionsPerFile1..8，默认官方4/4。既有launch-settings可选downloads字段，legacy原样读取/保存CAS保留memory/isolation，旧settings:get显式投影避免多字段破坏旧v1。profiles新增settings:downloadsGet/Update及preload两方法。尚未在main接入运行时/广告downloads.v1，无设置UI、无镜像/分段传输实现；不能声称用户请求已完成。完整pnpm check385项383PASS/0FAIL/2原有SKIP，类型/lint/build通过，日志.test-build/download-settings-check.log；真实worker重开/CAS/字段隔离测试通过。新cap类型已定义但main不广告，Electron烟测原30方法期望待随新增2方法更新。
+
+下一增量先做传输：Source-aware wrapper保留官方DownloadSpec.url及trustanchor，镜像只影响网络路由。TransferRecord需受控transportSource标识，切源清除前缀与ETag，镜像每次从0避免不同CDN验证器混用；默认官方legacy允许原断点。官方大文件强ETag/Range分段，4MiB片、阈值8MiB、单文件连接1..8/文件并发1..8/全局连接16和单host8。复用已分配staging的显式位置异步写，fsync后只记录连续完整前缀；尾部恢复截断，禁止多片假完成。取消/失败abort并join所有连接，journal/disk错误优先，不覆盖未知数据。HTTP不支持Range安全回退旧单流。最终对象仍经ObjectStore完整hash。InstallDownloadService并发和DownloadCoordinator目前均固定4，需接preferences getter并提供限额；进度目前只verifiedBytes，需加入实际传输进度但不冒充已校验。HttpTransfer原有完整测试保留。
+
+已读PCL ModNet.vb IsNoSplit/TryBeginThread/Range/SourceFail，只借鉴无复制。PCL本身对bmclapi等不分段，采用多文件并发；BMCLAPI官方文档https://bmclapidoc.bangbang93.com/要求可视署名，libs→/maven、assets→/assets；不以镜像元数据为独立信任。实际只读探测guava31.1-jre：BMCLAPI302至mirrors.cernet.edu.cn再302mirrors.qlu.edu.cn，最终200/2959479字节。拟固定HTTPS镜像host allowlist，未知跳转回退官方。原版client/Java piston对象、已支持Maven可映射，未知保持官方。无新包，不需要引入第三方下载器。
+
+下载设置UI接好后实际切换保存/重开验证、镜像完整可信文件下载、官方大文件真并行/恢复取消/对照吞吐、无Range回退/坏片/跨源/哈希不符/连接上限测试，完整check/现有smoke；然后恢复Fabric/Quilt实机与Mod依赖计划。不要只交付纯配置。官方F/Q最新重试仍CATALOG_UNAVAILABLE（日志.test-build/fabric-retry-20261026.log、quilt-retry-20261026.log），三个官方manifest/profile GET探测200，尚未定位。两个监督器已自然失败/finally关闭，未遗留游戏。测试rootowner恢复标记和旧natives材料保留。当前无push，原两份暂存排除，额度约10%已用/窗口1793032740，继续前再核对。
+
 ## 最新：实例 Mod 只读 UI 已完成（2026-10-26）
 
 继75918d7公共IPC后实现src/ui/ModPanel.tsx，首页所选实例下列表/一键双重检查、实际身份/摘要/来源、问题/未知/范围/依赖链、观察时间/修订。只读，无安装按钮；历史报告不作写入许可。接受超时保留requestId，tasks订阅/取消，分页恢复历史报告只取匹配实例；全局活动任务未知归属会明确标注。任务kind=mod-check所有状态显示检查文案，非安装完成/Java准备。
