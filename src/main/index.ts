@@ -46,6 +46,15 @@ import { InstallerPreparationService } from '../services/loaders/installer-prepa
 import { InstallerArtifactResolver } from '../services/loaders/installer-artifact.js';
 import { INSTANCES_V2_CAPABILITY, INSTANCES_V2_LIST_CHANNEL } from '../shared/contracts/instances-v2.js';
 import { handleInstancesV2 } from '../ipc/instances-v2.js';
+import { MOD_CHANNELS, MODS_CAPABILITY, ModContractError } from '../shared/contracts/mods.js';
+import { handleMods, modDispatcher } from '../ipc/mods.js';
+import { ModTaskService } from '../services/mods/tasks.js';
+import { ModArchiveReader } from '../services/workers/mod-archive-reader.js';
+import { InstalledLanguageReader } from '../services/mods/languages.js';
+import { modInventoryContext } from '../services/mods/context.js';
+import { ModInventoryService } from '../services/mods/inventory.js';
+import { ModInspectionService } from '../services/mods/inspection.js';
+import { ModrinthModClient } from '../services/mods/modrinth.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -57,6 +66,7 @@ let catalog: CatalogService | undefined;
 let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
 let loaders: LoaderService | undefined;
+let mods: ModTaskService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
 const javaSelections = new Map<string, Promise<string | undefined>>();
@@ -119,16 +129,28 @@ else void app.whenReady().then(async () => {
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
     const resourceService = new ResourceService(storage, service); await resourceService.initialize(); resources = resourceService;
-    const resourceTasks = resources; const games = gameAdapter;
+    // A damaged or newer Mod record must not disable existing launch/install capabilities.
+    try {
+      const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
+      const context = modInventoryContext(storage, new InstalledLanguageReader(scanner));
+      const inventory = new ModInventoryService(context, scanner);
+      const modTasks = new ModTaskService(storage, inventory, new ModInspectionService(context, inventory, new ModrinthModClient()));
+      await modTasks.initialize(); mods = modTasks;
+    } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
+    const resourceTasks = resources; const games = gameAdapter; const modTasks = mods;
     installerAdapter = new InstallerAdapter(service, storage, {
-      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id),
-      list: async root => [...await games.list(root), ...await resourceTasks.list(root)],
-      cancel: async (root, id) => { if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
+      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id),
+      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : [])],
+      cancel: async (root, id) => { if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
   });
+  for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
+    return modDispatcher(mods)(selected, payload, requestId);
+  }));
   ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
     const registered = await storage?.readInstallation();
     if (!installer || registered?.data.rootId !== rootId) throw new Error('UNAVAILABLE');
@@ -208,6 +230,6 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
-    installerAdapter?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    installerAdapter?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });

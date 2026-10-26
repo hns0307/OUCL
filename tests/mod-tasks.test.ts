@@ -8,6 +8,8 @@ import { StorageClient } from '../src/services/workers/storage-client.js';
 import { WorkerError } from '../src/services/workers/protocol.js';
 import { ModTaskService } from '../src/services/mods/tasks.js';
 import { ModInventoryError } from '../src/services/mods/inventory.js';
+import { InstallerAdapter } from '../src/ipc/installer-adapter.js';
+import { handleMods, modDispatcher } from '../src/ipc/mods.js';
 import type { ModInventory } from '../src/services/mods/inventory.js';
 import type { ModInspectionService } from '../src/services/mods/inspection.js';
 const entry = new URL('../src/services/workers/entry.js', import.meta.url);
@@ -34,6 +36,33 @@ async function done(service: ModTaskService, taskId: string): Promise<string> {
     if (Date.now() > deadline) throw new Error('TEST_TIMEOUT'); await new Promise(resolve => setTimeout(resolve, 10));
   }
 }
+
+test('public Mod admission shares task listing, reconnect snapshots and joined cancellation', async () => {
+  const { storage } = await fixture(); let entered!: () => void;
+  const scanning = new Promise<void>(resolve => { entered = resolve; });
+  const service = new ModTaskService(storage, { scan: async (_id, _revision, signal) => {
+    entered(); await new Promise<void>(resolve => { if (signal?.aborted) resolve(); else signal?.addEventListener('abort', () => { resolve(); }, { once: true }); });
+    throw new ModInventoryError('CANCELLED');
+  } }, inspection);
+  const unexpected = async (): Promise<never> => { throw new Error('UNEXPECTED_INSTALLER_ACCESS'); };
+  const adapter = new InstallerAdapter({ create: unexpected, list: async () => [], task: unexpected, cancel: unexpected }, storage, service);
+  try {
+    const requestId = randomUUID(); const admitted = await handleMods('mods:list', { contractVersion: 1, requestId, payload: input }, true, randomUUID(), modDispatcher(service));
+    assert.ok(admitted.ok); const taskId = admitted.data.taskId; await scanning;
+    assert.deepEqual(await service.start(requestId, 'list', input), { taskId });
+    const first = adapter.dispatcher(1, () => {});
+    assert.ok((await first('tasks:list', { limit: 20 }, randomUUID())).items.some(item => item.taskId === taskId && item.kind === 'mod-check'));
+    const subscription = await first('tasks:subscribe', { taskId }, randomUUID());
+    assert.equal(subscription.snapshot.kind, 'mod-check'); adapter.removeSender(1);
+    await assert.rejects(first('tasks:get', { taskId }, randomUUID()), { code: 'INVALID_SENDER' });
+    const second = adapter.dispatcher(2, () => {});
+    const reconnect = await second('tasks:subscribe', { taskId }, randomUUID());
+    assert.equal(reconnect.snapshot.taskId, taskId);
+    assert.equal((await second('tasks:control', { taskId, action: 'cancel' }, randomUUID())).state, 'cancelled');
+    assert.equal((await second('tasks:get', { taskId }, randomUUID())).snapshot.state, 'cancelled');
+    assert.deepEqual(await service.report(taskId), { report: null, errorCode: 'CANCELLED' });
+  } finally { adapter.close(); await service.close(); await storage.close(); }
+});
 test('Mod tasks are durable/idempotent, immutable reports reconnect and completed work is not repeated', async () => {
   const { directory, storage } = await fixture(); let scans = 0;
   const service = new ModTaskService(storage, { scan: async () => { scans++; return inventory(); } }, inspection);

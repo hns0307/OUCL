@@ -1,6 +1,6 @@
 # mods.v1 接入记录
 
-状态：用户已明确批准；公开报告与持久任务服务已完成，IPC/preload/界面尚未装配，mods.v1不在握手中广告。安装事务仍未完成。
+状态：用户已明确批准；公开报告、持久任务服务及IPC/preload已接通；mods.v1在服务成功初始化且通用任务适配可用时广告，界面尚未完成。安装事务仍未完成。
 
 公开ModReport格式版本1保存实例标识/修订、观察指纹和时间、list/check模式、本地/合并状态、文件摘要/启用状态、实际Mod声明身份、精确项目/版本身份和有依据的错误/未知。公开数据不含磁盘路径、原始JSON/TOML、任意URL、执行参数或私有对象库记录。只含安全文件名和JAR内部相对依赖链。
 
@@ -12,7 +12,7 @@
 
 ## 请求与持久格式
 
-已定义`mods:list`、`mods:check`：只接收instanceId/expectedRevision，成功返回taskId；`mods:report`只接收taskId，返回完整报告或null与固定errorCode。所有请求contractVersion=1、requestId为UUID、严格字段校验；错误类别/文案/可重试性固定，不接受任意路径、URL、参数或脚本。list只做本地库存观察，check执行双重检查。请求入口拟限15秒，后台扫描独立在持久任务运行，取消/订阅复用tasks.v1，不将超时当作取消成功。任务服务已完成，实际IPC尚未装配，mods.v1暂不在握手中广告。
+已定义`mods:list`、`mods:check`：只接收instanceId/expectedRevision，成功返回taskId；`mods:report`只接收taskId，返回完整报告或null与固定errorCode。所有请求contractVersion=1、requestId为UUID、严格字段校验；错误类别/文案/可重试性固定，不接受任意路径、URL、参数或脚本。list只做本地库存观察，check执行双重检查。请求入口拟限15秒，后台扫描独立在持久任务运行，取消/订阅复用tasks.v1，不将超时当作取消成功。任务服务已完成，实际IPC/preload已接通，mods.v1按服务可用性广告。
 
 任务kind新增mod-check，无SQL表结构变化；原任务仍按既有状态机和幂等表保存。固定`mod-jobs` JSON格式版本1记录当前root、最多1000条任务/请求/摘要/实例修订/模式/阶段/报告修订及受控错误；报告单独存到`mod-report-<taskUUID>`，格式版本1，包含root/task及公开ModReport，最大2MiB。报告仅允许revision0创建一次；JSON原子提交/恢复日志复用已有存储worker，不让主进程直接写元数据。未知格式/字段必须停写，不删除用户数据。历史报告只作观察证据，不能授权未来修改。
 
@@ -20,7 +20,7 @@
 
 ## 持久任务编排
 
-ModTaskService现已实现，仍未装配公开IPC/界面：快速验证当前根/ready实例/修订，先持久接受请求/任务/索引，再异步执行list本地扫描或check双重检查。单次只允许一个扫描，同requestId/同模式与修订返回同taskId，内容改变拒绝；历史最多1000条。任务快照kind=mod-check，进度用阶段/修订变化表示，不虚构下载字节。复用既有任务get/list/cancel和订阅适配形状，实际主进程绑定在下一增量。
+ModTaskService现已实现并装配公开IPC，界面待完成：快速验证当前根/ready实例/修订，先持久接受请求/任务/索引，再异步执行list本地扫描或check双重检查。单次只允许一个扫描，同requestId/同模式与修订返回同taskId，内容改变拒绝；历史最多1000条。任务快照kind=mod-check，进度用阶段/修订变化表示，不虚构下载字节。复用既有任务get/list/cancel和订阅适配形状，主进程已绑定，取消/关闭先等待扫描退出再释放存储。
 
 扫描错误与取消原因必须先持久，再进入failed/cancelled；取消和关闭等待活动读取退出。报告JSON单次原子保存、索引确认后才提交completed。丢失报告应答时保留needsRecovery；重开用有效匹配root/task/实例/修订/模式的JSON证明收敛完成，不重新扫描旧请求。丢失最后SQL应答但SQL/JSON均已提交时只复核证明，不生成第二份报告。没有报告的中断历史保持needsRecovery，不自行跑在变化后的文件上。持久写失败明确标恢复并报告，不能假装清理成功。
 

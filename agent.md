@@ -1,5 +1,13 @@
 # OUCL 下一对话交接
 
+## 最新恢复：Mod 公共接口已接通（2026-10-26）
+
+已核对额度实际重置为0%，resetsAt1793032740，从041ea1b恢复。本段覆盖下方等待状态。当前G2批准不变、分支mod_loaders、原始两份暂存保持排除、不push。新src/ipc/mods.ts严格入口/dispatcher、preload-mods与LauncherBridge、main服务装配和mods.v1能力按初始化及InstallerAdapter实际可用才广告。Mod记录损坏初始化失败只停Mod能力，原有服务继续；关机先Mod任务close等待读取退出后存储最后关闭。通用tasks查询/列表/取消和重连已集成，kind=mod-check。
+
+完整pnpm check383项381 PASS/0 FAIL/2原有SKIP，类型/lint/build通过；独立Electron smoke30方法/13能力含mods.v1、schema/root错误、安全边界及原四页通过。证据docs/validation/MODS-IPC-0.3.0/。新增集成测试public Mod admission验证窗口断开旧sender不可用、新sender重订阅、取消等待扫描退出/原因持久。首次受限检查权限失败，正常权限+独立TEMP最终通过；不是EXE交付。
+
+下一增量实例Mod面板：列表/一键双重检查、证据与未知原因、历史时间/实例修订、任务订阅取消重连，mod-check不要显示Java准备文案。随后递归依赖候选/确认/事务；下方真实Forge/Neo报告和测试根仍有效，Fabric/Quilt官方网络失败待重试，版本仍0.2.2。尚未完成全部目标，保留自动化；开发前重新核对额度，10%以下保存暂停。脚本package/bootstrap-smoke仍对应旧0.2.2交付，最终0.3前需按实际新界面/API调整并重新跑，不能冒充本轮EXE通过。
+
 ## 最新检查点：052e0c9，等待额度实际重置（2026-10-26）
 
 以下为当前唯一续接快照，后文较旧“当前有效交接”均为历史。最近get_usage_limits：5小时已用86%（剩14%）、周13%，resetsAt=1793014620。已保存停止新大增量；后续心跳剩余不足20%安静等待实际重置，10%或以下不得开发，重置后继续最新HEAD，不回退164daf3。自动化oucl保持，完整目标未完成，不停用。分支mod_loaders；原始暂存OUCL-Codex-Package.zip、OUCL.txt始终排除，不push、不碰用户原有游戏数据。
