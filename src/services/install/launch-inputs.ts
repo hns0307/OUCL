@@ -11,6 +11,7 @@ import { guardDirectory, readRegular } from '../storage/files.js';
 import { instanceGameLayout, prepareInstanceNatives, viewTarget } from './instance-files.js';
 import { artifactSpec } from './metadata-object.js';
 import { GameProcessError } from '../launch/process.js';
+import { verifyProcessorOutputs } from '../loaders/processor-outputs.js';
 
 interface Runtime { dataDirectory: string; rootId: string; hashes: HashPool; extractor: NativeExtractor; views: FileViewService }
 /** Reuses the installer's object owner/hash pool, verifying published launch dependencies without opening a second store. */
@@ -28,6 +29,11 @@ export async function verifyLaunchInputs(runtime: Runtime, record: RecordEnvelop
     return expected;
   };
   const directories = { layout, assets: await projection('assets'), libraries: await projection('libraries') };
+  const loader = record.data.metadata?.loader;
+  if (loader?.kind === 'forge' || loader?.kind === 'neoforge') {
+    if (!loader.processors) throw new GameProcessError('NEEDS_RECOVERY');
+    await verifyProcessorOutputs(directories.libraries, loader.processors, runtime.hashes, signal); check();
+  }
   const required = prepared.plan.views.filter(view => view.area !== 'assets' || view.path.startsWith('indexes/'));
   for (const view of required) {
     check();

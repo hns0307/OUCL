@@ -36,6 +36,12 @@ import type { JavaPackage } from '../java/runtime.js';
 import { guardDirectory, hasCode as fileHasCode } from '../storage/files.js';
 import type { InstanceV2Summary } from '../../shared/contracts/instances-v2.js';
 import { composeInstallerInstall, parseStoredInstallerProfile } from '../loaders/installer-compose.js';
+import { InstallerArchiveExtractor } from '../workers/installer-archive-extractor.js';
+import type { InstallerPreparationService } from '../loaders/installer-preparation.js';
+import type { PreparedInstallerMetadata } from '../loaders/installer-install-metadata.js';
+import { processInstallerWorkspace } from '../loaders/installer-processing.js';
+import { publishProcessorOutputs } from '../loaders/processor-outputs.js';
+import type { PersistedLoaderMetadata } from '../storage/instance-records.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -45,10 +51,13 @@ export class InstallerError extends Error {
   }
 }
 export interface CreateInstanceInput { rootId: string; mcVersionId: string; displayName: string; isolation: InstanceSummary['isolation'] }
-export interface CreateLoaderInstanceInput extends CreateInstanceInput { loader: { kind: 'fabric' | 'quilt'; version: string } }
+export interface CreateLoaderInstanceInput extends CreateInstanceInput { loader: { kind: 'fabric' | 'quilt' | 'forge' | 'neoforge'; version: string } }
 type CreateInput = CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader'] };
 interface LiveInstall { task: StoredTask; stage: string; controller: AbortController; done: Promise<void>; changes: Promise<void>; progress?: InstallDownloadProgress; progressWrite?: Promise<void>; failure?: unknown }
-interface Runtime { rootId: string; dataDirectory: string; objects: ObjectStore; hashes: HashPool; extractor: NativeExtractor; coordinator: DownloadCoordinator; downloads: InstallDownloadService; views: FileViewService }
+interface Runtime { rootId: string; dataDirectory: string; objects: ObjectStore; hashes: HashPool; extractor: NativeExtractor; installerExtractor: InstallerArchiveExtractor; coordinator: DownloadCoordinator; downloads: InstallDownloadService; views: FileViewService }
+function isInstallerMetadata(value: PreparedInstallMetadata | PreparedLoaderMetadata | PreparedInstallerMetadata): value is PreparedInstallerMetadata {
+  return 'loader' in value && (value.loader.kind === 'forge' || value.loader.kind === 'neoforge');
+}
 
 /** Stable, separate internal UUIDs bind one instance and its consumers to a durable task identity. */
 export function installIdentity(namespace: string, name: string): string {
@@ -92,7 +101,8 @@ export class InstallerService {
   private closed = false;
   private closing?: Promise<void>;
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService,
-    private readonly loaderMetadata?: LoaderInstallMetadataService) {}
+    private readonly loaderMetadata?: LoaderInstallMetadataService, private readonly installerPreparation?: InstallerPreparationService,
+    private readonly processorJava?: (major: 17 | 21, consumerId: string, signal: AbortSignal) => Promise<string>) {}
 
   /** Publishes an immutable, content-addressed official JVM only after all files verify. Never overwrites an existing runtime. */
   async prepareJava(pack: JavaPackage, consumerId: string, signal: AbortSignal): Promise<string> {
@@ -138,12 +148,12 @@ export class InstallerService {
     this.runtime ??= (async () => {
       const registration = await this.storage.readInstallation(); if (!registration) throw new InstallerError('ROOT_UNAVAILABLE');
       const { rootId, dataDirectory } = registration.data; const store = await ensureChildDirectory(dataDirectory, 'store');
-      const hashes = new HashPool(this.entry); const extractor = new NativeExtractor(this.entry);
+      const hashes = new HashPool(this.entry); const extractor = new NativeExtractor(this.entry); const installerExtractor = new InstallerArchiveExtractor(this.entry);
       try {
         const objects = await ObjectStore.open(store, this.storage, hashes);
         const coordinator = new DownloadCoordinator(new ArtifactTransfer(new HttpTransfer(), this.storage, objects), objects);
-        return { rootId, dataDirectory, hashes, extractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects), views: new FileViewService(store, objects, hashes) };
-      } catch (error) { await hashes.close(); await extractor.close(); throw error; }
+        return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects), views: new FileViewService(store, objects, hashes) };
+      } catch (error) { await hashes.close(); await extractor.close(); await installerExtractor.close(); throw error; }
     })();
     return this.runtime;
   }
@@ -170,6 +180,11 @@ export class InstallerService {
       const runtime = await this.resources(); const record = await this.storage.readInstance(instanceId);
       if (!record || record.data.summary.rootId !== runtime.rootId || record.data.phase !== 'ready') throw new InstallerError('INSTANCE_NOT_FOUND');
       if (record.revision !== expectedRevision) throw new InstallerError('NEEDS_RECOVERY');
+      const loader = record.data.metadata?.loader;
+      if (loader?.kind === 'forge' || loader?.kind === 'neoforge') {
+        if (!this.installerPreparation) throw new InstallerError('NEEDS_RECOVERY');
+        await this.installerPreparation.reopen(loader, { ...runtime, extractor: runtime.installerExtractor }, signal);
+      }
       return verifyLaunchInputs(runtime, record, restoreInstallMetadata(record.data), signal);
     });
     this.fileTail = operation.then(() => {}, () => {}); return operation;
@@ -179,8 +194,9 @@ export class InstallerService {
     const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName, isolation: input.isolation };
     return this.enqueue(requestId, canonical);
   }
-  /** Admits only Fabric/Quilt identities already selected through the strict loader contract. */
+  /** Admits fixed identities selected through the strict loader contract. */
   createLoader(requestId: string, input: CreateLoaderInstanceInput): Promise<{ taskId: string }> {
+    if (input.isolation !== 'on') return Promise.reject(new InstallerError('INSTALL_FAILED'));
     const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
       isolation: input.isolation, loader: { ...input.loader } };
     return this.enqueue(requestId, canonical);
@@ -290,14 +306,22 @@ export class InstallerService {
     try {
       await this.change(live, current => controlTask(current, 'start').execution); check();
       const environment = { os: 'windows' as const, arch: 'x64' as const, osVersion: release(), features: {} };
-      let prepared: PreparedInstallMetadata | PreparedLoaderMetadata;
+      let prepared: PreparedInstallMetadata | PreparedLoaderMetadata | PreparedInstallerMetadata; let processorWorkspace: string | undefined;
       if (!record.loader || record.loader.kind === 'vanilla') prepared = await this.metadata.prepare(record.summary.mcVersionId, environment);
+      else if (record.loader.kind === 'forge' || record.loader.kind === 'neoforge') {
+        if (!this.installerPreparation || !this.processorJava) throw new InstallerError('INSTALL_FAILED');
+        live.stage = 'installer';
+        const result = await this.installerPreparation.prepare(record.loader.kind, record.summary.mcVersionId, record.loader.version, environment,
+          installIdentity(record.summary.instanceId, 'loader-installer'), { ...runtime, extractor: runtime.installerExtractor }, live.controller.signal);
+        prepared = result.metadata; processorWorkspace = result.workspace;
+      }
       else {
         if ((record.loader.kind !== 'fabric' && record.loader.kind !== 'quilt') || !this.loaderMetadata) throw new InstallerError('INSTALL_FAILED');
         prepared = await this.loaderMetadata.prepare(record.loader.kind, record.summary.mcVersionId, record.loader.version, environment, live.controller.signal);
       }
       check();
-      const loader = 'loader' in prepared ? { loader: { kind: prepared.loader.kind, version: prepared.loader.version,
+      const loader: { loader?: PersistedLoaderMetadata } = isInstallerMetadata(prepared) ? { loader: prepared.loader }
+        : 'loader' in prepared ? { loader: { kind: prepared.loader.kind, version: prepared.loader.version,
         profileBody: prepared.loader.profileBody, profileSourceUrl: prepared.loader.profileEvidence.sourceUrl,
         profileSha256: prepared.loader.profileEvidence.sha256, libraries: prepared.loader.libraries.libraries } } : {};
       record = await this.save(record, 'prepared', { metadata: { versionDocuments: prepared.versionDocuments, metadataSha1ByVersion: prepared.metadataSha1ByVersion,
@@ -313,6 +337,16 @@ export class InstallerService {
         } });
       await live.progressWrite; check();
       record = await this.save(record, 'downloaded', { objects: Object.fromEntries(downloaded.objects) });
+      if (isInstallerMetadata(prepared)) {
+        if (!processorWorkspace || !this.processorJava) throw new InstallerError('INSTALL_FAILED');
+        live.stage = 'processors';
+        const executable = await this.processorJava(prepared.loader.kind === 'forge' ? 17 : 21,
+          installIdentity(record.summary.instanceId, 'processor-java'), live.controller.signal); check();
+        const processors = await processInstallerWorkspace(prepared, downloaded, processorWorkspace, executable,
+          installIdentity(record.summary.instanceId, 'mojang-mappings'), this.entry, runtime, live.controller.signal); check();
+        const metadata = record.metadata!;
+        record = await this.save(record, 'downloaded', { metadata: { ...metadata, loader: { ...prepared.loader, processors } } });
+      }
       await this.event(live, { kind: 'progress', bytesDone: prepared.plan.totalBytes, bytesTotal: prepared.plan.totalBytes } as WorkerEvent);
       await this.event(live, { kind: 'transferred' }); live.stage = 'materializing';
       const work = this.fileTail.then(async () => {
@@ -345,6 +379,11 @@ export class InstallerService {
           if (record.receipts!.length % 64 === 0) record = await this.save(record, 'materializing');
         }
         record = await this.save(record, 'materializing'); check();
+        const processorEvidence = record.metadata?.loader;
+        if (processorEvidence?.kind === 'forge' || processorEvidence?.kind === 'neoforge') {
+          if (!processorWorkspace || !processorEvidence.processors) throw new InstallerError('NEEDS_RECOVERY');
+          await publishProcessorOutputs(processorWorkspace, directories.libraries, processorEvidence.processors, runtime.hashes, live.controller.signal); check();
+        }
         const archives = prepared.plan.natives.map(native => {
           const object = downloaded.objects.get(native.artifactId)!;
           return { file: path.join(runtime.dataDirectory, 'store', 'objects', 'sha256', object.digest.slice(0, 2), object.digest), sha256: object.digest, size: object.size, exclude: native.exclude };
@@ -397,7 +436,7 @@ export class InstallerService {
     await Promise.allSettled([...this.live.values()].map(live => live.done));
     const runtime = await this.runtime?.catch(() => undefined);
     if (runtime) {
-      const stopped = await Promise.allSettled([runtime.coordinator.close(), runtime.extractor.close()]);
+      const stopped = await Promise.allSettled([runtime.coordinator.close(), runtime.extractor.close(), runtime.installerExtractor.close()]);
       try { await runtime.objects.close(); } finally { await runtime.hashes.close(); }
       if (stopped.some(result => result.status === 'rejected')) throw new InstallerError('NEEDS_RECOVERY');
     }

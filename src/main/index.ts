@@ -42,6 +42,8 @@ import { LoaderMetadataClient, isOfficialLoaderMetadataUrl } from '../services/l
 import { LoaderMavenResolver } from '../services/loaders/maven.js';
 import { LoaderInstallMetadataService } from '../services/loaders/install-metadata.js';
 import { LoaderService } from '../services/loaders/service.js';
+import { InstallerPreparationService } from '../services/loaders/installer-preparation.js';
+import { InstallerArtifactResolver } from '../services/loaders/installer-artifact.js';
 import { INSTANCES_V2_CAPABILITY, INSTANCES_V2_LIST_CHANNEL } from '../shared/contracts/instances-v2.js';
 import { handleInstancesV2 } from '../ipc/instances-v2.js';
 
@@ -105,11 +107,14 @@ else void app.whenReady().then(async () => {
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const vanillaMetadata = new InstallMetadataService(catalog, reader);
     const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
-    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
-      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver()));
+    const service: InstallerService = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
+      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver()),
+      new InstallerPreparationService(vanillaMetadata, loaderClient, new InstallerArtifactResolver()),
+      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable);
+    const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service);
     await service.initialize(); installer = service;
     loaders = new LoaderService(loaderClient, service);
-    launches = new LaunchService(storage, profiles, service, undefined, undefined, new JavaRuntimeService(profiles, service)); await launches.initialize();
+    launches = new LaunchService(storage, profiles, service, undefined, undefined, processorJava); await launches.initialize();
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });

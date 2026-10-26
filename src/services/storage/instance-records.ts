@@ -291,6 +291,7 @@ export function parseInstanceRecord(value: unknown): InstanceRecord {
     const parsedObjects = value.objects === undefined ? undefined : objects(value.objects);
     const parsedReceipts = value.receipts === undefined ? undefined : receipts(value.receipts, parsedObjects ?? {});
     const metadataLoader = parsedMetadata?.loader;
+    if (phase === 'ready' && (metadataLoader?.kind === 'forge' || metadataLoader?.kind === 'neoforge') && !metadataLoader.processors) invalid();
     if (metadataLoader !== undefined) {
       if (parsedLoader.kind === 'vanilla' || parsedLoader.kind !== metadataLoader.kind || parsedLoader.version !== metadataLoader.version) invalid();
     } else if (parsedLoader.kind !== 'vanilla' && ['prepared', 'downloaded', 'materializing', 'ready'].includes(phase as string)) invalid();
