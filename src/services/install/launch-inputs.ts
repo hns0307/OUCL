@@ -8,7 +8,7 @@ import type { HashPool } from '../workers/hash-pool.js';
 import type { NativeExtractor } from '../workers/native-extractor.js';
 import type { FileViewService } from './file-views.js';
 import { guardDirectory, readRegular } from '../storage/files.js';
-import { instanceGameLayout, prepareInstanceNatives, viewTarget } from './instance-files.js';
+import { ensureChildDirectory, instanceGameLayout, prepareInstanceNatives, viewTarget } from './instance-files.js';
 import { artifactSpec } from './metadata-object.js';
 import { GameProcessError } from '../launch/process.js';
 import { verifyProcessorOutputs } from '../loaders/processor-outputs.js';
@@ -18,7 +18,7 @@ interface Runtime { dataDirectory: string; rootId: string; hashes: HashPool; ext
 export async function verifyLaunchInputs(runtime: Runtime, record: RecordEnvelope<InstanceRecord>, prepared: PreparedInstallMetadata, signal: AbortSignal) {
   const check = (): void => { if (signal.aborted) throw new GameProcessError('CANCELLED'); }; check();
   const layout = instanceGameLayout(runtime.dataDirectory, record.data.summary, prepared);
-  await guardDirectory(layout.gameDirectory); await guardDirectory(layout.versionDirectory); await guardDirectory(layout.nativesDirectory);
+  await guardDirectory(layout.gameDirectory); await guardDirectory(layout.versionDirectory);
   const body = await readRegular(layout.instanceJson);
   if (!body || !isDeepStrictEqual(JSON.parse(body.toString('utf8')) as unknown, record)) throw new GameProcessError('NEEDS_RECOVERY');
   const projection = async (area: 'assets' | 'libraries'): Promise<string> => {
@@ -49,5 +49,7 @@ export async function verifyLaunchInputs(runtime: Runtime, record: RecordEnvelop
     return { file: path.join(layout.storeDirectory, 'objects', 'sha256', object.digest.slice(0, 2), object.digest), sha256: object.digest, size: object.size, exclude: native.exclude };
   });
   await prepareInstanceNatives(layout.versionDirectory, archives, runtime.extractor, runtime.hashes, signal); check();
+  await ensureChildDirectory(layout.versionDirectory, '.oucl-launch', 'jna'); check();
+  await ensureChildDirectory(layout.versionDirectory, '.oucl-launch', 'native-cache'); check();
   return { layout, prepared };
 }

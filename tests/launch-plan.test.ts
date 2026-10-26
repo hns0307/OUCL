@@ -50,6 +50,16 @@ test('Forge module exclusion follows the inherited physical client JAR without c
   assert.equal(result.args.at(-1), '1.20.1-forge-47.4.28');
   assert.ok(result.redactedPreview.includes('-DignoreList=bootstraplauncher,<managed-jar>'));
 });
+test('JNA writes temporary DLLs outside the verified native directory', () => {
+  const input = sample(); input.version.jvmArguments.push('-Djna.tmpdir=${natives_directory}',
+    '-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}', '-Dio.netty.native.workdir=${natives_directory}');
+  const plan = planOfflineLaunch(input);
+  assert.ok(plan.args.includes(`-Djna.tmpdir=${input.layout.versionDirectory}\\.oucl-launch\\jna`));
+  assert.ok(!plan.args.includes(`-Djna.tmpdir=${input.layout.nativesDirectory}`));
+  assert.equal(plan.args.filter(value => value.startsWith('-Djna.tmpdir=')).length, 1);
+  assert.ok(plan.args.includes(`-Dorg.lwjgl.system.SharedLibraryExtractPath=${input.layout.versionDirectory}\\.oucl-launch\\native-cache`));
+  assert.ok(plan.args.includes(`-Dio.netty.native.workdir=${input.layout.versionDirectory}\\.oucl-launch\\native-cache`));
+});
 test('Java mismatch, invalid identities, memory and launcher version fail before execution', () => {
   for (const mutate of [
     (x: LaunchInput) => { x.java.major = 21; }, (x: LaunchInput) => { x.java.javaId = 'path'; },

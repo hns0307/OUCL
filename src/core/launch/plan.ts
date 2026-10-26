@@ -37,13 +37,18 @@ export function planOfflineLaunch(input: LaunchInput): LaunchPlan {
     version_name: version.id, version_type: version.type, client_jar_name: layout.jar.split(/[\\/]/).at(-1)!,
     game_directory: layout.gameDirectory, assets_root: layout.assetsDirectory, assets_index_name: assetId,
     game_assets: input.assets.virtual ? childPath(layout.assetsDirectory, `virtual/${assetId}`) : layout.assetsDirectory,
-    natives_directory: layout.nativesDirectory, library_directory: layout.librariesDirectory,
+    natives_directory: layout.nativesDirectory, jna_directory: childPath(layout.versionDirectory, '.oucl-launch/jna'), library_directory: layout.librariesDirectory,
+    native_work_directory: childPath(layout.versionDirectory, '.oucl-launch/native-cache'),
     classpath: planClasspath(layout, input.classpath), classpath_separator: ';',
     launcher_name: 'OUCL', launcher_version: input.launcherVersion, resolution_width: '854', resolution_height: '480',
   };
   // Forge's module exclusion must follow the inherited JAR's physical name, independent of the selected version ID.
   const jvm = version.jvmArguments.map(value => value.startsWith('-DignoreList=')
-    ? value.replaceAll('${version_name}.jar', '${client_jar_name}') : value);
+    ? value.replaceAll('${version_name}.jar', '${client_jar_name}')
+    : value === '-Djna.tmpdir=${natives_directory}' ? '-Djna.tmpdir=${jna_directory}'
+      : ['-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}', '-Dio.netty.native.workdir=${natives_directory}'].includes(value)
+        ? value.replace('${natives_directory}', '${native_work_directory}') : value);
+  if (!jvm.some(value => value.startsWith('-Djna.tmpdir='))) jvm.push('-Djna.tmpdir=${jna_directory}');
   const classpathFlags = jvm.filter(value => ['-cp', '-classpath', '--class-path'].includes(value));
   if (classpathFlags.length === 0) jvm.push('-cp', '${classpath}');
   else if (classpathFlags.length !== 1 || jvm[jvm.indexOf(classpathFlags[0]!) + 1] !== '${classpath}') throw new LaunchPlanError('ARGUMENT_CONFLICT');
@@ -57,7 +62,7 @@ export function planOfflineLaunch(input: LaunchInput): LaunchPlan {
     || args.some(value => /[\0\r\n]/.test(value))) throw new LaunchPlanError('ARGUMENT_LIMIT');
   const preview = { ...bindings };
   for (const name of ['auth_player_name', 'auth_uuid', 'auth_access_token', 'auth_session', 'auth_xuid', 'clientid']) preview[name] = '<redacted>';
-  for (const name of ['game_directory', 'assets_root', 'game_assets', 'natives_directory', 'library_directory', 'classpath']) preview[name] = '<managed-path>';
+  for (const name of ['game_directory', 'assets_root', 'game_assets', 'natives_directory', 'jna_directory', 'native_work_directory', 'library_directory', 'classpath']) preview[name] = '<managed-path>';
   preview.client_jar_name = '<managed-jar>';
   return { executableRef: java.javaId, args, cwd: layout.gameDirectory, redactedPreview: substituteArguments(tokens, preview) };
 }
