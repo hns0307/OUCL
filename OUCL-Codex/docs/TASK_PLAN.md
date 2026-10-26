@@ -413,3 +413,5 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 2026-10-26恢复原计划的纯逻辑前置：已选平台依赖图校验（32层/256项目、所有固定版本约束、来路证据、循环、已安装精确复用/不升级、未知身份/多文件保留未知）已实现。405测试403PASS/0FAIL/2原有SKIP及完整检查通过，契约docs/contracts/MOD_DEPENDENCY_GRAPH.md；无新IPC/持久格式/依赖/实例写入。候选递归查询、确认事务及0.3.0仍未完成。
 
 2026-10-26真实诊断捕获Fabric profile UND_ERR_CONNECT_TIMEOUT（此前独立同址读取通过），Quilt profile/Maven亦有连接超时。后台profile只对CATALOG_UNAVAILABLE最多3次有限重试，不可信/坏元数据不重试，取消不开始下一次；无新依赖/IPC/存储格式。409测试407PASS/0FAIL/2原有SKIP及完整检查通过。Fabric已进入实际字节下载，官方一次JAR超时保留缓存；BMCLAPI再次尝试已全量校验进入物化，最终ready及菜单仍待。证据docs/validation/LOADERS-NETWORK-20261026/REPORT.md；不关闭四加载器矩阵或0.3.0。
+
+2026-10-26检查点：只读Mod固定版本候选递归服务完成，项目级依赖保留明确候选选择、已装不升级、有界/取消/去重，417测试415PASS/0FAIL/2原有SKIP及完整检查通过；尚无确认IPC/实际安装事务。Fabric实际官方信任根+镜像字节下载ready及测试FerriteCore加载通过，但实机退出4294967295，正常退出/重开未通过；用户物理Esc停止界面自动化，已停止全部窗口输入并保存，监督器已结束。Quilt/完整矩阵/0.3.0仍未完成。证据LOADERS-NETWORK-20261026/REPORT.md及MOD_DEPENDENCY_GRAPH.md。

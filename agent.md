@@ -1,5 +1,24 @@
 # OUCL 下一对话交接
 
+## 最新检查点：main下载完成，mod原计划已恢复（2026-10-26）
+
+用户物理Esc停止Computer Use，本轮立即停止一切窗口输入并保存；不要在没有重新许可的情况下继续接管游戏窗口。随后日志确认本轮Fabric游戏已退出4294967295，监督器退出1并正常关闭owner；不是正常退出通过，也不推断Esc是异常原因。当前没有本轮运行中游戏需要强杀。原自动化保持PAUSED。
+
+main独立工作目录D:/MC_start/OUCL-download-main，最新main:d2521bb。0.2.3小EXE release/OUCL-0.2.3.exe，241152字节，SHA25603206c0af601950d7d33917481b9e72288fea61abc50defa3cc3c5e5cd2b0c52。最终单EXE冷启动25.239s/热启动、同级OUCL.runtime、安全边界26方法11能力通过；原版新根3641制品735814641字节及正式服务两次菜单/Quit退出0通过。源/并发/严格偏好/实际设置UI完成，不含加载器/Mod代码，无新依赖，不push/发布。原版native运行缓存污染的通用修复已在main1bfb8c5验证。main工作区干净。
+
+下载优化精确同步mod_loaders：f5a8fb4，保留全部四加载器/Mod能力；397测试395PASS/0FAIL/2SKIP及32方法14能力Electron、下载设置独立重开通过。原目录先前WIP已逐文件SHA256核对并保存在.test-build/download-wip-preserved-20261026/（copies/originals/tracked.patch/hashes.json）。两份原始暂存OUCL-Codex-Package.zip、OUCL.txt始终保持暂存且排除提交。固定源官方/BMCLAPI、文件/单文件1..8默认4，总16/host8、官方标准强ETag精确Range4MiB分段、镜像单流/未知跳转官方回退/连续前缀fsync/取消join/完整hash发布。官方当前公网旧AzureETag/If-Range不满足条件，安全回退单流；公网实际分段及吞吐提升未通过，不放宽校验。
+
+mod恢复进度：45d9dde纯已选平台依赖图（全来路固定版本约束、32层/256项目、循环、旧项目精确复用、未知身份/文件选择）完成。04ce066官方后台profile网络不可用最多3次有限重试，坏数据不重试、取消不开始下次；实测捕获Fabric profile连接超时、Quilt profile/Maven也有UND_ERR_CONNECT_TIMEOUT，保留失败。最新只读ModCandidateService递归补齐固定版本、项目级候选需明确选择、按项目/版本去重/不升级/取消与体积上限完成（提交hash以git log为准）。417测试415PASS/0FAIL/2原有SKIP、typecheck/lint/build通过，日志.test-build/mod-candidates-check-verified.log。
+
+最新Fabric新测试根.test-build/official-loader-1bwU65，实例1971f881-fa70-5385-9eb2-55a6b862a0cf，Fabric0.16.14/MC1.20.1已真实安装ready并prepareLaunch通过，739685297字节；官方元数据/摘要+BMCLAPI字节。测试FerriteCore unerR5MN（Fabric/Quilt6.0.1、无平台前置）已供应，实际SHA512/大小/声明通过，日志确认FabricLoader0.16.14、Loading5mods、ferritecore6.0.1。UI仅观察首次欢迎/Continue，下一次主菜单核实被物理Esc停止；退出码4294967295，未定位，不标实机矩阵完成。新测试入口一度误加无close接口导致清理失败，修正并保留失败；仅对该已退出自有测试的精确metadata owner350d4c06-aeb3-4874-a8c1-1a0d65d4efc6及objects.owner f2df0a2b-14d5-4273-bf77-d5f2d5ea9e47改名保存恢复材料，未改生产锁保护。完整证据docs/validation/LOADERS-NETWORK-20261026/REPORT.md。
+
+下一最小增量：用户允许后复验Fabric主菜单/正常退出/再次启动并定位非零退出；Quilt官方真实安装/两次运行还缺。Mod尚缺候选组合求解/回溯、下载后真实声明复验、完整双重检查、玩家确认计划IPC/UI、修订/全部哈希/会话复核、一次安装差异与恢复；以及未来分发契约测试适配器和最终0.3.0EXE。不要把只读候选收集/手工测试夹具当作产品安装事务。此前Forge/NeoFerriteCore各两次正常退出证据保留，完整目标未交付。
+
+额度本轮最近已用80%只是历史，继续前必须get_usage_limits；剩10%及以下保存提交/交接暂停，必须实际重置且剩至少20%才恢复。此次停止原因是用户停止Computer Use，不是声称额度已耗尽。所有提交本地、--only明确路径，原资料不混入，不push。
+
+---
+# OUCL 下一对话交接
+
 ## 最新优先：下载源设置与多线程（2026-10-26）
 
 用户最新明确要求先做下载源设置（官方/镜像）、参考PCL优化多线程，完成这些再继续原工作；TASK_PLAN/DECISIONS顶部已记真实授权。6948e7e为Mod只读UI完整检查点（真实UI证据已交付仓库），原Mod依赖事务尚未实现。自动化prompt已按最新优先级更新并保留其现有PAUSED状态，未擅自激活；本轮人工指令继续开发。
@@ -181,3 +200,4 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 用户原始暂存 OUCL-Codex-Package.zip、OUCL.txt 必须保留且不纳入工程提交。使用显式路径add和commit --only，Conventional Commits，user.name Li ZeRui；不git add .、reset或push。release、.test-build、node_modules忽略是有意设计。新打包版本使用新目录，避免覆盖已验证产物。
 
 2026-10-26main独立实现并验证后已精确同步mod_loaders：397项395PASS/0FAIL/2原有SKIP、实际下载设置保存重开、32方法14能力Electron通过。完整main证据/0.2.3EXE在D:/MC_start/OUCL-download-main，main:d2521bb；本分支不改为0.2.3交付、不抹加载器/Mod能力。原WIP按SHA256保存在.test-build/download-wip-preserved-20261026/，两份原始资料仍暂存且排除提交。原版重开通用缓存修复本分支此前807e85c已存在；公网严格分段仍因官方ETag/If-Range不满足而回退，不把它写通过。现恢复F/Q失败诊断与Mod原目标。
+

@@ -28,6 +28,7 @@ const installer = new InstallerService(storage, entry, vanilla, undefined,
 const java = new JavaRuntimeService(profiles, installer); const launches = new LaunchService(storage, profiles, installer, undefined, undefined, java);
 try {
   await installer.initialize(); await launches.initialize();
+  if (process.env.OUCL_LOADER_TEST_JAVA) await profiles.registerJava(process.env.OUCL_LOADER_TEST_JAVA);
   const instance = (await installer.listV2(rootId)).find(item => item.loader.kind === kind && item.state === 'ready');
   if (!instance) throw new Error('READY_TEST_INSTANCE_MISSING');
   const saved = await profiles.list();

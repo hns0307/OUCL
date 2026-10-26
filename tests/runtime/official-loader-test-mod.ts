@@ -16,9 +16,9 @@ import { guardDirectory, hasCode } from '../../src/services/storage/files.js';
 const workspace = path.resolve(process.env.OUCL_LOADER_TEST_WORKSPACE ?? '');
 if (path.dirname(workspace) !== path.resolve('.test-build') || !/^official-loader-[A-Za-z0-9]+$/.test(path.basename(workspace))) throw new Error('INVALID_TEST_WORKSPACE');
 const kind = process.env.OUCL_LOADER_TEST_KIND;
-if (kind !== 'forge' && kind !== 'neoforge') throw new Error('INVALID_TEST_KIND');
-const versionId = kind === 'forge' ? 'DG5Fn9Sz' : 'x7kQWVju';
-const minecraft = kind === 'forge' ? '1.20.1' : '1.21.1';
+if (kind !== 'fabric' && kind !== 'quilt' && kind !== 'forge' && kind !== 'neoforge') throw new Error('INVALID_TEST_KIND');
+const versionId = kind === 'forge' ? 'DG5Fn9Sz' : kind === 'neoforge' ? 'x7kQWVju' : 'unerR5MN';
+const minecraft = kind === 'neoforge' ? '1.21.1' : '1.20.1';
 const entry = path.resolve('dist/workers/entry.cjs'); const storage = await StorageClient.open(entry, path.join(workspace, 'metadata'));
 const reader = new OfficialMetadataReader(); const metadata = new InstallMetadataService(new CatalogService(reader, storage), reader);
 const installer = new InstallerService(storage, entry, metadata);
@@ -46,7 +46,8 @@ try {
   if (!source.startsWith(objectRoot + path.sep)) throw new Error('TEST_OBJECT_ESCAPE');
   const scanner = new ModArchiveReader(entry); const verified = await scanner.read(source);
   if (verified.sha1 !== selected.sha1 || verified.sha512 !== selected.sha512 || verified.size !== selected.size
-    || !verified.archives[0]?.declarations.some(item => item.format === kind && item.mods.some(mod => mod.id === 'ferritecore'))) throw new Error('TEST_MOD_DECLARATION_MISMATCH');
+    || !verified.archives[0]?.declarations.some(item => (item.format === kind || kind === 'quilt' && item.format === 'fabric')
+      && item.mods.some(mod => mod.id === 'ferritecore'))) throw new Error('TEST_MOD_DECLARATION_MISMATCH');
   const context = await modInventoryContext(storage)(instance.instanceId); await checkIdle();
   await guardDirectory(path.dirname(context.modsDirectory));
   try { await mkdir(context.modsDirectory); } catch (error) { if (!hasCode(error, 'EEXIST')) throw error; }
