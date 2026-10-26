@@ -14,7 +14,10 @@
   "publishedInstance": "ready",
   "prepareLaunchReverification": "passed",
   "offlineReopenReverification": "passed",
-  "menu": "not-tested",
+  "menu": "passed",
+  "normalExit": "passed; exitCode=0",
+  "relaunchMenu": "passed",
+  "relaunchNormalExit": "failed; exitCode=3221226505",
   "testMod": "not-tested",
   "outputProof": "local-computation; not upstream authentication",
   "outputs": [

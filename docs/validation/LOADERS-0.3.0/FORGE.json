@@ -14,7 +14,10 @@
   "publishedInstance": "ready",
   "prepareLaunchReverification": "passed",
   "offlineReopenReverification": "passed",
-  "menu": "not-tested",
+  "menu": "passed",
+  "normalExit": "passed; exitCode=0",
+  "relaunchMenu": "passed",
+  "relaunchNormalExit": "passed; exitCode=0",
   "testMod": "not-tested",
   "outputs": [
     { "role": "extract-mappings", "size": 5653149, "sha256": "19ae000175bfb58e5b26406c31a0e501bfb40000b078fee2f00ea60a8c7ed453" },

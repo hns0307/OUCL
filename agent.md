@@ -2,15 +2,17 @@
 
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
-用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26北京时间11:13实际检查5小时窗口已重置为0%后恢复；本次交接前已用48%，周额度已用68%。剩余10%或以下须保存提交并等待实际重置；新一轮剩余不足20%不开发。
+用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。北京时间2026-10-26本次交接前5小时已用89%、周额度74%，窗口resetsAt=1793002434。已保存暂停新大增量；后续心跳剩余不足20%安静等待实际重置，10%或以下不得开发。
+
+最新增量807e85c：真实运行发现JNA/LWJGL/Netty将临时DLL和解包缓存写入受校验natives目录，导致严格复验拒绝重开。已把运行写入分离到实例`.oucl-launch/jna`与`native-cache`，不放宽原native校验。Forge完成主菜单→Quit Game退出0→再次主菜单→退出0，截图已归档。NeoForge首次主菜单/退出0通过，第二次主菜单通过但Quit Game后返回3221226505（0xC0000409），不能标重开正常退出通过；需继续排查原生退出问题。两种测试游戏和监督进程均已结束，无遗留owned游戏。
 
 当前四加载器安装事务与下载页均已接入，最新94ec0db开放Forge/NeoForge候选（仍标运行未验证、固定隔离）；3edf918/44e59be/175553b接入共享安装器下载、对象回读、私有输入、受管Java、处理器、派生产物发布及启动复验。8735f76补齐官方实测发现的32MiB日志预算、有限元数据重试、提取排队；f473f23允许客户端JAR最多65534条目，native仍4096；2f4b9bc修复Forge模块排除列表与继承共享JAR物理文件名不一致问题。**Mod管理、四加载器游戏运行矩阵和0.3.0仍未交付**，版本0.2.2；未触碰用户游戏数据，未push。
 
 依赖评估已完成：smol-toml 1.9.0，BSD-3-Clause，npm解包139963字节、无声明运行依赖；生产依赖audit 0漏洞，许可证检查128包无待审，记录在docs/DEPENDENCIES.md及licenses.json。Fabric/Quilt事务相关的隔离安装、取消、重开和启动链测试20/20通过；公共契约/握手目标测试、typecheck、lint、build及隔离Electron smoke通过，后者确认27方法/12能力和原版/Fabric/Quilt三选项。完整`pnpm test`本轮在受限执行环境再次出现多项既有SQLite/传输失败并长时间不结束，已中断，不能标整库通过；最终交付前须在正常权限与隔离TEMP环境保存完整`pnpm check`结果。
 
-下一最小增量：在下述独立测试根启动Forge/NeoForge到主菜单，逐一正常退出并重开；然后补Fabric/Quilt真实官方安装及四种测试Mod。之后实现有界JAR worker、mods.v1、Modrinth与声明双重检查、确认依赖/文件事务及UI，最后0.3.0小EXE。需要Windows操作时再读computer-use必需guidance/api/confirmations；本轮只读了SKILL.md，未初始化或操作Windows窗口。不能以当前官方安装通过代替游戏或测试Mod通过。
+下一最小增量：先排查NeoForge第二次正常退出的原生异常（latest.log已记录Stopping!，未发现根目录hs_err文件；不要猜根因），复测到连续正常退出，再补Fabric/Quilt真实官方安装及四种额外测试Mod。之后实现有界JAR worker、mods.v1、Modrinth与声明双重检查、确认依赖/文件事务及UI，最后0.3.0小EXE。computer-use的SKILL/guidance/api/confirmations已完整读取且用过，跨会话应按技能恢复；窗口ID均已失效，不复用坐标。测试Java21由既有已测系统运行时复用，窗口app可能不在official-loader路径，应按新返回的NeoForge标题和对应Java窗口唯一定位。
 
-官方实测已通过：独立根`.test-build/official-loader-qAJLBD`（本轮新建、无人使用游戏数据），Forge47.4.28/MC1.20.1/Java17实例`07ee75a2-fa9f-5969-86bd-01bcdb478dfb`修订64，NeoForge21.1.265/MC1.21.1/Java21实例`44b298d7-9351-5f8e-b68f-3112437e1d23`修订69。两种都完成全部官方依赖、实际六步链/七产物、ready提交；随后另起进程将fetch设为必定失败，重开后prepareLaunch通过。还未启动任何MC游戏JVM。Forge安装器SHA-1 `585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge `25ce1d35d619ccfd3080076fa5758c18e11a9778`。证据与失败历史在docs/validation/LOADERS-0.3.0/。
+官方安装实测：独立根`.test-build/official-loader-qAJLBD`，Forge实例`07ee75a2-fa9f-5969-86bd-01bcdb478dfb`修订64，NeoForge实例`44b298d7-9351-5f8e-b68f-3112437e1d23`修订69。两种都完成官方依赖、六步链/七产物、ready提交及断网重开prepareLaunch；本轮实际游戏结果见上文。启动复现：打包tests/runtime/official-loader-launch.ts到.test-build/official-loader-launch.mjs，设置OUCL_LOADER_TEST_WORKSPACE为此独立根、OUCL_LOADER_TEST_KIND为forge或neoforge运行；监督器会等实际游戏退出再释放存储。仅测试Forge的旧natives目录被保留为natives-recovery-20261026、natives-recovery-lwjgl-20261026，未删除，不用于未来启动。证据、截图和失败历史在docs/validation/LOADERS-0.3.0/。
 
 实际恢复记录：首次Forge两次下载NETWORK_FAILED，另有CATALOG_UNAVAILABLE；一轮ART因原128KiB总日志预算终止。均保留材料，重试后成功，没有宽容哈希。NeoForge首轮成功。完整pnpm check已在正常权限+仓库内独立TEMP通过，整库受限环境故障不再是当前阻塞；最新日志见上述证据目录。audit无漏洞、128包无待审、19项bootstrap通过；Electron烟测确认原版+四加载器、27方法/12能力、四页/设置/小窗口均通过。0.3.0尚未打包。
 
