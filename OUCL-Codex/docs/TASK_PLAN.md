@@ -391,3 +391,5 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 2026-10-26 main下载优化当前增量
 
 G2明确批准：下载优先，优化单独落main，完成再同步mod_loaders恢复原计划。工作目录D:/MC_start/OUCL-download-main，main基线aa21d7b；原mod_loaders目录/WIP/两份原始暂存资料保持。偏好与严格IPC迁入，完整check264项262通过/0失败/2原有跳过；UI/传输/新EXE尚未交付。后续按docs/contracts/DOWNLOADS.md完成传输、实际设置UI与真实验证。授权原文及额度暂停规则见DECISIONS最新记录。
+
+2026-10-26 main下载实现检查点：偏好/传输/设置UI/0.2.3小EXE完成，实际官方整批安装与正式启动服务两次菜单/退出0、277项完整检查通过（275PASS/0FAIL/2原有SKIP）。官方公网严格分段条件缺失，仍以安全单流回退，未宣称分段性能验收通过。下一同步限定下载优化及通用native缓存修复到mod_loaders，恢复四加载器/Mod原授权；公网分段补证保持未完成。报告根docs/validation/DOWNLOADS-main/。

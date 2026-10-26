@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "productionLaunchService": true,
+  "sessionId": "bac7aaa3-8408-4508-ba2e-1e48d0c3f7ea",
+  "instanceId": "0d153308-e066-5011-a832-a902e94e2615",
+  "exitCode": 0,
+  "milestones": [
+    "game:identity-bound",
+    "game:renderer-initializing",
+    "game:sound-ready",
+    "game:blocks-atlas-ready",
+    "game:stopping"
+  ]
+}

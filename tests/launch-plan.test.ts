@@ -69,3 +69,14 @@ test('assetIndex id overrides legacy name and additional official argument bindi
   const plan = planOfflineLaunch(input);
   assert.deepEqual(plan.args.slice(-12), ['1.20.1', 'release', '7', input.layout.assetsDirectory, 'legacy', '0', '0', '854', '480', '0.0.0', input.layout.librariesDirectory, ';']);
 });
+
+test('native runtime caches stay private and outside the verified immutable natives', () => {
+  const input = sample(); input.version.jvmArguments.push('-Djna.tmpdir=${natives_directory}',
+    '-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}', '-Dio.netty.native.workdir=${natives_directory}');
+  const result = planOfflineLaunch(input);
+  assert.equal(result.args.filter(value => value.startsWith('-Djna.tmpdir=')).length, 1);
+  assert.ok(result.args.includes(`-Djna.tmpdir=${input.layout.versionDirectory}\\.oucl-launch\\jna`));
+  assert.ok(result.args.includes(`-Dorg.lwjgl.system.SharedLibraryExtractPath=${input.layout.versionDirectory}\\.oucl-launch\\native-cache`));
+  assert.ok(result.args.includes(`-Dio.netty.native.workdir=${input.layout.versionDirectory}\\.oucl-launch\\native-cache`));
+  assert.equal(result.redactedPreview.join(' ').includes('Game Folder'), false);
+});

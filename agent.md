@@ -1,5 +1,24 @@
 # OUCL 下一对话交接
 
+## 2026-10-26 main下载优化当前检查点
+
+用户明确批准下载优先落main，之后同步mod_loaders恢复原四加载器/Mod目标；不push/发布、不碰用户游戏数据，原两份暂存资料必须排除。主工作目录D:/MC_start/OUCL-download-main（main），原D:/MC_start/OUCL仍mod_loaders68542ab及未提交下载WIP，两份原始资料仍暂存。旧C盘download-sources托管目录访问拒绝，未修改/归档。
+
+main提交7fab3b1下载偏好严格IPC、9ac0895有界源与分段、8fd3edd真实设置UI/验证，之后通用native运行缓存隔离修复（以git log为准）。无新依赖，无加载器/Mod代码合入main。偏好官方/BMCLAPI、文件/单文件1..8默认4，全局16/同主机8；官方标准强ETag精确Range时4MiB分段、剩余至少8MiB；镜像单流，切源零前缀/清验证器，fsync连续完整片后记录，取消失败join，最终完整hash发布，镜像hash错只官方重试一次。main启动读取设置且CAS修订单调，实际UI可见署名/保存重开，downloads.v1按Installer可用广告，26方法11能力。
+
+完整pnpm check277项275PASS/0FAIL/2原有SKIP、Electron四页/下载设置独立重开、19引导测试、审计无漏洞/127包许可通过。真实官方1.20.1新根3641制品735814641字节安装；先Oracle shim被拒后真实Java17通过；初次菜单退出0，再发现native缓存污染，保留本轮测试natives-before-cache-fix现场。通用修复仅迁入缓存隔离，不带Forge逻辑；正式LaunchService同实例两次主菜单与Quit均实际观察、退出0，worker/storage关闭，无owned游戏。
+
+0.2.3独立小EXE位于本工作目录release/OUCL-0.2.3.exe，精确大小/摘要见docs/validation/BOOTSTRAP-0.2.3/package.json。候选1/2及旧交付物保留；同级OUCL.runtime不变。首候选冷启动23.51s，最终候选热启动及26方法/11能力、安全边界/释放owner通过；不能将首候选冷启动写作最终载荷冷启动。所有最新证据docs/validation/DOWNLOADS-main/REPORT.md。
+
+未通过项：官方当前节点返回未加引号的旧AzureETag，x-ms-version/no-cache未改变；正确/错误If-Range均200，所以安全回退单流，公网实际分段与吞吐提升尚未观测。不得放宽强ETag条件或把本地HTTP分段测试写成公网成功。此限制不阻断镜像/多文件及已完成原版闭环。完整1A历史世界矩阵不因本轮关闭。
+
+下一步：先完成main本地提交和最终EXE验证，再精确同步下载增量/通用修复到mod_loaders；原WIP须先按精确路径保留为stash/独立补丁，不暂存原两份资料，不能整分支合main。mod已有下载偏好68542ab，不重复带入；installer/downloads/main装配冲突手工适配保留加载器/Mod能力。之后恢复Fabric/Quilt真实安装CATALOG_UNAVAILABLE诊断、四加载器矩阵/Mod依赖确认事务/分发测试适配器及0.3.0，当前仍未交付。原自动化PAUSED保持。
+
+额度继续实际get_usage_limits，剩10%及以下保存提交/交接并暂停；实际重置且剩至少20%才恢复。最后已用55%仅历史参考。原受限环境首轮check存在存储权限失败/长挂测试，正常权限277检查通过，日志未伪造；main根download-preferences-check.log是该自有测试输出，若仍打开可保留，不混入提交。
+
+---
+# OUCL 下一对话交接
+
 ## 当前有效交接：0.2.2 同级运行环境（2026-10-25）
 
 用户明确要求运行时在EXE同级准备环境，缺少下载、完整则直接启动，并美化或隐藏检查/启动界面。批准已记TASK_PLAN顶部/DECISIONS末尾。本增量交付待体验，下面0.2.1是历史系统缓存方案，不再是当前默认。
@@ -105,3 +124,4 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 ## Git保护
 
 用户原始暂存 OUCL-Codex-Package.zip、OUCL.txt 必须保留且不纳入工程提交。使用显式路径add和commit --only，Conventional Commits，user.name Li ZeRui；不git add .、reset或push。release、.test-build、node_modules忽略是有意设计。新打包版本使用新目录，避免覆盖已验证产物。
+
