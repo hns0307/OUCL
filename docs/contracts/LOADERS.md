@@ -1,6 +1,6 @@
 # 加载器元数据契约（增量 1）
 
-状态：2026-10-26 已批准并实现 Fabric/Quilt 元数据、安装事务、公共接口与界面；真实游戏矩阵仍待验证。
+状态：2026-10-26 已批准并接入四加载器元数据、安装事务、公共接口与下载界面；Forge/NeoForge额外测试Mod的两次运行通过，NeoForge历史一次间歇退出异常仍保留。Fabric/Quilt真实官方安装及完整游戏矩阵仍待验证。
 
 ## 信任边界
 
@@ -17,7 +17,7 @@
 - Maven 坐标只允许安全的 group、artifact、version、可选 classifier/extension，并由坐标确定相对路径。
 - 当前允许仓库：Fabric `maven.fabricmc.net`；Quilt `maven.quiltmc.org` 与其明确引用的 Fabric Maven。禁止 HTTP、凭据、查询串、片段和任意镜像替换。
 
-Forge/NeoForge 已完成官方目录、安装器 sidecar、只读提取、严格 profile 解析与受控处理器基础；下载任务和实例提交仍属于后续增量，不由本契约声称已完成。
+Forge/NeoForge 已完成官方目录、安装器 sidecar、只读提取、严格 profile 解析、受控处理器和实例提交，并接入公共创建事务；实际运行证据见LOADERS-0.3.0/REPORT.md。
 
 ## Forge / NeoForge 安装器与处理器边界
 

@@ -1,5 +1,23 @@
 # OUCL 下一对话交接
 
+## 最新检查点：052e0c9，等待额度实际重置（2026-10-26）
+
+以下为当前唯一续接快照，后文较旧“当前有效交接”均为历史。最近get_usage_limits：5小时已用86%（剩14%）、周13%，resetsAt=1793014620。已保存停止新大增量；后续心跳剩余不足20%安静等待实际重置，10%或以下不得开发，重置后继续最新HEAD，不回退164daf3。自动化oucl保持，完整目标未完成，不停用。分支mod_loaders；原始暂存OUCL-Codex-Package.zip、OUCL.txt始终排除，不push、不碰用户原有游戏数据。
+
+本轮主线：02e9aeb四加载器真实测试入口；f6cb194有界JAR worker；d232058官方版本语义修正；5efa1b0/4a5d39f四声明纯解析/worker解释；dc6d8b2官方Maven三次有限网络重试；7652596本地兼容；4c568e1只读库存；7a37b3a Modrinth精确SHA512来源/固定前置/候选；83821aa实际MANIFEST解析固定jarVersion；4d96fe3真实Forge/NeoForge测试Mod；67b8495双重证据；410b9bb真实文件稳定复验和官方语言对象；6e10750公开报告；9d28719版本化Mod任务/报告存储；052e0c9持久可取消检查编排。最新完整pnpm check379项/377 PASS/0 FAIL/2原有SKIP，类型/lint/build通过。日志docs/validation/LOADERS-0.3.0/check-mods-20261026.log；普通bootstrap/依赖审计沿用先前证据，本轮无新依赖，未造新EXE。
+
+真实游戏：Forge47.4.28/MC1.20.1/Java17，FerriteCore6.0.1（项目uXXizFIs，版本DG5Fn9Sz）两次Mods列表与退出0；NeoForge21.1.265/MC1.21.1/Java21，FerriteCore7.0.3（x7kQWVju）两次Mods列表与退出0。各有两张截图；NeoForge此前不带Mod时一次3221226505失败未定位，仍保留。Fabric0.16.14/Quilt0.29.2官方安装metadata/Maven请求失败，未形成ready，不改用镜像或本地摘要绕过。所有候选仍unverified；真实完整FQ矩阵/原版回归及EXE验收未补齐。当前没有遗留owned测试游戏、安装/扫描监督器或存储owner。
+
+独立测试根仍.test-build/official-loader-qAJLBD，rootId00f56e90-c7d1-43e8-b38c-0855a1bd7e45；Forge实例07ee75a2-fa9f-5969-86bd-01bcdb478dfb修订64，Neo实例44b298d7-9351-5f8e-b68f-3112437e1d23修订69。各自mods中只有本轮手动供应的一个测试Mod；供应入口tests/runtime/official-loader-test-mod.ts仅测试用，不是已完成的玩家确认事务。旧Forge natives恢复目录两份保留，未删除、不再用于启动。computer-use技能和三个参考文档已读，sky全局在node_repl；旧窗口ID全部失效，重新list/唯一定位。不要操作用户其他启动器/游戏窗口。
+
+生产能力边界：ModArchiveReader有界只读worker校验实际摘要/CRC/路径、四种JSON/TOML、嵌套/体积/深度；publicModReport严格2MiB/512问题/无机器路径或原文。ModInspectionService先本地扫描、SHA512平台关联、再次完整扫描/环境复验。Forge语言版本47、NeoForge独立FML组件4.0.45来自已校验官方组件，实际日志一致；Java仍null，遇Java版本约束要保留未知，后续补受控实测，不能填major冒充完整版本。JarJar选择、Quilt unless/备选/组限定/插件等目前显式未知。普通未知文件不作为依赖或删除目标。
+
+持久任务真实证明：Forge任务deca0569-fb6e-40ff-84fb-748bbb3ab40c、Neo任务fc72074f-fb40-41cf-b187-eaad15af1017，local/combined均satisfied、固定来源matched。公开导出FORGE_MOD_REPORT.json、NEOFORGE_MOD_REPORT.json；另起进程fetch必定失败后回读同任务/原报告通过。复现：打包tests/runtime/official-mod-inventory.ts，OUCL_LOADER_TEST_WORKSPACE设上述根，OUCL_MOD_TEST_TASKS=1；加OUCL_MOD_TEST_TASKS_REOPEN=1只重开历史报告。默认入口仍另做只读当前库存，历史报告不授权写入。真实语言对象/平台证明详见docs/contracts/MOD_ARCHIVES.md、MOD_PLATFORM.md、MODS.md。
+
+下一最小增量必须是公开接入：实现src/ipc/mods.ts严格sender/envelope处理、ModTaskService dispatcher/适配及preload bridge；main装配ModInventory/Inspection/InstalledLanguageReader/TaskService并initialize，追加InstallerAdapter AdditionalTasks get/list/cancel和关闭顺序。仅在服务/preload均可用时广告mods.v1。现在LauncherBridge/握手能力仍27方法/12能力，mods.v1没有广告；只有shared/contracts/mods.ts定义3通道，尚无公开处理器/桥接/UI。ModTaskService可供tasks.v1订阅形状，当前非终态snapshot.stage=preparing、bytesDone=0（无假下载进度），UI需按mod-check显示模组检查，不沿用Java启动文案。任务模式list只本地、check双重；报告标时间/修订，重连不当作永久写权限。所有IPC方法先schema再双端实现；旧接口和原版保留，测试/实际Electron smoke验证能力/重连/取消/安全后提交。
+
+之后：实例Mod面板/一键检查与资源库“安装到实例”真实方案；Modrinth前置项目/固定版本递归（32层/256项目）、真实modId对应证据、JarJar选择与复杂条件、玩家确认候选/被谁依赖、下载后实际声明复验、修订/哈希/会话复核和一次提交/恢复。游戏运行或会话未知禁止修改，不升级现有Mod/加载器、不覆盖同名不同内容，不删未知Mod/存档/配置。未来分发接口/测试适配器仍需完成，禁真实后台。最终完整质量/引导/依赖许可/UI/EXE与原版回归，0.3.0小EXE保留同级OUCL.runtime及旧交付物；现在package仍0.2.2。新第三方依赖仍需评估批准；smol-toml1.9.0已按原计划批准/审计安装，无新增包。
+
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
 后续最新覆盖：4c568e1只读库存、7a37b3a Modrinth真实SHA512/候选适配、83821aa实际MANIFEST固定jarVersion、4d96fe3 Forge/NeoForge测试Mod各两次真实Mods菜单与退出0、67b8495双重证据规则。当前继续双重检查编排及语言对象复验（本次提交hash以git log为准），最新完整366测试364 PASS/0 FAIL/2原有SKIP，99.02%行/96.98%分支/99.54%函数。真实两个实例均已按SHA512关联FerriteCore项目uXXizFIs，版本分别DG5Fn9Sz与x7kQWVju；实际JAR版本6.0.1/7.0.3，受控语言对象复验后javafml为47/4.0.45，local和combined均satisfied，平台失败=[]。证据MOD_PLATFORM.md、LOADERS-0.3.0/REPORT.md，日志.test-build/mod-runtime-evidence-check.log。最近quota41%（之后还需再查），窗口1793014620；不是暂停状态。
