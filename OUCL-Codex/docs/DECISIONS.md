@@ -284,3 +284,5 @@
 执行交付：0.2.2真实单EXE234496字节（229KiB），EXE同级OUCL.runtime、普通检查/启动隐藏、下载/错误显示简洁窗口实现。262测试260 PASS/0 FAIL/2原有SKIP，19原生引导测试、审计与许可通过；真实单EXE在独立中文/空格目录两次冷启动官方下载及同级URL验证、同目录热启动不新增运行环境验证通过。用户Esc中断的GUI取消验收不记通过，取消信号/清理单测另有证据。旧缓存及用户游戏资料保留，未push/发布，证据见根docs/validation/BOOTSTRAP-0.2.2/REPORT.md；待用户体验验收。
 
 2026-10-26实施记录：main独立下载优化0.2.3完成代码/设置/镜像及原版闭环、最终小EXE冷热验证，严格公网分段未满足条件保留单流；限定改动同步mod_loaders，397测试395PASS/0FAIL/2SKIP及32方法14能力Electron验证通过。遵循原明确授权恢复四加载器/Mod目标，不将0.3.0或公网分段缺项标通过，证据docs/validation/DOWNLOADS-mod/REPORT.md；原WIP备份/原始暂存保留。
+
+2026-10-26实施记录：原批准Mod依赖确认前置的纯平台依赖图校验完成，core无IO、无公开IPC/存储变化/新依赖。405项403PASS/0FAIL/2原有SKIP及完整检查通过。resolved只表示已选平台快照闭包，不代表真实JAR兼容/写入授权，见docs/contracts/MOD_DEPENDENCY_GRAPH.md；原候选服务/确认事务目标继续进行。
