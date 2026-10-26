@@ -2,6 +2,12 @@
 
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
+最新进度覆盖下文旧暂停快照：额度已实际重置，最近5小时已用24%、周4%、resetsAt=1793014620，当前可继续既定授权，不需等旧窗口。02e9aeb记录NeoForge不改参数连续两次主菜单/退出0，旧3221226505间歇失败仍未定位。Fabric0.16.14/Quilt0.29.2官方安装入口已扩展；Fabric有效官方profile已读到，但Maven证明网络持续失败，dc6d8b2三次有限重试后仍CATALOG_UNAVAILABLE；Quilt亦metadata失败，暂没有ready。不要将网络失败改成信任成功或切镜像。
+
+本轮新实现：f6cb194有界只读JAR worker；d232058修复Fabric caret0.x/tilde及不支持运算符语义；5efa1b0四声明纯解析；4a5d39f实际worker内JSON/TOML解释与回复复验；7652596本地兼容报告；随后只读实例库存IO（以git log最新提交为准）。详见docs/contracts/MOD_ARCHIVES.md。生产worker在真实NeoForge官方共享对象读到neoforge21.1.265/javafml[3,]；对象SHA256 c12cf1a6cb0aa7792b13174b06088a4f54d8bcc92f6a32fcb03310b456936847。完整最新pnpm check350项348通过/0失败/2原有跳过，核心99.10%行/96.82%分支/99.50%函数；日志.test-build/mod-inventory-check.log。运行测试入口tests/runtime/official-mod-inventory.ts已验证本轮独立Forge/NeoForge实例目录及空Mod库存，不创建玩家文件。
+
+下一最小增量：先将只读实例库存/本地检查接mods.v1契约和实际UI，再补Modrinth文件哈希关联、平台/本地证据冲突与来源候选。JarJar现在仅发现原文并显式未知，需实现真实声明/选择再计嵌套满足；Quilt unless/备选/组限定、未知插件/变量/排序等目前保守未知。后续依赖递归32层/256项目、确认下载、提交修订/实际哈希/会话复验与恢复仍未实现；四加载器额外测试Mod、Fabric/Quilt真实矩阵及0.3.0EXE都未交付。当前没有遗留owned游戏或安装监督进程。不要重复使用旧窗口ID。参考源码不复制、不push，原始两份暂存继续排除。
+
 用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。北京时间2026-10-26本次交接前5小时已用89%、周额度74%，窗口resetsAt=1793002434。已保存暂停新大增量；后续心跳剩余不足20%安静等待实际重置，10%或以下不得开发。
 
 最新增量807e85c：真实运行发现JNA/LWJGL/Netty将临时DLL和解包缓存写入受校验natives目录，导致严格复验拒绝重开。已把运行写入分离到实例`.oucl-launch/jna`与`native-cache`，不放宽原native校验。Forge完成主菜单→Quit Game退出0→再次主菜单→退出0，截图已归档。NeoForge首次主菜单/退出0通过，第二次主菜单通过但Quit Game后返回3221226505（0xC0000409），不能标重开正常退出通过；需继续排查原生退出问题。两种测试游戏和监督进程均已结束，无遗留owned游戏。

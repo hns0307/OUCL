@@ -16,6 +16,8 @@ worker接入补充：上述四解析器现由有界扫描worker执行，各归�
 
 本地声明检查增量：`checkLocalMods`按实际目标加载器选择声明，Quilt优先自己的声明、缺少时读取Fabric兼容声明；只沿已声明嵌套路径查找。禁用文件/服务端专用Mod不提供客户端依赖；别名保留提供者版本，重复modId/别名和运行时保留身份冲突明确报错。区分运行环境和普通Mod；语言加载器版本独立传入，不能用NeoForge版本冒充FML版本。必需/可选/不兼容/警告分开；可选已存在仍检查范围。JarJar选择、未知条件、范围、版本或缺嵌套归档均保留未知，不自动安装或升级。最多256文件/256实际Mod，报告4096项到限标未知。346测试344通过/0失败/2原有跳过，类型/lint/构建通过；检查仅覆盖本地已知声明，平台双重校验、依赖求解、实例IO/IPC/UI尚待实现。
 
+只读实例IO增量：主进程受管实例解析器从当前注册根、ready记录和现有布局定位mods；扫描不创建目录、不写JAR。最多4096目录项/256个JAR或.jar.disabled条目，顺序worker读取；只保留轻量事实，实例总事实8MiB。保存实际摘要、禁用状态及受控文件标识，扫描前后检查文件元信息、目录项与实例修订；变化返回FILES_CHANGED或REVISION_CONFLICT。其指纹只代表观察，提交仍必须独立重哈希，不得当作长期写权限。默认不推断Java/FML精确版本。350项完整检查348通过/0失败/2原有跳过；`official-mod-inventory.ts`在本轮独立根真实Forge修订64及NeoForge修订69上完成只读定位/空Mod目录检查。空目录的声明检查satisfied仅表示当前没有未满足声明，不是额外测试Mod验收，也没有公开IPC/UI或安装能力。
+
 范围语义复核修正：Fabric的caret即使在0.x也按主版本边界，tilde按主次版本保留，排除下一系列的预发布；不使用npm的0.x特殊规则。Fabric空格AND、数组OR；Quilt使用数组OR或any/all对象，单个版本表达式不擅自解释成多条件。`||`、`&&`与拆开的运算符作为不支持语法返回unknown。依据[Fabric规范](https://wiki.fabricmc.net/documentation:fabric_mod_json_spec)、[固定0.16.14运算符](https://github.com/FabricMC/fabric-loader/blob/0.16.14/src/main/java/net/fabricmc/loader/api/metadata/version/VersionComparisonOperator.java)及[Quilt规范](https://github.com/QuiltMC/rfcs/blob/main/specification/0002-quilt.mod.json.md)独立修正，不复制代码。完整检查330项/328通过/0失败/2原有跳过。
 
 验证：完整`pnpm check`329项/327通过/0失败/2原有环境跳过，类型、lint及构建通过。新增测试覆盖四类声明、嵌套树/摘要、CRC损坏、非法路径、重复项、非UTF8、无声明、目录/缺文件、条目/展开/深度/数量限制、伪造回复、并发拒绝、取消、超时、崩溃及空回复。生产构建worker读取本轮独立测试根的NeoForge21.1.265官方共享对象成功：3,559,126字节、SHA-256 `c12cf1a6cb0aa7792b13174b06088a4f54d8bcc92f6a32fcb03310b456936847`，识别NeoForge TOML、jarjar声明与两个内嵌JAR；先对链接视图扫描返回UNSAFE_ARCHIVE符合边界，测试显式选择受管真实对象后成功。
