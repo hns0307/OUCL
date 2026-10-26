@@ -17,3 +17,5 @@
 传输增量main：SourceTransfer固定路由、官方ParallelHttpTransfer、共享RequestBudget已接InstallerService（含Java/资源使用的同一协调器），无加载器实现迁入。分段4MiB、剩余至少8MiB且精确Range/强ETag；最多16总连接/8同主机，镜像单流、未知跳转回退官方。账本transportSource可选字段向后兼容，切源仅允许无验证器零前缀；错误镜像摘要在对象发布前清零并官方重试一次。取消/失败join所有分段；只fsync连续完整片后checkpoint。传输进度仍与已校验进度分离，公开任务目前继续只展示已校验字节。
 
 完整pnpm check274项272通过/0失败/2原有跳过，含真实本地HTTP乱序分段、取消+稀疏尾恢复、实体改变回退、idle超时、镜像hash失败官方重试及持久切源拒绝。日志.test-build/download-transport-check-final.log；真实公网/设置UI/新EXE验证尚待，不将本地fixture视为公网通过。
+
+设置UI/运行时已接：main实际读取持久偏好、修订单调更新，downloads.v1只随Installer装配可用广告；BMCLAPI可视署名、1..8边界与CAS保存/独立重开已通过。276项274通过/0失败/2原有跳过，真实官方/镜像SHA1、全新原版整批安装与初次菜单/退出0通过。官方公网ETag不满足标准强校验条件，安全单流回退，尚无公网分段成功证据；原版重开暴露既有native缓存污染，需通用修复。完整证据docs/validation/DOWNLOADS-main/REPORT.md，0.2.3保持待最终验收。

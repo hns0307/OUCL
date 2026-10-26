@@ -9,7 +9,7 @@ import type { GameBridge } from './game.js';
 export const CONTRACT_VERSION = 1 as const;
 export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
 export const HANDSHAKE_TIMEOUT_MS = 3000;
-export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1'] as const;
+export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'downloads.v1'] as const;
 export type Capability = typeof CAPABILITIES[number];
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 

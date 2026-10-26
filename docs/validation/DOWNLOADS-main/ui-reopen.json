@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "handshake": {
+    "contractVersion": 1,
+    "requestId": "772a1e94-39a8-41c6-8d7f-5bd9c20d9283",
+    "ok": true,
+    "data": {
+      "selectedVersion": 1,
+      "capabilities": [
+        "roots.v1",
+        "catalog.v1",
+        "instances.v1",
+        "tasks.v1",
+        "downloads.v1",
+        "java.v1",
+        "accounts.v1",
+        "settings.v1",
+        "game.v1",
+        "sessions.v1",
+        "resources.v1"
+      ],
+      "sessionId": "afb4b465-a1d0-469b-afb5-f550204b7a9f"
+    }
+  },
+  "before": {
+    "contractVersion": 1,
+    "requestId": "e08daf87-2935-4291-8ac3-d9c9910086c4",
+    "ok": true,
+    "data": {
+      "revision": 2,
+      "formatVersion": 1,
+      "source": "bmclapi",
+      "fileConcurrency": 6,
+      "connectionsPerFile": 3
+    }
+  },
+  "actual": {
+    "contractVersion": 1,
+    "requestId": "e08daf87-2935-4291-8ac3-d9c9910086c4",
+    "ok": true,
+    "data": {
+      "revision": 2,
+      "formatVersion": 1,
+      "source": "bmclapi",
+      "fileConcurrency": 6,
+      "connectionsPerFile": 3
+    }
+  },
+  "noNode": true,
+  "methods": [
+    "listInstances",
+    "createInstance",
+    "listTasks",
+    "getTask",
+    "controlTask",
+    "subscribeTask",
+    "getDownloadSettings",
+    "updateDownloadSettings",
+    "updateSettings",
+    "chooseJava",
+    "listAccounts",
+    "createOfflineAccount",
+    "getSettings",
+    "launchGame",
+    "stopGame",
+    "listSessions",
+    "getSession",
+    "searchResources",
+    "resourceVersions",
+    "downloadResource",
+    "resourceLibrary",
+    "openResourceLibrary",
+    "catalog",
+    "listRoots",
+    "chooseRoot",
+    "handshake"
+  ]
+}

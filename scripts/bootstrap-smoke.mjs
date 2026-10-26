@@ -46,7 +46,7 @@ try {
     return { connected:!!document.querySelector('[data-status="connected"]'), noNode:typeof require==='undefined' && typeof process==='undefined', handshake:await window.oucl.handshake(), methods:Object.keys(window.oucl) };
   })()`, awaitPromise: true, returnByValue: true });
   assert.equal(result.exceptionDetails, undefined); const value = result.result.value;
-  assert.ok(value.connected && value.noNode && value.handshake.ok); assert.equal(value.methods.length, 24); assert.equal(value.handshake.data.capabilities.length, 10);
+  assert.ok(value.connected && value.noNode && value.handshake.ok); assert.equal(value.methods.length, 26); assert.equal(value.handshake.data.capabilities.length, 11);
   if (!testHarness) {
     const expectedApplication = path.join(await realpath(runtimeRoot), `app-${JSON.parse(await readFile(path.join(evidence, 'package.json'), 'utf8')).appHash}`, 'dist/renderer/index.html');
     assert.equal(decodeURIComponent(new URL(page.url).pathname).replace(/^\//, '').replaceAll('/', path.sep).toLowerCase(), expectedApplication.toLowerCase());
@@ -68,3 +68,4 @@ try {
   // No user/game window is touched; test profiles remain available as evidence.
   if (child.exitCode === null) child.kill();
 }
+

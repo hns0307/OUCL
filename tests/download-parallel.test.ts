@@ -137,3 +137,28 @@ test('parallel idle timeout cancels a stalled body even when a mock transport ig
   await assert.rejects(new ParallelHttpTransfer(request, new RequestBudget(), 1000, 20).run(state.file, state.current, state.save, {}, 3), { code: 'TIMEOUT' });
   assert.equal(cancelled, 3); assert.equal(state.current.bytesDone, 0);
 });
+
+test('switching away from a mirror truncates its prefix and never sends its validators to the official host', async () => {
+  const state = await fixture(); await writeFile(state.file, bytes.subarray(0, 1024));
+  Object.assign(state.current, { bytesDone: 1024, transportSource: 'bmclapi', etag: '"mirror"' });
+  const request: typeof fetch = async (url, init) => {
+    assert.equal(String(url), state.current.url); assert.equal(new Headers(init?.headers).get('if-range'), null);
+    return new Response(bytes, { status: 200, headers: { ETag: '"official"' } });
+  };
+  const result = await new SourceTransfer(() => ({ ...DEFAULT_DOWNLOAD_PREFERENCES, connectionsPerFile: 1 }), request).run(state.file, state.current, state.save);
+  assert.equal(state.checkpoints[0], 0); assert.equal(result.transportSource, 'official'); assert.deepEqual(await readFile(state.file), bytes);
+});
+
+test('weak or missing ETags and malformed range lengths never enable parallel writes', async () => {
+  for (const tag of ['W/"weak"', null, '"strong"']) {
+    const state = await fixture(); let calls = 0;
+    const request: typeof fetch = async (_url, init) => {
+      calls++; const range = new Headers(init?.headers).get('range');
+      if (range) return new Response(new Uint8Array([0]), { status: 206, headers: {
+        'Content-Range': `bytes 0-0/${bytes.length}`, 'Content-Length': tag === '"strong"' ? '2' : '1', ...(tag ? { ETag: tag } : {}) } });
+      return new Response(bytes);
+    };
+    await new ParallelHttpTransfer(request).run(state.file, state.current, state.save);
+    assert.equal(calls, 2); assert.deepEqual(await readFile(state.file), bytes);
+  }
+});

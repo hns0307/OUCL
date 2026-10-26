@@ -7,8 +7,7 @@ export function bmclapiArtifactUrl(value: string): string | undefined {
   if (['piston-data.mojang.com', 'launcher.mojang.com'].includes(url.hostname) && url.pathname.startsWith('/objects/')) return `https://bmclapi2.bangbang93.com${url.pathname}`;
   return undefined;
 }
-const MIRROR_HOSTS = ['bmclapi2.bangbang93.com', 'mirrors.cernet.edu.cn', 'mirrors.qlu.edu.cn', 'mirrors.ustc.edu.cn',
-  'mirrors.nju.edu.cn', 'mirror.nju.edu.cn', 'mirrors.tuna.tsinghua.edu.cn', 'mirrors.bfsu.edu.cn', 'mirrors.sjtug.sjtu.edu.cn'];
+const MIRROR_HOSTS = ['bmclapi2.bangbang93.com', 'mirrors.cernet.edu.cn', 'mirrors.qlu.edu.cn'];
 /** Unknown CDN nodes are refused and the caller may fall back to the original official URL. */
 export function isMirrorArtifactUrl(value: string): boolean {
   try {

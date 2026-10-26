@@ -293,3 +293,6 @@ h1{font-size:25px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}
 }
 
+.download-settings{scroll-margin-top:90px}
+.download-settings .setting-row>strong{flex:1;min-width:90px}
+.download-settings .setting-row select{width:min(55%,280px);margin-top:0}

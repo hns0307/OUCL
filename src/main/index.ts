@@ -43,6 +43,7 @@ const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 let resources: ResourceService | undefined;
 let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
+let downloadPreferencesRevision = 0;
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
@@ -96,7 +97,9 @@ else void app.whenReady().then(async () => {
     profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
-    downloadPreferences = (await storage.readSettings())?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
+    const initialSettings = await storage.readSettings();
+    downloadPreferences = initialSettings?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
+    downloadPreferencesRevision = initialSettings?.revision ?? 0;
     const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader), () => downloadPreferences);
     await service.initialize(); installer = service;
     launches = new LaunchService(storage, profiles, service, undefined, undefined, new JavaRuntimeService(profiles, service)); await launches.initialize();
@@ -112,7 +115,7 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : [])] : []);
   });
   for (const channel of RESOURCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleResources(channel, input, trustedSender(event), randomUUID(), (async (selected: ResourceChannel, payload: ResourcePayloads[ResourceChannel], requestId: string) => {
     if (!resources || !storage) throw new ResourceContractError('UNAVAILABLE');
@@ -145,7 +148,7 @@ else void app.whenReady().then(async () => {
       })();
       javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
       return selection;
-    }, preferences => { downloadPreferences = Object.freeze({ ...preferences }); });
+    }, (preferences, revision) => { if (revision >= downloadPreferencesRevision) { downloadPreferences = Object.freeze({ ...preferences }); downloadPreferencesRevision = revision; } });
     return dispatch(selected, payload, requestId);
   }));
   for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {

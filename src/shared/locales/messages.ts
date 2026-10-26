@@ -1,4 +1,9 @@
 export const MESSAGES = {
+  downloadSettings: '下载设置', downloadSource: '下载源', downloadOfficial: '官方源（默认）', downloadMirror: 'BMCLAPI 加速源',
+  downloadAttribution: '镜像加速由 BMCLAPI（bangbang93）提供；文件仍按官方摘要完整校验。',
+  downloadFileConcurrency: '同时下载文件数', downloadConnections: '单文件连接数',
+  downloadConcurrencyHint: '范围 1–8，默认 4；总连接最多 16，同主机最多 8。',
+  downloadRangeHint: '官方大文件支持时分段下载；BMCLAPI 使用多文件并发。新设置应用于后续文件。',
   uiPreviewOnly: '开发预览 · 示例公告',
   uiHome: '首页',
   uiDownloads: '下载',
@@ -46,7 +51,7 @@ export const MESSAGES = {
   uiSave: '保存设置',
   uiSaved: '已保存',
   uiAbout: '关于 OUCL',
-  uiVersion: 'OUCL 0.2.2 · Windows x64',
+  uiVersion: 'OUCL 0.2.3 · Windows x64',
   uiAboutDescription: '面向高校社团的 Minecraft Java 版启动器。当前提供原版离线启动与 Modrinth 资源下载。',
   uiResourceNotice: '下载至资源库，不自动安装。Mod 与光影需自行配置兼容加载器和运行组件。',
   uiSearchResources: '搜索资源名称',
@@ -176,3 +181,4 @@ export const MESSAGES = {
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;
+

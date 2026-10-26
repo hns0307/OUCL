@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "fixture": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "instanceId": "0d153308-e066-5011-a832-a902e94e2615",
+  "sessionId": "91772c8e-75f2-4dc7-b3ab-4bc8fa34078f",
+  "spawnObserved": true,
+  "dependenciesReverified": 66,
+  "nativeTreeReverified": true,
+  "accountIsValidationFixture": true,
+  "productionAccountPolicyFrozen": false,
+  "menuVisuallyVerified": false,
+  "worldVisuallyVerified": false,
+  "state": "exited",
+  "exitCode": 0,
+  "milestones": [
+    "game:identity-bound",
+    "game:renderer-initializing",
+    "game:sound-ready",
+    "game:blocks-atlas-ready",
+    "game:stopping"
+  ],
+  "timestamp": "2026-10-26T12:53:36.461Z"
+}
