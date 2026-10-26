@@ -18,9 +18,11 @@ type InstallObjects = Pick<ObjectStore, 'lookup' | 'createStaging' | 'commit' | 
 /** Executes bounded live installation downloads; durable installation/task associations belong to the task service. */
 export class InstallDownloadService {
   constructor(private readonly downloads: Pick<DownloadCoordinator, 'request'>, private readonly objects: InstallObjects,
-    private readonly concurrency = 4) {
-    if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 16) throw new DownloadError('INVALID_TRANSFER');
+    private readonly concurrency: number | (() => number) = 4) {
+    this.limit();
   }
+  private limit(): number { const value = typeof this.concurrency === 'number' ? this.concurrency : this.concurrency();
+    if (!Number.isSafeInteger(value) || value < 1 || value > 16) throw new DownloadError('INVALID_TRANSFER'); return value; }
 
   /** Returns only after every artifact and independent proof is committed, or all owned consumers have joined. */
   async run(metadata: PreparedInstallMetadata, options: { signal?: AbortSignal; onProgress?: (value: InstallDownloadProgress) => void; consumerId?: (artifactId: string) => string } = {}): Promise<DownloadedInstall> {
@@ -64,7 +66,7 @@ export class InstallDownloadService {
           }
         } catch (error) { failures.push(error); controller.abort(); }
       };
-      await Promise.all(Array.from({ length: Math.min(this.concurrency, queue.length) }, lane));
+      await Promise.all(Array.from({ length: Math.min(this.limit(), queue.length) }, lane));
       const failure = failures.find(error => !(error instanceof DownloadError && error.code === 'CANCELLED')) ?? failures[0];
       if (failure !== undefined) throw failure;
       cancelled(); return { plan, objects };

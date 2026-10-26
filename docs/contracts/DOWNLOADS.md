@@ -13,3 +13,7 @@
 镜像路由依据：[BMCLAPI官方文档](https://bmclapidoc.bangbang93.com/)的assets/maven映射、可见来源要求和归属说明。2026-10-26实测BMCLAPI guava31.1-jre路由为302→mirrors.cernet.edu.cn→mirrors.qlu.edu.cn→200；仅HTTPS且固定受控主机集合，未知节点回退官方，禁止任意跳转。不要加入已关闭或未验证的镜像。
 
 旧Fabric/Quilt本轮重试均metadata/CATALOG_UNAVAILABLE，三个官方端点独立探测200；尚未定位，不因下载优化提案而标为安装通过。
+
+传输增量main：SourceTransfer固定路由、官方ParallelHttpTransfer、共享RequestBudget已接InstallerService（含Java/资源使用的同一协调器），无加载器实现迁入。分段4MiB、剩余至少8MiB且精确Range/强ETag；最多16总连接/8同主机，镜像单流、未知跳转回退官方。账本transportSource可选字段向后兼容，切源仅允许无验证器零前缀；错误镜像摘要在对象发布前清零并官方重试一次。取消/失败join所有分段；只fsync连续完整片后checkpoint。传输进度仍与已校验进度分离，公开任务目前继续只展示已校验字节。
+
+完整pnpm check274项272通过/0失败/2原有跳过，含真实本地HTTP乱序分段、取消+稀疏尾恢复、实体改变回退、idle超时、镜像hash失败官方重试及持久切源拒绝。日志.test-build/download-transport-check-final.log；真实公网/设置UI/新EXE验证尚待，不将本地fixture视为公网通过。

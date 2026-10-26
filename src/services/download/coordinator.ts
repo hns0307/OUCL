@@ -39,10 +39,13 @@ export class DownloadCoordinator {
   private active = 0;
   private closed = false;
   constructor(private readonly physical: PhysicalTransfer, private readonly attestor: SourceAttestor,
-    private readonly concurrency = 4, private readonly maxJobs = 128, private readonly maxConsumers = 1024) {
-    if (![concurrency, maxJobs, maxConsumers].every(Number.isSafeInteger) || concurrency < 1 || concurrency > 16
-      || maxJobs < concurrency || maxJobs > 4096 || maxConsumers < 1 || maxConsumers > 10000) throw new CoordinatorError('INVALID_CONSUMER');
+    private readonly concurrency: number | (() => number) = 4, private readonly maxJobs = 128, private readonly maxConsumers = 1024) {
+    const limit = this.limit();
+    if (![maxJobs, maxConsumers].every(Number.isSafeInteger)
+      || maxJobs < limit || maxJobs > 4096 || maxConsumers < 1 || maxConsumers > 10000) throw new CoordinatorError('INVALID_CONSUMER');
   }
+  private limit(): number { const value = typeof this.concurrency === 'number' ? this.concurrency : this.concurrency();
+    if (!Number.isSafeInteger(value) || value < 1 || value > 16) throw new CoordinatorError('INVALID_CONSUMER'); return value; }
 
   /** Registers a stable internal consumer; UI event unsubscribe must never call cancel. */
   request(spec: DownloadSpec, options: ConsumerOptions): DownloadConsumer {
@@ -79,7 +82,7 @@ export class DownloadCoordinator {
   private pump(): void {
     if (this.closed) return;
     for (const job of this.jobs.values()) {
-      if (this.active >= this.concurrency) break;
+      if (this.active >= this.limit()) break;
       if (!job.cycle && !job.object && this.demand(job)) this.start(job);
     }
   }

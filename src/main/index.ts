@@ -1,4 +1,6 @@
 import { ResourceService } from '../services/resources/service.js';
+import { DEFAULT_DOWNLOAD_PREFERENCES } from '../shared/contracts/download-preferences.js';
+import type { DownloadPreferences } from '../shared/contracts/download-preferences.js';
 import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../shared/contracts/resources.js';
 import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
 import { handleResources } from '../ipc/resources.js';
@@ -40,6 +42,7 @@ const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 let resources: ResourceService | undefined;
+let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
@@ -93,7 +96,8 @@ else void app.whenReady().then(async () => {
     profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
-    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader));
+    downloadPreferences = (await storage.readSettings())?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
+    const service = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), new InstallMetadataService(catalog, reader), () => downloadPreferences);
     await service.initialize(); installer = service;
     launches = new LaunchService(storage, profiles, service, undefined, undefined, new JavaRuntimeService(profiles, service)); await launches.initialize();
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
@@ -141,7 +145,7 @@ else void app.whenReady().then(async () => {
       })();
       javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
       return selection;
-    });
+    }, preferences => { downloadPreferences = Object.freeze({ ...preferences }); });
     return dispatch(selected, payload, requestId);
   }));
   for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {

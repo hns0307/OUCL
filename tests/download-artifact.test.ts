@@ -125,3 +125,15 @@ test('verified cache cannot hide a contradictory authoritative committed object 
   }, f.objects);
   await assert.rejects(transfer.run(spec), { code: 'NEEDS_RECOVERY' });
 }));
+
+test('a mirror hash mismatch retries the official bytes once without publishing bad content', async () => fixture(async f => {
+  const { SourceTransfer } = await import('../src/services/download/source-transfer.js');
+  const { DEFAULT_DOWNLOAD_PREFERENCES } = await import('../src/shared/contracts/download-preferences.js');
+  const calls: string[] = [];
+  const request: typeof fetch = async input => { const url = String(input); calls.push(url); return full(url.includes('bmclapi') ? Buffer.alloc(payload.length, 99) : payload); };
+  const transfer = new ArtifactTransfer(new SourceTransfer(() => ({ ...DEFAULT_DOWNLOAD_PREFERENCES, source: 'bmclapi' }), request), f.client, f.objects);
+  const object = await transfer.run(spec);
+  assert.equal(object.digest, createHash('sha256').update(payload).digest('hex'));
+  assert.equal(calls.length, 2); assert.ok(calls[0]!.includes('bmclapi')); assert.equal(calls[1], spec.url);
+  assert.equal((await f.client.getTransfer(key))?.transportSource, 'official');
+}));
