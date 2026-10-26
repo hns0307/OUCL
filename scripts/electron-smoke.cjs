@@ -55,7 +55,7 @@ async function run(window) {
         loaderChoices: [...document.querySelectorAll('.install-confirm label select')[0].options].map(option => option.value) };
     })()`);
     assert.equal(confirmation.selected, true); assert.equal(confirmation.disabledWithoutRoot, true);
-    assert.deepEqual(confirmation.loaderChoices, ['vanilla', 'fabric', 'quilt']);
+    assert.deepEqual(confirmation.loaderChoices, ['vanilla', 'fabric', 'quilt', 'forge', 'neoforge']);
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);

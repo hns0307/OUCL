@@ -54,6 +54,8 @@ export const MESSAGES = {
   uiAllLoaders: '全部运行组件',
   loaderVersion: '加载器版本',
   loaderStable: '稳定版',
+  loaderUnverified: '此组合尚未完成游戏运行验证。加载器实例使用独立游戏目录。',
+  loaderVersionUnsupported: '当前 Minecraft 与加载器组合尚未接入。',
   uiSearch: '搜索',
   uiDiscover: '发现资源',
   uiResults: '项结果',

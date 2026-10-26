@@ -36,7 +36,7 @@ const ERRORS: Record<LoaderCode, { category: AppError['category']; key: MessageK
   UNAVAILABLE: { category: 'system', key: 'unavailable', retryable: true },
   NETWORK_FAILED: { category: 'network', key: 'resourceNetworkFailed', retryable: true },
   UNTRUSTED_METADATA: { category: 'network', key: 'untrustedManifest', retryable: false },
-  VERSION_UNSUPPORTED: { category: 'minecraft', key: 'unavailable', retryable: false },
+  VERSION_UNSUPPORTED: { category: 'minecraft', key: 'loaderVersionUnsupported', retryable: false },
   ROOT_UNAVAILABLE: { category: 'disk', key: 'rootUnavailable', retryable: true },
   NAME_CONFLICT: { category: 'biz', key: 'invalidArgument', retryable: false },
   INSTALL_FAILED: { category: 'minecraft', key: 'unavailable', retryable: true },

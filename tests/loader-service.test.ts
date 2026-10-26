@@ -18,11 +18,27 @@ test('loader service rechecks official catalog identity before transactional adm
   await assert.rejects(dispatch('loaders:create', { ...input, loaderVersion: '0.20.2' }, id), { code: 'VERSION_UNSUPPORTED' });
 });
 
-test('loader service keeps unimplemented processor families explicit', async () => {
+test('loader service rejects unimplemented Minecraft series before network access', async () => {
   let calls = 0; const service = new LoaderService({ catalog: async () => { calls++; throw new Error('must not call'); } },
     { createLoader: async () => { calls++; return { taskId: id }; } });
   const dispatch = service.dispatcher();
-  await assert.rejects(dispatch('loaders:versions', { loader: 'forge', minecraftVersion: '1.20.1' }, id), { code: 'VERSION_UNSUPPORTED' });
-  await assert.rejects(dispatch('loaders:create', { rootId: id, loader: 'neoforge', minecraftVersion: '1.21.1', loaderVersion: '21.1.1', displayName: 'NeoForge', isolation: 'on' }, id), { code: 'VERSION_UNSUPPORTED' });
+  await assert.rejects(dispatch('loaders:versions', { loader: 'forge', minecraftVersion: '1.21.1' }, id), { code: 'VERSION_UNSUPPORTED' });
+  await assert.rejects(dispatch('loaders:create', { rootId: id, loader: 'neoforge', minecraftVersion: '1.20.1', loaderVersion: '21.1.1', displayName: 'NeoForge', isolation: 'on' }, id), { code: 'VERSION_UNSUPPORTED' });
   assert.equal(calls, 0);
+});
+
+test('both processor families expose unverified candidates and preserve exact isolated identities', async () => {
+  for (const kind of ['forge', 'neoforge'] as const) {
+    const minecraftVersion = kind === 'forge' ? '1.20.1' : '1.21.1'; const loaderVersion = kind === 'forge' ? '47.4.28' : '21.1.265';
+    let accepted = 0; const service = new LoaderService({ catalog: async () => ({ evidence: { sourceUrl: 'https://official.invalid', sha256: 'a'.repeat(64) },
+      items: [{ kind, minecraftVersion, loaderVersion, stable: true }] }) }, { createLoader: async (_request, input) => {
+      assert.deepEqual(input.loader, { kind, version: loaderVersion }); assert.equal(input.isolation, 'on'); accepted++; return { taskId: id };
+    } });
+    const dispatch = service.dispatcher();
+    assert.deepEqual(await dispatch('loaders:versions', { loader: kind, minecraftVersion }, id), { items: [{ loaderVersion, stable: true, support: 'unverified' }] });
+    const input = { rootId: id, loader: kind, minecraftVersion, loaderVersion, displayName: kind, isolation: 'on' as const };
+    assert.deepEqual(await dispatch('loaders:create', input, id), { taskId: id });
+    await assert.rejects(dispatch('loaders:create', { ...input, isolation: 'off' }, id), { code: 'INVALID_ARGUMENT' });
+    assert.equal(accepted, 1);
+  }
 });

@@ -13,7 +13,12 @@ function mapped(error: unknown): LoaderContractError {
   return new LoaderContractError('UNAVAILABLE');
 }
 
-/** Public Fabric/Quilt adapter. Forge families remain explicit unsupported results until their processors exist. */
+function requireMatrix(input: LoaderPayloads['loaders:versions']): void {
+  if (input.loader === 'forge' && input.minecraftVersion !== '1.20.1'
+    || input.loader === 'neoforge' && input.minecraftVersion !== '1.21.1') throw new LoaderContractError('VERSION_UNSUPPORTED');
+}
+
+/** Revalidates the selected official identity before admitting the common installation transaction. */
 export class LoaderService {
   constructor(private readonly metadata: Pick<LoaderMetadataClient, 'catalog'>,
     private readonly installer: Pick<InstallerService, 'createLoader'>) {}
@@ -29,15 +34,17 @@ export class LoaderService {
   }
 
   private async versions(input: LoaderPayloads['loaders:versions']): Promise<LoaderData['loaders:versions']> {
-    if (input.loader === 'forge' || input.loader === 'neoforge') throw new LoaderContractError('VERSION_UNSUPPORTED');
+    requireMatrix(input);
     const catalog = await this.metadata.catalog(input.loader, input.minecraftVersion);
     return { items: catalog.items.map(item => ({ loaderVersion: item.loaderVersion, stable: item.stable, support: 'unverified' })) };
   }
 
   private async create(requestId: string, input: LoaderPayloads['loaders:create']): Promise<LoaderData['loaders:create']> {
-    if (input.loader === 'forge' || input.loader === 'neoforge') throw new LoaderContractError('VERSION_UNSUPPORTED');
+    requireMatrix(input);
+    if (input.isolation !== 'on') throw new LoaderContractError('INVALID_ARGUMENT');
     const catalog = await this.metadata.catalog(input.loader, input.minecraftVersion);
-    if (!catalog.items.some(item => item.loaderVersion === input.loaderVersion)) throw new LoaderContractError('VERSION_UNSUPPORTED');
+    if (!catalog.items.some(item => item.kind === input.loader && item.minecraftVersion === input.minecraftVersion
+      && item.loaderVersion === input.loaderVersion)) throw new LoaderContractError('VERSION_UNSUPPORTED');
     return this.installer.createLoader(requestId, { rootId: input.rootId, mcVersionId: input.minecraftVersion, displayName: input.displayName,
       isolation: input.isolation, loader: { kind: input.loader, version: input.loaderVersion } });
   }
