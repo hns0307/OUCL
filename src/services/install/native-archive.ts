@@ -281,3 +281,26 @@ export async function validateVerifiedArchive(archive: SelectedArchiveInput): Pr
     throw new NativeArchiveError('ARCHIVE_IO');
   }
 }
+
+/** Inspects a local Mod ZIP in a worker, validates every CRC and retains only bounded metadata/nested JARs.
+ * No entry is executed or written. The caller shares the remaining decompression budget across nesting.
+ */
+export function inspectModArchiveBytes(bytes: Buffer, documents: readonly string[], remainingBytes: number): {
+  bytes: number; selected: Array<{ name: string; body: Buffer }>;
+} {
+  if (bytes.length > MAX_ARCHIVE || documents.length > 8 || !Number.isSafeInteger(remainingBytes)
+    || remainingBytes < 0 || remainingBytes > MAX_TOTAL) limit();
+  const entries = parse(bytes, [], 65534); checkPaths(entries);
+  const total = entries.reduce((sum, entry) => sum + entry.size, 0);
+  if (total > remainingBytes) limit();
+  const selected: Array<{ name: string; body: Buffer }> = []; let selectedBytes = 0;
+  for (const entry of entries) {
+    if (entry.directory) continue;
+    const metadata = documents.includes(entry.name); const nested = entry.name.endsWith('.jar');
+    if (metadata && entry.size > 1024 ** 2) limit();
+    if (metadata || nested) { selectedBytes += entry.size; if (selectedBytes > MAX_ARCHIVE || selected.length >= 72) limit(); }
+    const body = unpack(entry);
+    if (metadata || nested) selected.push({ name: entry.name, body });
+  }
+  return { bytes: total, selected };
+}

@@ -20,6 +20,8 @@ import { parseLaunchProfiles } from '../storage/launch-profiles.js';
 import { parseResourceLibrary } from '../storage/resources.js';
 import { parseSettings } from '../storage/settings.js';
 import { parseGameSessions } from '../storage/game-sessions.js';
+import { ModArchiveError, scanModArchive } from '../mods/archive.js';
+import { parseModArchiveRequest } from './mod-archive-protocol.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -105,7 +107,14 @@ async function hashFile(file: string, maximumBytes: number): Promise<void> {
 void (async () => {
   const input: unknown = workerData;
   if (typeof input !== 'object' || input === null || !('version' in input) || input.version !== 1 || !('kind' in input)) throw new WorkerError('INVALID_MESSAGE');
-  if (input.kind === 'native-extract') {
+  if (input.kind === 'mod-archive') {
+    try {
+      const request = parseModArchiveRequest(input);
+      port.postMessage({ version: 1, kind: 'mod-archive-result', result: await scanModArchive(request.file) });
+    } catch (error) { port.postMessage({ version: 1, kind: 'mod-archive-failed', code: error instanceof ModArchiveError ? error.code : 'INVALID_ARCHIVE' }); }
+    port.close();
+  }
+  else if (input.kind === 'native-extract') {
     try {
       let request;
       try { request = parseNativeRequest(input); } catch { throw new NativeArchiveError('INVALID_ARCHIVE'); }
