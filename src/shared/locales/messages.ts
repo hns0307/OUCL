@@ -1,4 +1,7 @@
 export const MESSAGES = {
+  modsChanged: '模组文件已更改，请重新检查。', modsLimit: '模组数量或检查报告超过当前处理上限。',
+  modsUnsafe: '模组目录包含无法安全读取的文件，请检查链接或文件类型。', modsBusy: '另一次模组检查正在进行，请稍候或取消。',
+  modsCancelled: '模组检查已取消。', modsScanFailed: '无法读取模组，请检查文件和目录权限。', modsTaskMissing: '找不到这次模组检查，请重新检查。',
   uiPreviewOnly: '开发预览 · 示例公告',
   uiHome: '首页',
   uiDownloads: '下载',

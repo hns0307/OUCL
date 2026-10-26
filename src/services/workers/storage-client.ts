@@ -14,7 +14,8 @@ import type { TransferRecord } from '../download/types.js';
 import type { InstanceIndex, InstanceRecord } from '../storage/instance-records.js';
 import type { LaunchProfiles } from '../storage/launch-profiles.js';
 import type { GameSessions } from '../storage/game-sessions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary> };
+import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -79,7 +80,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -96,6 +97,21 @@ export class StorageClient {
       try { this.worker.postMessage(request); }
       catch { this.pending.delete(request.id); clearTimeout(timer); reject(new WorkerError('INVALID_MESSAGE')); }
     });
+  }
+
+  /** Reads the fixed resource ownership index. */
+  async readModJobs(): Promise<RecordEnvelope<ModJobs> | undefined> { return (await this.request({ kind: 'mod-jobs:get' })).modJobs; }
+  async writeModJobs(expectedRevision: number, data: ModJobs): Promise<RecordEnvelope<ModJobs>> {
+    const result = (await this.request({ kind: 'mod-jobs:set', expectedRevision, data })).modJobs;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  async readModReport(taskId: string): Promise<RecordEnvelope<StoredModReport> | undefined> {
+    return (await this.request({ kind: 'mod-report:get', taskId })).modReport;
+  }
+  /** Immutable reports have one atomic JSON commit and cannot overwrite an existing observation. */
+  async writeModReport(taskId: string, data: StoredModReport): Promise<RecordEnvelope<StoredModReport>> {
+    const result = (await this.request({ kind: 'mod-report:set', taskId, expectedRevision: 0, data })).modReport;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
   }
 
   /** Reads the fixed resource ownership index. */

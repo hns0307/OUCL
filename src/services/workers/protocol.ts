@@ -1,7 +1,9 @@
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import type { Execution } from '../../core/task/machine.js';
 import type { StoredTask, TaskKind } from '../storage/tasks.js';
-import { parseExecution } from '../storage/tasks.js';
+import { parseExecution, TASK_KINDS } from '../storage/tasks.js';
+import { parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
+import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
 import type { IndexedObject } from '../storage/object-index.js';
 import { parseInstallation } from '../storage/installation.js';
 import type { Installation } from '../storage/installation.js';
@@ -60,13 +62,17 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'settings:set'; expectedRevision: number; data: LaunchSettings }
   | { kind: 'resources:get' }
   | { kind: 'resources:set'; expectedRevision: number; data: ResourceLibrary }
+  | { kind: 'mod-jobs:get' }
+  | { kind: 'mod-jobs:set'; expectedRevision: number; data: ModJobs }
+  | { kind: 'mod-report:get'; taskId: string }
+  | { kind: 'mod-report:set'; taskId: string; expectedRevision: 0; data: StoredModReport }
   | { kind: 'close' };
 export interface StorageRequest { version: 1; id: string; command: StorageCommand }
 export interface HashResult { size: number; sha1: string; sha256: string }
 export interface HashJobRequest { version: 1; kind: 'hash-job'; jobId: string; file: string; maximumBytes: number }
 export type WorkerReply = { version: 1; kind: 'ready' }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary> }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport> }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult }
@@ -93,7 +99,13 @@ export function parseHashJobRequest(value: unknown): HashJobRequest {
 export function parseStorageRequest(value: unknown): StorageRequest {
   requireMessage(object(value) && exact(value, ['version', 'id', 'command']) && value.version === 1 && uuid(value.id) && object(value.command));
   const command = value.command;
-  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get' || command.kind === 'instances:get' || command.kind === 'profiles:get' || command.kind === 'sessions:get' || command.kind === 'settings:get' || command.kind === 'resources:get') requireMessage(exact(command, ['kind']));
+  if (command.kind === 'close' || command.kind === 'object:clear' || command.kind === 'installation:get' || command.kind === 'catalog:get' || command.kind === 'instances:get' || command.kind === 'profiles:get' || command.kind === 'sessions:get' || command.kind === 'settings:get' || command.kind === 'resources:get' || command.kind === 'mod-jobs:get') requireMessage(exact(command, ['kind']));
+  else if (command.kind === 'mod-jobs:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseModJobs(command.data); }
+  else if (command.kind === 'mod-report:get') requireMessage(exact(command, ['kind', 'taskId']) && uuid(command.taskId));
+  else if (command.kind === 'mod-report:set') {
+    requireMessage(exact(command, ['kind', 'taskId', 'expectedRevision', 'data']) && uuid(command.taskId) && command.expectedRevision === 0);
+    requireMessage(parseStoredModReport(command.data).taskId.toLowerCase() === command.taskId.toLowerCase());
+  }
   else if (command.kind === 'resources:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseResourceLibrary(command.data); }
   else if (command.kind === 'settings:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseSettings(command.data); }
   else if (command.kind === 'sessions:set') { requireMessage(exact(command, ['kind', 'expectedRevision', 'data']) && integer(command.expectedRevision)); parseGameSessions(command.data); }
@@ -117,7 +129,7 @@ export function parseStorageRequest(value: unknown): StorageRequest {
   else {
     requireMessage(uuid(command.ownerId));
     if (command.kind === 'accept') requireMessage(exact(command, ['kind', 'ownerId', 'requestId', 'taskKind', 'payloadDigest'])
-      && uuid(command.requestId) && typeof command.taskKind === 'string' && ['download', 'install', 'java', 'launch', 'stop'].includes(command.taskKind)
+      && uuid(command.requestId) && typeof command.taskKind === 'string' && (TASK_KINDS as readonly string[]).includes(command.taskKind)
       && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
     else if (command.kind === 'get') requireMessage(exact(command, ['kind', 'ownerId', 'taskId']) && uuid(command.taskId));
     else if (command.kind === 'update') {
@@ -130,7 +142,7 @@ export function parseStorageRequest(value: unknown): StorageRequest {
 
 function parseTask(value: unknown): StoredTask {
   requireMessage(object(value) && exact(value, ['taskId', 'ownerId', 'kind', 'execution']) && uuid(value.taskId) && uuid(value.ownerId)
-    && typeof value.kind === 'string' && ['download', 'install', 'java', 'launch', 'stop'].includes(value.kind));
+    && typeof value.kind === 'string' && (TASK_KINDS as readonly string[]).includes(value.kind));
   return { taskId: value.taskId, ownerId: value.ownerId, kind: value.kind as TaskKind, execution: parseExecution(value.execution) };
 }
 
@@ -152,8 +164,17 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance, value.profiles, value.sessions, value.settings, value.resources].filter(item => item !== undefined).length <= 1
-        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance']), ...(value.profiles === undefined ? [] : ['profiles']), ...(value.sessions === undefined ? [] : ['sessions']), ...(value.settings === undefined ? [] : ['settings']), ...(value.resources === undefined ? [] : ['resources'])]));
+      requireMessage([value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance, value.profiles, value.sessions, value.settings, value.resources, value.modJobs, value.modReport].filter(item => item !== undefined).length <= 1
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance']), ...(value.profiles === undefined ? [] : ['profiles']), ...(value.sessions === undefined ? [] : ['sessions']), ...(value.settings === undefined ? [] : ['settings']), ...(value.resources === undefined ? [] : ['resources']), ...(value.modJobs === undefined ? [] : ['modJobs']), ...(value.modReport === undefined ? [] : ['modReport'])]));
+      let modJobs: RecordEnvelope<ModJobs> | undefined; let modReport: RecordEnvelope<StoredModReport> | undefined;
+      if (value.modJobs !== undefined) {
+        requireMessage(object(value.modJobs) && exact(value.modJobs, ['schemaVersion', 'revision', 'data']) && value.modJobs.schemaVersion === 1 && integer(value.modJobs.revision) && value.modJobs.revision > 0);
+        modJobs = { schemaVersion: 1, revision: value.modJobs.revision, data: parseModJobs(value.modJobs.data) };
+      }
+      if (value.modReport !== undefined) {
+        requireMessage(object(value.modReport) && exact(value.modReport, ['schemaVersion', 'revision', 'data']) && value.modReport.schemaVersion === 1 && value.modReport.revision === 1);
+        modReport = { schemaVersion: 1, revision: 1, data: parseStoredModReport(value.modReport.data) };
+      }
       let resources: RecordEnvelope<ResourceLibrary> | undefined;
       if (value.resources !== undefined) {
         requireMessage(object(value.resources) && exact(value.resources, ['schemaVersion', 'revision', 'data']) && value.resources.schemaVersion === 1 && integer(value.resources.revision) && value.resources.revision > 0);
@@ -202,7 +223,7 @@ export function parseReply(value: unknown): WorkerReply {
       }
       return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
         ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }), ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }),
-        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }) };
+        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

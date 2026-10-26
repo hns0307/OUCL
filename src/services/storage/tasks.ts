@@ -5,10 +5,11 @@ import type { Execution } from '../../core/task/machine.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { StorageError } from './files.js';
 
-export type TaskKind = 'download' | 'install' | 'java' | 'launch' | 'stop';
+export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check'] as const;
+export type TaskKind = typeof TASK_KINDS[number];
 export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
 const STATES = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
-const KINDS = ['download', 'install', 'java', 'launch', 'stop'];
+const KINDS: readonly string[] = TASK_KINDS;
 
 /** Checks the exact private execution format rather than accepting arbitrary serialized objects. */
 export function parseExecution(value: unknown): Execution {

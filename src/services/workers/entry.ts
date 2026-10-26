@@ -22,6 +22,7 @@ import { parseSettings } from '../storage/settings.js';
 import { parseGameSessions } from '../storage/game-sessions.js';
 import { ModArchiveError, scanModArchive } from '../mods/archive.js';
 import { parseModArchiveRequest } from './mod-archive-protocol.js';
+import { modReportRecordId, parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -54,7 +55,16 @@ async function storage(directory: string): Promise<void> {
         let sessions;
         let settings;
         let resources;
+        let modJobs;
+        let modReport;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'mod-jobs:get') modJobs = await store.read('mod-jobs', parseModJobs);
+        else if (command.kind === 'mod-jobs:set') modJobs = await store.write('mod-jobs', command.expectedRevision, command.data, parseModJobs);
+        else if (command.kind === 'mod-report:get') {
+          modReport = await store.read(modReportRecordId(command.taskId), parseStoredModReport);
+          if (modReport && modReport.data.taskId.toLowerCase() !== command.taskId.toLowerCase()) throw new StorageError('NEEDS_RECOVERY');
+        }
+        else if (command.kind === 'mod-report:set') modReport = await store.write(modReportRecordId(command.taskId), 0, command.data, parseStoredModReport);
         else if (command.kind === 'get') task = await store.getTask(command.ownerId, command.taskId);
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
         else if (command.kind === 'resources:get') resources = await store.read('resource-library', parseResourceLibrary);
@@ -90,7 +100,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });
