@@ -11,3 +11,7 @@
 依据Modrinth官方[哈希查询](https://docs.modrinth.com/api/operations/versionsfromhashes/)、[具体版本](https://docs.modrinth.com/api/operations/getversion/)、[项目版本](https://docs.modrinth.com/api/operations/getprojectversions/)独立实现，无新依赖。354项完整检查352通过/0失败/2原有跳过；测试覆盖真实哈希请求形状、固定前置、候选顺序、项目/哈希漂移、危险URL、损坏证明、速率/并发/体积/取消。
 
 真实候选验证：官方FerriteCore项目uXXizFIs（project/ferrite-core元数据声明MIT许可）。Forge/MC1.20.1候选DG5Fn9Sz为6.0.1，123034字节，SHA-1 417fb6ce8f52abf40bd9d0390371790f9576f8ba；NeoForge/MC1.21.1候选x7kQWVju为7.0.3-neoforge，121559字节，SHA-1 9563692efb708b6b568df27a01ec52f6311928ef。两者平台required前置为空，仅作为独立加载器测试候选，尚非实际游戏加载通过。平台与本地声明合并、冲突判定、递归计划与确认事务仍待继续。
+
+双重检查增量：纯`checkPlatformMods`将实际SHA-512、SHA-1、大小、目标MC/加载器及客户端适用性同平台具体版本对比，冲突附项目/版本及前置身份。平台版本号不替代真实mod版本。禁用文件不满足平台前置；同项目重复版本明确报错，固定version_id不退化为同项目任意版本。未命中来源、Quilt未获平台声明的Fabric兼容组合、未解析内嵌项目和仅文件名身份保留未知。存在未识别本地/内嵌内容时，不断言必定缺少项目并重复自动下载。360项完整检查358通过/0失败/2原有跳过；此增量不创建安装计划、不写文件，尚无公开Mod IPC/UI。
+
+后续真实游戏已完成FerriteCore在独立Forge与NeoForge实例各两次Mods菜单观察与退出0，证据见LOADERS-0.3.0/REPORT.md；不把该测试夹具供应当作玩家确认事务完成。

@@ -2,14 +2,8 @@ import { createHash } from 'node:crypto';
 import { resourceFilename, resourceId } from '../../shared/contracts/resources.js';
 import { isModrinthFileUrl } from '../resources/modrinth.js';
 import type { ModFormat } from '../../core/mods/declarations.js';
-
-export interface PlatformDependency { projectId: string | null; versionId: string | null; filename: string | null; type: 'required' | 'optional' | 'incompatible' | 'embedded' }
-export interface PlatformModFile { filename: string; size: number; sha1: string; sha512: string; url: string; primary: boolean }
-export interface PlatformModVersion {
-  projectId: string; versionId: string; name: string; versionNumber: string; release: 'release' | 'beta' | 'alpha'; publishedAt: string;
-  loaders: string[]; gameVersions: string[]; environment: string; dependencies: PlatformDependency[]; files: PlatformModFile[];
-  evidence: { url: string; sha256: string };
-}
+import type { PlatformDependency, PlatformModFile, PlatformModVersion } from '../../core/mods/platform.js';
+export type { PlatformDependency, PlatformModFile, PlatformModVersion } from '../../core/mods/platform.js';
 export type ModPlatformCode = 'INVALID_ARGUMENT' | 'UNTRUSTED_METADATA' | 'NETWORK_FAILED' | 'NOT_FOUND' | 'RETRY_LATER' | 'CANCELLED' | 'PLATFORM_LIMIT';
 export class ModPlatformError extends Error {
   readonly category: 'validation' | 'network' | 'cancelled' | 'biz';
