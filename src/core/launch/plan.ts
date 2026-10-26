@@ -34,14 +34,16 @@ export function planOfflineLaunch(input: LaunchInput): LaunchPlan {
   const bindings: Record<string, string> = {
     auth_player_name: account.gameName, auth_uuid: uuid, auth_access_token: '0', auth_session: `token:0:${uuid}`,
     user_type: 'legacy', user_properties: '{}', auth_xuid: '0', clientid: '0',
-    version_name: version.id, version_type: version.type,
+    version_name: version.id, version_type: version.type, client_jar_name: layout.jar.split(/[\\/]/).at(-1)!,
     game_directory: layout.gameDirectory, assets_root: layout.assetsDirectory, assets_index_name: assetId,
     game_assets: input.assets.virtual ? childPath(layout.assetsDirectory, `virtual/${assetId}`) : layout.assetsDirectory,
     natives_directory: layout.nativesDirectory, library_directory: layout.librariesDirectory,
     classpath: planClasspath(layout, input.classpath), classpath_separator: ';',
     launcher_name: 'OUCL', launcher_version: input.launcherVersion, resolution_width: '854', resolution_height: '480',
   };
-  const jvm = [...version.jvmArguments];
+  // Forge's module exclusion must follow the inherited JAR's physical name, independent of the selected version ID.
+  const jvm = version.jvmArguments.map(value => value.startsWith('-DignoreList=')
+    ? value.replaceAll('${version_name}.jar', '${client_jar_name}') : value);
   const classpathFlags = jvm.filter(value => ['-cp', '-classpath', '--class-path'].includes(value));
   if (classpathFlags.length === 0) jvm.push('-cp', '${classpath}');
   else if (classpathFlags.length !== 1 || jvm[jvm.indexOf(classpathFlags[0]!) + 1] !== '${classpath}') throw new LaunchPlanError('ARGUMENT_CONFLICT');
@@ -56,5 +58,6 @@ export function planOfflineLaunch(input: LaunchInput): LaunchPlan {
   const preview = { ...bindings };
   for (const name of ['auth_player_name', 'auth_uuid', 'auth_access_token', 'auth_session', 'auth_xuid', 'clientid']) preview[name] = '<redacted>';
   for (const name of ['game_directory', 'assets_root', 'game_assets', 'natives_directory', 'library_directory', 'classpath']) preview[name] = '<managed-path>';
+  preview.client_jar_name = '<managed-jar>';
   return { executableRef: java.javaId, args, cwd: layout.gameDirectory, redactedPreview: substituteArguments(tokens, preview) };
 }

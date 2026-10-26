@@ -41,6 +41,15 @@ test('legacy JVM fallback and virtual assets use the supplied actual game direct
   assert.ok(plan.args.includes(input.layout.assetsDirectory + '\\virtual\\5')); assert.equal(plan.cwd, input.layout.gameRoot);
   assert.ok(plan.args.includes('{}'));
 });
+test('Forge module exclusion follows the inherited physical client JAR without changing version identity', () => {
+  const input = sample(); input.version.id = '1.20.1-forge-47.4.28';
+  input.version.jvmArguments.push('-DignoreList=bootstraplauncher,${version_name}.jar');
+  input.version.gameArguments.push('--version', '${version_name}');
+  const result = planOfflineLaunch(input);
+  assert.ok(result.args.includes('-DignoreList=bootstraplauncher,parent.jar'));
+  assert.equal(result.args.at(-1), '1.20.1-forge-47.4.28');
+  assert.ok(result.redactedPreview.includes('-DignoreList=bootstraplauncher,<managed-jar>'));
+});
 test('Java mismatch, invalid identities, memory and launcher version fail before execution', () => {
   for (const mutate of [
     (x: LaunchInput) => { x.java.major = 21; }, (x: LaunchInput) => { x.java.javaId = 'path'; },
