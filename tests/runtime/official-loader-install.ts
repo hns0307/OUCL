@@ -35,6 +35,13 @@ const profiles = new ProfileService(storage); const java: JavaRuntimeService = n
 console.log(JSON.stringify({ event: 'test-started', kind, minecraftVersion, loaderVersion, workspace }));
 try {
   await service.initialize();
+  if (process.env.OUCL_LOADER_TEST_REOPEN === '1') {
+    const instance = (await service.listV2(rootId)).find(item => item.loader.kind === kind && item.state === 'ready');
+    if (!instance) throw new Error('READY_TEST_INSTANCE_MISSING');
+    globalThis.fetch = async () => { throw new Error('UNEXPECTED_NETWORK_ON_REOPEN'); };
+    await service.prepareLaunch(instance.instanceId, instance.revision, new AbortController().signal);
+    console.log(JSON.stringify({ event: 'official-reopen-offline-verified', kind, instanceId: instance.instanceId, workspace }));
+  } else {
   const accepted = await service.createLoader(randomUUID(), { rootId, mcVersionId: minecraftVersion, displayName: `Official ${kind} verification`,
     isolation: 'on', loader: { kind, version: loaderVersion } });
   let previous = ''; const deadline = Date.now() + 30 * 60 * 1000;
@@ -52,5 +59,6 @@ try {
     }
     if (Date.now() > deadline) { await service.cancel(rootId, accepted.taskId); throw new Error('OFFICIAL_INSTALL_TIMEOUT'); }
     await new Promise(resolve => setTimeout(resolve, 1000));
+  }
   }
 } finally { await service.close(); await storage.close(); }

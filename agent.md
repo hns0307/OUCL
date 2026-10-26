@@ -2,15 +2,17 @@
 
 ## 当前有效交接：mod_loaders 开发中（2026-10-26）
 
-用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26约06:04再次通过账户工具确认5小时窗口实际重置为已用0%后恢复开发；本次交接更新前已用82%。接近5小时额度剩余10%时仍须保存、提交并暂停等待下次实际重置。
+用户明确要求完整实施《四加载器接入与 Mod 管理修订方案》，分支为 `mod_loaders`，批准记录见TASK_PLAN顶部及DECISIONS顶部。2026-10-26北京时间11:13实际检查5小时窗口已重置为0%后恢复；本次交接前已用48%，周额度已用68%。剩余10%或以下须保存提交并等待实际重置；新一轮剩余不足20%不开发。
 
-当前 Fabric/Quilt 链截至d7ffa4c：严格元数据、可信共享下载/物化/取消/恢复事务、`loaders.v1`/`instances.v2`和界面均已接入。Forge/NeoForge新增18d7c6f–09ebafb：官方安装器spike，目录与sidecar下载证明，选择性提取，严格profile解析；只允许固定六步客户端处理器，八个官方工具JAR的清单入口经SHA-1/大小复验后再匹配固定入口；参数只展开到私有暂存树，可取消执行器等待子进程close，产物在worker中摘要及完整ZIP/JAR结构复验，处理器专用库与最终游戏classpath分离。0fc8c73/c82d203/09ebafb新增安装器、原始文档、逐库和处理器产物证据的严格实例格式、重开重建及检查点组装。**Forge/NeoForge尚未接入共享下载、对象回读复验、实际处理和实例ready提交，公共查询/创建仍关闭；四加载器完整交付、Mod管理、0.3.0及实机矩阵仍未交付**，版本仍为0.2.2；尚未执行处理器、运行游戏或触碰用户游戏数据。
+当前四加载器安装事务与下载页均已接入，最新94ec0db开放Forge/NeoForge候选（仍标运行未验证、固定隔离）；3edf918/44e59be/175553b接入共享安装器下载、对象回读、私有输入、受管Java、处理器、派生产物发布及启动复验。8735f76补齐官方实测发现的32MiB日志预算、有限元数据重试、提取排队；f473f23允许客户端JAR最多65534条目，native仍4096；2f4b9bc修复Forge模块排除列表与继承共享JAR物理文件名不一致问题。**Mod管理、四加载器游戏运行矩阵和0.3.0仍未交付**，版本0.2.2；未触碰用户游戏数据，未push。
 
 依赖评估已完成：smol-toml 1.9.0，BSD-3-Clause，npm解包139963字节、无声明运行依赖；生产依赖audit 0漏洞，许可证检查128包无待审，记录在docs/DEPENDENCIES.md及licenses.json。Fabric/Quilt事务相关的隔离安装、取消、重开和启动链测试20/20通过；公共契约/握手目标测试、typecheck、lint、build及隔离Electron smoke通过，后者确认27方法/12能力和原版/Fabric/Quilt三选项。完整`pnpm test`本轮在受限执行环境再次出现多项既有SQLite/传输失败并长时间不结束，已中断，不能标整库通过；最终交付前须在正常权限与隔离TEMP环境保存完整`pnpm check`结果。
 
-下一最小增量：为现有安装任务增加Forge/NeoForge专用准备阶段，复用共享协调器下载安装器对象，在私有空暂存目录提取并调用09ebafb组装检查点；随后下载原版/逐库计划、物化暂存、用Java17/21执行六步、保存产物证据并单次提交ready。恢复路径必须从安装器对象重新提取比对原始文档；最后才开放Forge/NeoForge查询/创建。之后完成JAR worker双重检查/依赖确认事务、四加载器真实验收和0.3.0小EXE。
+下一最小增量：在下述独立测试根启动Forge/NeoForge到主菜单，逐一正常退出并重开；然后补Fabric/Quilt真实官方安装及四种测试Mod。之后实现有界JAR worker、mods.v1、Modrinth与声明双重检查、确认依赖/文件事务及UI，最后0.3.0小EXE。需要Windows操作时再读computer-use必需guidance/api/confirmations；本轮只读了SKILL.md，未初始化或操作Windows窗口。不能以当前官方安装通过代替游戏或测试Mod通过。
 
-Forge/NeoForge样本证据：Forge 1.20.1-47.4.28官方安装器8,859,760字节、SHA-1 `585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge 21.1.258格式样本6,972,022字节、SHA-1 `4e873ba909cd4d2c0818517f479a69a655097691`。当前NeoForge官方目录生产候选首项已实际读到21.1.265（6,992,412字节，SHA-1 `25ce1d35d619ccfd3080076fa5758c18e11a9778`），发布前仍需按稳定目录重新冻结。隔离`.test-build`中的安装器和八个处理器工具均只读验证、未执行。完整typecheck/lint/build及新增聚焦测试通过；完整`pnpm test/check`仍受既有受限环境SQLite/传输问题影响，不能标整库通过。
+官方实测已通过：独立根`.test-build/official-loader-qAJLBD`（本轮新建、无人使用游戏数据），Forge47.4.28/MC1.20.1/Java17实例`07ee75a2-fa9f-5969-86bd-01bcdb478dfb`修订64，NeoForge21.1.265/MC1.21.1/Java21实例`44b298d7-9351-5f8e-b68f-3112437e1d23`修订69。两种都完成全部官方依赖、实际六步链/七产物、ready提交；随后另起进程将fetch设为必定失败，重开后prepareLaunch通过。还未启动任何MC游戏JVM。Forge安装器SHA-1 `585dd6071897becaed3b09bff4c3d9559e0cbc75`；NeoForge `25ce1d35d619ccfd3080076fa5758c18e11a9778`。证据与失败历史在docs/validation/LOADERS-0.3.0/。
+
+实际恢复记录：首次Forge两次下载NETWORK_FAILED，另有CATALOG_UNAVAILABLE；一轮ART因原128KiB总日志预算终止。均保留材料，重试后成功，没有宽容哈希。NeoForge首轮成功。完整pnpm check已在正常权限+仓库内独立TEMP通过，整库受限环境故障不再是当前阻塞；最新日志见上述证据目录。audit无漏洞、128包无待审、19项bootstrap通过；Electron烟测确认原版+四加载器、27方法/12能力、四页/设置/小窗口均通过。0.3.0尚未打包。
 
 Git保护：原始暂存OUCL-Codex-Package.zip、OUCL.txt继续保留，不纳入本次提交；显式路径add/commit --only，不push。历史1A及阶段0缺项不关闭。用户此前允许多agent仅在历史1A上下文，本轮尚未委派子agent。
 

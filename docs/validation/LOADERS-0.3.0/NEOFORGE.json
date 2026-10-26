@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-26",
+  "kind": "neoforge",
+  "minecraftVersion": "1.21.1",
+  "loaderVersion": "21.1.265",
+  "javaMajor": 21,
+  "instanceId": "44b298d7-9351-5f8e-b68f-3112437e1d23",
+  "instanceRevision": 69,
+  "installerSha1": "25ce1d35d619ccfd3080076fa5758c18e11a9778",
+  "installerSize": 6992412,
+  "installerSidecarSha256": "959cf1bd0cff4040a9c0a23ecc621e88e03fe0307e6cbf483ffd374667fbf30d",
+  "plannedDownloadBytes": 939575527,
+  "processing": "passed",
+  "publishedInstance": "ready",
+  "prepareLaunchReverification": "passed",
+  "offlineReopenReverification": "passed",
+  "menu": "not-tested",
+  "testMod": "not-tested",
+  "outputProof": "local-computation; not upstream authentication",
+  "outputs": [
+    { "role": "extract-mappings", "size": 5601343, "sha256": "8081431dcb7c2428db07582db7135be739fa50b123103b3eaf14b2ae16ea37a6" },
+    { "role": "download-mojang-mappings", "size": 9598610, "sha1": "2244b6f072256667bcd9a73df124d6c58de77992", "sha256": "140c47931cccc8fc9e4c22d7603e2d714d1a953a146f51ea7397d95c955536ec" },
+    { "role": "merge-mappings", "size": 5636727, "sha256": "7bd3e2be95fa246778b90b078dbb78b5d1a7a98853baea5e1321a6c3d5383929" },
+    { "role": "split-client-slim", "size": 14464635, "sha256": "93224371dda52351038d0957e392729e692dce031f55ae29ea4b47d909433a5c" },
+    { "role": "split-client-extra", "size": 12372293, "sha256": "fd02f80f4eec9dfaa1714cb62595d013cbac03d52d19dd0623d1922b999c40b7" },
+    { "role": "rename-client", "size": 18725656, "sha256": "a649bd3ce77f122d0f83ae1b37b4b303e662470f928b9bee5fbc76580805ffd4" },
+    { "role": "apply-client-patches", "size": 5698522, "sha256": "374997701b28d3c9374d5dd5fa8bdd96e4143a6786ccba660246b4451a0be23d" }
+  ]
+}

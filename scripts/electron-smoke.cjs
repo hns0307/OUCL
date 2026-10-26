@@ -61,7 +61,7 @@ async function run(window) {
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/UI-0.2.0');
+    const directory = path.resolve(process.env.OUCL_SMOKE_REPORT_DIRECTORY ?? 'docs/validation/LOADERS-0.3.0');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
     for (const [index, name] of [[0, 'home'], [1, 'downloads'], [2, 'announcements'], [3, 'settings']]) {
