@@ -71,6 +71,18 @@ export class LoaderMavenResolver {
 /** Reads a SHA-1 sidecar and authoritative size from the exact admitted official Maven artifact URL. */
 export async function readOfficialMavenProof(request: typeof fetch, url: string,
   signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (signal?.aborted) throw new LoaderMavenError('CANCELLED');
+    try { return await readOfficialMavenProofOnce(request, url, signal); }
+    catch (error) {
+      if (!(error instanceof LoaderMavenError) || error.code !== 'NETWORK_FAILED' || attempt === 2) throw error;
+    }
+  }
+  throw new LoaderMavenError('NETWORK_FAILED');
+}
+
+async function readOfficialMavenProofOnce(request: typeof fetch, url: string,
+  signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
   if (!isArtifactUrl(url)) throw new LoaderMavenError('INVALID_METADATA');
   const controller = new AbortController(); const abort = (): void => controller.abort();
   signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) controller.abort();

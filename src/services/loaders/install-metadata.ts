@@ -9,6 +9,7 @@ import type { LoaderKind } from '../../shared/contracts/loaders.js';
 import { composeLoaderInstall } from './compose.js';
 import type { LoaderMetadataClient, LoaderMetadataEvidence } from './metadata.js';
 import type { LoaderLibraryPlan, LoaderMavenResolver } from './maven.js';
+import { LoaderMavenError } from './maven.js';
 
 type MetadataLoaderKind = Extract<LoaderKind, 'fabric' | 'quilt'>;
 export interface PreparedLoaderMetadata extends PreparedInstallMetadata {
@@ -54,6 +55,7 @@ export class LoaderInstallMetadataService {
         profileBody: loader.body, profileEvidence: loader.evidence, libraries, derivedDocument: composed.loaderDocument, environment } };
     } catch (error) {
       if (error instanceof CatalogError) throw error;
+      if (error instanceof LoaderMavenError && (error.code === 'NETWORK_FAILED' || error.code === 'CANCELLED')) throw new CatalogError('CATALOG_UNAVAILABLE');
       throw new CatalogError('UNTRUSTED_MANIFEST');
     }
   }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
-import { LoaderMavenResolver } from '../src/services/loaders/maven.js';
+import { LoaderMavenResolver, readOfficialMavenProof } from '../src/services/loaders/maven.js';
 import type { LoaderProfile } from '../src/core/loaders/types.js';
 import { definition } from '../src/services/objects/provenance.js';
 import { isArtifactUrl } from '../src/services/download/types.js';
@@ -34,6 +34,24 @@ test('loader Maven libraries use inline profile proof or the exact official side
     { url: profile.libraries[1]!.url, method: 'HEAD' }
   ]);
   for (const item of plan.libraries) assert.doesNotThrow(() => definition(item.spec.expected, item.spec.anchor));
+});
+
+test('official Maven proof retries network failures three times, never malformed proof or cancellation', async () => {
+  const url = profile.libraries[1]!.url; let calls = 0;
+  const recovered: typeof fetch = async (_input, options) => {
+    calls++; if (calls === 1) throw new Error('PRIVATE_NETWORK_DETAIL');
+    return options?.method === 'HEAD' ? new Response(null, { headers: { 'content-length': '4' } }) : new Response(sidecarHash);
+  };
+  assert.equal((await readOfficialMavenProof(recovered, url)).sha1, sidecarHash); assert.equal(calls, 3);
+  calls = 0;
+  await assert.rejects(readOfficialMavenProof(async () => { calls++; throw new Error('network'); }, url), { code: 'NETWORK_FAILED' });
+  assert.equal(calls, 3); calls = 0;
+  await assert.rejects(readOfficialMavenProof(async () => { calls++; return new Response('bad-hash'); }, url), { code: 'INVALID_METADATA' });
+  assert.equal(calls, 1); calls = 0;
+  const controller = new AbortController();
+  await assert.rejects(readOfficialMavenProof(async () => { calls++; controller.abort(); throw new Error('cancelled'); }, url, controller.signal), { code: 'CANCELLED' });
+  assert.equal(calls, 1);
+  await assert.rejects(readOfficialMavenProof(recovered, url, controller.signal), { code: 'CANCELLED' }); assert.equal(calls, 1);
 });
 
 test('artifact policy admits only exact official Maven hosts without query or credentials', () => {
