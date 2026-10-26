@@ -1,9 +1,10 @@
 import { parse } from 'smol-toml';
 import { emptyDeclarations, modId, modObject, modRange, modText, modVersion } from './declarations.js';
 import type { ModDeclarations, ModDependency } from './declarations.js';
+import { modManifestVersion } from './manifest.js';
 
 /** Parses standard TOML (including multi-Mod files). Unresolved substitutions stay unknown, never guessed. */
-export function parseTomlModDeclarations(format: 'forge' | 'neoforge', body: string): ModDeclarations {
+export function parseTomlModDeclarations(format: 'forge' | 'neoforge', body: string, manifest?: string): ModDeclarations {
   const result = emptyDeclarations(format);
   try {
     if (body.length > 1024 ** 2) throw new Error('LIMIT');
@@ -16,7 +17,9 @@ export function parseTomlModDeclarations(format: 'forge' | 'neoforge', body: str
     } else result.issues.push('UNKNOWN_LANGUAGE_LOADER');
     for (const raw of value.mods) {
       if (!modObject(raw) || !modId(raw.modId, format)) { result.issues.push('UNKNOWN_MOD_ID'); continue; }
-      const issues: string[] = []; const version = modVersion(raw.version ?? '1', issues);
+      const issues: string[] = [];
+      const declaredVersion = raw.version === '${file.jarVersion}' ? modManifestVersion(manifest) : raw.version ?? '1';
+      const version = modVersion(declaredVersion, issues);
       const dependencies: ModDependency[] = [];
       const rawDependencies = modObject(value.dependencies) ? value.dependencies[raw.modId] : undefined;
       if (rawDependencies !== undefined) {

@@ -3,10 +3,25 @@ import test from 'node:test';
 import { emptyDeclarations, modClient, modNested, modRange, modVersion } from '../src/core/mods/declarations.js';
 import { parseJsonModDeclarations as json } from '../src/core/mods/json-declarations.js';
 import { parseTomlModDeclarations as toml } from '../src/core/mods/toml-declarations.js';
+import { modManifestVersion } from '../src/core/mods/manifest.js';
 const fabric = (extra: Record<string, unknown> = {}): string => JSON.stringify({ schemaVersion: 1, id: 'outer_mod', version: '1.2.3', ...extra });
 const quilt = (extra: Record<string, unknown> = {}, root: Record<string, unknown> = {}): string => JSON.stringify({ schema_version: 1,
   quilt_loader: { group: 'org.example', id: 'outer_mod', version: '1.2.3', ...extra }, ...root });
 const forge = 'modLoader="javafml"\nloaderVersion="[47,)"\n[[mods]]\nmodId="first_mod"\nversion="1.0"\n';
+
+test('known jarVersion substitution uses only the actual main-section manifest with continuations', () => {
+  assert.equal(modManifestVersion('Manifest-Version: 1.0\r\nImplementation-Version: 6.0.\r\n 1\r\n\r\nName: class\r\nImplementation-Version: 99'), '6.0.1');
+  assert.equal(modManifestVersion('Implementation-Version: 2\r\rName: section\rImplementation-Version: 99'), '2');
+  const body = forge.replace('version="1.0"', 'version="${file.jarVersion}"');
+  const facts = toml('forge', body, 'Manifest-Version: 1.0\nImplementation-Version: 6.0.1\n\n');
+  assert.equal(facts.mods[0]!.version, '6.0.1'); assert.deepEqual(facts.mods[0]!.issues, []);
+  for (const manifest of [undefined, 'x'.repeat(65537), '\0', ' orphan', 'invalid', 'Bad Key: x',
+    'Implementation-Version: 1\nimplementation-version: 2', 'Implementation-Version: ${file.version}', 'Manifest-Version: 1.0\n\nImplementation-Version: 99']) {
+    assert.equal(modManifestVersion(manifest), null);
+    assert.equal(toml('forge', body, manifest).mods[0]!.version, null);
+  }
+  assert.equal(toml('forge', body.replace('${file.jarVersion}', '${unknown}'), 'Implementation-Version: 1').mods[0]!.version, null);
+});
 
 test('Fabric declarations preserve real IDs, aliases, exact constraints, nested JARs and client applicability', () => {
   const facts = json('fabric', fabric({ name: 'Example', provides: ['provided_mod'], environment: 'client', jars: [{ file: 'nested/dep.jar' }],

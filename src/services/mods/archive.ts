@@ -48,11 +48,14 @@ export async function scanModArchive(file: string): Promise<ModArchiveScan> {
           try { text = new TextDecoder('utf-8', { fatal: true }).decode(selected.body); }
           catch { throw new ModArchiveError('INVALID_ARCHIVE'); }
           node.documents.push({ name: selected.name as ModArchiveDocument['name'], body: text });
-          if (selected.name === 'fabric.mod.json') node.declarations.push(parseJsonModDeclarations('fabric', text));
-          else if (selected.name === 'quilt.mod.json') node.declarations.push(parseJsonModDeclarations('quilt', text));
-          else if (selected.name === 'META-INF/mods.toml') node.declarations.push(parseTomlModDeclarations('forge', text));
-          else if (selected.name === 'META-INF/neoforge.mods.toml') node.declarations.push(parseTomlModDeclarations('neoforge', text));
         } else visit(selected.body, [...entries, selected.name]);
+      }
+      const manifest = node.documents.find(document => document.name === 'META-INF/MANIFEST.MF')?.body;
+      for (const document of node.documents) {
+        if (document.name === 'fabric.mod.json') node.declarations.push(parseJsonModDeclarations('fabric', document.body));
+        else if (document.name === 'quilt.mod.json') node.declarations.push(parseJsonModDeclarations('quilt', document.body));
+        else if (document.name === 'META-INF/mods.toml') node.declarations.push(parseTomlModDeclarations('forge', document.body, manifest));
+        else if (document.name === 'META-INF/neoforge.mods.toml') node.declarations.push(parseTomlModDeclarations('neoforge', document.body, manifest));
       }
     };
     visit(bytes, []);
