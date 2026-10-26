@@ -11,6 +11,7 @@ import { LaunchControls, useGameSessions } from './LaunchControls.js';
 import { ResourceBrowser } from './ResourceBrowser.js';
 import { AnnouncementsPage } from './AnnouncementsPage.js';
 import { Avatar } from './Avatar.js';
+import { ModPanel } from './ModPanel.js';
 import type { Capability } from '../shared/contracts/handshake.js';
 
 const NAV: { id: Page; label: keyof typeof MESSAGES }[] = [{ id: 'home', label: 'uiHome' }, { id: 'downloads', label: 'uiDownloads' }, { id: 'announcements', label: 'uiAnnouncements' }, { id: 'settings', label: 'uiSettings' }];
@@ -55,7 +56,7 @@ export function App() {
       </section><aside className="panel character-card"><div className="character-top"><span className="eyebrow">PLAYER PROFILE</span><span className="tag">{MESSAGES.uiOffline}</span></div><div className="avatar-stage"><Avatar /><div className="avatar-grid" /></div>
         <div className="player-name"><h2>{account?.displayName ?? MESSAGES.uiGuest}</h2><span>{account?.gameName ?? MESSAGES.uiChooseProfile}</span></div><AccountsPanel enabled={has('accounts.v1')} />
         {instance?.state === 'ready' ? <LaunchControls key={instance.instanceId} instance={instance} accountId={state.accountId} current={sessions.find(s => s.instanceId === instance.instanceId)} /> : <button className="primary" disabled>{MESSAGES.launchGame}</button>}
-      </aside></div></div>
+      </aside></div>{instance && <ModPanel key={instance.instanceId} instance={instance} enabled={has('mods.v1')} />}</div>
       <div hidden={state.page !== 'downloads'}><div className="tabs download-tabs">{(['minecraft', 'mod', 'resourcepack', 'shader', 'library'] as const).map(id => <button key={id} aria-pressed={downloadTab === id} onClick={() => { setDownloadTab(id); }}>{id === 'minecraft' ? 'Minecraft' : id === 'mod' ? MESSAGES.uiMods : id === 'resourcepack' ? MESSAGES.uiResourcepacks : id === 'shader' ? MESSAGES.uiShaders : MESSAGES.uiLibrary}</button>)}</div>
         <div hidden={downloadTab !== 'minecraft'}><div className="download-note"><span className="source-badge">Mojang</span><p>{MESSAGES.uiVanillaDownloadHint}</p></div><div className="install-layout"><VersionCatalog enabled={has('catalog.v1')} selected={versionId} onSelect={setVersionId} /><InstallPanel enabled={has('instances.v1')} loadersEnabled={has('loaders.v1')} rootId={state.rootId} versionId={versionId} /></div></div>
         <div hidden={downloadTab === 'minecraft'}><ResourceBrowser enabled={has('resources.v1') && state.page === 'downloads' && downloadTab !== 'minecraft'} kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>

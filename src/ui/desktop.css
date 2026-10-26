@@ -293,3 +293,17 @@ h1{font-size:25px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}
 }
 
+.mods-panel{margin-top:22px;min-width:0}
+.mods-actions,.mods-summary{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.mods-actions{margin:14px 0}
+.mods-actions>.primary{width:auto;flex:1}
+.mods-summary{justify-content:space-between}
+.mod-report{margin-top:18px}
+.mod-files,.mod-issues ul{list-style:none;padding:0;margin:12px 0}
+.mod-files>li,.mod-issues li{border-top:1px solid #e4e7df;padding:14px 0;overflow-wrap:anywhere}
+.mod-files p,.mod-issues p{margin:7px 0}
+.mod-files details,.mod-issues{font-size:12px}
+.mod-files summary,.mod-issues summary{cursor:pointer;padding:7px 0}
+.mod-files dd{margin:5px 0 12px;overflow-wrap:anywhere;font-family:monospace}
+.mods-panel code{overflow-wrap:anywhere}
+

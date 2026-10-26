@@ -1,4 +1,17 @@
 export const MESSAGES = {
+  modsTitle: '实例模组', modsReadList: '读取列表', modsCheck: '一键检查', modsChecking: '正在检查模组',
+  modsCheckCompleted: '检查完成', modsCheckFailed: '检查失败', modsCheckCancelled: '检查已取消', modsCheckRecovery: '检查任务需要恢复',
+  modsReadOnlyHint: '读取真实文件与模组声明；一键检查同时核对 Modrinth 来源和依赖。',
+  modsNoReport: '尚无此实例的检查报告，请读取列表或开始检查。', modsEmpty: '这次观察未发现模组文件。',
+  modsSatisfied: '已知声明满足', modsUnsatisfied: '发现不兼容或缺失依赖', modsUnknown: '无法判定',
+  modsDual: '本地声明 + 平台核对', modsLocal: '仅本地声明', modsObserved: '观察时间', modsRevision: '实例修订',
+  modsStale: '实例已更改，此报告属于旧修订，请重新检查。',
+  modsRuntimeHint: '报告是当时的文件观察。已知声明满足仍需实际启动验证；外部文件变化须重新检查。',
+  modsTaskHint: '任务可跨窗口重连；进行中的检查可能属于其他实例，完成后仅显示与所选实例匹配的报告。',
+  modsEnabled: '启用', modsDisabled: '已禁用', modsSource: '来源', modsSourceMatched: '文件摘要匹配', modsSourceConflict: '证据冲突',
+  modsEvidence: '查看文件证据', modsFindings: '检查依据与问题', modsIssueError: '不满足', modsIssueWarning: '提示',
+  modsDeclaration: 'JAR 声明', modsUnknownDeclaration: '未能识别实际模组声明。', modsEnvironment: '运行环境 / 整体检查',
+  modsRequiredBy: '被谁依赖', modsRequirement: '要求', modsActual: '实际', modsEmbedded: '内嵌依赖链', modsUnknownReason: '当前规则无法完整解释此证据。',
   modsChanged: '模组文件已更改，请重新检查。', modsLimit: '模组数量或检查报告超过当前处理上限。',
   modsUnsafe: '模组目录包含无法安全读取的文件，请检查链接或文件类型。', modsBusy: '另一次模组检查正在进行，请稍候或取消。',
   modsCancelled: '模组检查已取消。', modsScanFailed: '无法读取模组，请检查文件和目录权限。', modsTaskMissing: '找不到这次模组检查，请重新检查。',
@@ -183,3 +196,26 @@ export const MESSAGES = {
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;
+
+/** Fixed explanations for evidence codes; future codes retain their identifier and an explicit unknown explanation. */
+export const MOD_ISSUE_MESSAGES: Readonly<Record<string, string>> = {
+  DEPENDENCY_VERSION_MISMATCH: '依赖版本不满足声明范围。', DUPLICATE_MOD_ID: '多个启用文件提供了同一个模组标识。',
+  MOD_DEPENDENCY_MISSING: '缺少必需模组。', RUNTIME_DEPENDENCY_MISSING: '缺少所需运行组件。', MOD_CONFLICT: '模组声明了已知冲突。',
+  MOD_DISCOURAGED: '模组声明不建议同时使用。', LOADER_MISMATCH: '声明与实例加载器不匹配。', LANGUAGE_REQUIREMENT: '语言加载器要求未满足或尚无法确认。',
+  SERVER_ONLY_MOD: '此模组声明仅适用于服务端。', UNKNOWN_DEPENDENCY_ENVIRONMENT: '无法完整判断依赖的客户端适用条件。',
+  UNKNOWN_DEPENDENCY_RANGE: '无法按加载器规则理解版本要求。', UNKNOWN_ENVIRONMENT: '尚未测得所需运行环境的完整版本。',
+  UNKNOWN_ARCHIVE: '未发现可识别的模组声明。', UNKNOWN_DECLARATION: '声明包含尚不支持的格式或条件。',
+  NESTED_DECLARATION_MISSING: '已声明的内嵌模组缺少可读取声明。', JARJAR_SELECTION_REQUIRES_CHECK: '内嵌依赖的选择规则仍需进一步确认。',
+  INSTANCE_MOD_LIMIT: '模组数量超过检查上限。', NESTED_MOD_LIMIT: '内嵌模组数量超过检查上限。', REPORT_LIMIT: '报告达到上限，部分证据无法完整展示。',
+  DUPLICATE_PROJECT: '多个启用文件关联同一个平台项目。', EMBEDDED_PROJECT_UNRESOLVED: '无法确认内嵌模组对应的平台项目。',
+  LOCAL_LOADER_CONFLICT: '本地声明与平台加载器信息矛盾。', MINECRAFT_VERSION_UNKNOWN: '无法判断目标 Minecraft 版本。',
+  PLATFORM_CLIENT_CONFLICT: '平台声明此版本不适用于客户端。', PLATFORM_DEPENDENCY_ID_UNKNOWN: '平台依赖缺少可确认的项目身份。',
+  PLATFORM_DEPENDENCY_MISSING: '缺少平台声明的必需前置项目。', PLATFORM_ENVIRONMENT_UNKNOWN: '平台的运行环境条件无法判定。',
+  PLATFORM_HASH_CONFLICT: '实际文件摘要与平台证据矛盾。', PLATFORM_LOADER_CONFLICT: '平台版本不支持当前加载器。',
+  PLATFORM_MINECRAFT_CONFLICT: '平台版本不支持当前 Minecraft。', PLATFORM_PIN_MISMATCH: '平台要求固定前置版本，当前文件不匹配。',
+  PLATFORM_PROJECT_CONFLICT: '平台项目身份存在矛盾。', PLATFORM_QUILT_UNVERIFIED: '平台的 Quilt 兼容信息不足，不能推断兼容。',
+  PLATFORM_SOURCE_UNKNOWN: '实际文件未能关联到可信平台版本。', NETWORK_FAILED: '平台请求失败，来源和平台依赖无法完整核对。',
+  RETRY_LATER: '平台暂时限制请求，请稍后重试。', UNTRUSTED_METADATA: '平台响应未通过严格验证。',
+  ARCHIVE_LIMIT: 'JAR 条目、解压量或嵌套层数超过上限。', INVALID_ARCHIVE: 'JAR 文件损坏或结构无法识别。',
+  UNSAFE_ARCHIVE: 'JAR 包含不安全的条目结构。', SCAN_TIMEOUT: 'JAR 读取超过时间限制。', ARCHIVE_IO: '无法完整读取文件。',
+};

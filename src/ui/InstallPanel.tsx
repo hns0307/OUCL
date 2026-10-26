@@ -13,6 +13,11 @@ function bytes(value: number): string {
   return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(number)} ${units[unit]}`;
 }
 function terminal(snapshot: TaskSnapshot): boolean { return ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(snapshot.state); }
+function taskLabel(snapshot: TaskSnapshot): MessageKey {
+  if (snapshot.kind !== 'mod-check') return STAGE_MESSAGES[snapshot.stage];
+  return snapshot.state === 'completed' ? 'modsCheckCompleted' : snapshot.state === 'failed' ? 'modsCheckFailed'
+    : snapshot.state === 'cancelled' ? 'modsCheckCancelled' : snapshot.state === 'needsRecovery' ? 'modsCheckRecovery' : 'modsChecking';
+}
 
 export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled: (snapshot: TaskSnapshot) => void }) {
   const [snapshot, setSnapshot] = useState(initial); const [error, setError] = useState<MessageKey>(); const [cancelling, setCancelling] = useState(false);
@@ -36,7 +41,7 @@ export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onS
     if (!result.ok) { setError(result.error.messageKey); setCancelling(false); }
   }
   return <article className="install-task" data-task-id={snapshot.taskId} data-task-state={snapshot.state}>
-    <div className="task-heading"><strong>{MESSAGES[STAGE_MESSAGES[snapshot.stage]]}</strong>
+    <div className="task-heading"><strong>{MESSAGES[taskLabel(snapshot)]}</strong>
       {!terminal(snapshot) && <button disabled={cancelling || snapshot.state === 'committing' || snapshot.state === 'cancelling'} onClick={() => { void cancel(); }}>{MESSAGES.cancelTask}</button>}
     </div>
     {snapshot.bytesTotal !== undefined && <><progress max={snapshot.bytesTotal || 1} value={snapshot.bytesDone} /><p className="storage-note">{MESSAGES.preparedBytes} {bytes(snapshot.bytesDone)} / {bytes(snapshot.bytesTotal)}</p></>}

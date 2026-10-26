@@ -1,5 +1,13 @@
 # OUCL 下一对话交接
 
+## 最新：实例 Mod 只读 UI 已完成（2026-10-26）
+
+继75918d7公共IPC后实现src/ui/ModPanel.tsx，首页所选实例下列表/一键双重检查、实际身份/摘要/来源、问题/未知/范围/依赖链、观察时间/修订。只读，无安装按钮；历史报告不作写入许可。接受超时保留requestId，tasks订阅/取消，分页恢复历史报告只取匹配实例；全局活动任务未知归属会明确标注。任务kind=mod-check所有状态显示检查文案，非安装完成/Java准备。
+
+完整pnpm check383项381PASS/0FAIL/2原有SKIP，最后文案/布局又typecheck/lint/build通过。正式main/preload/UI真实Forge和Neo两个既有独立测试实例列表/双重检查satisfied、uXXizFIs来源、窗口重载原checkedAt不变及720×560无横向溢出通过；大/小截图已实际看过。证据docs/validation/MODS-UI-0.3.0/。脚本scripts/electron-mods-smoke.cjs固定.test-build/official-loader-*测试根；原独立root未搬动，测试Mod各一个仍在，无owned游戏或存储锁。首轮测试脚本DOM克隆失败留下自有owner标记，已按精确UUID保存为同metadata/owner-recovery-f72d43d9-d950-4a3c-947b-831d3f926f6c.lock；没有删除恢复材料；失败/超时现走正常关闭。
+
+下一最小增量：依赖候选递归解析（固定版本、平台项目去重、32层/256项目、循环/全约束），结合真实modId证据与下载后声明复验，再玩家确认及一次安装差异/事务/恢复。此时不要把UI只读检查当作安装交付。可先重试官方Fabric/Quilt安装并补实机矩阵，禁止镜像信任放宽。仍需未来分发契约/测试适配器、原版回归及0.3.0小EXE。最近quota已用10%/周15%，窗口1793032740；不是暂停，继续时再核对。原两份暂存、无push、不碰用户游戏等边界继续。
+
 ## 最新恢复：Mod 公共接口已接通（2026-10-26）
 
 已核对额度实际重置为0%，resetsAt1793032740，从041ea1b恢复。本段覆盖下方等待状态。当前G2批准不变、分支mod_loaders、原始两份暂存保持排除、不push。新src/ipc/mods.ts严格入口/dispatcher、preload-mods与LauncherBridge、main服务装配和mods.v1能力按初始化及InstallerAdapter实际可用才广告。Mod记录损坏初始化失败只停Mod能力，原有服务继续；关机先Mod任务close等待读取退出后存储最后关闭。通用tasks查询/列表/取消和重连已集成，kind=mod-check。
