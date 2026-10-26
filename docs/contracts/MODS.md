@@ -17,3 +17,11 @@
 任务kind新增mod-check，无SQL表结构变化；原任务仍按既有状态机和幂等表保存。固定`mod-jobs` JSON格式版本1记录当前root、最多1000条任务/请求/摘要/实例修订/模式/阶段/报告修订及受控错误；报告单独存到`mod-report-<taskUUID>`，格式版本1，包含root/task及公开ModReport，最大2MiB。报告仅允许revision0创建一次；JSON原子提交/恢复日志复用已有存储worker，不让主进程直接写元数据。未知格式/字段必须停写，不删除用户数据。历史报告只作观察证据，不能授权未来修改。
 
 373项完整检查371通过/0失败/2原有跳过，类型/lint/构建通过；真实SQLite/JSON worker验证mod-check任务幂等及重开needsRecovery、报告单次创建、跨UUID写拒绝。通过模拟未来版本2的合法原子存储验证：当前typed读/写都拒绝，原两份JSON逐字节保留。公开payload/result/错误与内部固定域/不可覆盖规则均有测试。
+
+## 持久任务编排
+
+ModTaskService现已实现，仍未装配公开IPC/界面：快速验证当前根/ready实例/修订，先持久接受请求/任务/索引，再异步执行list本地扫描或check双重检查。单次只允许一个扫描，同requestId/同模式与修订返回同taskId，内容改变拒绝；历史最多1000条。任务快照kind=mod-check，进度用阶段/修订变化表示，不虚构下载字节。复用既有任务get/list/cancel和订阅适配形状，实际主进程绑定在下一增量。
+
+扫描错误与取消原因必须先持久，再进入failed/cancelled；取消和关闭等待活动读取退出。报告JSON单次原子保存、索引确认后才提交completed。丢失报告应答时保留needsRecovery；重开用有效匹配root/task/实例/修订/模式的JSON证明收敛完成，不重新扫描旧请求。丢失最后SQL应答但SQL/JSON均已提交时只复核证明，不生成第二份报告。没有报告的中断历史保持needsRecovery，不自行跑在变化后的文件上。持久写失败明确标恢复并报告，不能假装清理成功。
+
+379项完整检查377通过/0失败/2原有跳过，类型/lint/构建通过。独立真实测试根中Forge检查任务deca0569-fb6e-40ff-84fb-748bbb3ab40c、NeoForge任务fc72074f-fb40-41cf-b187-eaad15af1017均完成并保存state=satisfied报告；另起进程将fetch改为必定失败，成功读取同一任务和原报告，无平台重查或报告覆盖。公开导出分别为FORGE_MOD_REPORT.json/NEOFORGE_MOD_REPORT.json，完整日志check-mods-20261026.log。仍未完成依赖安装事务/公开界面，不标0.3.0交付。

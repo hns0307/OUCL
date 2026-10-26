@@ -36,6 +36,10 @@ NeoForge会话`6e6aa84e-4827-4cab-ba0f-4df6be7e91c9`和`c2a69f5a-a2cd-413c-bc6d-
 
 声明解析按同一实际MANIFEST解析固定`${file.jarVersion}`，没有拿平台版本号替代；FerriteCore的普通Mod/Java/FML要求继续以真实声明为依据，平台依赖数组为空不代表本地无运行环境要求。最新完整pnpm check355项/353通过/0失败/2原有跳过，核心99.12%行/96.88%分支/99.50%函数；日志暂存`.test-build/mod-manifest-check.log`。只读库存、平台适配及声明检查的逐增量证据见docs/contracts/MOD_ARCHIVES.md和MOD_PLATFORM.md，公开Mod事务/UI仍未完成。
 
+后续实际Mod持久检查也已完成：Forge任务deca0569-fb6e-40ff-84fb-748bbb3ab40c、NeoForge任务fc72074f-fb40-41cf-b187-eaad15af1017先扫描真实文件，再按SHA-512关联Modrinth，再次完整扫描复验稳定性。默认语言提供者通过官方组件对象SHA-1/SHA-256/大小复验，分别确定47与独立FML4.0.45；实际运行debug.log结果一致。两报告local/combined均satisfied，来源为uXXizFIs的固定版本DG5Fn9Sz/x7kQWVju。公开导出见FORGE_MOD_REPORT.json与NEOFORGE_MOD_REPORT.json，不含机器路径或声明原文。另起进程禁止fetch后仍成功回读同一持久任务/报告，不重新扫描旧检查任务、不覆盖报告；测试入口会另做只读当前库存核对，但不作为报告写权限。
+
+最新完整检查379项/377通过/0失败/2原有跳过，日志check-mods-20261026.log。新增测试覆盖未知格式停写、报告不可覆盖、幂等/取消/重开、失败原因先于终态、报告/最后任务应答丢失恢复。公开mods.v1数据/存储已定义，任务服务已实现，但IPC/preload/UI还未装配；依赖确认安装及0.3.0仍未完成。
+
 真实失败也保留：两次下载分别在约79MB和748MB处遇到 `NETWORK_FAILED`；另有目录网络请求 `CATALOG_UNAVAILABLE`。一轮处理器因旧128KiB日志总量限制触发 `OUTPUT_LIMIT`，没有发布ready。修正为32MiB累计限制，原始文本只排空不保存，复测通过；网络元数据仅针对固定网络错误最多尝试三次。所有失败暂存和已验证对象保留。
 
 ## 自动化验证

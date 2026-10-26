@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "instanceId": "07ee75a2-fa9f-5969-86bd-01bcdb478dfb",
+  "instanceRevision": 64,
+  "fingerprint": "0b9d34f1b4244799a77cd0d4bcd9b1560eeed7c0b2892a38dab911381dd426f3",
+  "checkedAt": "2026-10-26T08:53:48.519Z",
+  "mode": "check",
+  "localState": "satisfied",
+  "state": "satisfied",
+  "files": [
+    {
+      "fileId": "1104d75465f9dda9af69907a74fa08f3771ed18579648b79eb80b654dbae0dc1",
+      "filename": "ferritecore-6.0.1-forge.jar",
+      "enabled": true,
+      "size": 123034,
+      "sha1": "417fb6ce8f52abf40bd9d0390371790f9576f8ba",
+      "sha256": "9c2c9396a49e796d88497758caa4637d2bcbb433c318e2dd9cebcffbaf0f6c54",
+      "sha512": "a1960a7c03dc32d4ccaccaf28afdd9b078758bbd62d15a91d4039a83fa9397a098e89b69591f6bd5190254d9ee97e502504154b9aec764adb8c65f000b75ba2c",
+      "mods": [
+        {
+          "format": "forge",
+          "id": "ferritecore",
+          "version": "6.0.1",
+          "name": "Ferrite Core"
+        }
+      ],
+      "issues": [],
+      "sourceStatus": "matched",
+      "source": {
+        "projectId": "uXXizFIs",
+        "versionId": "DG5Fn9Sz",
+        "versionName": "6.0.1 (Forge)"
+      }
+    }
+  ],
+  "issues": []
+}
