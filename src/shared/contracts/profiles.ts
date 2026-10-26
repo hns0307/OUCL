@@ -1,19 +1,25 @@
 import { exactObject, UUID_PATTERN } from './handshake.js';
 import type { AppError } from './handshake.js';
 import type { MessageKey } from '../locales/messages.js';
+import { isDownloadPreferences } from './download-preferences.js';
+import type { DownloadPreferences } from './download-preferences.js';
 
-export const PROFILE_CHANNELS = ['java:choose', 'accounts:list', 'accounts:createOffline', 'settings:get', 'settings:update'] as const;
+export const PROFILE_CHANNELS = ['java:choose', 'accounts:list', 'accounts:createOffline', 'settings:get', 'settings:update', 'settings:downloadsGet', 'settings:downloadsUpdate'] as const;
 export const PROFILE_CAPABILITIES = ['java.v1', 'accounts.v1', 'settings.v1'] as const;
 export type ProfileChannel = typeof PROFILE_CHANNELS[number];
 export interface JavaRef { javaId: string; major: 8 | 17 | 21; arch: 'x64'; source: 'system'; available: boolean }
 export interface AccountSummary { accountId: string; kind: 'offline'; displayName: string; gameName: string; ready: boolean }
 export interface SettingsSummary { revision: number; rootId?: string; javaId?: string; memoryMiB: number; isolationDefault: boolean; theme: 'system' }
 export interface ProfilePayloads {
+  'settings:downloadsGet': Record<string, never>;
+  'settings:downloadsUpdate': { expectedRevision: number; preferences: DownloadPreferences };
   'java:choose': Record<string, never>; 'accounts:list': Record<string, never>; 'settings:get': Record<string, never>;
   'settings:update': { expectedRevision: number; patch: { memoryMiB?: number; isolationDefault?: boolean } };
   'accounts:createOffline': { displayName: string; gameName: string };
 }
 export interface ProfileData {
+  'settings:downloadsGet': DownloadPreferences & { revision: number };
+  'settings:downloadsUpdate': DownloadPreferences & { revision: number };
   'java:choose': { selection: 'cancelled' } | { selection: 'chosen'; java: JavaRef };
   'accounts:list': { items: AccountSummary[] }; 'accounts:createOffline': { account: AccountSummary }; 'settings:get': SettingsSummary; 'settings:update': SettingsSummary;
 }
@@ -23,6 +29,8 @@ export type ProfileResult<C extends ProfileChannel> = { contractVersion: 1; requ
   | { contractVersion: 1; requestId: string; ok: false; error: ProfileError };
 export interface ProfileDispatcher { <C extends ProfileChannel>(channel: C, payload: ProfilePayloads[C], requestId: string): Promise<ProfileData[C]> }
 export interface ProfilesBridge {
+  getDownloadSettings(): Promise<ProfileResult<'settings:downloadsGet'>>;
+  updateDownloadSettings(requestId: string, input: ProfilePayloads['settings:downloadsUpdate']): Promise<ProfileResult<'settings:downloadsUpdate'>>;
   chooseJava(requestId: string): Promise<ProfileResult<'java:choose'>>;
   listAccounts(): Promise<ProfileResult<'accounts:list'>>;
   createOfflineAccount(requestId: string, input: ProfilePayloads['accounts:createOffline']): Promise<ProfileResult<'accounts:createOffline'>>;
@@ -43,6 +51,8 @@ const name = (x: unknown): x is string => typeof x === 'string' && x.trim() === 
 /** Exact approved payloads; renderer paths and executable options are never accepted. */
 export function isProfilePayload<C extends ProfileChannel>(x: unknown, channel: C): x is ProfilePayloads[C] {
   if (!PROFILE_CHANNELS.includes(channel)) return false;
+  if (channel === 'settings:downloadsUpdate') return exactObject(x, ['expectedRevision', 'preferences'])
+    && typeof x.expectedRevision === 'number' && Number.isSafeInteger(x.expectedRevision) && x.expectedRevision >= 0 && isDownloadPreferences(x.preferences);
   if (channel === 'settings:update') {
     if (!exactObject(x, ['expectedRevision', 'patch']) || typeof x.expectedRevision !== 'number' || !Number.isSafeInteger(x.expectedRevision) || x.expectedRevision < 0 || typeof x.patch !== 'object' || x.patch === null) return false;
     const keys = Object.keys(x.patch); const p = x.patch as Record<string, unknown>;
@@ -58,6 +68,11 @@ function account(x: unknown): x is AccountSummary {
 }
 /** Checks output projection, rejecting private UUIDs, executable paths and unexpected fields. */
 export function isProfileData<C extends ProfileChannel>(x: unknown, channel: C): x is ProfileData[C] {
+  if (channel === 'settings:downloadsGet' || channel === 'settings:downloadsUpdate') {
+    if (!exactObject(x, ['revision', 'formatVersion', 'source', 'fileConcurrency', 'connectionsPerFile'])
+      || typeof x.revision !== 'number' || !Number.isSafeInteger(x.revision) || x.revision < 0) return false;
+    return isDownloadPreferences({ formatVersion: x.formatVersion, source: x.source, fileConcurrency: x.fileConcurrency, connectionsPerFile: x.connectionsPerFile });
+  }
   if (channel === 'accounts:list') return exactObject(x, ['items']) && Array.isArray(x.items) && x.items.length <= 1000 && x.items.every(account) && new Set(x.items.map(item => item.accountId)).size === x.items.length;
   if (channel === 'accounts:createOffline') return exactObject(x, ['account']) && account(x.account);
   if (channel === 'java:choose') return exactObject(x, ['selection']) && x.selection === 'cancelled'

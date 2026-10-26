@@ -387,3 +387,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 34. 用户实测确认与exe交付
 
 2026-10-25用户明确反馈“我经过实测，已经可以了，接下来就是给我一个可以直接运行的EXE，并进行提交”。本次简易下载/启动目标按用户实测确认交付0.1.0便携exe及完整目录zip；源码/打包脚本/验证记录本地提交，二进制保留release不入源码Git。交接agent.md同步。代理未观察的世界/再次启动仍不补写通过；整个阶段1A其余缺项不随此次目标交付自动完成，不自动进入后续阶段。
+
+## 2026-10-26 main下载优化当前增量
+
+G2明确批准：下载优先，优化单独落main，完成再同步mod_loaders恢复原计划。工作目录D:/MC_start/OUCL-download-main，main基线aa21d7b；原mod_loaders目录/WIP/两份原始暂存资料保持。偏好与严格IPC迁入，完整check264项262通过/0失败/2原有跳过；UI/传输/新EXE尚未交付。后续按docs/contracts/DOWNLOADS.md完成传输、实际设置UI与真实验证。授权原文及额度暂停规则见DECISIONS最新记录。
