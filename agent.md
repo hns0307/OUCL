@@ -125,3 +125,5 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 用户原始暂存 OUCL-Codex-Package.zip、OUCL.txt 必须保留且不纳入工程提交。使用显式路径add和commit --only，Conventional Commits，user.name Li ZeRui；不git add .、reset或push。release、.test-build、node_modules忽略是有意设计。新打包版本使用新目录，避免覆盖已验证产物。
 
+
+最终0.2.3冷启动补证已完成（25.239秒、新目录官方下载Electron），SHA25603206c0af601950d7d33917481b9e72288fea61abc50defa3cc3c5e5cd2b0c52；正式两次原版菜单退出0。限定下载同步已在原mod_loaders开始，原WIP按SHA256保存在原目录.test-build/download-wip-preserved-20261026/（copies、originals、tracked.patch、hashes.json），两份原始暂存不动；没有stash或整分支合main。main源码与交付单独保留，原计划恢复进度以mod_loaders最新agent.md为准。

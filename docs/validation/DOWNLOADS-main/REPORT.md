@@ -21,3 +21,5 @@ node scripts/verify-download-production-launch.mjs D:/Java/jdk-17/bin/java.exe f
 官方If-Range补测（azure-if-range-probe.json）：raw旧Azure标识、加引号相同标识、错误标识均返回200整文件，未满足严格Range+强ETag条件；请求x-ms-version2011-08-18或2023-11-03及no-cache仍返回2009-09-19旧版响应。微软官方Get Blob说明2011-08-18后ETag才加引号：https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob 。保持原条件，不擅自引入旧Azure兼容或放宽校验。公网实际分段验收仍未通过，条件性能力与安全回退已验证。
 
 最后交付EXE含缓存隔离修复，精确bytes/SHA256见../BOOTSTRAP-0.2.3/package.json，旧候选1/2以独立文件保留。最终EXE热启动证据smoke-cache-fix.json；首候选冷启动只证明相同引导流程，不能冒充最终载荷冷启动。
+
+最终含缓存修复载荷冷启动已补齐：pnpm smoke:exe final-cold，全新中文/空格目录仅复制EXE，官方Electron下载后同级OUCL.runtime正常启动，25.239秒，26方法/11能力、renderer无Node、正常关闭释放owner。smoke-final-cold.json为最终载荷，package.json中appHash5fa7a7ba4376730f668ac514223943b8054e639fe41f1926e35d81867f42d48b、EXE SHA25603206c0af601950d7d33917481b9e72288fea61abc50defa3cc3c5e5cd2b0c52，241152字节。此前冷启动仅候选的限制已由此补证解除；公网严格分段缺项继续保留。
