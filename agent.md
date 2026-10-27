@@ -361,3 +361,13 @@ initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务�
 最终pnpm check 506项/504PASS/0FAIL/2既有SKIP，核心覆盖率98.83/96.90/99.56，类型lintbuild通过。scripts/mod-transaction-runtime.mjs扩为准备+事务两组，固定计数27，报告改写新MOD-EXECUTOR-20261028目录，不覆盖历史11项；Electron45+正式worker27/27 PASS。新增本地真实准备→依赖传输→JAR核验→一次事务闭环，另6执行器测试覆盖复用确认/取消等待/回退/孤立不重放/提交后任务状态缺失恢复/提交拒绝取消及close。fixture纯生成JAR和惰性MC metadata，无公网、用户游戏或真实Java/MC。
 
 下一步：**先补固定版本安装结果/失败报告**（ModCode及受控本地/平台证据、任务/实例/plan绑定，lost ack精确证明），再扩公共mod-install任务快照/标签，mods:confirm与结果查询/重连，main装配此执行器并关闭时等待，ResourceBrowser确认/任务取消。当前main仍未装配preparation/transaction/执行器，没有产品安装按钮、新EXE或完整目标交付。先读最新计划，继续从本HEAD，勿回退；保留旧EXE、原zip/txt/stash，不push。
+
+## 最新检查点：WIP结果报告，额度暂停（2026-10-28）
+
+主分支保持已验证1edbc41；mod_loaders保存未通过增量。新增src/services/storage/mod-results.ts：formatVersion1固定mod-result-taskUUID，绑定根/任务/plan/实例修订、受控ModCode、可选ModReport，终态不可变/needsRecovery可解析。worker mod-result:get/set和StorageClient读写接入，写入复核确认任务/计划/assessment指纹。install-tasks.finish先保存结果后写任务状态，TIMEOUT仅认完全相同JSON；initialize支持无事务的持久failed/cancelled恢复。
+
+**未通过，切勿合并main/打包**：新增failed preparation persists bounded assessment测试仍抛NEEDS_RECOVERY；初次fileId非法已修正，但仍有问题。测试finally service.close抛错掩盖原始断言并跳过f.close，造成worker悬挂，最新全套与runtime已中止。优先修复清理保证，再定位publicModReport(inventory.items=[]但issues有fileId)是否违反引用校验；或验证worker writeModResult拒绝原因。不要按报告猜测根因已证实。新增lost result ack测试实际运行PASS，但整体不能说通过。原先完整506/504PASS/2SKIP仅适用于1edbc41。scripts/mod-transaction-runtime.mjs现期待29项，证据目录MOD-RESULTS-20261028，保留失败TAP和FAIL JSON，不覆盖旧27PASS材料。
+
+已停止本轮运行会话（全套4106、runtime44814已Ctrl-C退出；旧69264/57564亦已停止），没有游戏进程操作。原始zip/txt/stash及旧EXE保留，不push。
+
+**额度等待已开始**：get_usage_limits五小时91%使用，resetsAt=1793148801；周89%使用，resetsAt=1793601420。下一心跳先核对实际窗口重置及所有可用窗口剩余>=20%，未满足安静等待、不开发。满足后先修复此WIP再续公共确认/结果查询/任务快照/main装配/UI；不得回退丢弃当前代码，也不得把WIP当完整目标交付。

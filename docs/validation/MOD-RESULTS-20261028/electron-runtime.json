@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "timestamp": "2026-10-27T22:58:24.630Z",
+  "electron": "45.0.0",
+  "mode": "Electron as Node, bundled production worker, real filesystem and SQLite",
+  "tests": -1,
+  "pass": -1,
+  "fail": -1,
+  "exitCode": null
+}

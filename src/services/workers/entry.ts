@@ -25,6 +25,7 @@ import { parseModArchiveRequest } from './mod-archive-protocol.js';
 import { modReportRecordId, parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
 import { assertModPlanTransition, modPlanRecordId, parseStoredModPlan } from '../storage/mod-plans.js';
 import { modConfirmationDigest } from '../mods/plan-identity.js';
+import { assertModResultTransition, modResultRecordId, parseModInstallResult } from '../storage/mod-results.js';
 import { assertModTransactionTransition, modTransactionRecordId, parseModTransaction } from '../storage/mod-transactions.js';
 
 const port = parentPort;
@@ -63,6 +64,7 @@ async function storage(directory: string): Promise<void> {
         let modPlan;
         let modTransaction;
         let modConfirmations;
+        let modResult;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'mod-confirm:accept' || command.kind === 'mod-confirm:list') {
@@ -93,6 +95,21 @@ async function storage(directory: string): Promise<void> {
               if ((await store.readModConfirmations(ownerId)).length >= 1000) throw new WorkerError('QUEUE_FULL');
               task = await store.acceptTask(ownerId, id, 'mod-install', digest);
             }
+          }
+        }
+        else if (command.kind === 'mod-result:get' || command.kind === 'mod-result:set') {
+          const id = modResultRecordId(command.taskId); const previous = await store.read(id, parseModInstallResult);
+          if (previous && previous.data.taskId !== command.taskId.toLowerCase()) throw new WorkerError('INVALID_RECORD');
+          if (command.kind === 'mod-result:get') modResult = previous;
+          else {
+            const data = command.data; const plan = await store.read(modPlanRecordId(data.planRequestId), parseStoredModPlan);
+            if (!plan || plan.data.rootId !== data.rootId || plan.data.plan.planId !== data.planId
+              || plan.data.plan.instanceId !== data.instanceId || plan.data.plan.instanceRevision !== data.instanceRevision
+              || data.assessment && (data.assessment.fingerprint !== plan.data.plan.fingerprint || data.assessment.mode !== 'check')
+              || (await store.getTask(data.rootId, data.taskId))?.kind !== 'mod-install') throw new WorkerError('INVALID_RECORD');
+            const accepted = await store.findAcceptedTask(data.rootId, data.planRequestId, 'mod-install', modConfirmationDigest(data.planRequestId, data.planId));
+            if (accepted?.taskId !== data.taskId) throw new WorkerError('INVALID_RECORD');
+            assertModResultTransition(previous?.data, data); modResult = await store.write(id, command.expectedRevision, data, parseModInstallResult);
           }
         }
         else if (command.kind === 'mod-jobs:get') modJobs = await store.read('mod-jobs', parseModJobs);
@@ -159,7 +176,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

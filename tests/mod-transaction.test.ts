@@ -5,7 +5,10 @@ import { mkdir, mkdtemp, readFile, readdir, rename, writeFile } from 'node:fs/pr
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ModTransactionService } from '../src/services/mods/transaction.js';
+import { ModPreparationError } from '../src/services/mods/preparation.js';
 import type { PreparedModInstall } from '../src/services/mods/preparation.js';
+import { ModContractError } from '../src/shared/contracts/mods.js';
+import { parseModInstallResult } from '../src/services/storage/mod-results.js';
 import { ModArchiveReader } from '../src/services/workers/mod-archive-reader.js';
 import { StorageClient } from '../src/services/workers/storage-client.js';
 import { WorkerError } from '../src/services/workers/protocol.js';
@@ -111,9 +114,41 @@ test('confirmed executor joins duplicate requests and commits real files once wi
     const task = await finished(service, accepted.taskId); assert.equal(task.execution.state, 'completed');
     assert.equal(task.execution.bytesDone, 5); assert.equal(preparations, 1);
     assert.equal((await f.storage().readInstance(instanceId))!.data.modCommitId, accepted.taskId);
+    assert.equal((await f.storage().readModResult(accepted.taskId))!.data.state, 'completed');
     await service.close(); await f.reopen();
     const restored = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
     try { await restored.initialize(); assert.equal((await restored.get(accepted.taskId))!.execution.state, 'completed'); }
+    finally { await restored.close(); }
+  } finally { await service.close(); await f.close(); }
+});
+
+test('failed preparation persists bounded assessment and immutable task/plan association', async () => {
+  const f = await fixture();
+  const assessment = { ...f.prepared.assessment, local: { ...f.prepared.assessment.local, state: 'unsatisfied' as const,
+    issues: [{ severity: 'error' as const, code: 'MISSING_DEPENDENCY', fileId: 'a'.repeat(64), modId: 'root_mod', dependencyId: 'library_mod', expected: '>=2', actual: ['1.0.0'], via: [] }] } };
+  const service = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new ModPreparationError('MODS_INCOMPATIBLE', assessment); } }, f.make());
+  try {
+    const { taskId } = await service.confirm(confirmation(f)); assert.equal((await finished(service, taskId)).execution.state, 'failed');
+    const saved = (await f.storage().readModResult(taskId))!;
+    assert.equal(saved.data.errorCode, 'MODS_INCOMPATIBLE'); assert.equal(saved.data.assessment!.localState, 'unsatisfied');
+    assert.equal(saved.data.assessment!.issues[0]!.requirement, '>=2');
+    await assert.rejects(f.storage().writeModResult(taskId, saved.revision, { ...saved.data, errorCode: 'FILES_CHANGED' }), { code: 'INVALID_RECORD' });
+    assert.throws(() => parseModInstallResult({ ...saved.data, path: 'private' }), { code: 'INVALID_RECORD' });
+    assert.throws(() => parseModInstallResult({ ...saved.data, formatVersion: 2 }), { code: 'INVALID_RECORD' });
+    assert.throws(() => parseModInstallResult({ ...saved.data, state: 'completed' }), { code: 'INVALID_RECORD' });
+  } finally { await service.close(); await f.close(); }
+});
+
+test('lost result acknowledgement resolves only exact durable content and restarts without replay', async () => {
+  const f = await fixture(); const write = f.storage().writeModResult.bind(f.storage());
+  f.storage().writeModResult = async (...args) => { await write(...args); throw new WorkerError('TIMEOUT'); };
+  const service = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new ModContractError('FILES_CHANGED'); } }, f.make());
+  try {
+    const { taskId } = await service.confirm(confirmation(f)); assert.equal((await finished(service, taskId)).execution.state, 'failed');
+    assert.equal((await f.storage().readModResult(taskId))!.data.errorCode, 'FILES_CHANGED');
+    await service.close(); await f.reopen();
+    const restored = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
+    try { await restored.initialize(); assert.equal((await restored.get(taskId))!.execution.state, 'failed'); }
     finally { await restored.close(); }
   } finally { await service.close(); await f.close(); }
 });

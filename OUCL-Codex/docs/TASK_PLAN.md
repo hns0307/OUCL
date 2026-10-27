@@ -471,3 +471,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 44. 2026-10-28 Mod确认任务内部执行闭环
 
 私有ModInstallTaskService连接固定确认接纳、真实准备下载与一次文件事务，任务UUID贯穿consumer/transaction；进度串行持久、取消等待准备清理、提交边界后拒绝取消、close等待收尾。重开仅按已存在事务原token/JSON证明恢复，孤立确认不重放。Electron45+正式worker的准备/事务共27项全部PASS，真实本地HTTP适配器闭环含依赖传输/JAR声明/实例及索引一次提交。证据docs/validation/MOD-EXECUTOR-20261028/。公共详细失败报告、mod-install快照/订阅、主进程装配与确认UI仍待接，不标产品或完整目标完成。
+
+## 45. 2026-10-28 安装结果WIP与额度暂停
+
+固定mod-result记录/worker/执行器写入已在工作分支推进，但新增检查证据测试仍失败NEEDS_RECOVERY，完整检查未通过；不得视为完成或合并main。见docs/validation/MOD-RESULTS-20261028/REPORT.md。额度5小时91%已用、resetsAt=1793148801，暂停等待实际重置，恢复时先修复该测试和清理保证，再完整验证。上次已验证主分支仍1edbc41。

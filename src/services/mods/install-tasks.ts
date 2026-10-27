@@ -1,15 +1,21 @@
 import { applyWorkerEvent, controlTask } from '../../core/task/machine.js';
 import type { Execution, WorkerEvent } from '../../core/task/machine.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
-import { ModContractError } from '../../shared/contracts/mods.js';
+import { isModCode, ModContractError } from '../../shared/contracts/mods.js';
+import type { ModCode } from '../../shared/contracts/mods.js';
+import type { ModReport } from '../../shared/contracts/mods-report.js';
 import type { StoredTask } from '../storage/tasks.js';
 import type { ModTransaction } from '../storage/mod-transactions.js';
 import type { StorageClient } from '../workers/storage-client.js';
 import type { ModConfirmation, ModInstallPreparation } from './preparation.js';
+import { ModPreparationError } from './preparation.js';
+import { publicModReport } from './report.js';
+import { WorkerError } from '../workers/protocol.js';
+import type { ModInstallResult } from '../storage/mod-results.js';
 import type { ModTransactionService } from './transaction.js';
 
 type Repository = Pick<StorageClient, 'readInstallation' | 'acceptModConfirmation' | 'readModConfirmations' | 'readModPlan'
-  | 'get' | 'update' | 'readModTransaction'>;
+  | 'get' | 'update' | 'readModTransaction' | 'readModResult' | 'writeModResult'>;
 interface Job { task: StoredTask; controller: AbortController; done: Promise<void>; writes: Promise<void>; committing: boolean }
 const terminal = (task: StoredTask): boolean => ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(task.execution.state);
 
@@ -36,7 +42,24 @@ export class ModInstallTaskService {
     return this.change(job, applyWorkerEvent(job.task.execution, { kind, attempt: job.task.execution.attempt,
       sequence: job.task.execution.lastSequence + 1 } as WorkerEvent).execution);
   }
-  private async finish(task: StoredTask, state: Execution['state']): Promise<StoredTask> {
+  private async finish(task: StoredTask, state: ModInstallResult['state'], errorCode?: ModCode, assessment: ModReport | null = null): Promise<StoredTask> {
+    const accepted = (await this.storage.readModConfirmations()).find(item => item.task.taskId === task.taskId);
+    const plan = accepted && await this.storage.readModPlan(accepted.planRequestId);
+    if (!accepted || !plan) throw new ModContractError('NEEDS_RECOVERY');
+    const previous = await this.storage.readModResult(task.taskId);
+    const data: ModInstallResult = { formatVersion: 1, rootId: task.ownerId, taskId: task.taskId,
+      planRequestId: accepted.planRequestId, planId: plan.data.plan.planId, instanceId: plan.data.plan.instanceId,
+      instanceRevision: plan.data.plan.instanceRevision, state,
+      errorCode: state === 'completed' ? null : state === 'needsRecovery' ? 'NEEDS_RECOVERY' : state === 'cancelled' ? 'CANCELLED' : errorCode ?? 'SCAN_FAILED', assessment };
+    if (previous && ['rootId', 'taskId', 'planRequestId', 'planId', 'instanceId', 'instanceRevision'].some(key =>
+      previous.data[key as keyof ModInstallResult] !== data[key as keyof ModInstallResult])) throw new ModContractError('NEEDS_RECOVERY');
+    if (previous?.data.state !== state || !previous) {
+      try { await this.storage.writeModResult(task.taskId, previous?.revision ?? 0, data); }
+      catch (error) {
+        const persisted = error instanceof WorkerError && ['TIMEOUT', 'REVISION_CONFLICT'].includes(error.code) ? await this.storage.readModResult(task.taskId) : undefined;
+        if (!persisted || JSON.stringify(persisted.data) !== JSON.stringify(data)) throw new ModContractError('NEEDS_RECOVERY');
+      }
+    }
     if (task.execution.state === state) return task;
     return this.storage.update(task.ownerId, task.taskId, task.execution.revision, { ...task.execution, state, revision: task.execution.revision + 1 });
   }
@@ -48,17 +71,23 @@ export class ModInstallTaskService {
       if (!plan) throw new ModContractError('NEEDS_RECOVERY');
       const input: ModConfirmation = { planRequestId: accepted.planRequestId, planId: plan.data.plan.planId, confirmed: true };
       const stored = await this.storage.readModTransaction(task.taskId);
+      const outcome = await this.storage.readModResult(task.taskId);
       if (stored && !this.matches(stored.data, task, input)) throw new ModContractError('NEEDS_RECOVERY');
       if (terminal(task) && task.execution.state !== 'needsRecovery') {
         if (task.execution.state === 'completed' && stored?.data.phase !== 'committed'
           || task.execution.state !== 'completed' && stored && stored.data.phase !== 'rolledBack') throw new ModContractError('NEEDS_RECOVERY');
+        await this.finish(task, task.execution.state as ModInstallResult['state']); continue;
+      }
+      if (!stored) {
+        if (outcome && ['failed', 'cancelled'].includes(outcome.data.state)) await this.finish(task, outcome.data.state, outcome.data.errorCode ?? undefined, outcome.data.assessment);
+        else await this.finish(task, 'needsRecovery');
         continue;
       }
-      if (!stored) { await this.finish(task, 'needsRecovery'); continue; }
       try {
         const receipt = await this.transaction.recover(task.taskId);
         if (!this.matches(receipt, task, input)) throw new ModContractError('NEEDS_RECOVERY');
-        await this.finish(task, receipt.phase === 'committed' ? 'completed' : receipt.phase === 'rolledBack' ? 'failed' : 'needsRecovery');
+        await this.finish(task, receipt.phase === 'committed' ? 'completed' : receipt.phase === 'rolledBack'
+          ? outcome?.data.state === 'cancelled' ? 'cancelled' : 'failed' : 'needsRecovery', outcome?.data.errorCode ?? undefined, outcome?.data.assessment ?? null);
       } catch { await this.finish(task, 'needsRecovery'); }
     }
   }
@@ -103,7 +132,7 @@ export class ModInstallTaskService {
       job.committing = true; await this.event(job, 'verified');
       const receipt = await this.transaction.commit(prepared);
       if (!this.matches(receipt, job.task, input) || receipt.phase !== 'committed') throw new ModContractError('NEEDS_RECOVERY');
-      await this.event(job, 'committed');
+      job.task = await this.finish(job.task, 'completed');
     } catch (error) {
       await job.writes.catch(() => {});
       const receipt = await this.storage.readModTransaction(job.task.taskId);
@@ -114,7 +143,16 @@ export class ModInstallTaskService {
         job.task = await this.finish(job.task, 'completed');
       } else if (receipt && receipt.data.phase !== 'rolledBack' || job.task.execution.state === 'committing' && !receipt
         || error instanceof ModContractError && error.code === 'NEEDS_RECOVERY') job.task = await this.finish(job.task, 'needsRecovery');
-      else job.task = await this.finish(job.task, job.controller.signal.aborted ? 'cancelled' : 'failed');
+      else {
+        const plan = await this.storage.readModPlan(input.planRequestId); let assessment: ModReport | null = null;
+        if (plan && error instanceof ModPreparationError && error.assessment) {
+          const inventory = { instanceId: plan.data.plan.instanceId, revision: plan.data.plan.instanceRevision,
+            fingerprint: plan.data.plan.fingerprint, items: [], local: error.assessment.local };
+          assessment = publicModReport(inventory, { inventory, platform: error.assessment.platform, platformFailures: [] });
+        }
+        const code = typeof error === 'object' && error !== null && 'code' in error && isModCode(error.code) ? error.code : 'SCAN_FAILED';
+        job.task = await this.finish(job.task, job.controller.signal.aborted ? 'cancelled' : 'failed', code, assessment);
+      }
     }
   }
   async get(taskId: string): Promise<StoredTask | undefined> {

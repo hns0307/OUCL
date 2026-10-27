@@ -1,0 +1,185 @@
+TAP version 13
+# Subtest: confirmed executor connects actual dependency transfer, JAR verification and one instance transaction
+ok 1 - confirmed executor connects actual dependency transfer, JAR verification and one instance transaction
+  ---
+  duration_ms: 551.7601
+  type: 'test'
+  ...
+# Subtest: confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files
+ok 2 - confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files
+  ---
+  duration_ms: 233.7417
+  type: 'test'
+  ...
+# Subtest: unconfirmed, cancelled, stale or occupied plans cannot start dependency downloads
+ok 3 - unconfirmed, cancelled, stale or occupied plans cannot start dependency downloads
+  ---
+  duration_ms: 140.1736
+  type: 'test'
+  ...
+# Subtest: enabled exact dependency reuse preserves a renamed JAR without downloading or upgrading it
+ok 4 - enabled exact dependency reuse preserves a renamed JAR without downloading or upgrading it
+  ---
+  duration_ms: 306.908
+  type: 'test'
+  ...
+# Subtest: a disabled dependency is not reused; unknown embedded project relationships stop before duplicate downloads
+ok 5 - a disabled dependency is not reused; unknown embedded project relationships stop before duplicate downloads
+  ---
+  duration_ms: 516.0984
+  type: 'test'
+  ...
+# Subtest: prospective declarations reject unsatisfied actual ranges, duplicate modIds and unknown requirements
+ok 6 - prospective declarations reject unsatisfied actual ranges, duplicate modIds and unknown requirements
+  ---
+  duration_ms: 915.4009
+  type: 'test'
+  ...
+# Subtest: case-insensitive filename collisions and refreshed source changes stop without overwriting an existing Mod
+ok 7 - case-insensitive filename collisions and refreshed source changes stop without overwriting an existing Mod
+  ---
+  duration_ms: 251.9771
+  type: 'test'
+  ...
+# Subtest: fixed candidate metadata and post-download SHA512 mismatch cannot prepare untrusted bytes
+ok 8 - fixed candidate metadata and post-download SHA512 mismatch cannot prepare untrusted bytes
+  ---
+  duration_ms: 333.5434
+  type: 'test'
+  ...
+# Subtest: cancelled preparation joins in-flight transfer cleanup and refuses concurrent admissions
+ok 9 - cancelled preparation joins in-flight transfer cleanup and refuses concurrent admissions
+  ---
+  duration_ms: 213.1725
+  type: 'test'
+  ...
+# Subtest: plan refusal, external file changes and unknown sessions during transfer invalidate the preparation
+ok 10 - plan refusal, external file changes and unknown sessions during transfer invalidate the preparation
+  ---
+  duration_ms: 829.0776
+  type: 'test'
+  ...
+# Subtest: confirmed executor joins duplicate requests and commits real files once with durable completion
+ok 11 - confirmed executor joins duplicate requests and commits real files once with durable completion
+  ---
+  duration_ms: 469.5163
+  type: 'test'
+  ...
+# Subtest: failed preparation persists bounded assessment and immutable task/plan association
+not ok 12 - failed preparation persists bounded assessment and immutable task/plan association
+  ---
+  duration_ms: 151.4615
+  type: 'test'
+  location: 'D:\\MC_start\\OUCL\\.test-build\\tests\\mod-transaction.test.js:215:1'
+  failureType: 'testCodeFailure'
+  error: 'NEEDS_RECOVERY'
+  code: 'NEEDS_RECOVERY'
+  name: 'ModContractError'
+  stack: |-
+    ModInstallTaskService.close (file:///D:/MC_start/OUCL/.test-build/src/services/mods/install-tasks.js:208:31)
+    async TestContext.<anonymous> (file:///D:/MC_start/OUCL/.test-build/tests/mod-transaction.test.js:237:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: lost result acknowledgement resolves only exact durable content and restarts without replay
+ok 13 - lost result acknowledgement resolves only exact durable content and restarts without replay
+  ---
+  duration_ms: 193.7288
+  type: 'test'
+  ...
+# Subtest: executor cancellation waits for preparation cleanup and leaves no transaction or instance change
+ok 14 - executor cancellation waits for preparation cleanup and leaves no transaction or instance change
+  ---
+  duration_ms: 180.7382
+  type: 'test'
+  ...
+# Subtest: executor classifies a proven rollback as failed and never replays it after restart
+ok 15 - executor classifies a proven rollback as failed and never replays it after restart
+  ---
+  duration_ms: 391.6388
+  type: 'test'
+  ...
+# Subtest: orphan confirmation without a transaction becomes needsRecovery without running preparation
+ok 16 - orphan confirmation without a transaction becomes needsRecovery without running preparation
+  ---
+  duration_ms: 181.1877
+  type: 'test'
+  ...
+# Subtest: executor restores completion from a real committed transaction after the final task update was absent
+ok 17 - executor restores completion from a real committed transaction after the final task update was absent
+  ---
+  duration_ms: 427.844
+  type: 'test'
+  ...
+# Subtest: commit boundary rejects cancellation and close joins the actual transaction
+ok 18 - commit boundary rejects cancellation and close joins the actual transaction
+  ---
+  duration_ms: 393.2073
+  type: 'test'
+  ...
+# Subtest: add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits
+ok 19 - add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits
+  ---
+  duration_ms: 352.955
+  type: 'test'
+  ...
+# Subtest: mid-publication failure rolls back only owned files and retains all recovery materials
+ok 20 - mid-publication failure rolls back only owned files and retains all recovery materials
+  ---
+  duration_ms: 381.3791
+  type: 'test'
+  ...
+# Subtest: an external edit to an owned new file is preserved and blocks unsafe rollback and launch
+ok 21 - an external edit to an owned new file is preserved and blocks unsafe rollback and launch
+  ---
+  duration_ms: 390.859
+  type: 'test'
+  ...
+# Subtest: foreign replacement and renamed files are retained while remaining owned additions are rolled back
+ok 22 - foreign replacement and renamed files are retained while remaining owned additions are rolled back
+  ---
+  duration_ms: 451.5173
+  type: 'test'
+  ...
+# Subtest: pre-existing player files and session owners are never overwritten or cleared
+ok 23 - pre-existing player files and session owners are never overwritten or cleared
+  ---
+  duration_ms: 349.8704
+  type: 'test'
+  ...
+# Subtest: cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result
+ok 24 - cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result
+  ---
+  duration_ms: 1368.814
+  type: 'test'
+  ...
+# Subtest: lost instance and journal acknowledgements reconcile from exact JSON proof without double publication
+ok 25 - lost instance and journal acknowledgements reconcile from exact JSON proof without double publication
+  ---
+  duration_ms: 420.1795
+  type: 'test'
+  ...
+# Subtest: cancellation during source verification joins the worker boundary and does not start a staged copy
+ok 26 - cancellation during source verification joins the worker boundary and does not start a staged copy
+  ---
+  duration_ms: 157.326
+  type: 'test'
+  ...
+# Subtest: recovery finishes a published instance after index failure using its unique commit ID
+ok 27 - recovery finishes a published instance after index failure using its unique commit ID
+  ---
+  duration_ms: 431.5059
+  type: 'test'
+  ...
+# Subtest: interrupted pre-commit work recovers by rolling back owned files after a real storage restart
+ok 28 - interrupted pre-commit work recovers by rolling back owned files after a real storage restart
+  ---
+  duration_ms: 398.5727
+  type: 'test'
+  ...
+# Subtest: transaction records reject future formats, arbitrary operations and changes to prepared evidence
+ok 29 - transaction records reject future formats, arbitrary operations and changes to prepared evidence
+  ---
+  duration_ms: 434.1384
+  type: 'test'
+  ...
