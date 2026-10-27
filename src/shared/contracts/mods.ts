@@ -11,7 +11,8 @@ export const MOD_CHANNELS = ['mods:list', 'mods:check', 'mods:report', 'mods:pla
 export type ModChannel = typeof MOD_CHANNELS[number];
 export const MOD_CODES = ['INVALID_ARGUMENT', 'UNSUPPORTED_CONTRACT', 'INVALID_SENDER', 'TIMEOUT', 'UNAVAILABLE', 'ROOT_UNAVAILABLE',
   'REVISION_CONFLICT', 'FILES_CHANGED', 'MOD_LIMIT', 'MODS_UNSAFE', 'SCAN_BUSY', 'CANCELLED', 'SCAN_FAILED', 'TASK_NOT_FOUND',
-  'NEEDS_RECOVERY', 'CANCEL_TOO_LATE', 'NETWORK_FAILED', 'UNTRUSTED_METADATA', 'NOT_FOUND', 'RETRY_LATER', 'PLATFORM_LIMIT'] as const;
+  'NEEDS_RECOVERY', 'CANCEL_TOO_LATE', 'NETWORK_FAILED', 'UNTRUSTED_METADATA', 'NOT_FOUND', 'RETRY_LATER', 'PLATFORM_LIMIT',
+  'CONFIRMATION_REQUIRED', 'INSTANCE_BUSY', 'MODS_INCOMPATIBLE', 'MODS_UNDETERMINED'] as const;
 export type ModCode = typeof MOD_CODES[number];
 export interface ModError extends Omit<AppError, 'code'> { code: ModCode }
 export interface ModPayloads {
@@ -79,7 +80,11 @@ const ERRORS: Record<ModCode, { category: AppError['category']; key: MessageKey;
   NEEDS_RECOVERY: { category: 'disk', key: 'unavailable', retryable: false }, CANCEL_TOO_LATE: { category: 'biz', key: 'unavailable', retryable: false },
   NETWORK_FAILED: { category: 'network', key: 'resourceNetworkFailed', retryable: true }, UNTRUSTED_METADATA: { category: 'validation', key: 'untrustedManifest', retryable: false },
   NOT_FOUND: { category: 'network', key: 'resourceNetworkFailed', retryable: true }, RETRY_LATER: { category: 'network', key: 'resourceRateLimited', retryable: true },
-  PLATFORM_LIMIT: { category: 'biz', key: 'modsLimit', retryable: false }
+  PLATFORM_LIMIT: { category: 'biz', key: 'modsLimit', retryable: false },
+  CONFIRMATION_REQUIRED: { category: 'permission', key: 'modsConfirmRequired', retryable: false },
+  INSTANCE_BUSY: { category: 'biz', key: 'instanceBusy', retryable: true },
+  MODS_INCOMPATIBLE: { category: 'validation', key: 'modsIncompatible', retryable: false },
+  MODS_UNDETERMINED: { category: 'validation', key: 'modsUndetermined', retryable: false }
 };
 export function isModPayload<C extends ModChannel>(value: unknown, channel: C): value is ModPayloads[C] {
   if (channel === 'mods:report') return exactObject(value, ['taskId']) && uuid(value.taskId);

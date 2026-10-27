@@ -1,10 +1,11 @@
 import { checkPlatformMods } from '../../core/mods/platform.js';
-import type { DualModCheck, PlatformLocalMod, PlatformModVersion } from '../../core/mods/platform.js';
+import type { DualModCheck, PlatformModVersion } from '../../core/mods/platform.js';
 import type { ModInventory, ModInventoryContext, ModInventoryService } from './inventory.js';
 import { ModInventoryError } from './inventory.js';
 import type { ModrinthModClient, ModPlatformCode } from './modrinth.js';
 import { ModPlatformError } from './modrinth.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import { platformFacts } from './facts.js';
 
 export interface ModInspection { inventory: ModInventory; platform: DualModCheck; platformFailures: ModPlatformCode[] }
 export type ModInspectionStage = 'local' | 'platform' | 'rechecking' | 'completed';
@@ -46,10 +47,7 @@ export class ModInspectionService {
       const final = await this.inventory.scan(instanceId, expectedRevision, signal); cancelled();
       if (initial.fingerprint !== final.fingerprint) throw new ModInventoryError('FILES_CHANGED');
       if (JSON.stringify(await this.context(instanceId, signal)) !== contextSnapshot) throw new ModInventoryError('REVISION_CONFLICT');
-      const local: PlatformLocalMod[] = final.items.map(item => ({ fileId: item.fileId, enabled: item.enabled, size: item.size, sha1: item.sha1,
-        sha512: item.sha512, formats: item.archives.find(archive => !archive.entries.length)?.declarations.map(declaration => declaration.format) ?? [],
-        unresolvedEmbedded: item.archives.some(archive => archive.jarJar || archive.entries.length > 0) }));
-      const platform = checkPlatformMods(final.local.state, local, context.environment, versions);
+      const platform = checkPlatformMods(final.local.state, platformFacts(final.items), context.environment, versions);
       if (platformFailures.length && platform.state === 'satisfied') platform.state = 'unknown';
       cancelled(); await progress?.('completed'); cancelled(); return { inventory: final, platform, platformFailures };
     } finally { this.active = false; }

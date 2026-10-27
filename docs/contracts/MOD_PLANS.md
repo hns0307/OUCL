@@ -26,4 +26,6 @@ payloadDigest使用规范化实例UUID、显式根身份和排序selections计�
 
 本增量没有确认接口、依赖实际下载、下载后真实JAR复验或一次安装事务，也没有开放删除/替换已有Mod。已有EXE保留，不将测试夹具或保存计划视为真实游戏安装成功。
 
+后续2026-10-28已增加私有[可信下载准备服务](MOD_PREPARATION.md)，可对明确confirmed的固定计划执行实际对象传输及真实JAR检查；尚未接公共确认任务或一次实例事务，上述用户界面边界保持不变。
+
 验证见[MOD-PLAN-DURABLE-20261028](../validation/MOD-PLAN-DURABLE-20261028/REPORT.md)。

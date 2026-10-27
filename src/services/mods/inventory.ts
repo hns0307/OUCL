@@ -8,6 +8,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { guardDirectory, hasCode } from '../storage/files.js';
 import { ModArchiveError } from './archive.js';
 import type { ModArchiveReader } from '../workers/mod-archive-reader.js';
+import { archiveFacts } from './facts.js';
 
 export interface ModInventoryContext { instanceId: string; revision: number; modsDirectory: string; environment: ModEnvironment }
 export interface ModInventoryItem extends LocalModFile {
@@ -57,8 +58,7 @@ export class ModInventoryService {
           try {
             const scan = await this.scanner.read(target, signal); check();
             item.size = scan.size; item.sha1 = scan.sha1; item.sha256 = scan.sha256; item.sha512 = scan.sha512;
-            item.archives = scan.archives.map(archive => ({ entries: archive.entries, declarations: archive.declarations,
-              jarJar: archive.documents.some(document => document.name === 'META-INF/jarjar/metadata.json') }));
+            item.archives = archiveFacts(scan);
           } catch (error) {
             check(); if (!(error instanceof ModArchiveError)) throw error;
             item.issues.push(error.code);

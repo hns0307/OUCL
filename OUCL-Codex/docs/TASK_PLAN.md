@@ -451,3 +451,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 39. 2026-10-28 Mod计划持久化、恢复与取消
 
 `mods:plan`已接真实worker原子保存；同请求重试/重开恢复原证据，不重跑平台读取或换参数。新增严格`mods:planState`和`mods:cancelPlan`；取消状态持久保留且不可重新激活，确认接口尚未开放。资源库重载恢复同实例同修订计划、显示文件来源/精确大小/依赖来路，并可实际取消；异步旧目标结果不重新显示。完整`pnpm check`471项/469 PASS/0 FAIL/2既有SKIP，类型/lint/覆盖率/build通过；隔离真实组件+preload+存储worker测试验证DOM恢复、取消及旧修订提示；本地夹具的正式入口验证36方法/15能力与无Node。证据[MOD-PLAN-DURABLE-20261028](../../docs/validation/MOD-PLAN-DURABLE-20261028/REPORT.md)。仍待玩家确认、依赖实际下载、逐JAR复验、会话/修订/哈希复核及一次安装事务，不标完整目标完成。
+
+## 40. 2026-10-28 确认后的可信下载准备基础
+
+私有ModInstallPreparation已实现固定计划确认校验、来源重验、现有可信传输/对象仓库接入和逐JAR三摘要/实际声明复验；在内存里双重检查预期安装结果，重查库存/环境/根/取消/会话，保留未知、拒绝冲突及外部文件变化。不会写入实例或资源库，也未开放公共确认按钮。完整`pnpm check`480项/478 PASS/0 FAIL/2既有SKIP，正式入口本地fixture的36方法/15能力smoke通过；新增测试用真实SQLite/对象传输/JAR worker、生成的JAR及本地metadata/HTTP适配器，无公网或真实游戏测试。证据[MOD-PREPARATION-20261028](../../docs/validation/MOD-PREPARATION-20261028/REPORT.md)。下一步接持久确认任务、实测Java事实和一次实例提交/恢复，仍不标Mod安装或完整目标完成。

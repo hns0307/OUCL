@@ -313,3 +313,13 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：确认下载准备服务（2026-10-28）
+
+新增私有`src/services/mods/preparation.ts`的ModInstallPreparation，接受精确planRequestId/planId/confirmed=true及受控consumer UUID；读取持久preview/ready计划、重验计划与当前库存/环境/会话。根用ModLibraryReader复验，依赖按固定versionId查询并精确核对项目/文件/三摘要中的上游SHA1/SHA512/大小，transferResource进入既有对象仓库，再由真实JAR worker验证SHA1/SHA256/SHA512/大小/声明。`facts.ts`统一已装和待装声明投影，预期结果双重检查后再复查文件/环境/根/计划取消/会话。已装精确依赖可保留改名，禁用文件不复用，嵌套来源未明保留unknown，任何不兼容/未知不返回ready。
+
+完整`pnpm check`480项/478 PASS/0 FAIL/2既有SKIP，类型/lint/覆盖率/build通过。9项新增测试（含多分支）用真实SQLite/对象传输/校验/JAR worker与生成的JAR、本地metadata/HTTP适配器验证：准备成功但不写实例/资源库、固定依赖与可选不下载、实际版本非平台标签、复用/禁用、范围/重复modId/未知/客户端限制、文件名冲突、上游/下载后SHA512矛盾、取消等待清理、准备期间取消/文件变化/未知会话。正式入口`OUCL_SMOKE_OFFLINE=1 pnpm smoke`36方法/15能力无Node通过，无公网或真实游戏启动。证据`docs/validation/MOD-PREPARATION-20261028/`；说明`docs/contracts/MOD_PREPARATION.md`。
+
+重要边界：本服务尚未在main公开确认路径装配，不是可点击安装功能。下一步接**持久确认任务与计划占用/取消互锁、实测Java版本事实、gameDir独占及一次提交/恢复**；事务必须再次实哈希/实例修订/会话复验，回滚不覆盖外部修改。生产context的java当前为null，不能按MC或加载器版本猜Java精确版本。准备结果不代表安装成功；完整目标保持进行中。旧0.3.0修复EXE与两份原始资料/stash继续保留，不push。末次额度查询5小时41%已用、周81%已用，继续按用户阈值核对并保存交接。
+
+---
+
