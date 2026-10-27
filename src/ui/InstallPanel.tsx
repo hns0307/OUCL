@@ -76,7 +76,7 @@ export function InstallPanel({ enabled, loadersEnabled, rootId, versionId }: { e
     try {
       const result = loader === 'vanilla' ? await window.oucl.createInstance(requestId.current, { rootId, mcVersionId: versionId, displayName: displayName.trim(), isolation })
         : await window.oucl.createLoaderInstance(requestId.current, { rootId, minecraftVersion: versionId, loader, loaderVersion, displayName: displayName.trim(), isolation: 'on' });
-      if (!result.ok) { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT') requestId.current = undefined; return; }
+      if (!result.ok) { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT' && result.error.code !== 'UNAVAILABLE') requestId.current = undefined; return; }
       accepted.current = true; await refreshGame();
     } catch { setError('unavailable'); } finally { setBusy(false); }
   }

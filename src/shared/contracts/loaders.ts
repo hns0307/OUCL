@@ -17,7 +17,7 @@ export interface LoaderData {
   'loaders:create': { taskId: string };
 }
 export type LoaderCode = AppError['code'] | 'NETWORK_FAILED' | 'UNTRUSTED_METADATA' | 'VERSION_UNSUPPORTED'
-  | 'ROOT_UNAVAILABLE' | 'NAME_CONFLICT' | 'INSTALL_FAILED' | 'NEEDS_RECOVERY';
+  | 'ROOT_UNAVAILABLE' | 'NAME_CONFLICT' | 'INSTALL_FAILED' | 'NEEDS_RECOVERY' | 'REVISION_CONFLICT';
 export interface LoaderError extends Omit<AppError, 'code'> { code: LoaderCode }
 export type LoaderResult<C extends LoaderChannel> = { contractVersion: 1; requestId: string; ok: true; data: LoaderData[C] }
   | { contractVersion: 1; requestId: string; ok: false; error: LoaderError };
@@ -30,6 +30,7 @@ export class LoaderContractError extends Error { constructor(readonly code: Load
 
 const ERRORS: Record<LoaderCode, { category: AppError['category']; key: MessageKey; retryable: boolean }> = {
   INVALID_ARGUMENT: { category: 'validation', key: 'invalidArgument', retryable: false },
+  REVISION_CONFLICT: { category: 'biz', key: 'requestConflict', retryable: false },
   UNSUPPORTED_CONTRACT: { category: 'validation', key: 'unsupportedContract', retryable: false },
   INVALID_SENDER: { category: 'permission', key: 'invalidSender', retryable: false },
   TIMEOUT: { category: 'system', key: 'timeout', retryable: true },

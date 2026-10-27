@@ -163,6 +163,14 @@ export class RecordStore {
     });
   }
 
+  /** Reads an exact accepted request without changing the task or request journal. */
+  findAcceptedTask(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): Promise<StoredTask | undefined> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).findAccepted(ownerId, requestId, kind, payloadDigest);
+    });
+  }
+
   /** Accepts and persists a side-effect request before any executor starts. */
   acceptTask(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): Promise<StoredTask> {
     return this.serial(async () => {

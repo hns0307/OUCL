@@ -39,6 +39,7 @@ export class WorkerError extends Error {
 }
 
 export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
+  | { kind: 'find-accepted'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'get'; ownerId: string; taskId: string }
   | { kind: 'update'; ownerId: string; taskId: string; expectedRevision: number; execution: Execution }
   | { kind: 'object:lookup'; sourceKey: string }
@@ -128,7 +129,7 @@ export function parseStorageRequest(value: unknown): StorageRequest {
   }
   else {
     requireMessage(uuid(command.ownerId));
-    if (command.kind === 'accept') requireMessage(exact(command, ['kind', 'ownerId', 'requestId', 'taskKind', 'payloadDigest'])
+    if (command.kind === 'accept' || command.kind === 'find-accepted') requireMessage(exact(command, ['kind', 'ownerId', 'requestId', 'taskKind', 'payloadDigest'])
       && uuid(command.requestId) && typeof command.taskKind === 'string' && (TASK_KINDS as readonly string[]).includes(command.taskKind)
       && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
     else if (command.kind === 'get') requireMessage(exact(command, ['kind', 'ownerId', 'taskId']) && uuid(command.taskId));

@@ -1,5 +1,9 @@
 # 加载器元数据契约（增量 1）
 
+2026-10-27本地接入修订：loaders:create先以当前root/request/kind/规范payloadDigest只读查询SQLite接受凭据。已接受请求直接返回原taskId，不受远程目录变化或断网影响；不同参数的同requestId返回新增固定REVISION_CONFLICT，禁止错误复用。首次新请求仍核对官方目录和隔离，再交由原安装事务。相同在途请求共享目录读取，最多16个不同接受请求；渲染TIMEOUT/UNAVAILABLE保留requestId重试，改参数则换新ID。主进程不直接访问SQLite，无DB表或持久格式变更。
+
+437项完整本地检查435通过/0失败/2原有跳过，类型/lint/build通过；真实worker验证缺失查询不创建记录、匹配不改状态、跨owner不可见/参数冲突、重开后四加载器凭据均在不调用元数据的情况下恢复。指令后的验证仅本地SQLite/夹具/模拟网络，不跑外网或游戏窗口。证据../validation/LOADER-RECEIPTS-20261027/；实机未验证项不因此变更。
+
 状态：2026-10-26 已批准并接入四加载器元数据、安装事务、公共接口与下载界面；Forge/NeoForge额外测试Mod的两次运行通过，NeoForge历史一次间歇退出异常仍保留。Fabric/Quilt真实官方安装及完整游戏矩阵仍待验证。
 
 ## 信任边界

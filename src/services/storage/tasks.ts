@@ -32,6 +32,18 @@ function identity(value: string): void { if (!UUID_PATTERN.test(value)) throw ne
 export class TaskTable {
   constructor(private readonly db: DatabaseSync) {}
 
+  /** Read-only acceptance lookup; an absent request never allocates a task or changes its state. */
+  findAccepted(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): StoredTask | undefined {
+    identity(ownerId); identity(requestId);
+    if (!KINDS.includes(kind) || !/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
+    const accepted = this.db.prepare('SELECT task_id, kind, payload_digest FROM requests WHERE owner_id=? AND request_id=?').get(ownerId, requestId);
+    if (!accepted) return undefined;
+    if (accepted.kind !== kind || accepted.payload_digest !== payloadDigest || typeof accepted.task_id !== 'string') throw new StorageError('REVISION_CONFLICT');
+    const task = this.get(ownerId, accepted.task_id);
+    if (!task || task.kind !== kind) throw new StorageError('NEEDS_RECOVERY');
+    return task;
+  }
+
   private transaction<T>(work: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = work(); this.db.exec('COMMIT'); return result; }

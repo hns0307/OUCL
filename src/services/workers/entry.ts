@@ -58,6 +58,7 @@ async function storage(directory: string): Promise<void> {
         let modJobs;
         let modReport;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'mod-jobs:get') modJobs = await store.read('mod-jobs', parseModJobs);
         else if (command.kind === 'mod-jobs:set') modJobs = await store.write('mod-jobs', command.expectedRevision, command.data, parseModJobs);
         else if (command.kind === 'mod-report:get') {

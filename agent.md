@@ -1,5 +1,15 @@
 # OUCL 下一对话交接
 
+## 最新加载器接入：本地接受凭据恢复（2026-10-27）
+
+用户当前优先仍“跳过联网测试，优先模组加载器”，不跑外网或已停止的窗口操作。749eadc保存ModLibraryReader；本增量LoaderService.create先调用InstallerService.findAcceptedLoader，当前registered root+规范payloadDigest+requestId经StorageClient/worker/RecordStore/TaskTable.findAccepted只读查原requests/tasks。准确接受凭据直接返回原taskId，不再依赖远程catalog；同ID不同参数新增loaders.v1 REVISION_CONFLICT，不错复用。首次请求依然核对官方目录/隔离。相同在途请求合并，最多16不同待接受请求；UI TIMEOUT和UNAVAILABLE均保留requestId。新私有find-accepted协议严格无SQL/路径/额外字段，原DB表/格式不变。
+
+完整pnpm check437项435 PASS/0 FAIL/2原有SKIP、typecheck/lint/build通过；全是本地/mocked/loopback夹具，不外网。新增3个真实SQLite/协议测试+1个服务并发测试：缺失只读不创建请求、状态不改、owner隔离/类型/摘要冲突、重开后四加载器原凭据恢复且catalog调用0。证据docs/validation/LOADER-RECEIPTS-20261027/。原始两份暂存排除，不push/改用户游戏。
+
+下一步加载器产品接入：集中共享代表矩阵（Fabric0.16.14/Quilt0.29.2/Forge47.4.28对应MC1.20.1+Java17，Neo21.1.265对应MC1.21.1+Java21）；下载页默认优先目录实际存在的稳定代表版本，显示目标MC/Java及尚未验证状态，清掉跨MC/加载器遗留版本选项，主进程/界面统一Forge/Neo支持边界，其他组合不冒充已验。用纯逻辑/本地夹具覆盖，不联网。之后按原四加载器安装/处理器/恢复缺口与Mod确认事务继续，0.3.0仍未完成。
+
+最近额度31%已用/周34%、窗口1793087081（历史，继续前需再查），可继续开发；10%剩余以下保存暂停。main下载已完成并同步，不回退；自动化完整交付前不删除。
+
 ## 最新优先：跳过外网测试，先加载器（2026-10-27）
 
 用户原文“跳过联网测试，优先模组加载器”。接下来停止外网测试，优先Fabric/Quilt/Forge/NeoForge本地安装/启动接入修订与夹具验证，保留未完成的外网/实机矩阵，不恢复原Esc停止窗口操作。main下载优化已完成，不重复开发。

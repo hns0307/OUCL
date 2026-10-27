@@ -56,6 +56,10 @@ export class InstallerError extends Error {
 export interface CreateInstanceInput { rootId: string; mcVersionId: string; displayName: string; isolation: InstanceSummary['isolation'] }
 export interface CreateLoaderInstanceInput extends CreateInstanceInput { loader: { kind: 'fabric' | 'quilt' | 'forge' | 'neoforge'; version: string } }
 type CreateInput = CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader'] };
+function canonicalLoaderInput(input: CreateLoaderInstanceInput): CreateInput {
+  return { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
+    isolation: input.isolation, loader: { ...input.loader } };
+}
 interface LiveInstall { task: StoredTask; stage: string; controller: AbortController; done: Promise<void>; changes: Promise<void>; progress?: InstallDownloadProgress; progressWrite?: Promise<void>; failure?: unknown }
 interface Runtime { rootId: string; dataDirectory: string; objects: ObjectStore; hashes: HashPool; extractor: NativeExtractor; installerExtractor: InstallerArchiveExtractor; coordinator: DownloadCoordinator; downloads: InstallDownloadService; views: FileViewService }
 function isInstallerMetadata(value: PreparedInstallMetadata | PreparedLoaderMetadata | PreparedInstallerMetadata): value is PreparedInstallerMetadata {
@@ -203,9 +207,17 @@ export class InstallerService {
   /** Admits fixed identities selected through the strict loader contract. */
   createLoader(requestId: string, input: CreateLoaderInstanceInput): Promise<{ taskId: string }> {
     if (input.isolation !== 'on') return Promise.reject(new InstallerError('INSTALL_FAILED'));
-    const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
-      isolation: input.isolation, loader: { ...input.loader } };
+    const canonical = canonicalLoaderInput(input);
     return this.enqueue(requestId, canonical);
+  }
+  /** Read-only receipt recovery precedes remote catalog access; a request with different input is never reused. */
+  async findAcceptedLoader(requestId: string, input: CreateLoaderInstanceInput): Promise<{ taskId: string } | undefined> {
+    if (this.closed || input.isolation !== 'on') throw new InstallerError('INSTALL_FAILED');
+    const canonical = canonicalLoaderInput(input); const registered = await this.storage.readInstallation();
+    if (!registered || registered.data.rootId !== canonical.rootId) throw new InstallerError('ROOT_UNAVAILABLE');
+    const digest = createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+    const task = await this.storage.findAccepted(canonical.rootId, requestId.toLowerCase(), 'install', digest);
+    return task ? { taskId: task.taskId } : undefined;
   }
   private enqueue(requestId: string, canonical: CreateInput): Promise<{ taskId: string }> {
     const key = `${canonical.rootId}:${requestId.toLowerCase()}:${JSON.stringify(canonical)}`; const pending = this.admissions.get(key); if (pending) return pending;

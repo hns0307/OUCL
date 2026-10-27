@@ -150,6 +150,13 @@ export class StorageClient {
     if (!task) throw new WorkerError('INVALID_MESSAGE'); return task;
   }
 
+  /** Recovers an exact accepted request without admitting a new task, even after a renderer restart. */
+  async findAccepted(ownerId: string, requestId: string, taskKind: TaskKind, payloadDigest: string): Promise<StoredTask | undefined> {
+    const { task } = await this.request({ kind: 'find-accepted', ownerId, requestId, taskKind, payloadDigest });
+    if (task && (task.ownerId !== ownerId || task.kind !== taskKind)) throw new WorkerError('INVALID_MESSAGE');
+    return task;
+  }
+
   /** Queries only the stable owner's task, including after a caller timeout. */
   async get(ownerId: string, taskId: string): Promise<StoredTask | undefined> { return (await this.request({ kind: 'get', ownerId, taskId })).task; }
 
