@@ -1,4 +1,4 @@
-import { open, realpath, unlink } from 'node:fs/promises';
+import { mkdir, open, realpath, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { guardDirectory, hasCode } from '../storage/files.js';
@@ -36,6 +36,14 @@ export class RootService {
     this.choosing = pending;
     void pending.finally(() => { if (this.choosing === pending) this.choosing = undefined; }).catch(() => {});
     return pending;
+  }
+  /** Registers the portable default only when no user-selected root exists. Existing roots always win. */
+  async ensureDefault(directory: string): Promise<RootSelection> {
+    const existing = await this.repository.readInstallation();
+    if (existing) return { selection: 'chosen', rootId: existing.data.rootId, label: this.label() };
+    try { normalizeDataDirectory(directory); await mkdir(directory, { recursive: true }); }
+    catch { throw new RootError('ROOT_UNAVAILABLE'); }
+    return this.performChoice(async () => directory);
   }
   private async performChoice(select: () => Promise<string | undefined>): Promise<RootSelection> {
     const existing = await this.repository.readInstallation();

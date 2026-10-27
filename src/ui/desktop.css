@@ -94,6 +94,7 @@ small,.small{font-size:11px;line-height:1.7}
 .instance-facts small{color:#9aa48f;font-size:10px}
 .instance-facts strong{font-weight:500;font-size:13px}
 .selected-instance>p{margin:24px 0 0}
+.version-settings-toggle{margin-top:16px}.version-settings{margin-top:12px;padding-top:12px;border-top:1px solid #e5e8df}.version-settings>p{margin:0 0 10px}.folder-actions{display:flex;flex-wrap:wrap;gap:8px}.folder-actions button{font-size:12px;padding:7px 10px}
 .announcement-shortcut{display:flex;align-items:center;gap:14px;color:#75836a;text-align:left;padding:18px 22px;width:100%;background:white}
 .announcement-shortcut:hover{background:#f9fbf6}
 .announcement-shortcut>span:nth-child(2){flex:1}

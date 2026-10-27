@@ -14,6 +14,7 @@ import { createGameBridge } from './preload-game.js';
 import { createLoadersBridge } from './preload-loaders.js';
 import { createInstancesV2Bridge } from './preload-instances-v2.js';
 import { createModsBridge } from './preload-mods.js';
+import { createInstanceFoldersBridge } from './preload-instance-folders.js';
 
 async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 'choose', requestId: string, timeoutMs: number): Promise<RootsResult<T>> {
   if (!UUID_PATTERN.test(requestId)) return rootsFailure(globalThis.crypto.randomUUID(), 'INVALID_ARGUMENT', globalThis.crypto.randomUUID());
@@ -33,6 +34,7 @@ const bridge: LauncherBridge = Object.freeze({
   ...createResourcesBridge(),
   ...createLoadersBridge(),
   ...createInstancesV2Bridge(),
+  ...createInstanceFoldersBridge(ipcRenderer),
   ...createModsBridge(),
   async catalog(query: CatalogQuery): Promise<CatalogResult> {
     const requestId = globalThis.crypto.randomUUID();

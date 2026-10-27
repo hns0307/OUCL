@@ -1,5 +1,11 @@
 # OUCL 下一对话交接
 
+## 2026-10-27 便携目录与版本设置检查点（额度暂停）
+
+当前分支`mod_loaders`，HEAD仍196bfd7，工作区新增便携目录/版本设置增量待提交。用户明确要求EXE同级自动游戏主目录、版本设置文件夹入口、完成后合并main并生成0.3 EXE，允许Strata。Strata本地模型ready且仅审查方案；采纳外层Bootstrap传可信目录和opaque ID+enum契约，拒绝其改Installation格式/拒绝旧根建议。实现：Launcher.cs传`OUCL_PORTABLE_ROOT`；main仅在没有Installation记录时创建并注册`OUCL.games`，已有自选根不覆盖；新增`instance-folders.v1`，主进程从持久实例元数据重建实际隔离/共享gameDir，只打开game/mods/saves/resourcepacks/shaderpacks/screenshots/logs，拒绝链接逃逸；首页新增版本设置面板；package/UI版本预置0.3.0。
+
+验证：`pnpm typecheck` PASS，`pnpm lint` PASS，`pnpm test` 457项/455 PASS/0 FAIL/2原有SKIP，外网0。首次测试仅因Windows短/长路径表现不同失败，改为realpath比较后全过。尚未跑build、bootstrap测试、包烟测，未合并main，未生成0.3 EXE；Mod计划持久化及玩家确认安装事务仍未完成。原始`OUCL-Codex-Package.zip`和`OUCL.txt`继续保持用户暂存且排除提交。额度检查91%已用，按用户规则提交后暂停至实际重置。下一步：从本提交继续`pnpm check`、bootstrap测试/本地EXE冷热启动（不联网则复用缓存）、审查main与mod_loaders合并关系，再合并到main并生成/校验`release/OUCL-0.3.0.exe`；不得把目录入口冒充完整Mod安装交付。
+
 ## 最新加载器选择：本地 UI/IPC 通过（2026-10-27）
 
 f45f58c为四加载器接受凭据离线恢复；本增量shared/contracts/loader-targets.ts统一参考组合（Fabric0.16.14/Quilt0.29.2/Forge47.4.28的MC1.20.1+Java17、Neo21.1.265的MC1.21.1+Java21），不声明已验证。实际目录稳定目标优先，否则其他稳定版本；没有稳定项时不自动选预发布。主进程与UI同一Forge/Neo MC接入界限。InstallPanel跨MC/loader立即清空旧options、忽略旧promise，参考组合MC/Java可见；参数接受中禁改、旧表单应答不污染新上下文，目录错误可重新获取，未就绪/不支持组合不能提交。

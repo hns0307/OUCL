@@ -170,6 +170,7 @@ internal static class Launcher {
             Cancel.Token.ThrowIfCancellationRequested();
             var start = new ProcessStartInfo(Path.Combine(runtime, "electron.exe")); start.UseShellExecute = false; start.WorkingDirectory = application;
             start.Arguments = Quote(application) + " " + String.Join(" ", Arguments.Select(Quote));
+            start.EnvironmentVariables["OUCL_PORTABLE_ROOT"] = Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));
             start.EnvironmentVariables.Remove("ELECTRON_RUN_AS_NODE"); start.EnvironmentVariables.Remove("NODE_OPTIONS");
             start.EnvironmentVariables.Remove("ELECTRON_OVERRIDE_DIST_PATH");
             Process.Start(start);

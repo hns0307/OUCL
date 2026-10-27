@@ -57,6 +57,8 @@ import { modInventoryContext } from '../services/mods/context.js';
 import { ModInventoryService } from '../services/mods/inventory.js';
 import { ModInspectionService } from '../services/mods/inspection.js';
 import { ModrinthModClient } from '../services/mods/modrinth.js';
+import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
+import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -71,6 +73,7 @@ let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
 let loaders: LoaderService | undefined;
 let mods: ModTaskService | undefined;
+let instanceFolders: InstanceFolderService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
 const javaSelections = new Map<string, Promise<string | undefined>>();
@@ -118,6 +121,8 @@ else void app.whenReady().then(async () => {
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
+    const portableRoot = process.env.OUCL_PORTABLE_ROOT; delete process.env.OUCL_PORTABLE_ROOT;
+    if (portableRoot) await roots.ensureDefault(path.join(portableRoot, 'OUCL.games'));
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const vanillaMetadata = new InstallMetadataService(catalog, reader);
     const initialSettings = await storage.readSettings();
@@ -130,6 +135,7 @@ else void app.whenReady().then(async () => {
       async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable, () => downloadPreferences);
     const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service);
     await service.initialize(); installer = service;
+    instanceFolders = new InstanceFolderService(storage);
     loaders = new LoaderService(loaderClient, service);
     launches = new LaunchService(storage, profiles, service, undefined, undefined, processorJava); await launches.initialize();
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
@@ -152,7 +158,19 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
+  });
+  ipcMain.handle(INSTANCE_FOLDER_CHANNEL, async (event, input: unknown) => {
+    const traceId = randomUUID(); const fallback = typeof input === 'object' && input !== null && 'requestId' in input && typeof input.requestId === 'string' ? input.requestId : traceId;
+    if (!trustedSender(event)) return instanceFolderFailure(fallback, 'INVALID_SENDER', traceId);
+    if (!isInstanceFolderRequest(input)) return instanceFolderFailure(fallback, 'INVALID_ARGUMENT', traceId);
+    try {
+      if (!instanceFolders) throw new InstanceFolderError('ROOT_UNAVAILABLE');
+      const directory = await instanceFolders.resolve(input.payload.instanceId.toLowerCase(), input.payload.folder);
+      if (!trustedSender(event)) return instanceFolderFailure(input.requestId, 'INVALID_SENDER', traceId);
+      if (await shell.openPath(directory)) return instanceFolderFailure(input.requestId, 'UNAVAILABLE', traceId);
+      return { contractVersion: 1 as const, requestId: input.requestId, ok: true as const, data: { opened: true as const } };
+    } catch (error) { return instanceFolderFailure(input.requestId, error instanceof InstanceFolderError ? error.code : 'UNAVAILABLE', traceId); }
   });
   for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
