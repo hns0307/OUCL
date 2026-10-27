@@ -320,3 +320,5 @@
 2026-10-28事务实施：依据原明确批准的版本化实例记录、来源证明、一次安装事务/恢复范围，增加固定mod-txn UUID日志、加载器ready实例可选modCommitId，复用原JSON原子提交/SQLite恢复日志与严格worker；不增加依赖、公开确认通道或远程能力。私有暂存副本hard link仅用于同卷独占发布，未将可写Mod链接到共享对象。保留全部回退材料，无法证明所有权时停写。公共确认任务/取消互锁与完整产品验收仍未完成，证据docs/validation/MOD-TRANSACTION-20261028/。
 
 2026-10-28原批准Mod方案实施：固定mod-confirm:accept/list私有worker与既有SQLite任务接纳互锁，沿用原确认/取消/重连授权，无新表、依赖、公开IPC或后台。计划UUID作为任务请求身份，确认后取消计划受控拒绝；恢复清单核对不可变计划且有界。尚未开放产品执行器/按钮，完整目标继续。证据docs/validation/MOD-CONFIRMATION-20261028/。
+
+2026-10-28原批准Mod环境双重检查实施：生产context接入已登记Java的当前实测版本，沿用既有受控JavaProbe，不扩展发现/下载/登记、公开接口或依赖。无可用测量仍unknown；新增测试用适配器，不编造本机或MC验收。证据docs/validation/MOD-JAVA-FACTS-20261028/。

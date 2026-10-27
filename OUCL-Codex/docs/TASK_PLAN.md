@@ -463,3 +463,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 42. 2026-10-28 Mod确认持久接纳与取消互锁
 
 固定worker确认入口复用既有SQLite tasks/requests事务，绑定计划UUID/精确planId，重复确认恢复同一任务；与取消计划串行互锁，确认后cancelPlan明确CANCEL_TOO_LATE。新增当前根固定有界恢复清单，复核计划证据，无新增表/依赖/公共IPC。完整`pnpm check`495项/493 PASS/0 FAIL/2既有SKIP，Electron45+正式worker的15项计划测试全部通过，证据[MOD-CONFIRMATION-20261028](../../docs/validation/MOD-CONFIRMATION-20261028/REPORT.md)。仍未在产品装配确认执行器，不开放按钮、不重放在途未知任务；下一步接实测Java、准备/事务编排和任务/UI。
+
+## 43. 2026-10-28 Mod检查Java实测事实
+
+生产Mod context已接InstalledJavaFacts，仅对已登记兼容候选执行受控JavaProbe，使用本次真实版本属性；失败/缺失保持unknown，不扫描下载或改登记。取消等待进程close，档案变化使旧结果失效，无永久缓存。完整`pnpm check`499项/497 PASS/0 FAIL/2既有SKIP，正式入口本地fixture的36方法/15能力窗口smoke通过，证据[MOD-JAVA-FACTS-20261028](../../docs/validation/MOD-JAVA-FACTS-20261028/REPORT.md)。新增测试使用注入探测适配器，不算本机Java或MC实测。下一步继续确认任务执行器、准备/事务编排及UI，完整Mod安装仍未交付。

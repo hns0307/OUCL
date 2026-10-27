@@ -5,10 +5,11 @@ import { instanceGameLayout } from '../install/instance-files.js';
 import { ModInventoryError } from './inventory.js';
 import type { ModInventoryContext } from './inventory.js';
 import type { InstalledLanguageReader } from './languages.js';
+import type { InstalledJavaFacts } from './java-facts.js';
 
 /** Resolves only the current registered root and ready instance; directory names never come from IPC. */
 export function modInventoryContext(storage: Pick<StorageClient, 'readInstallation' | 'readInstance'>,
-  languages?: Pick<InstalledLanguageReader, 'read'>): (instanceId: string, signal?: AbortSignal) => Promise<ModInventoryContext> {
+  languages?: Pick<InstalledLanguageReader, 'read'>, java?: Pick<InstalledJavaFacts, 'read'>): (instanceId: string, signal?: AbortSignal) => Promise<ModInventoryContext> {
   return async (instanceId, signal) => {
     const root = await storage.readInstallation(); const record = await storage.readInstance(instanceId);
     if (!root || !record || record.data.summary.rootId !== root.data.rootId || record.data.phase !== 'ready') throw new ModInventoryError('INVALID_ARGUMENT');
@@ -18,7 +19,7 @@ export function modInventoryContext(storage: Pick<StorageClient, 'readInstallati
     const versions: Record<string, string | null> = { minecraft: record.data.summary.mcVersionId, java: null };
     if (loader.kind !== 'vanilla') versions[{ fabric: 'fabricloader', quilt: 'quilt_loader', forge: 'forge', neoforge: 'neoforge' }[loader.kind]] = loader.version;
     const languageVersions = languages ? await languages.read(root.data.dataDirectory, record.data, signal) : {};
-    // Java preparation/probing remains separate; the measured provider components are never inferred from NeoForge version.
+    if (java) versions.java = await java.read(prepared.version.javaMajor, signal);
     return { instanceId, revision: record.revision, modsDirectory: path.join(layout.gameDirectory, 'mods'),
       environment: { loader: loader.kind, versions, languageVersions } };
   };

@@ -17,3 +17,5 @@
 验证见[MOD-PREPARATION-20261028](../validation/MOD-PREPARATION-20261028/REPORT.md)。仍待公共确认任务、持久确认记录、一次实例提交/恢复和最终产品/EXE验证。
 
 后续2026-10-28已有私有[新增事务与恢复服务](MOD_TRANSACTION.md)，可对准备结果执行真实文件发布和唯一JSON提交点；尚未接公共确认任务，产品安装按钮继续不开放。
+
+同日后续：已加入[确认持久接纳互锁](MOD_CONFIRMATION.md)及生产[Java实测事实provider](MOD_JAVA_FACTS.md)。Java不再恒定null；有可探测兼容已登记JVM时使用本次实测完整版本，否则继续unknown。确认执行器与产品UI仍待装配。

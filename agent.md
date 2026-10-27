@@ -343,3 +343,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 pnpm check 495项/493PASS/0FAIL/2既有SKIP；Electron45正式dist worker完整15项mod-plans测试PASS。运行器scripts/mod-confirmation-runtime.mjs；首次计数误配16实际15，修正后明确通过，原TAP保留报告。材料docs/validation/MOD-CONFIRMATION-20261028/及docs/contracts/MOD_CONFIRMATION.md。未联网/未启动MC/不碰用户数据。
 
 下一步：实测Java事实（生产context.java仍null）、公共确认服务编排preparation/transaction、任务订阅/取消/重连/退出等待，最后UI确认按钮与0.3重打包。现有SQLite清单可直接供执行器initialize，先核对mod-txn日志与modCommitId，不自动重放未知下载/提交。产品尚未创建任何mod-install任务。保留旧EXE及zip/txt/stash，不push。
+
+## 最新检查点：生产Mod Java事实（2026-10-28）
+
+从a3b5d11继续，InstalledJavaFacts已接main的modInventoryContext第三参数。按实例prepared.version.javaMajor选择已登记兼容候选，selected优先，使用新JavaProbe真实完整version；失败/实际major变更跳过、全部失败null，不复用saved.version，不系统发现/下载/登记。每次探测2秒，现有输出限制/取消等待close；单活动，无缓存，前后资料变化FILES_CHANGED。候选排序与JavaRuntimeService一致；将来确认准备/提交复验不能省略，启动仍原服务复核。
+
+pnpm check 499项/497PASS/0FAIL/2既有SKIP，4项新测试为受控probe适配器；正式入口本地fixture smoke 36方法/15能力通过。证据docs/validation/MOD-JAVA-FACTS-20261028/，契约docs/contracts/MOD_JAVA_FACTS.md。未联网/未启动MC/未动用户资料。
+
+下一步只剩接线但仍需完整验证：持久确认执行器调用acceptModConfirmation，以返回taskId作为preparation consumer/transaction taskId；初始化readModConfirmations结合mod-txn日志和实例modCommitId判定恢复，未知不得重放。任务快照增加mod-install及相应标签；公共confirm/state响应与ResourceBrowser按钮，取消改走任务控制且提交后CANCEL_TOO_LATE；关闭等待执行器。当前产品未装配私有preparation/transaction/confirm，不声称Mod安装交付。旧EXE及原zip/txt/stash保留，不push。末次额度5小时78%已用、周86%已用，未到开发暂停阈值；下一心跳先核对额度。

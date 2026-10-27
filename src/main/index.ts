@@ -54,6 +54,7 @@ import { ModTaskService } from '../services/mods/tasks.js';
 import { ModArchiveReader } from '../services/workers/mod-archive-reader.js';
 import { InstalledLanguageReader } from '../services/mods/languages.js';
 import { modInventoryContext } from '../services/mods/context.js';
+import { InstalledJavaFacts } from '../services/mods/java-facts.js';
 import { ModInventoryService } from '../services/mods/inventory.js';
 import { ModInspectionService } from '../services/mods/inspection.js';
 import { ModrinthModClient } from '../services/mods/modrinth.js';
@@ -155,7 +156,7 @@ else void app.whenReady().then(async () => {
     // A damaged or newer Mod record must not disable existing launch/install capabilities.
     try {
       const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
-      const context = modInventoryContext(storage, new InstalledLanguageReader(scanner));
+      const context = modInventoryContext(storage, new InstalledLanguageReader(scanner), new InstalledJavaFacts(profiles));
       const inventory = new ModInventoryService(context, scanner);
       const platform = new ModrinthModClient(); const inspections = new ModInspectionService(context, inventory, platform);
       const modTasks = new ModTaskService(storage, inventory, inspections);
