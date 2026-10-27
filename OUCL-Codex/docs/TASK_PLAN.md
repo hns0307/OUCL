@@ -439,3 +439,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 36. 2026-10-28 Mod安装计划公开预览
 
 既有真实JAR/平台双重检查与候选解析已通过`mods:plan`接入主进程、preload和严格公开契约。请求不含路径/URL，响应绑定当前实例修订/指纹与精确文件摘要、下载量、requiredBy和未知/冲突证据；仍是非授权预览。`pnpm check`459项/457 PASS/0 FAIL/2既有SKIP，34方法/15能力Electron smoke通过，证据见[MOD-PLAN-IPC-20261028](../../docs/validation/MOD-PLAN-IPC-20261028/REPORT.md)。下一增量为计划持久化、玩家确认/拒绝、下载后复验和一次事务；未联网、未写实例、不误报安装完成。
+
+## 37. 2026-10-28 资源库安装计划界面
+
+已下载Mod在选中ready非原版实例时可生成计划预览；界面只展示状态、文件数和待下载量，并明确不写入实例。切换实例/修订清除旧计划，vanilla/非Mod/未下载项目不显示入口。完整检查仍为459项/457 PASS/0 FAIL/2既有SKIP，证据见[MOD-PLAN-UI-20261028](../../docs/validation/MOD-PLAN-UI-20261028/REPORT.md)。确认/拒绝、持久计划、实际依赖下载和一次安装事务继续保持未完成。

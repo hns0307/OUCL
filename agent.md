@@ -287,3 +287,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：资源库安装计划界面（2026-10-28）
+
+下载页资源库现在只对已下载完成的Mod、当前ready非原版实例和可用`mods.v1`显示“生成安装计划”。调用绑定实例当前修订及资源库project/version/SHA1；切换实例/修订清除旧预览，超时保留同requestId重试。界面显示ready/conflict/unknown、计划文件数和待下载总量，并明确这是不会写实例的预览；vanilla、非Mod和未完成下载不显示入口。
+
+完整`pnpm check`459项/457 PASS/0 FAIL/2既有系统能力SKIP，typecheck/lint/coverage/build通过；证据`docs/validation/MOD-PLAN-UI-20261028/`。未联网、未启动游戏、未动用户游戏数据。下一步仍为计划持久化、玩家确认/拒绝、依赖实际下载、逐JAR复验和一次事务；不push。
+
+---
+

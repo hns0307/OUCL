@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
 import type { LibraryItem, ResourceKind, ResourceProject, ResourceVersion } from '../shared/contracts/resources.js';
+import type { InstanceSummary } from '../shared/contracts/instances.js';
+import type { ModInstallPlan } from '../shared/contracts/mods.js';
 import { resourceFailure } from '../shared/contracts/resources.js';
 import { useLauncher } from './launcher-state.js';
 import { InstallTask } from './InstallPanel.js';
 
 const size = (bytes: number): string => `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
 /** Real Modrinth browsing and verified library downloads. No loader or instance installation is implied. */
-export function ResourceBrowser({ enabled, kind, libraryOnly }: { enabled: boolean; kind: ResourceKind; libraryOnly: boolean }) {
+export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, instance }: {
+  enabled: boolean; kind: ResourceKind; libraryOnly: boolean; modPlansEnabled: boolean; instance?: InstanceSummary;
+}) {
   const { rootId, tasks, refreshGame } = useLauncher();
   const [query, setQuery] = useState(''); const [gameVersion, setGameVersion] = useState(''); const [loader, setLoader] = useState('');
   const [search, setSearch] = useState({ query: '', gameVersion: '', loader: '', offset: 0 }); const [refresh, setRefresh] = useState(0);
@@ -17,7 +21,9 @@ export function ResourceBrowser({ enabled, kind, libraryOnly }: { enabled: boole
   const [versionId, setVersionId] = useState(''); const [fileId, setFileId] = useState(''); const [library, setLibrary] = useState<LibraryItem[]>([]);
   const [busy, setBusy] = useState(false); const [versionBusy, setVersionBusy] = useState(false); const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<MessageKey>(); const [libraryError, setLibraryError] = useState<MessageKey>();
+  const [plan, setPlan] = useState<ModInstallPlan>(); const [planning, setPlanning] = useState<string>(); const [planError, setPlanError] = useState<MessageKey>();
   const requests = useRef(new Map<string, string>());
+  useEffect(() => { setPlan(undefined); setPlanError(undefined); setPlanning(undefined); }, [instance?.instanceId, instance?.revision]);
   useEffect(() => { setSelected(undefined); setVersions([]); setVersionId(''); setFileId(''); }, [kind]);
   useEffect(() => {
     if (!enabled || libraryOnly || !window.oucl) return; let active = true; setBusy(true); setError(undefined);
@@ -50,6 +56,18 @@ export function ResourceBrowser({ enabled, kind, libraryOnly }: { enabled: boole
     } catch { setError('unavailable'); } finally { setDownloading(false); }
   }
   async function openLibrary(): Promise<void> { if (!window.oucl) return; const result = await window.oucl.openResourceLibrary(); if (!result.ok) setLibraryError(result.error.messageKey); }
+  async function previewPlan(item: LibraryItem): Promise<void> {
+    if (!window.oucl || !instance || planning) return;
+    const key = `plan:${instance.instanceId}:${instance.revision}:${item.projectId}:${item.versionId}:${item.fileId}`;
+    const requestId = requests.current.get(key) ?? crypto.randomUUID(); requests.current.set(key, requestId);
+    setPlanning(item.taskId); setPlanError(undefined); setPlan(undefined);
+    try {
+      const result = await window.oucl.planMod(requestId, { instanceId: instance.instanceId, expectedRevision: instance.revision,
+        root: { projectId: item.projectId, versionId: item.versionId, fileId: item.fileId }, selections: {} });
+      if (result.ok) { requests.current.delete(key); setPlan(result.data.plan); }
+      else { setPlanError(result.error.messageKey); if (result.error.code !== 'TIMEOUT' && result.error.code !== 'UNAVAILABLE') requests.current.delete(key); }
+    } catch { setPlanError('unavailable'); } finally { setPlanning(undefined); }
+  }
   const version = versions.find(v => v.versionId === versionId);
   return <div className="resources-view">
     {!libraryOnly && <><div className="download-note"><span className="source-badge">Modrinth</span><p>{MESSAGES.uiResourceNotice}</p></div>
@@ -82,12 +100,19 @@ export function ResourceBrowser({ enabled, kind, libraryOnly }: { enabled: boole
       {!rootId ? <p className="empty-state">{MESSAGES.chooseRootFirst}</p> : library.length === 0 ? <p className="empty-state">{MESSAGES.uiEmptyLibrary}</p> : [...library].reverse().map(item => {
         const task = tasks.find(t => t.taskId === item.taskId); const failure = item.errorCode ? resourceFailure(item.taskId, item.errorCode, item.taskId) : undefined; return <article className="library-item" key={item.taskId}><div><strong>{item.title}</strong><span className="tag">{item.kind === 'mod' ? MESSAGES.uiMods : item.kind === 'shader' ? MESSAGES.uiShaders : MESSAGES.uiResourcepacks}</span>
           <p className="muted small">{item.versionName} · {item.filename} · {size(item.size)}</p></div>
-          {item.downloaded ? <span className="success">{MESSAGES.uiDownloaded}</span> : task && <InstallTask initial={task} onSettled={refreshGame} />}
+          {item.downloaded ? <><span className="success">{MESSAGES.uiDownloaded}</span>{item.kind === 'mod' && modPlansEnabled && instance &&
+            <button className="secondary" disabled={!!planning} onClick={() => { void previewPlan(item); }}>{planning === item.taskId ? MESSAGES.modsPlanning : MESSAGES.modsPlan}</button>}</> : task && <InstallTask initial={task} onSettled={refreshGame} />}
           {failure && !failure.ok && <p className="form-error" role="alert">{MESSAGES[failure.error.messageKey]}</p>}
           {!item.downloaded && (!task || ['failed', 'cancelled', 'needsRecovery'].includes(task.state)) && <button className="secondary" disabled={downloading} onClick={() => { void download(item.projectId, item.versionId, item.fileId); }}>{MESSAGES.uiRetry}</button>}
+          {plan?.rootVersionId === item.versionId && plan.instanceId === instance?.instanceId && <div className="mod-plan-preview" data-plan-state={plan.state}>
+            <strong>{plan.state === 'ready' ? MESSAGES.modsPlanReady : plan.state === 'conflict' ? MESSAGES.modsPlanConflict : MESSAGES.modsPlanUnknown}</strong>
+            <p>{MESSAGES.modsPlanFiles}: {plan.items.length} · {MESSAGES.modsPlanDownload}: {size(plan.totalDownloadBytes)}</p>
+            <p className="muted small">{MESSAGES.modsPlanPreviewOnly}</p>
+          </div>}
         </article>;
       })}
       {libraryError && <p className="form-error" role="alert">{MESSAGES[libraryError]}</p>}
+      {planError && <p className="form-error" role="alert">{MESSAGES[planError]}</p>}
     </section>
   </div>;
 }
