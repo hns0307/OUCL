@@ -1,5 +1,15 @@
 # OUCL 下一对话交接
 
+## 最新优先：跳过外网测试，先加载器（2026-10-27）
+
+用户原文“跳过联网测试，优先模组加载器”。接下来停止外网测试，优先Fabric/Quilt/Forge/NeoForge本地安装/启动接入修订与夹具验证，保留未完成的外网/实机矩阵，不恢复原Esc停止窗口操作。main下载优化已完成，不重复开发。
+
+d066a9d为有界候选回溯（428/426/0/2）。本次来源前置ModLibraryReader只接收资源库受控标识，检查下载完成/项目版本/对象sourceKey、实际SHA1/SHA256/SHA512及大小/真实JAR声明，并在平台读取后复验资源记录、注册根和文件stamp；不写实例。433测试431PASS/0FAIL/2原有SKIP，完整check及runtime入口typecheck/lint通过。指令前联网夹具已结束：首次NETWORK_FAILED保留，同官方固定文件探测200，有限重试中三个FerriteCore真实资源下载及Reader复验均通过，测试rootId7a880384-9fdb-4800-bf92-8407425e7469、只在新建.test-build/mod-library-*根，无实例写入。证据docs/validation/MOD-LIBRARY-20261027/；无需再联网跑。当前没有该测试监督器需要取消。
+
+加载器审查发现优先修订点：LoaderService.create先远程catalog再InstallerService.createLoader，这使已持久接受的同requestId重试受网络或目录变更阻挡。应先从受管SQLite请求幂等表只读查询同root/request/kind/payloadDigest的既有接受；匹配直接恢复原任务，不新任务/不联网，内容冲突明确拒绝；首次新请求仍验证官方目录和隔离再接受。TaskTable已有requests表，无需改DB表格式，可新增固定worker find-accepted只读指令，主进程不直连SQLite。InstallerService.enqueue/admit已有规范输入/digest及实例恢复检查，要复用/保持，不能无条件返回不同payload的任务。loaders.v1目前无REVISION_CONFLICT代码，需在原批准契约内补明确映射。渲染端接受超时或UNAVAILABLE应保留请求ID。后续确认四加载器独立本地夹具安装、取消/恢复/重开和原版兼容，不做外网或Windows输入。
+
+原始两份暂存排除，--only显式路径本地提交，不push、不碰用户游戏。最近额度已用7%/周31%，窗口1793087081为历史，继续前重新核对。完整0.3.0、Mod确认事务、分发契约/适配器仍未完成。
+
 ## 最新执行：有界候选组合提案（2026-10-27）
 
 用户已切回Default并明确继续完整批准方案，已核对额度0%已用/周29%、新窗口1793087081；从c2f0247继续，main下载优化已交付/同步，不重复。新增services/mods/resolver.ts：ModDependencyResolver在既有候选收集上按稳定/发布时间/ID探索项目选择并回溯；精确根/玩家选择/已装不变。候选全量512而非只展示32，默认1024搜索状态/最高4096，图评估间30秒预算/让出事件循环、最多512网络读取/8MiB缓存。耗尽上限返回SEARCH_LIMIT未知；完整穷尽冲突附NO_SOLUTION。未知证据不变通过，失败读取不伪装冲突；合法toString项目只读own selections。无新依赖/IPC/存储格式。
