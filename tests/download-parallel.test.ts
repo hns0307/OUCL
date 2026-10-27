@@ -41,7 +41,11 @@ test('real HTTP parallel ranges join exact bytes and checkpoint only a complete 
   try {
     const result = await new ParallelHttpTransfer(request).run(state.file, state.current, state.save, {}, 3);
     assert.equal(result.state, 'complete'); assert.deepEqual(await readFile(state.file), bytes); assert.ok(peak >= 2 && peak <= 3);
-    assert.ok(state.checkpoints.every(size => size === 0 || size === bytes.length));
+    assert.ok(state.checkpoints.every((size, index) =>
+      size >= 0 && size <= bytes.length
+      && (size === bytes.length || size % (4 * 1024 ** 2) === 0)
+      && (index === 0 || size >= state.checkpoints[index - 1]!)));
+    assert.equal(state.checkpoints.at(-1), bytes.length);
   } finally { server.closeAllConnections(); server.close(); await once(server, 'close'); }
 });
 test('unsupported ranges fall back to one stream, while mirror failure clears source validators', async () => {

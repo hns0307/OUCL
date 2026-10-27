@@ -1,0 +1,31 @@
+{
+  "status": "FAIL",
+  "root": "D:\\MC_start\\OUCL-download-main\\.test-build\\download-network-YDmuXp",
+  "samples": [
+    {
+      "label": "official-parallel",
+      "bytes": 23028853,
+      "elapsedMs": 2467,
+      "peak": 1,
+      "transportSource": "official",
+      "independentSha1": true,
+      "requests": [
+        {
+          "url": "https://piston-data.mojang.com/v1/objects/0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838/client.jar",
+          "range": "bytes=0-0",
+          "status": 206,
+          "etag": "0x8DB6B496E3B6697",
+          "location": null
+        },
+        {
+          "url": "https://piston-data.mojang.com/v1/objects/0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838/client.jar",
+          "range": null,
+          "status": 200,
+          "etag": "0x8DB6B496E3B6697",
+          "location": null
+        }
+      ]
+    }
+  ],
+  "error": "ERR_ASSERTION"
+}

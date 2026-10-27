@@ -1,0 +1,8 @@
+{
+  "status": "FAIL",
+  "fixture": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "stage": "natives",
+  "code": "NEEDS_RECOVERY"
+}

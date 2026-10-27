@@ -75,7 +75,7 @@ export function App() {
         <div hidden={downloadTab === 'minecraft'}><ResourceBrowser enabled={has('resources.v1') && state.page === 'downloads' && downloadTab !== 'minecraft'} kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
       </div>
       <div hidden={state.page !== 'announcements'}><AnnouncementsPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
-      <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.2.2</span></footer>
+      <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.3.0</span></footer>
     </main></div>
   </div>;
 }

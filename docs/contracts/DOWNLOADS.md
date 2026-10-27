@@ -15,3 +15,5 @@
 旧Fabric/Quilt本轮重试均metadata/CATALOG_UNAVAILABLE，三个官方端点独立探测200；尚未定位，不因下载优化提案而标为安装通过。
 
 main:d2521bb限定实现已同步本分支：实际运行时/设置UI/有界源传输可用，397项395通过/0失败/2原有跳过、真实Electron32方法14能力与下载设置独立重开通过。以docs/validation/DOWNLOADS-mod/REPORT.md为本分支证据；main的公网官方ETag/If-Range条件缺项保持安全单流回退，不宣称公网分段性能通过。安装器保留全部加载器/Mod装配，无新包。原WIP按SHA256保留，原始两份暂存排除。
+
+2026-10-27分支合并补入main原始验证证据：`docs/validation/DOWNLOADS-main/`及`docs/validation/BOOTSTRAP-0.2.3/`保留main的设置UI、原版安装/重开和0.2.3引导证据。其源码能力已由`f5a8fb4`按加载器构造参数同步，合并后继续采用包含四加载器、Mod与下载源的超集实现；公网官方源缺少强ETag时仍安全回退单流，不据此宣称公网分段成功。

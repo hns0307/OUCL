@@ -1,5 +1,7 @@
 # 0.2.2 小EXE与按需运行时
 
+> 0.3.0延续同级`OUCL.runtime`，并由外层引导程序向Electron传递实际EXE目录。首次没有既有游戏根记录时，应用在EXE同级建立并注册`OUCL.games`；已有用户自选根优先，不自动覆盖、迁移或删除。
+
 批准：2026-10-25用户“按照你说的进行”，原文及范围见资料包DECISIONS末尾。Electron业务架构保留；独立Windows C#引导只负责运行环境准备与启动，不承接游戏业务。没有加入electron-builder、NuGet包或生产npm依赖。
 
 ## 分发与信任

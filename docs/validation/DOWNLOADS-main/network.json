@@ -1,0 +1,79 @@
+{
+  "status": "PASS",
+  "root": "D:\\MC_start\\OUCL-download-main\\.test-build\\download-network-PzFfpJ",
+  "samples": [
+    {
+      "label": "official-parallel",
+      "bytes": 23028853,
+      "elapsedMs": 2385,
+      "peak": 1,
+      "transportSource": "official",
+      "independentSha1": true,
+      "requests": [
+        {
+          "url": "https://piston-data.mojang.com/v1/objects/0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838/client.jar",
+          "range": "bytes=0-0",
+          "status": 206,
+          "etag": "0x8DB6B496E3B6697",
+          "location": null
+        },
+        {
+          "url": "https://piston-data.mojang.com/v1/objects/0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838/client.jar",
+          "range": null,
+          "status": 200,
+          "etag": "0x8DB6B496E3B6697",
+          "location": null
+        }
+      ]
+    },
+    {
+      "label": "official-serial",
+      "bytes": 23028853,
+      "elapsedMs": 926,
+      "peak": 1,
+      "transportSource": "official",
+      "independentSha1": true,
+      "requests": [
+        {
+          "url": "https://piston-data.mojang.com/v1/objects/0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838/client.jar",
+          "range": null,
+          "status": 200,
+          "etag": "0x8DB6B496E3B6697",
+          "location": null
+        }
+      ]
+    },
+    {
+      "label": "bmclapi",
+      "bytes": 2959479,
+      "elapsedMs": 694,
+      "peak": 1,
+      "transportSource": "bmclapi",
+      "independentSha1": true,
+      "requests": [
+        {
+          "url": "https://bmclapi2.bangbang93.com/maven/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar",
+          "range": null,
+          "status": 302,
+          "etag": null,
+          "location": "https://mirrors.cernet.edu.cn/bmclapi/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar"
+        },
+        {
+          "url": "https://mirrors.cernet.edu.cn/bmclapi/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar",
+          "range": null,
+          "status": 302,
+          "etag": null,
+          "location": "https://mirrors.qlu.edu.cn/bmclapi/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar"
+        },
+        {
+          "url": "https://mirrors.qlu.edu.cn/bmclapi/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar",
+          "range": null,
+          "status": 200,
+          "etag": "\"6ad633d4-2d2877\"",
+          "location": null
+        }
+      ]
+    }
+  ],
+  "officialParallelObserved": false
+}
