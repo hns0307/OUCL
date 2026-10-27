@@ -36,7 +36,9 @@ function nativeJar(): Buffer {
   end.writeUInt32LE(central.length + name.length, 12); end.writeUInt32LE(local.length + name.length + body.length, 16);
   return Buffer.concat([local, name, body, central, name, end]);
 }
-async function fixture() {
+type MetadataLoaderKind = 'fabric' | 'quilt';
+async function fixture(loaderKind: MetadataLoaderKind = 'fabric', minecraftVersion = 'fixture',
+  loaderVersion = loaderKind === 'fabric' ? '0.20.1' : '0.29.2') {
   const root = await mkdtemp(path.join(tmpdir(), 'oucl-installer-')); const metadataDirectory = path.join(root, 'metadata'); const dataDirectory = path.join(root, 'games');
   await mkdir(metadataDirectory); await mkdir(dataDirectory); const storage = await StorageClient.open(entry, metadataDirectory);
   await storage.createInstallation({ rootId, dataDirectory });
@@ -50,42 +52,60 @@ async function fixture() {
   bodies.set(`https://resources.download.minecraft.net/${hash.slice(0, 2)}/${hash}`, resource);
   const indexBody = JSON.stringify({ objects: { 'minecraft/sound.ogg': { hash, size: resource.length } } }, null, 2);
   const indexHash = sha1(indexBody); const indexUrl = `https://piston-meta.mojang.com/v1/packages/${indexHash}/fixture.json`;
-  const descriptor = JSON.stringify({ id: 'fixture', mainClass: 'net.minecraft.client.main.Main', type: 'release', downloads: { client },
+  const descriptor = JSON.stringify({ id: minecraftVersion, mainClass: 'net.minecraft.client.main.Main', type: 'release', downloads: { client },
     javaVersion: { majorVersion: 17 }, assetIndex: { id: 'fixture', url: indexUrl, sha1: indexHash, size: Buffer.byteLength(indexBody) },
     libraries: [{ name: 'org.example:library:1', downloads: { artifact: library, classifiers: { 'natives-windows': native } }, natives: { windows: 'natives-windows' } }],
     arguments: { game: ['--username', '${auth_player_name}', '--gameDir', '${game_directory}'], jvm: ['-cp', '${classpath}', '-Djava.library.path=${natives_directory}'] } });
-  const descriptorHash = sha1(descriptor); const descriptorUrl = `https://piston-meta.mojang.com/v1/packages/${descriptorHash}/fixture.json`;
-  const manifest = JSON.stringify({ versions: [{ id: 'fixture', type: 'release', url: descriptorUrl, sha1: descriptorHash,
+  const descriptorHash = sha1(descriptor); const descriptorUrl = `https://piston-meta.mojang.com/v1/packages/${descriptorHash}/${minecraftVersion}.json`;
+  const manifest = JSON.stringify({ versions: [{ id: minecraftVersion, type: 'release', url: descriptorUrl, sha1: descriptorHash,
     time: '2026-01-01T00:00:00+00:00', releaseTime: '2026-01-01T00:00:00+00:00' }] });
+  let metadataRequests = 0; let offline = false;
   const reader: MetadataReader = { async read(url, expected) {
+    metadataRequests++; if (offline) throw new Error('fixture metadata disabled');
     const body = url === descriptorUrl ? descriptor : url === indexUrl ? indexBody : manifest;
     const digest = sha1(body); if (expected) assert.equal(digest, expected);
     return { body, sha1: digest, sha256: createHash('sha256').update(body).digest('hex') };
   } };
-  const loaderBytes = Buffer.from('loader library fixture'); const loaderHash = sha1(loaderBytes);
-  const loaderUrl = 'https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.20.1/fabric-loader-0.20.1.jar'; bodies.set(loaderUrl, loaderBytes);
-  const loaderValue = { id: 'fabric-loader-0.20.1-fixture', inheritsFrom: 'fixture', mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient',
-    arguments: { game: [], jvm: ['-Dfabric.fixture=true'] }, libraries: [{ name: 'net.fabricmc:fabric-loader:0.20.1', url: 'https://maven.fabricmc.net/' }] };
-  const loaderBody = JSON.stringify(loaderValue); const loaderProfile = parseLoaderProfile('fabric', 'fixture', '0.20.1', loaderValue);
+  const loaderBytes = Buffer.from(`${loaderKind} loader library fixture`); const loaderHash = sha1(loaderBytes);
+  const loaderRepository = loaderKind === 'fabric' ? 'https://maven.fabricmc.net/' : 'https://maven.quiltmc.org/repository/release/';
+  const loaderGroup = loaderKind === 'fabric' ? 'net.fabricmc' : 'org.quiltmc';
+  const loaderCoordinate = `${loaderGroup}:${loaderKind}-loader:${loaderVersion}`;
+  const loaderPath = `${loaderGroup.replaceAll('.', '/')}/${loaderKind}-loader/${loaderVersion}`;
+  const loaderArtifact = loaderKind === 'fabric' ? 'fabric-loader' : 'quilt-loader';
+  const loaderUrl = `${loaderRepository}${loaderPath}/${loaderArtifact}-${loaderVersion}.jar`; bodies.set(loaderUrl, loaderBytes);
+  const loaderMainClass = loaderKind === 'fabric' ? 'net.fabricmc.loader.impl.launch.knot.KnotClient' : 'org.quiltmc.loader.impl.launch.knot.KnotClient';
+  const loaderValue = { id: `${loaderArtifact}-${loaderVersion}-${minecraftVersion}`, inheritsFrom: minecraftVersion, mainClass: loaderMainClass,
+    arguments: { game: [], jvm: [`-D${loaderKind}.fixture=true`] }, libraries: [{ name: loaderCoordinate, url: loaderRepository }] };
+  const loaderBody = JSON.stringify(loaderValue); const loaderProfile = parseLoaderProfile(loaderKind, minecraftVersion, loaderVersion, loaderValue);
   const loaderSha256 = createHash('sha256').update(loaderBody).digest('hex');
   const originalFetch = globalThis.fetch; let requests = 0; let delayed = false;
+  let notifyFetchStarted: (() => void) | undefined;
+  const fetchStarted = new Promise<void>(resolve => { notifyFetchStarted = resolve; });
   globalThis.fetch = async (url, options) => {
-    requests++; if (delayed) await new Promise<void>(resolve => setTimeout(resolve, 100));
+    requests++; notifyFetchStarted?.(); notifyFetchStarted = undefined;
+    if (offline) throw new Error('fixture network disabled');
+    if (delayed) await new Promise<void>(resolve => setTimeout(resolve, 100));
     if (options?.signal?.aborted) throw new DOMException('cancelled', 'AbortError');
     const bytes = bodies.get(String(url)); assert.ok(bytes, 'fixture URL not found');
     return new Response(new Uint8Array(bytes), { headers: { 'content-length': String(bytes.length) } });
   };
-  const createService = (repository: StorageClient): InstallerService => {
+  const createLoaderMetadata = (repository: StorageClient): LoaderInstallMetadataService => {
     const vanilla = new InstallMetadataService(new CatalogService(reader, repository), reader);
-    const loader = new LoaderInstallMetadataService(vanilla, { profile: async () => ({ profile: loaderProfile, body: loaderBody,
-      evidence: { sourceUrl: 'https://meta.fabricmc.net/v2/versions/loader/fixture/0.20.1/profile/json', sha256: loaderSha256 } }) },
-    { plan: async () => ({ totalBytes: loaderBytes.length, libraries: [{ path: loaderProfile.libraries[0]!.path, spec: { url: loaderUrl,
-      expected: { algorithm: 'sha1', digest: loaderHash, size: loaderBytes.length, provenanceId: `loader:fabric:${loaderHash}` },
-      anchor: { kind: 'loader-maven', algorithm: 'sha256', digest: 'f'.repeat(64) } } }] }) });
-    return new InstallerService(repository, entry, vanilla, loader);
+    return new LoaderInstallMetadataService(vanilla, { profile: async () => {
+      metadataRequests++; if (offline) throw new Error('fixture metadata disabled');
+      return { profile: loaderProfile, body: loaderBody,
+        evidence: { sourceUrl: `${loaderKind === 'fabric' ? 'https://meta.fabricmc.net/v2' : 'https://meta.quiltmc.org/v3'}/versions/loader/${minecraftVersion}/${loaderVersion}/profile/json`, sha256: loaderSha256 } };
+    } },
+    { plan: async () => { metadataRequests++; if (offline) throw new Error('fixture metadata disabled'); return { totalBytes: loaderBytes.length, libraries: [{ path: loaderProfile.libraries[0]!.path, spec: { url: loaderUrl,
+      expected: { algorithm: 'sha1', digest: loaderHash, size: loaderBytes.length, provenanceId: `loader:${loaderKind}:${loaderHash}` },
+      anchor: { kind: 'loader-maven', algorithm: 'sha256', digest: 'f'.repeat(64) } } }] }; } });
   };
+  const createService = (repository: StorageClient): InstallerService => new InstallerService(repository, entry,
+    new InstallMetadataService(new CatalogService(reader, repository), reader), createLoaderMetadata(repository));
   const service = createService(storage);
-  return { root, storage, service, createService, metadataDirectory, dataDirectory, requests: () => requests, delay: () => { delayed = true; },
+  return { root, storage, service, createService, metadataDirectory, dataDirectory, requests: () => requests,
+    metadataRequests: () => metadataRequests, waitForFetch: () => fetchStarted, delay: () => { delayed = true; }, resume: () => { delayed = false; },
+    offline: () => { offline = true; },
     async close() { await service.close(); globalThis.fetch = originalFetch; await storage.close(); assert.equal(path.dirname(root), path.resolve(tmpdir())); assert.ok(path.basename(root).startsWith('oucl-installer-')); await rm(root, { recursive: true, force: true }); } };
 }
 async function finished(service: InstallerService, taskId: string) {
@@ -135,12 +155,59 @@ test('Fabric installation uses the same transaction and reopens with its pinned 
     assert.equal(record?.data.metadata?.loader?.version, '0.20.1');
     const restored = restoreInstallMetadata(record!.data); assert.equal(restored.version.mainClass, 'net.fabricmc.loader.impl.launch.knot.KnotClient');
     assert.ok(restored.version.jvmArguments.includes('-Dfabric.fixture=true'));
-    assert.ok(restored.plan.artifacts.some(item => item.sha1 === sha1(Buffer.from('loader library fixture'))));
+    assert.ok(restored.plan.artifacts.some(item => item.sha1 === sha1(Buffer.from('fabric loader library fixture'))));
     await f.service.close(); await f.storage.close(); const reopened = await StorageClient.open(entry, f.metadataDirectory); const restarted = f.createService(reopened);
     try { await restarted.initialize(); assert.equal((await restarted.list(rootId))[0]?.state, 'ready'); }
     finally { await restarted.close(); await reopened.close(); }
   } finally { await f.close(); }
 });
+
+for (const target of [
+  { kind: 'fabric' as const, minecraftVersion: '1.20.1', loaderVersion: '0.16.14', mainClass: 'net.fabricmc.loader.impl.launch.knot.KnotClient' },
+  { kind: 'quilt' as const, minecraftVersion: '1.20.1', loaderVersion: '0.29.2', mainClass: 'org.quiltmc.loader.impl.launch.knot.KnotClient' }
+]) {
+  test(`${target.kind} reference target installs privately and reopens without metadata or transfer access`, async () => {
+    const f = await fixture(target.kind, target.minecraftVersion, target.loaderVersion);
+    try {
+      const accepted = await f.service.createLoader(request(80), { rootId, mcVersionId: target.minecraftVersion,
+        displayName: `${target.kind} reference`, isolation: 'on', loader: { kind: target.kind, version: target.loaderVersion } });
+      const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.ok(completed.instance);
+      const stored = await f.storage.readInstance(completed.instance.instanceId); assert.ok(stored); assert.equal(stored.data.phase, 'ready');
+      assert.deepEqual(stored.data.loader, { kind: target.kind, version: target.loaderVersion });
+      const verified = await f.service.prepareLaunch(completed.instance.instanceId, stored.revision, new AbortController().signal);
+      assert.equal(verified.prepared.version.mainClass, target.mainClass);
+      assert.equal(verified.prepared.version.javaMajor, 17);
+      assert.ok(verified.prepared.version.jvmArguments.includes(`-D${target.kind}.fixture=true`));
+      assert.equal(verified.layout.gameDirectory, path.join(verified.layout.gameRoot, 'versions', completed.instance.instanceId));
+      const transferCount = f.requests(); const metadataCount = f.metadataRequests(); f.offline();
+      await f.service.close(); await f.storage.close();
+      const reopened = await StorageClient.open(entry, f.metadataDirectory); const restarted = f.createService(reopened);
+      try {
+        await restarted.initialize(); const summaries = await restarted.listV2(rootId); assert.equal(summaries.length, 1);
+        assert.deepEqual(summaries[0]?.loader, { kind: target.kind, version: target.loaderVersion });
+        const record = await reopened.readInstance(completed.instance.instanceId); assert.ok(record);
+        const offlineVerified = await restarted.prepareLaunch(completed.instance.instanceId, record.revision, new AbortController().signal);
+        assert.equal(offlineVerified.prepared.version.mainClass, target.mainClass);
+        assert.equal(f.requests(), transferCount); assert.equal(f.metadataRequests(), metadataCount);
+      } finally { await restarted.close(); await reopened.close(); }
+    } finally { await f.close(); }
+  });
+
+  test(`${target.kind} cancellation stays unlaunchable and a new request can install the same display name`, async () => {
+    const f = await fixture(target.kind, target.minecraftVersion, target.loaderVersion); f.delay();
+    try {
+      const loaderInput = { rootId, mcVersionId: target.minecraftVersion, displayName: `${target.kind} cancelled`, isolation: 'on' as const,
+        loader: { kind: target.kind, version: target.loaderVersion } };
+      const accepted = await f.service.createLoader(request(81), loaderInput); await f.waitForFetch(); await f.service.cancel(rootId, accepted.taskId);
+      const cancelled = await finished(f.service, accepted.taskId); assert.equal(cancelled.task.execution.state, 'cancelled');
+      assert.equal(cancelled.instance?.state, 'cancelled'); assert.ok(cancelled.instance);
+      await assert.rejects(f.service.prepareLaunch(cancelled.instance.instanceId, cancelled.instance.revision, new AbortController().signal),
+        { code: 'INSTANCE_NOT_FOUND' });
+      f.resume(); const retry = await f.service.createLoader(request(82), loaderInput);
+      const ready = await finished(f.service, retry.taskId); assert.equal(ready.task.execution.state, 'completed'); assert.equal(ready.instance?.state, 'ready');
+    } finally { await f.close(); }
+  });
+}
 
 test('request idempotency rejects changed payload and same-name admission never overwrites an instance', async () => {
   const f = await fixture();

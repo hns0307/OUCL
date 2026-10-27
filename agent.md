@@ -239,3 +239,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 2026-10-26main独立实现并验证后已精确同步mod_loaders：397项395PASS/0FAIL/2原有SKIP、实际下载设置保存重开、32方法14能力Electron通过。完整main证据/0.2.3EXE在D:/MC_start/OUCL-download-main，main:d2521bb；本分支不改为0.2.3交付、不抹加载器/Mod能力。原WIP按SHA256保存在.test-build/download-wip-preserved-20261026/，两份原始资料仍暂存且排除提交。原版重开通用缓存修复本分支此前807e85c已存在；公网严格分段仍因官方ETag/If-Range不满足而回退，不把它写通过。现恢复F/Q失败诊断与Mod原目标。
 
+## 最新检查点：Fabric / Quilt 本地安装事务（2026-10-27）
+
+从9b8f010继续，`tests/installer.test.ts`夹具参数化为Fabric/Quilt独立官方形状，代表目标Fabric0.16.14、Quilt0.29.2，均MC1.20.1/Java17。两者分别通过正式InstallerService、SQLite worker、对象仓库、隔离实例物化和prepareLaunch；检查主类、Java major、JVM参数及私有gameDir。关闭服务/存储并重开后，夹具强制所有元数据和传输入口失败，prepareLaunch仍只用持久证明/缓存对象通过且计数不变。下载开始后取消进入cancelled，prepareLaunch拒绝，新的requestId可用同显示名安装ready。
+
+完整`pnpm check`444项/442 PASS/0 FAIL/2原有SKIP，typecheck/lint/coverage/build通过，证据`docs/validation/LOADERS-LOCAL-INSTALL-20261027/`。首轮受限权限检查出现基础SQLite/链接失败并已停止，不计代码失败；正常本地权限完整检查通过。所有新增字节为非可执行测试夹具，外网0、未启动游戏、未操作用户游戏数据；真实F/Q主菜单/Mod/退出矩阵仍未验证。下一步优先Forge/NeoForge本地处理器安装的取消、失败恢复和重开一致性，再汇总四加载器本地契约；不联网。原两份暂存资料继续排除，不push。
+
+---
+
