@@ -255,3 +255,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：Mod安装预览证据绑定（2026-10-27）
+
+在742e91b后新增src/services/mods/planner.ts。ModInstallPlanner先用ModLibraryReader复验已下载根JAR，再双重检查目标实例并读取同一受控上下文，将当前修订/fingerprint、loader/MC、已装平台身份、unknown embedded/source、玩家selections交给有界resolver。结果逐节点绑定精确文件SHA1/SHA512/大小和requiredBy，处置reuse/library/download；输出不含路径/URL。根平台事实必须与LibraryReader完全一致，根文件必须与实际JAR三摘要/大小一致。仅graph resolved映射ready；unknown/conflict不授权，本地除可补的MOD_DEPENDENCY_MISSING外的硬错误直接MODS_UNSAFE。planId是公开body SHA256，仅供后续持久确认关联，不能绕过提交前重扫。
+
+新增4测试，完整pnpm check452项/450 PASS/0 FAIL/2原有SKIP，typecheck/lint/coverage/build通过，证据docs/validation/MOD-PLAN-20261027/。尚未加入公共mods.v1、计划持久化、confirm/cancel、依赖实际下载、下载后逐JAR复验或一次实例事务，不标Mod安装完成。下一步正是这些；继续不联网，原暂存排除、不push。
+
+---
+
