@@ -323,3 +323,15 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：Mod文件事务与恢复（2026-10-28）
+
+新增私有ModTransactionService及固定worker `mod-txn:get/set`。日志formatVersion1、最大512KiB/256文件，保存计划/实例关联、原修订/指纹、前后JSON摘要、token与文件三摘要/sourceKey/dev/ino。先日志后gameDir独占标记，再从共享对象复制到`.oucl-mod-staging/<taskUUID>`复验；只从私有副本独占hard link到mods，不能写通共享缓存。全部实际文件/本地平台规则/环境/会话/计划复查后，实例formatVersion2 ready加载器记录CAS写summary.revision+1及可选modCommitId=taskUUID作为提交点，再同步index/committed。未知字段/阶段停写，旧记录可读。
+
+回退只移动身份和真实三摘要仍匹配的本次新增文件至保留材料，不清目录、不删外来文件；外部替换保留，外部修改已发布文件则needsRecovery且保留gameDir标记。recover只认自己的日志token和唯一JSON提交证明，支持提交前中断回退、提交后索引修复、终态本人标记释放；不按PID/年龄抢占。详见`docs/contracts/MOD_TRANSACTION.md`。
+
+最终`pnpm check`491项/489 PASS/0 FAIL/2既有SKIP，core覆盖率行98.83%/分支96.90%/函数99.56%，类型/lint/build通过。11项新增事务测试用生成JAR、惰性MC metadata夹具及真实文件/worker/JSON证明，覆盖实际新增、缓存写隔离、逐文件失败/回退、外部编辑/替换/改名、外来锁/同名文件、取消边界、丢失ack、索引失败、真实存储重开恢复及未来格式逐字节保留。`node scripts/mod-transaction-runtime.mjs`在Electron45 as Node+正式dist worker下11/11 PASS；此运行器收集明确TAP统计，PS直接启动GUI EXE的空输出不作为通过证据。材料`docs/validation/MOD-TRANSACTION-20261028/`。未联网、未启动MC、未动用户游戏数据，不push。
+
+**下一步**：持久确认任务/index、plan取消互锁、实测Java、任务进度/重连及公共确认UI。两个私有服务还未在main确认路径装配，禁止直接开放PreparedModInstall或声称产品安装已交付。确认任务必须在开始后阻止独立cancelPlan承诺撤销，提交点后取消应CANCEL_TOO_LATE；已准备快照仍需事务自己的复验。断电/真实kill全矩阵未验收，不补写通过。旧EXE/原始zip/txt/stash保留；继续从最新HEAD，不回退2bef0ac。
+
+---
+

@@ -455,3 +455,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 40. 2026-10-28 确认后的可信下载准备基础
 
 私有ModInstallPreparation已实现固定计划确认校验、来源重验、现有可信传输/对象仓库接入和逐JAR三摘要/实际声明复验；在内存里双重检查预期安装结果，重查库存/环境/根/取消/会话，保留未知、拒绝冲突及外部文件变化。不会写入实例或资源库，也未开放公共确认按钮。完整`pnpm check`480项/478 PASS/0 FAIL/2既有SKIP，正式入口本地fixture的36方法/15能力smoke通过；新增测试用真实SQLite/对象传输/JAR worker、生成的JAR及本地metadata/HTTP适配器，无公网或真实游戏测试。证据[MOD-PREPARATION-20261028](../../docs/validation/MOD-PREPARATION-20261028/REPORT.md)。下一步接持久确认任务、实测Java事实和一次实例提交/恢复，仍不标Mod安装或完整目标完成。
+
+## 41. 2026-10-28 Mod新增文件事务与恢复基础
+
+ModTransactionService已实现固定worker日志、gameDir占用、私有暂存副本/三摘要复验、独占新增、实例modCommitId+revision JSON提交点及索引恢复。失败只回退身份/内容仍属于本次的文件并保留材料，外部修改/外来锁不覆盖或清除；取消/未知提交结果以精确JSON证明处理。完整`pnpm check`491项/489 PASS/0 FAIL/2既有SKIP，11项事务测试在Electron45+正式打包worker下全部通过；证据[MOD-TRANSACTION-20261028](../../docs/validation/MOD-TRANSACTION-20261028/REPORT.md)。仍是未接公共确认任务的内部API；下一步接持久确认/取消互锁、实测Java及任务/UI，最后再打包完整Mod功能，不把内部事务测试当产品交付。

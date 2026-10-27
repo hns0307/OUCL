@@ -50,6 +50,7 @@ export type InstanceLoaderIdentity = { kind: 'vanilla' } | { kind: 'fabric' | 'q
 export interface InstanceRecord {
   summary: InstanceSummary; phase: 'reserved' | 'prepared' | 'downloaded' | 'materializing' | 'ready' | 'failed' | 'cancelled' | 'needsRecovery';
   formatVersion?: 2; loader?: InstanceLoaderIdentity;
+  modCommitId?: string;
   metadata?: InstanceMetadata; objects?: Record<string, ObjectRef>; receipts?: InstanceReceipt[];
 }
 function invalid(): never { throw new StorageError('INVALID_RECORD'); }
@@ -281,13 +282,14 @@ export function parseInstanceRecord(value: unknown): InstanceRecord {
     budget(value);
     const versioned = Object.hasOwn(value, 'formatVersion') || Object.hasOwn(value, 'loader');
     if (versioned && (!Object.hasOwn(value, 'formatVersion') || !Object.hasOwn(value, 'loader') || value.formatVersion !== 2)) invalid();
-    const optional = ['formatVersion', 'loader', 'metadata', 'objects', 'receipts'].filter(key => Object.hasOwn(value, key));
+    const optional = ['formatVersion', 'loader', 'metadata', 'objects', 'receipts', 'modCommitId'].filter(key => Object.hasOwn(value, key));
     if (!exactObject(value, ['summary', 'phase', ...optional])) invalid();
     const summary = parseInstanceSummary(value.summary); const phase = value.phase;
     if (typeof phase !== 'string' || !['reserved', 'prepared', 'downloaded', 'materializing', 'ready', 'failed', 'cancelled', 'needsRecovery'].includes(phase)
       || summary.state !== (['reserved', 'prepared', 'downloaded', 'materializing'].includes(phase) ? 'installing' : phase)) invalid();
     const parsedMetadata = value.metadata === undefined ? undefined : metadata(value.metadata, summary.mcVersionId);
     const parsedLoader = versioned ? loader(value.loader) : { kind: 'vanilla' as const };
+    if (Object.hasOwn(value, 'modCommitId') && (!versioned || !uuid(value.modCommitId) || phase !== 'ready' || parsedLoader.kind === 'vanilla')) invalid();
     const parsedObjects = value.objects === undefined ? undefined : objects(value.objects);
     const parsedReceipts = value.receipts === undefined ? undefined : receipts(value.receipts, parsedObjects ?? {});
     const metadataLoader = parsedMetadata?.loader;
@@ -301,7 +303,8 @@ export function parseInstanceRecord(value: unknown): InstanceRecord {
       || parsedObjects && !parsedMetadata || parsedReceipts && !parsedObjects
       || optional.some(key => value[key] === undefined)) invalid();
     const result: InstanceRecord = { formatVersion: 2, loader: parsedLoader, summary, phase: phase as InstanceRecord['phase'], ...(parsedMetadata === undefined ? {} : { metadata: parsedMetadata }),
-      ...(parsedObjects === undefined ? {} : { objects: parsedObjects }), ...(parsedReceipts === undefined ? {} : { receipts: parsedReceipts }) };
+      ...(parsedObjects === undefined ? {} : { objects: parsedObjects }), ...(parsedReceipts === undefined ? {} : { receipts: parsedReceipts }),
+      ...(value.modCommitId === undefined ? {} : { modCommitId: (value.modCommitId as string).toLowerCase() }) };
     budget(result); return result;
   } catch { return invalid(); }
 }

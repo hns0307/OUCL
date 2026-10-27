@@ -27,6 +27,11 @@ export class ModInventoryError extends Error {
 }
 interface FileStamp { size: number; mtimeMs: number; ctimeMs: number; ino: number; dev: number; regular: boolean }
 const digest = (value: unknown): string => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+/** Same content observation identity for actual and prospective directory inventories. */
+export function modInventoryFingerprint(instanceId: string, revision: number, items: readonly ModInventoryItem[]): string {
+  return digest({ instanceId, revision, items: [...items].sort((left, right) => left.filename < right.filename ? -1 : left.filename > right.filename ? 1 : 0)
+    .map(item => ({ fileId: item.fileId, filename: item.filename, enabled: item.enabled, size: item.size, sha256: item.sha256, issues: item.issues })) });
+}
 async function stamp(file: string): Promise<FileStamp> {
   const info = await lstat(file);
   return { size: info.size, mtimeMs: info.mtimeMs, ctimeMs: info.ctimeMs, ino: info.ino, dev: info.dev,
@@ -74,8 +79,7 @@ export class ModInventoryService {
       for (const filename of names) { check(); if (digest(stamps.get(filename)) !== digest(await stamp(path.join(context.modsDirectory, filename)))) throw new ModInventoryError('FILES_CHANGED'); }
       const latest = await this.context(instanceId.toLowerCase(), signal); check();
       if (digest(latest) !== digest(context)) throw new ModInventoryError('REVISION_CONFLICT');
-      const fingerprint = digest({ instanceId: context.instanceId, revision: expectedRevision, items: items.map(item => ({
-        fileId: item.fileId, filename: item.filename, enabled: item.enabled, size: item.size, sha256: item.sha256, issues: item.issues })) });
+      const fingerprint = modInventoryFingerprint(context.instanceId, expectedRevision, items);
       return { instanceId: context.instanceId, revision: expectedRevision, fingerprint, items, local: checkLocalMods(items, context.environment) };
     } catch (error) {
       if (error instanceof ModInventoryError) throw error;

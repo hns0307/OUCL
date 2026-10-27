@@ -15,3 +15,5 @@
 增加受控错误CONFIRMATION_REQUIRED、INSTANCE_BUSY、MODS_INCOMPATIBLE、MODS_UNDETERMINED。后两者可在私有错误中携带本地/平台检查证据，未来任务层须使用公开报告投影，不能直接把私有source URL/原文返回renderer。
 
 验证见[MOD-PREPARATION-20261028](../validation/MOD-PREPARATION-20261028/REPORT.md)。仍待公共确认任务、持久确认记录、一次实例提交/恢复和最终产品/EXE验证。
+
+后续2026-10-28已有私有[新增事务与恢复服务](MOD_TRANSACTION.md)，可对准备结果执行真实文件发布和唯一JSON提交点；尚未接公共确认任务，产品安装按钮继续不开放。

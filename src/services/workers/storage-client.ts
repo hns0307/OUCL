@@ -16,7 +16,8 @@ import type { LaunchProfiles } from '../storage/launch-profiles.js';
 import type { GameSessions } from '../storage/game-sessions.js';
 import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
 import type { StoredModPlan } from '../storage/mod-plans.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan> };
+import type { ModTransaction } from '../storage/mod-transactions.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -81,7 +82,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -101,6 +102,13 @@ export class StorageClient {
   }
 
   /** Loads only the request-correlated saved Mod plan domain. */
+  async readModTransaction(taskId: string): Promise<RecordEnvelope<ModTransaction> | undefined> {
+    return (await this.request({ kind: 'mod-txn:get', taskId })).modTransaction;
+  }
+  async writeModTransaction(taskId: string, expectedRevision: number, data: ModTransaction): Promise<RecordEnvelope<ModTransaction>> {
+    const result = (await this.request({ kind: 'mod-txn:set', taskId, expectedRevision, data })).modTransaction;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
   async readModPlan(requestId: string): Promise<RecordEnvelope<StoredModPlan> | undefined> {
     return (await this.request({ kind: 'mod-plan:get', requestId })).modPlan;
   }

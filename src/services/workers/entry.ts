@@ -24,6 +24,7 @@ import { ModArchiveError, scanModArchive } from '../mods/archive.js';
 import { parseModArchiveRequest } from './mod-archive-protocol.js';
 import { modReportRecordId, parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
 import { assertModPlanTransition, modPlanRecordId, parseStoredModPlan } from '../storage/mod-plans.js';
+import { assertModTransactionTransition, modTransactionRecordId, parseModTransaction } from '../storage/mod-transactions.js';
 
 const port = parentPort;
 if (!port) throw new WorkerError('INVALID_MESSAGE');
@@ -59,10 +60,20 @@ async function storage(directory: string): Promise<void> {
         let modJobs;
         let modReport;
         let modPlan;
+        let modTransaction;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'mod-jobs:get') modJobs = await store.read('mod-jobs', parseModJobs);
         else if (command.kind === 'mod-jobs:set') modJobs = await store.write('mod-jobs', command.expectedRevision, command.data, parseModJobs);
+        else if (command.kind === 'mod-txn:get' || command.kind === 'mod-txn:set') {
+          const recordId = modTransactionRecordId(command.taskId); const previous = await store.read(recordId, parseModTransaction);
+          if (previous && previous.data.taskId.toLowerCase() !== command.taskId.toLowerCase()) throw new StorageError('INVALID_RECORD');
+          if (command.kind === 'mod-txn:get') modTransaction = previous;
+          else {
+            assertModTransactionTransition(previous?.data, command.data);
+            modTransaction = await store.write(recordId, command.expectedRevision, command.data, parseModTransaction);
+          }
+        }
         else if (command.kind === 'mod-plan:get' || command.kind === 'mod-plan:set') {
           const recordId = modPlanRecordId(command.requestId);
           const previous = await store.read(recordId, parseStoredModPlan);
@@ -114,7 +125,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });
