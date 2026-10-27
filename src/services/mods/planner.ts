@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { modPlanDigest } from './plan-identity.js';
 import type { PlatformModVersion } from '../../core/mods/platform.js';
 import type { ResourcePayloads } from '../../shared/contracts/resources.js';
 import { ModContractError } from '../../shared/contracts/mods.js';
@@ -76,7 +76,7 @@ export class ModInstallPlanner {
         attempts: resolution.attempts, totalDownloadBytes: items.filter(item => item.disposition === 'download').reduce((sum, item) => sum + item.size, 0),
         items, issues: structuredClone(resolution.graph.issues) };
       if (Buffer.byteLength(JSON.stringify(body)) > 2 * 1024 ** 2) throw new ModContractError('MOD_LIMIT');
-      return { ...body, planId: createHash('sha256').update(JSON.stringify(body)).digest('hex') };
+      return { ...body, planId: modPlanDigest(body) };
     } catch (error) {
       if (signal?.aborted) throw new ModContractError('CANCELLED');
       throw error;

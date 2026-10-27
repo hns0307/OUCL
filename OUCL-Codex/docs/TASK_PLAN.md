@@ -447,3 +447,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 38. 2026-10-28 目录服务与便携资料隔离修复
 
 按最新用户指令优先修复目录服务不可用。便携EXE默认资料目录改为同级`OUCL.runtime/profile`，避免旧全局资料占用阻断新EXE；保留显式测试profile参数。`OUCL.games`自动创建失败只阻断当前根操作，不中止其他服务初始化；便携模式`roots:choose`重试固定默认位置。旧全局资料、owner标记和原始游戏数据均保留。完整`pnpm check`通过（新增1项根目录回归），26项引导检查通过；本地运行时预置的真实EXE首次自动创建、重开根身份不变、阻塞文件保留及排除后重试三场景通过。修复版为`release/OUCL-0.3.0-directory-fix.exe`，328704字节，SHA256 `dcbe8f777685efdd456ddc914a9f4a04856639f18801e92c8511afd063167bee`。见[PORTABLE-ROOTS-20261028](../../docs/validation/PORTABLE-ROOTS-20261028/REPORT.md)。下一步继续Mod确认及实际安装事务。
+
+## 39. 2026-10-28 Mod计划持久化、恢复与取消
+
+`mods:plan`已接真实worker原子保存；同请求重试/重开恢复原证据，不重跑平台读取或换参数。新增严格`mods:planState`和`mods:cancelPlan`；取消状态持久保留且不可重新激活，确认接口尚未开放。资源库重载恢复同实例同修订计划、显示文件来源/精确大小/依赖来路，并可实际取消；异步旧目标结果不重新显示。完整`pnpm check`471项/469 PASS/0 FAIL/2既有SKIP，类型/lint/覆盖率/build通过；隔离真实组件+preload+存储worker测试验证DOM恢复、取消及旧修订提示；本地夹具的正式入口验证36方法/15能力与无Node。证据[MOD-PLAN-DURABLE-20261028](../../docs/validation/MOD-PLAN-DURABLE-20261028/REPORT.md)。仍待玩家确认、依赖实际下载、逐JAR复验、会话/修订/哈希复核及一次安装事务，不标完整目标完成。

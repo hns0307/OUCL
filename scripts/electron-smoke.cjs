@@ -4,6 +4,15 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 
 app.disableHardwareAcceleration();
+const offlineCatalog = process.env.OUCL_SMOKE_OFFLINE === '1';
+if (offlineCatalog) {
+  // Explicit local fixture mode. All other main-process requests are rejected before network access.
+  globalThis.fetch = async url => {
+    assert.equal(String(url), 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json');
+    return new globalThis.Response(JSON.stringify({ versions: [{ id: '1.20.1', type: 'release', sha1: 'a'.repeat(40),
+      url: `https://piston-meta.mojang.com/v1/packages/${'a'.repeat(40)}/1.20.1.json`, releaseTime: '2026-10-24T00:00:00Z' }] }));
+  };
+}
 const timeout = setTimeout(() => { console.error('SMOKE_TIMEOUT'); app.exit(1); }, 45000);
 let finished = false;
 
@@ -23,15 +32,16 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'checkMods', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'downloadResource', 'getDownloadSettings', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'planMod', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateDownloadSettings', 'updateSettings']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['cancelModPlan', 'catalog', 'checkMods', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'downloadResource', 'getDownloadSettings', 'getModPlan', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'planMod', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateDownloadSettings', 'updateSettings']);
     assert.ok(renderer.nodeAbsent);
     const modErrors = await window.webContents.executeJavaScript(`(async () => {
       const id = crypto.randomUUID();
       return [await window.oucl.listMods(id, { instanceId: '../private', expectedRevision: 1 }),
         await window.oucl.checkMods(id, { instanceId: id, expectedRevision: 1 }), await window.oucl.modReport(id),
-        await window.oucl.planMod(id, { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'a'.repeat(40) }, selections: {} })];
+        await window.oucl.planMod(id, { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'a'.repeat(40) }, selections: {} }),
+        await window.oucl.getModPlan(id), await window.oucl.cancelModPlan(id, { planRequestId: id, planId: 'a'.repeat(64) })];
     })()`);
-    assert.deepEqual(modErrors.map(reply => reply.ok ? 'unexpected-success' : reply.error.code), ['INVALID_ARGUMENT', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE']);
+    assert.deepEqual(modErrors.map(reply => reply.ok ? 'unexpected-success' : reply.error.code), ['INVALID_ARGUMENT', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE']);
     assert.equal(renderer.result.ok, true);
     assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'downloads.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1']);
     await window.webContents.executeJavaScript(`(async () => {
@@ -52,7 +62,7 @@ async function run(window) {
       while (!document.querySelector('.version-list li') && !document.querySelector('.catalog .form-error') && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 50));
       return { count: document.querySelectorAll('.version-list li').length, first: document.querySelector('.version-list strong')?.textContent, error: !!document.querySelector('.catalog .form-error') };
     })()`);
-    assert.ok(catalog.count > 0, 'OFFICIAL_CATALOG_DID_NOT_LOAD');
+    assert.ok(catalog.count > 0, 'CATALOG_DID_NOT_LOAD');
     const confirmation = await window.webContents.executeJavaScript(`(async () => {
       const rows = [...document.querySelectorAll('.version-list li')];
       const chosen = rows.find(row => row.querySelector('strong')?.textContent === '1.20.1') || rows[0];
@@ -94,7 +104,7 @@ async function run(window) {
       modBridgeSchemaAndRootChecks: true,
       actualOfflineAccountDomCreation: true, accountUuidNotExposed: true, javaChooserOperated: false,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
-      officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
+      officialCatalogLoaded: !offlineCatalog, localCatalogFixture: offlineCatalog, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
       versionSelectionRendered: confirmation.selected, loaderChoices: confirmation.loaderChoices, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
       fourPagesRendered: true, smallWindowNoHorizontalOverflow: true, settingsSaveAndConflict: true,
       packagedPayload: false,

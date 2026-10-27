@@ -7,7 +7,7 @@ import { isResourcePayload, resourceFilename, resourceId } from './resources.js'
 import type { ResourcePayloads } from './resources.js';
 
 export const MODS_CAPABILITY = 'mods.v1' as const;
-export const MOD_CHANNELS = ['mods:list', 'mods:check', 'mods:report', 'mods:plan'] as const;
+export const MOD_CHANNELS = ['mods:list', 'mods:check', 'mods:report', 'mods:plan', 'mods:planState', 'mods:cancelPlan'] as const;
 export type ModChannel = typeof MOD_CHANNELS[number];
 export const MOD_CODES = ['INVALID_ARGUMENT', 'UNSUPPORTED_CONTRACT', 'INVALID_SENDER', 'TIMEOUT', 'UNAVAILABLE', 'ROOT_UNAVAILABLE',
   'REVISION_CONFLICT', 'FILES_CHANGED', 'MOD_LIMIT', 'MODS_UNSAFE', 'SCAN_BUSY', 'CANCELLED', 'SCAN_FAILED', 'TASK_NOT_FOUND',
@@ -19,6 +19,8 @@ export interface ModPayloads {
   'mods:check': { instanceId: string; expectedRevision: number };
   'mods:report': { taskId: string };
   'mods:plan': { instanceId: string; expectedRevision: number; root: ResourcePayloads['resources:download']; selections: Record<string, string> };
+  'mods:planState': { planRequestId: string };
+  'mods:cancelPlan': { planRequestId: string; planId: string };
 }
 export interface ModPlanIssue {
   severity: 'conflict' | 'unknown'; code: 'MISSING_CANDIDATE' | 'PIN_CONFLICT' | 'PROJECT_CONFLICT' | 'INSTALLED_CONFLICT'
@@ -40,7 +42,10 @@ export interface ModData {
   'mods:check': { taskId: string };
   'mods:report': { report: ModReport | null; errorCode: ModCode | null };
   'mods:plan': { plan: ModInstallPlan };
+  'mods:planState': SavedModPlan;
+  'mods:cancelPlan': SavedModPlan;
 }
+export interface SavedModPlan { plan: ModInstallPlan; status: 'preview' | 'cancelled' }
 export type ModResult<C extends ModChannel = ModChannel> = { contractVersion: 1; requestId: string; ok: true; data: ModData[C] }
   | { contractVersion: 1; requestId: string; ok: false; error: ModError };
 export interface ModDispatcher { <C extends ModChannel>(channel: C, input: ModPayloads[C], requestId: string): Promise<ModData[C]> }
@@ -49,6 +54,8 @@ export interface ModsBridge {
   checkMods(requestId: string, input: ModPayloads['mods:check']): Promise<ModResult<'mods:check'>>;
   modReport(taskId: string): Promise<ModResult<'mods:report'>>;
   planMod(requestId: string, input: ModPayloads['mods:plan']): Promise<ModResult<'mods:plan'>>;
+  getModPlan(planRequestId: string): Promise<ModResult<'mods:planState'>>;
+  cancelModPlan(requestId: string, input: ModPayloads['mods:cancelPlan']): Promise<ModResult<'mods:cancelPlan'>>;
 }
 export class ModContractError extends Error { constructor(readonly code: ModCode) { super(code); this.name = 'ModContractError'; } }
 const uuid = (value: unknown): value is string => typeof value === 'string' && UUID_PATTERN.test(value);
@@ -76,6 +83,9 @@ const ERRORS: Record<ModCode, { category: AppError['category']; key: MessageKey;
 };
 export function isModPayload<C extends ModChannel>(value: unknown, channel: C): value is ModPayloads[C] {
   if (channel === 'mods:report') return exactObject(value, ['taskId']) && uuid(value.taskId);
+  if (channel === 'mods:planState') return exactObject(value, ['planRequestId']) && uuid(value.planRequestId);
+  if (channel === 'mods:cancelPlan') return exactObject(value, ['planRequestId', 'planId']) && uuid(value.planRequestId)
+    && typeof value.planId === 'string' && /^[a-f0-9]{64}$/.test(value.planId);
   if (channel === 'mods:plan') return exactObject(value, ['instanceId', 'expectedRevision', 'root', 'selections']) && uuid(value.instanceId)
     && integer(value.expectedRevision) && value.expectedRevision >= 1 && isResourcePayload(value.root, 'resources:download') && selections(value.selections);
   return (channel === 'mods:list' || channel === 'mods:check') && exactObject(value, ['instanceId', 'expectedRevision']) && uuid(value.instanceId)
@@ -105,6 +115,8 @@ export function isModData<C extends ModChannel>(value: unknown, channel: C): val
   if (channel === 'mods:report') return exactObject(value, ['report', 'errorCode']) && (value.report === null || isModReport(value.report))
     && (value.errorCode === null || isModCode(value.errorCode)) && !(value.report !== null && value.errorCode !== null);
   if (channel === 'mods:plan') return exactObject(value, ['plan']) && isModInstallPlan(value.plan);
+  if (channel === 'mods:planState' || channel === 'mods:cancelPlan') return exactObject(value, ['plan', 'status'])
+    && isModInstallPlan(value.plan) && (value.status === 'cancelled' || channel === 'mods:planState' && value.status === 'preview');
   return (channel === 'mods:list' || channel === 'mods:check') && exactObject(value, ['taskId']) && uuid(value.taskId);
 }
 export function modFailure<C extends ModChannel>(requestId: string, code: ModCode, traceId: string): ModResult<C> {

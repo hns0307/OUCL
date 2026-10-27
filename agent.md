@@ -303,3 +303,13 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：持久Mod计划与取消（2026-10-28）
+
+`ModPlanService`已在main装配：`mods:plan`返回前保存固定`mod-plan-<requestUUID>`，新记录revision1/preview，取消revision2/cancelled。body/input不可改，重试同ID返回原快照，同ID换参数拒绝，已取消不能重新激活；成功提交但ack超时只从精确JSON证据恢复。新`mods:planState`/`getModPlan`及`mods:cancelPlan`/`cancelModPlan`均严格白名单，当前共36方法/15能力。关闭等待读/写与创建取消结束。schema、未知版本保护与边界见`docs/contracts/MOD_PLANS.md`。
+
+资源库只在浏览器保存不含路径的请求UUID指针，重载恢复同实例同修订预览；旧修订清指针并提示，旧异步结果不串实例。展示来源、精确大小、处置和被谁依赖，可实际持久取消。完整`pnpm check`471项/469 PASS/0 FAIL/2既有SKIP，coverage行98.83%/分支96.84%/函数99.56%；随后新增UI夹具/精确大小显示的typecheck/lint/build也通过。`pnpm smoke:mod-plans`使用真实组件/preload/worker及明确planner夹具，验证重载不重解析、DOM取消revision2、旧修订提示、小窗口无溢出；正式入口`OUCL_SMOKE_OFFLINE=1 pnpm smoke`使用本地manifest，36方法/15能力无Node和新增接口根检查通过，不联网。证据`docs/validation/MOD-PLAN-DURABLE-20261028/`。旧EXE和原始两份暂存资料/stash保留，不push。
+
+下一步从本HEAD继续：确认一个仍为preview的ready计划，绑定planRequestId/planId；固定项目版本/文件下载并逐JAR双重复验，然后会话/实例修订/全部哈希复核，一次提交/恢复。未实现这些，不显示可用安装按钮，不把本次保存或取消计划当完整Mod安装交付；用户要求继续跳过公网测试。目录修复已在e6d9214交付，不重复改旧资料/生成同名覆盖EXE。
+
+---
+

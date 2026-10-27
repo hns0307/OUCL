@@ -25,6 +25,7 @@ export const MESSAGES = {
   modsPlan: '生成安装计划', modsPlanning: '正在核对依赖', modsPlanReady: '安装计划已生成',
   modsPlanConflict: '依赖存在冲突', modsPlanUnknown: '依赖仍有无法判定项', modsPlanDownload: '需要下载',
   modsPlanFiles: '计划文件', modsPlanPreviewOnly: '这是安装前预览；当前不会写入实例，请在后续确认步骤中再次核对。',
+  modsPlanCancel: '取消此计划', modsPlanCancelled: '此安装计划已取消', modsPlanRestoring: '正在恢复已保存的安装计划', modsPlanReuse: '保留实例中已有版本',
   uiPreviewOnly: '开发预览 · 示例公告',
   uiHome: '首页',
   uiDownloads: '下载',

@@ -60,6 +60,7 @@ import { ModrinthModClient } from '../services/mods/modrinth.js';
 import { ModLibraryReader } from '../services/mods/library.js';
 import { ModDependencyResolver } from '../services/mods/resolver.js';
 import { ModInstallPlanner } from '../services/mods/planner.js';
+import { ModPlanService } from '../services/mods/plans.js';
 import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
 import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
 
@@ -77,6 +78,7 @@ let installerAdapter: InstallerAdapter | undefined;
 let loaders: LoaderService | undefined;
 let mods: ModTaskService | undefined;
 let modPlanner: ModInstallPlanner | undefined;
+let modPlans: ModPlanService | undefined;
 let instanceFolders: InstanceFolderService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
@@ -158,6 +160,7 @@ else void app.whenReady().then(async () => {
       const platform = new ModrinthModClient(); const inspections = new ModInspectionService(context, inventory, platform);
       const modTasks = new ModTaskService(storage, inventory, inspections);
       modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
+      modPlans = new ModPlanService(storage, modPlanner);
       await modTasks.initialize(); mods = modTasks;
     } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
     const resourceTasks = resources; const games = gameAdapter; const modTasks = mods;
@@ -184,7 +187,7 @@ else void app.whenReady().then(async () => {
   });
   for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
-    return modDispatcher(mods, modPlanner)(selected, payload, requestId);
+    return modDispatcher(mods, modPlanner, modPlans)(selected, payload, requestId);
   }));
   ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
     const registered = await storage?.readInstallation();
@@ -266,7 +269,7 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
-    installerAdapter?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    installerAdapter?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });
 

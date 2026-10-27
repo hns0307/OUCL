@@ -3,6 +3,7 @@ import { isModData, isModPayload, modFailure, ModContractError } from '../shared
 import type { ModChannel, ModData, ModDispatcher, ModPayloads, ModResult } from '../shared/contracts/mods.js';
 import type { ModTaskService } from '../services/mods/tasks.js';
 import type { ModInstallPlanner } from '../services/mods/planner.js';
+import type { ModPlanService } from '../services/mods/plans.js';
 
 /** Checks the sender and exact envelope before dispatch, then validates every public result. */
 export async function handleMods<C extends ModChannel>(channel: C, input: unknown, trusted: boolean, traceId: string,
@@ -21,11 +22,15 @@ export async function handleMods<C extends ModChannel>(channel: C, input: unknow
 }
 
 /** Resolves only controlled instance/task identities; list and check share durable task admission. */
-export function modDispatcher(service: Pick<ModTaskService, 'start' | 'report'>, planner?: Pick<ModInstallPlanner, 'plan'>): ModDispatcher {
+export function modDispatcher(service: Pick<ModTaskService, 'start' | 'report'>, planner?: Pick<ModInstallPlanner, 'plan'>,
+  plans?: Pick<ModPlanService, 'create' | 'get' | 'cancel'>): ModDispatcher {
   return async <C extends ModChannel>(channel: C, payload: ModPayloads[C], requestId: string): Promise<ModData[C]> => {
     let data: ModData[ModChannel];
     if (channel === 'mods:report' && isModPayload(payload, 'mods:report')) data = await service.report(payload.taskId);
+    else if (channel === 'mods:plan' && isModPayload(payload, 'mods:plan') && plans) data = { plan: await plans.create(requestId, payload) };
     else if (channel === 'mods:plan' && isModPayload(payload, 'mods:plan') && planner) data = { plan: await planner.plan(payload) };
+    else if (channel === 'mods:planState' && isModPayload(payload, 'mods:planState') && plans) data = await plans.get(payload.planRequestId);
+    else if (channel === 'mods:cancelPlan' && isModPayload(payload, 'mods:cancelPlan') && plans) data = await plans.cancel(payload.planRequestId, payload.planId);
     else if (channel === 'mods:list' && isModPayload(payload, 'mods:list')) data = await service.start(requestId, 'list', payload);
     else if (channel === 'mods:check' && isModPayload(payload, 'mods:check')) data = await service.start(requestId, 'check', payload);
     else throw new ModContractError('INVALID_ARGUMENT');

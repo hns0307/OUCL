@@ -35,7 +35,7 @@ app.on('browser-window-created', (_event, window) => window.webContents.once('di
       return {handshake,before,actual:await bridge.getDownloadSettings(),legacy,invalid,stale,memory,noNode:typeof process==='undefined'&&typeof require==='undefined',methods:Object.keys(bridge)};
     })()`);
     assert.equal(result.noNode,true); assert.equal(result.handshake.ok,true); assert.ok(result.handshake.data.capabilities.includes('downloads.v1'));
-    assert.equal(result.methods.length,34); assert.equal(result.actual.ok,true); assert.equal(result.actual.data.source,'bmclapi');
+    assert.equal(result.methods.length,36); assert.equal(result.actual.ok,true); assert.equal(result.actual.data.source,'bmclapi');
     assert.equal(result.actual.data.fileConcurrency,6); assert.equal(result.actual.data.connectionsPerFile,3);
     if(process.env.OUCL_DOWNLOAD_TEST_REOPEN!=='1') {assert.equal(result.before.data.source,'official');assert.equal(result.invalid.error.code,'INVALID_ARGUMENT');assert.equal(result.stale.error.code,'REVISION_CONFLICT');assert.equal(result.memory.ok,true);assert.equal('downloads' in result.legacy.data,false);}
     await mkdir(evidence,{recursive:true});
