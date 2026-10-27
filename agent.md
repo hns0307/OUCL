@@ -351,3 +351,13 @@ pnpm check 495项/493PASS/0FAIL/2既有SKIP；Electron45正式dist worker完整1
 pnpm check 499项/497PASS/0FAIL/2既有SKIP，4项新测试为受控probe适配器；正式入口本地fixture smoke 36方法/15能力通过。证据docs/validation/MOD-JAVA-FACTS-20261028/，契约docs/contracts/MOD_JAVA_FACTS.md。未联网/未启动MC/未动用户资料。
 
 下一步只剩接线但仍需完整验证：持久确认执行器调用acceptModConfirmation，以返回taskId作为preparation consumer/transaction taskId；初始化readModConfirmations结合mod-txn日志和实例modCommitId判定恢复，未知不得重放。任务快照增加mod-install及相应标签；公共confirm/state响应与ResourceBrowser按钮，取消改走任务控制且提交后CANCEL_TOO_LATE；关闭等待执行器。当前产品未装配私有preparation/transaction/confirm，不声称Mod安装交付。旧EXE及原zip/txt/stash保留，不push。末次额度5小时78%已用、周86%已用，未到开发暂停阈值；下一心跳先核对额度。
+
+## 最新检查点：确认任务内部执行器（2026-10-28）
+
+从77584fe继续。新增src/services/mods/install-tasks.ts的私有ModInstallTaskService(storage,preparation,transaction)，confirm先固定worker接纳，返回taskId后run实际准备并提交。任务UUID作consumer/transaction身份；同计划重试不重复执行、不同活动计划SCAN_BUSY。进度写入串行并在提交前join；取消等待准备退出；verifying后同步committing标记与持久committing边界，cancel返回CANCEL_TOO_LATE；close阻止接纳、abort准备、等待提交，lost写入结果报告needsRecovery。get返回内部StoredTask，还未公共投影。
+
+initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务用recover原token和JSON证明恢复，committed完成/rolledBack失败；无事务的孤立确认一律needsRecovery，不重放下载。已结束任务和事务矛盾停恢复。阶段/错误细节尚未持久报告，不能直接公开内部assessment、路径、URL或原始异常。
+
+最终pnpm check 506项/504PASS/0FAIL/2既有SKIP，核心覆盖率98.83/96.90/99.56，类型lintbuild通过。scripts/mod-transaction-runtime.mjs扩为准备+事务两组，固定计数27，报告改写新MOD-EXECUTOR-20261028目录，不覆盖历史11项；Electron45+正式worker27/27 PASS。新增本地真实准备→依赖传输→JAR核验→一次事务闭环，另6执行器测试覆盖复用确认/取消等待/回退/孤立不重放/提交后任务状态缺失恢复/提交拒绝取消及close。fixture纯生成JAR和惰性MC metadata，无公网、用户游戏或真实Java/MC。
+
+下一步：**先补固定版本安装结果/失败报告**（ModCode及受控本地/平台证据、任务/实例/plan绑定，lost ack精确证明），再扩公共mod-install任务快照/标签，mods:confirm与结果查询/重连，main装配此执行器并关闭时等待，ResourceBrowser确认/任务取消。当前main仍未装配preparation/transaction/执行器，没有产品安装按钮、新EXE或完整目标交付。先读最新计划，继续从本HEAD，勿回退；保留旧EXE、原zip/txt/stash，不push。

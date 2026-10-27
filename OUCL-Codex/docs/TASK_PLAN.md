@@ -467,3 +467,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 43. 2026-10-28 Mod检查Java实测事实
 
 生产Mod context已接InstalledJavaFacts，仅对已登记兼容候选执行受控JavaProbe，使用本次真实版本属性；失败/缺失保持unknown，不扫描下载或改登记。取消等待进程close，档案变化使旧结果失效，无永久缓存。完整`pnpm check`499项/497 PASS/0 FAIL/2既有SKIP，正式入口本地fixture的36方法/15能力窗口smoke通过，证据[MOD-JAVA-FACTS-20261028](../../docs/validation/MOD-JAVA-FACTS-20261028/REPORT.md)。新增测试使用注入探测适配器，不算本机Java或MC实测。下一步继续确认任务执行器、准备/事务编排及UI，完整Mod安装仍未交付。
+
+## 44. 2026-10-28 Mod确认任务内部执行闭环
+
+私有ModInstallTaskService连接固定确认接纳、真实准备下载与一次文件事务，任务UUID贯穿consumer/transaction；进度串行持久、取消等待准备清理、提交边界后拒绝取消、close等待收尾。重开仅按已存在事务原token/JSON证明恢复，孤立确认不重放。Electron45+正式worker的准备/事务共27项全部PASS，真实本地HTTP适配器闭环含依赖传输/JAR声明/实例及索引一次提交。证据docs/validation/MOD-EXECUTOR-20261028/。公共详细失败报告、mod-install快照/订阅、主进程装配与确认UI仍待接，不标产品或完整目标完成。

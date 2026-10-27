@@ -3,6 +3,7 @@ import test from 'node:test';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { ModInstallPreparation, ModPreparationError } from '../src/services/mods/preparation.js';
 import type { ModConfirmation } from '../src/services/mods/preparation.js';
 import { ModArchiveReader } from '../src/services/workers/mod-archive-reader.js';
@@ -20,8 +21,12 @@ import { modPlanDigest, modPlanInputDigest } from '../src/services/mods/plan-ide
 import type { ModInstallPlan, ModPayloads, ModPlanItem } from '../src/shared/contracts/mods.js';
 import type { DownloadSpec } from '../src/services/download/types.js';
 import { modZip } from './fixtures/mod-zip.js';
+import { modReadyInstance } from './fixtures/mod-ready-instance.js';
+import { ModInstallTaskService } from '../src/services/mods/install-tasks.js';
+import { ModTransactionService } from '../src/services/mods/transaction.js';
 
-const entry = new URL('../src/services/workers/entry.js', import.meta.url);
+const entry = process.env.OUCL_MOD_TXN_BUNDLED_WORKER === '1'
+  ? pathToFileURL(path.resolve('dist/workers/entry.cjs')) : new URL('../src/services/workers/entry.js', import.meta.url);
 const rootId = '00000000-0000-4000-8000-000000000001'; const instanceId = '00000000-0000-4000-8000-000000000002';
 const hash = (algorithm: string, bytes: Buffer): string => createHash(algorithm).update(bytes).digest('hex');
 interface Options { dependencyId?: string; dependencyVersion?: string; serverOnly?: boolean; unknownRange?: boolean; embedded?: boolean }
@@ -102,6 +107,31 @@ async function setup(options: Options = {}) {
     plan: () => structuredClone(plan),
     close: async () => { await objects.close(); await pool.close(); await storage.close(); } };
 }
+
+test('confirmed executor connects actual dependency transfer, JAR verification and one instance transaction', async () => {
+  const f = await setup();
+  const instance = modReadyInstance(rootId, instanceId);
+  await f.storage.writeInstance(instanceId, 0, instance); await f.storage.writeInstances(0, { items: [instance.summary] });
+  const service = new ModInstallTaskService(f.storage, f.make(), new ModTransactionService(f.storage, {
+    context: f.dependencies.context, inventory: f.dependencies.inventory, scanner: f.dependencies.scanner,
+  }));
+  try {
+    const libraryBefore = await f.storage.readResources(); const { taskId } = await service.confirm(f.confirmation());
+    let state = '';
+    for (let attempt = 0; attempt < 300; attempt++) {
+      state = (await service.get(taskId))!.execution.state;
+      if (['completed', 'failed', 'cancelled', 'needsRecovery'].includes(state)) break;
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    assert.equal(state, 'completed'); assert.equal(f.state.requests.length, 1);
+    assert.deepEqual(await readFile(path.join(f.game, 'mods/library.jar')), f.dependencyBytes);
+    assert.deepEqual(await readdir(path.join(f.game, 'mods')), ['library.jar', 'root.jar']);
+    assert.equal((await f.storage.readInstance(instanceId))!.data.modCommitId, taskId);
+    assert.equal((await f.storage.readInstances())!.data.items[0]!.revision, 2);
+    assert.deepEqual(await f.storage.readResources(), libraryBefore);
+    assert.equal((await f.storage.readModTransaction(taskId))!.data.phase, 'committed');
+  } finally { await service.close(); await f.close(); }
+});
 
 test('confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files', async () => {
   const f = await setup();

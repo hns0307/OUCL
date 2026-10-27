@@ -1,0 +1,21 @@
+# Mod确认任务执行器
+
+原批准方案的私有服务`ModInstallTaskService`，尚未装配公共IPC/UI。所有执行前先通过固定worker保存确认；任务UUID同时用作可信传输consumer和文件事务taskId，外部不能提供路径、命令或下载URL。
+
+## 顺序及取消
+
+同计划重试返回原任务；另一计划在当前活动期间不接纳，不产生无界队列。接纳与执行身份分离，SQL接纳成功但确认响应丢失时可从清单找回，不能凭重试自动重放。
+
+任务先持久running，再调用真实ModInstallPreparation。进度回调串行写入SQLite，准备结束必须等待这些写入；任何进度持久化失败都不能进入实例提交。再次核对准备结果与任务根/计划/consumer身份，取消检查后进入verifying，再同步关闭取消入口并持久committing，最后调用ModTransactionService。
+
+准备期间取消传递AbortSignal并等待当前准备清理；进入提交边界后取消返回CANCEL_TOO_LATE。关闭服务阻止新接纳，取消尚在准备的任务，等待已有提交完成；无法证明任务写入结果时记录本会话lost并在读取中显示needsRecovery、close受控报错。
+
+## 结果与恢复
+
+只有对应任务/根/精确计划的committed事务收据证明完成。事务已保存committed而末次任务写入失败时，调用原事务recover收尾后修正任务。对应rolledBack证明可以落失败/取消；未有事务却已进入committing、事务不确定或身份矛盾必须needsRecovery。
+
+initialize读取固定确认清单。已经结束的任务必须与对应事务终态一致；未结束且有事务则交给原事务recover，仍使用原token/JSON证明，禁止抢外来锁。没有事务的孤立/中断确认标needsRecovery，不重新准备或下载。该保守行为不把只存在文件当成功，也不自动重跑旧计划。
+
+## 边界
+
+当前仅内部StoredTask查询，没有公共mod-install快照、详细持久失败报告、主进程装配及确认UI。下一增量应先将本地/平台失败证据投影到受控持久结果，再接任务列表/订阅、确认与取消入口。错误原文、路径与私有来源不能直接送渲染层。产品安装能力和新EXE仍未交付。

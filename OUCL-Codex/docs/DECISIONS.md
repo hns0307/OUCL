@@ -322,3 +322,5 @@
 2026-10-28原批准Mod方案实施：固定mod-confirm:accept/list私有worker与既有SQLite任务接纳互锁，沿用原确认/取消/重连授权，无新表、依赖、公开IPC或后台。计划UUID作为任务请求身份，确认后取消计划受控拒绝；恢复清单核对不可变计划且有界。尚未开放产品执行器/按钮，完整目标继续。证据docs/validation/MOD-CONFIRMATION-20261028/。
 
 2026-10-28原批准Mod环境双重检查实施：生产context接入已登记Java的当前实测版本，沿用既有受控JavaProbe，不扩展发现/下载/登记、公开接口或依赖。无可用测量仍unknown；新增测试用适配器，不编造本机或MC验收。证据docs/validation/MOD-JAVA-FACTS-20261028/。
+
+2026-10-28原批准确认安装继续实施：新增私有任务执行器，沿用已批准SQLite任务/确认记录、可信下载准备及JSON事务，不扩展依赖、公开IPC或远程能力。本地真实服务闭环已测，不冒充公网或实际游戏验收。证据docs/validation/MOD-EXECUTOR-20261028/；公共报告/任务/UI待接。

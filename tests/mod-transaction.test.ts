@@ -25,6 +25,7 @@ import { parseInstanceRecord } from '../src/services/storage/instance-records.js
 import { assertModTransactionTransition, modTransactionRecordId, parseModTransaction } from '../src/services/storage/mod-transactions.js';
 import type { ModTransaction } from '../src/services/storage/mod-transactions.js';
 import { ModArchiveError } from '../src/services/mods/archive.js';
+import { ModInstallTaskService } from '../src/services/mods/install-tasks.js';
 
 const entry = process.env.OUCL_MOD_TXN_BUNDLED_WORKER === '1'
   ? pathToFileURL(path.resolve('dist/workers/entry.cjs')) : new URL('../src/services/workers/entry.js', import.meta.url);
@@ -87,6 +88,109 @@ async function fixture() {
     close: () => storage.close() };
 }
 async function noLease(game: string): Promise<void> { await assert.rejects(readFile(path.join(game, 'oucl.session.lock')), { code: 'ENOENT' }); }
+
+const confirmation = (f: Awaited<ReturnType<typeof fixture>>) => ({ planRequestId: f.prepared.planRequestId, planId: f.prepared.planId, confirmed: true as const });
+async function finished(service: ModInstallTaskService, taskId: string) {
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const task = await service.get(taskId);
+    if (task && ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(task.execution.state)) return task;
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert.fail('task did not settle');
+}
+
+test('confirmed executor joins duplicate requests and commits real files once with durable completion', async () => {
+  const f = await fixture(); let preparations = 0;
+  const service = new ModInstallTaskService(f.storage(), { prepare: async (_input, consumerId, _signal, progress) => {
+    preparations++; progress?.({ stage: 'downloading', bytesDone: 5, bytesTotal: 5 });
+    return { ...f.prepared, consumerId };
+  } }, f.make());
+  try {
+    await service.initialize(); const accepted = await service.confirm(confirmation(f));
+    assert.equal((await service.confirm(confirmation(f))).taskId, accepted.taskId);
+    const task = await finished(service, accepted.taskId); assert.equal(task.execution.state, 'completed');
+    assert.equal(task.execution.bytesDone, 5); assert.equal(preparations, 1);
+    assert.equal((await f.storage().readInstance(instanceId))!.data.modCommitId, accepted.taskId);
+    await service.close(); await f.reopen();
+    const restored = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
+    try { await restored.initialize(); assert.equal((await restored.get(accepted.taskId))!.execution.state, 'completed'); }
+    finally { await restored.close(); }
+  } finally { await service.close(); await f.close(); }
+});
+
+test('executor cancellation waits for preparation cleanup and leaves no transaction or instance change', async () => {
+  const f = await fixture(); let entered!: () => void; let release!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; }); const gate = new Promise<void>(resolve => { release = resolve; });
+  const service = new ModInstallTaskService(f.storage(), { prepare: async (_input, consumerId, signal) => {
+    entered(); await gate; assert.equal(signal?.aborted, true); return { ...f.prepared, consumerId };
+  } }, f.make());
+  try {
+    const accepted = await service.confirm(confirmation(f)); await started;
+    let settled = false; const cancelled = service.cancel(accepted.taskId).then(() => { settled = true; });
+    await new Promise(resolve => setTimeout(resolve, 20)); assert.equal(settled, false); release(); await cancelled;
+    assert.equal((await service.get(accepted.taskId))!.execution.state, 'cancelled');
+    assert.equal(await f.storage().readModTransaction(accepted.taskId), undefined);
+    assert.equal((await f.storage().readInstance(instanceId))!.revision, 1);
+  } finally { release(); await service.close(); await f.close(); }
+});
+
+test('executor classifies a proven rollback as failed and never replays it after restart', async () => {
+  const f = await fixture();
+  const transaction = new ModTransactionService(f.repository(), { ...f.dependencies, checkpoint: async point => { if (point === 'linked') throw new Error('CONTROLLED_FAILURE'); } });
+  const service = new ModInstallTaskService(f.storage(), { prepare: async (_input, consumerId) => ({ ...f.prepared, consumerId }) }, transaction);
+  try {
+    const { taskId } = await service.confirm(confirmation(f)); assert.equal((await finished(service, taskId)).execution.state, 'failed');
+    assert.equal((await f.storage().readModTransaction(taskId))!.data.phase, 'rolledBack');
+    assert.equal((await f.storage().readInstance(instanceId))!.revision, 1); await noLease(f.game);
+    await service.close(); await f.reopen();
+    const restored = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
+    try { await restored.initialize(); assert.equal((await restored.get(taskId))!.execution.state, 'failed'); }
+    finally { await restored.close(); }
+  } finally { await service.close(); await f.close(); }
+});
+
+test('orphan confirmation without a transaction becomes needsRecovery without running preparation', async () => {
+  const f = await fixture();
+  try {
+    const task = await f.storage().acceptModConfirmation(f.prepared.planRequestId, f.prepared.planId, true);
+    await f.reopen(); const service = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
+    try {
+      await service.initialize(); assert.equal((await service.get(task.taskId))!.execution.state, 'needsRecovery');
+      assert.equal((await service.confirm(confirmation(f))).taskId, task.taskId);
+      assert.equal((await f.storage().readInstance(instanceId))!.revision, 1);
+    } finally { await service.close(); }
+  } finally { await f.close(); }
+});
+
+test('executor restores completion from a real committed transaction after the final task update was absent', async () => {
+  const f = await fixture();
+  try {
+    let task = await f.storage().acceptModConfirmation(f.prepared.planRequestId, f.prepared.planId, true);
+    task = await f.storage().update(rootId, task.taskId, task.execution.revision, { ...task.execution, state: 'committing', revision: task.execution.revision + 1 });
+    await f.make().commit({ ...f.prepared, consumerId: task.taskId });
+    await f.reopen();
+    const service = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
+    try {
+      assert.equal((await service.get(task.taskId))!.execution.state, 'needsRecovery'); await service.initialize();
+      assert.equal((await service.get(task.taskId))!.execution.state, 'completed');
+      assert.equal((await f.storage().readInstance(instanceId))!.revision, 2); await noLease(f.game);
+    } finally { await service.close(); }
+  } finally { await f.close(); }
+});
+
+test('commit boundary rejects cancellation and close joins the actual transaction', async () => {
+  const f = await fixture(); let entered!: () => void; let release!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; }); const gate = new Promise<void>(resolve => { release = resolve; });
+  const transaction = new ModTransactionService(f.repository(), { ...f.dependencies, checkpoint: async point => { if (point === 'staged') { entered(); await gate; } } });
+  const service = new ModInstallTaskService(f.storage(), { prepare: async (_input, consumerId) => ({ ...f.prepared, consumerId }) }, transaction);
+  try {
+    const { taskId } = await service.confirm(confirmation(f)); await started;
+    await assert.rejects(service.cancel(taskId), { code: 'CANCEL_TOO_LATE' });
+    let closed = false; const closing = service.close().then(() => { closed = true; });
+    await new Promise(resolve => setTimeout(resolve, 20)); assert.equal(closed, false); release(); await closing;
+    assert.equal((await service.get(taskId))!.execution.state, 'completed');
+  } finally { release(); await service.close(); await f.close(); }
+});
 
 test('add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits', async () => {
   const f = await fixture();
