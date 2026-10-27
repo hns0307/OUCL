@@ -41,6 +41,20 @@ test('cancellation terminates and waits for child close before rejecting', async
   await assert.rejects(running, error => error instanceof ProcessorExecutionError && error.code === 'CANCELLED');
 });
 
+for (const target of [{ kind: 'forge', major: 17 as const }, { kind: 'neoforge', major: 21 as const }]) {
+  test(`${target.kind} processor cancellation escalates but still waits for the owned process close`, async () => {
+    const child = new FakeChild(); const controller = new AbortController(); let settled = false;
+    const executor = new InstallerProcessorExecutor({ probe: { probe: async () => ({ ...runtime, major: target.major }) },
+      hash: { hash: async () => { throw new Error(); } }, validateArchive: async () => {}, inspect: async () => 'missing',
+      start: () => child as unknown as ChildProcessWithoutNullStreams }, 1000, 5);
+    const running = executor.run('java.exe', target.major, plan(), controller.signal).finally(() => { settled = true; });
+    await new Promise(resolve => setImmediate(resolve)); controller.abort();
+    await new Promise(resolve => setTimeout(resolve, 15)); assert.deepEqual(child.kills, ['SIGTERM', 'SIGKILL']); assert.equal(settled, false);
+    child.close(null, 'SIGKILL');
+    await assert.rejects(running, error => error instanceof ProcessorExecutionError && error.code === 'CANCELLED');
+  });
+}
+
 test('refuses existing outputs, wrong hashes and excessive child output', async () => {
   const existing = new InstallerProcessorExecutor({ probe: { probe: async () => runtime }, hash: { hash: async () => ({ size: 1, sha1: 'a'.repeat(40), sha256: 'b'.repeat(64) }) },
     validateArchive: async () => {}, inspect: async () => 'file', start: () => new FakeChild() as unknown as ChildProcessWithoutNullStreams });

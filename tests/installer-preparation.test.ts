@@ -28,12 +28,14 @@ function archive(): Buffer {
   return Buffer.concat([...local, center, end]);
 }
 
-async function fixture() {
+async function fixture(kind: 'forge' | 'neoforge' = 'forge') {
   const root = await mkdtemp(path.join(tmpdir(), 'oucl-loader-prepare-')); const index = new Map<string, { digest: string; size: number }>();
   const hash = { hash: async (file: string) => { const body = await readFile(file); return { size: body.length,
     sha1: createHash('sha1').update(body).digest('hex'), sha256: createHash('sha256').update(body).digest('hex') }; } };
   const objects = await ObjectStore.open(root, { lookup: async key => index.get(key), remember: async (key, object) => { index.set(key, object); }, clear: async () => { index.clear(); } }, hash);
-  const body = archive(); const url = 'https://maven.minecraftforge.net/fixture/installer.jar';
+  const body = archive(); const url = kind === 'forge'
+    ? 'https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.4.28/forge-1.20.1-47.4.28-installer.jar'
+    : 'https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.265/neoforge-21.1.265-installer.jar';
   const spec = { url, expected: { algorithm: 'sha1' as const, digest: createHash('sha1').update(body).digest('hex'), size: body.length, provenanceId: 'loader:fixture' },
     anchor: { kind: 'loader-maven' as const, algorithm: 'sha256' as const, digest: 'a'.repeat(64) } };
   const staged = await objects.createStaging(); await writeFile(staged.file, body); const object = await objects.commit(staged.id, spec.expected, spec.anchor);
@@ -83,3 +85,25 @@ test('concurrent preparations serialize the shared one-shot extractor', async ()
     assert.equal(peak, 1); assert.equal(f.stats(), 2);
   } finally { await f.close(); }
 });
+
+for (const kind of ['forge', 'neoforge'] as const) {
+  test(`${kind} extraction cancellation joins owned work and preserves private recovery material`, async () => {
+    const f = await fixture(kind); const controller = new AbortController(); let started!: () => void; let release!: () => void; let workspace = '';
+    const extractionStarted = new Promise<void>(resolve => { started = resolve; });
+    const extractionReleased = new Promise<void>(resolve => { release = resolve; });
+    let settled = false;
+    try {
+      const runtime = { ...f.runtime, extractor: { run: async (destination: string, _input: unknown, options?: { signal?: AbortSignal }) => {
+        workspace = path.dirname(destination); started(); await extractionReleased;
+        if (options?.signal?.aborted) throw Object.assign(new Error('cancelled fixture extraction'), { code: 'CANCELLED' });
+        throw new Error('expected cancellation');
+      } } };
+      const reopening = f.service.reopen(f.loader, runtime, controller.signal).finally(() => { settled = true; });
+      await extractionStarted; controller.abort(); await new Promise(resolve => setImmediate(resolve)); assert.equal(settled, false);
+      release(); await assert.rejects(reopening, { code: 'CANCELLED' });
+      assert.equal(await readFile(path.join(workspace, 'installer.jar')).then(value => value.equals(archive())), true);
+      const recovered = await f.service.reopen(f.loader, f.runtime, new AbortController().signal);
+      assert.equal(await readFile(path.join(recovered.workspace, 'installer/version.json'), 'utf8'), '{"id":"fixture"}');
+    } finally { release(); await f.close(); }
+  });
+}

@@ -247,3 +247,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：Forge / NeoForge取消与恢复（2026-10-27）
+
+在9917198后补全正式InstallerPreparationService/InstallerProcessorExecutor的本地故障边界。Forge与NeoForge官方安装器URL形状分别使用非可执行归档：提取已开始时取消会join自有工作，保留已校验installer.jar私有暂存恢复材料，随后可重新从对象仓库复验/提取。Forge Java17和NeoForge Java21处理器对不响应SIGTERM的子进程升级SIGKILL，但直到FakeChild真实close才返回CANCELLED。无网络、无真实Java、无游戏窗口。
+
+完整pnpm check448项/446 PASS/0 FAIL/2原有SKIP，typecheck/lint/coverage/build通过；证据docs/validation/INSTALLER-RECOVERY-20261027/。四加载器本地安装/取消/重开关键路径已有独立覆盖；真实F/Q游戏矩阵及既有Neo间歇退出仍保持缺项，不伪报。下一步回到已批准Mod玩家确认计划与一次安装事务，继续不联网；原两份暂存排除、不push。
+
+---
+
