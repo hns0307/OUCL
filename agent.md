@@ -279,3 +279,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：Mod安装计划公开预览（2026-10-28）
+
+`mods.v1`新增`mods:plan`/`planMod`并在main/preload实际装配。请求仅允许实例UUID/修订、已下载资源库projectId/versionId/SHA1和最多256个显式选择；公开`ModInstallPlan`严格限制项目/版本/安全文件名/SHA1/SHA512/大小、处置、requiredBy、总下载量和最多512项冲突/未知证据，不含路径/URL/命令。主进程复用同一Modrinth客户端、本地JAR复验、双重检查、实例上下文和有界resolver。35秒preload超时不代表成功或取消，计划不授权写入。
+
+完整`pnpm check`459项/457 PASS/0 FAIL/2既有系统能力SKIP，typecheck/lint/coverage/build通过；`pnpm smoke`确认34方法/15能力、renderer无Node以及计划桥接严格错误映射。证据`docs/validation/MOD-PLAN-IPC-20261028/`。未联网、未启动游戏、未动用户游戏数据。仍缺持久计划、玩家确认/拒绝、依赖实际下载、下载后逐JAR复验、会话/修订再检查和一次实例事务；下一增量继续这些，不重打已交付0.3.0二进制，不push。
+
+---
+

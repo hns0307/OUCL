@@ -435,3 +435,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 35. 2026-10-28 便携目录、版本设置与0.3.0交付
 
 `main`和`mod_loaders`已合并并对齐到`e93adf5`。首次运行0.3.0 EXE且没有既有游戏根记录时，在EXE同级创建并登记`OUCL.games`；已有自选根保持优先。实例版本设置新增受控的游戏目录、Mods、存档、资源包、光影、截图和日志入口，渲染层不接触路径。完整`pnpm check`为458项/456 PASS/0 FAIL/2既有系统能力SKIP，`test:bootstrap`19项通过，真实EXE隔离启动及本地Electron smoke通过。交付`release/OUCL-0.3.0.exe`，319,488字节，SHA256 `c1ebf29f195c2553386508faaef73dade3a6419928b96d012fc2086789b251cb`；证据见[BOOTSTRAP-0.3.0](../../docs/validation/BOOTSTRAP-0.3.0/REPORT.md)。按用户要求未联网、未启动真实游戏；Mod确认/实际依赖下载/一次提交事务仍继续进行，不能把EXE包装视为完整原计划结束。
+
+## 36. 2026-10-28 Mod安装计划公开预览
+
+既有真实JAR/平台双重检查与候选解析已通过`mods:plan`接入主进程、preload和严格公开契约。请求不含路径/URL，响应绑定当前实例修订/指纹与精确文件摘要、下载量、requiredBy和未知/冲突证据；仍是非授权预览。`pnpm check`459项/457 PASS/0 FAIL/2既有SKIP，34方法/15能力Electron smoke通过，证据见[MOD-PLAN-IPC-20261028](../../docs/validation/MOD-PLAN-IPC-20261028/REPORT.md)。下一增量为计划持久化、玩家确认/拒绝、下载后复验和一次事务；未联网、未写实例、不误报安装完成。

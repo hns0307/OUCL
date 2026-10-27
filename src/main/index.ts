@@ -57,6 +57,9 @@ import { modInventoryContext } from '../services/mods/context.js';
 import { ModInventoryService } from '../services/mods/inventory.js';
 import { ModInspectionService } from '../services/mods/inspection.js';
 import { ModrinthModClient } from '../services/mods/modrinth.js';
+import { ModLibraryReader } from '../services/mods/library.js';
+import { ModDependencyResolver } from '../services/mods/resolver.js';
+import { ModInstallPlanner } from '../services/mods/planner.js';
 import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
 import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
 
@@ -73,6 +76,7 @@ let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
 let loaders: LoaderService | undefined;
 let mods: ModTaskService | undefined;
+let modPlanner: ModInstallPlanner | undefined;
 let instanceFolders: InstanceFolderService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
@@ -147,7 +151,9 @@ else void app.whenReady().then(async () => {
       const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
       const context = modInventoryContext(storage, new InstalledLanguageReader(scanner));
       const inventory = new ModInventoryService(context, scanner);
-      const modTasks = new ModTaskService(storage, inventory, new ModInspectionService(context, inventory, new ModrinthModClient()));
+      const platform = new ModrinthModClient(); const inspections = new ModInspectionService(context, inventory, platform);
+      const modTasks = new ModTaskService(storage, inventory, inspections);
+      modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
       await modTasks.initialize(); mods = modTasks;
     } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
     const resourceTasks = resources; const games = gameAdapter; const modTasks = mods;
@@ -174,7 +180,7 @@ else void app.whenReady().then(async () => {
   });
   for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
-    return modDispatcher(mods)(selected, payload, requestId);
+    return modDispatcher(mods, modPlanner)(selected, payload, requestId);
   }));
   ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
     const registered = await storage?.readInstallation();

@@ -21,8 +21,13 @@ test('Mod IPC rejects untrusted envelopes before touching a service', async () =
 });
 test('Mod IPC preserves idempotency identities and report/task channel shapes', async () => {
   const calls: unknown[] = [];
+  const plan = { formatVersion: 1 as const, planId: 'a'.repeat(64), instanceId: id, instanceRevision: 1, fingerprint: 'b'.repeat(64),
+    minecraft: '1.20.1', loader: 'fabric' as const, rootVersionId: 'RootVer1', state: 'ready' as const, attempts: 2, totalDownloadBytes: 7,
+    items: [{ projectId: 'Depends1', versionId: 'DepVers1', filename: 'dependency.jar', fileId: 'c'.repeat(40), sha512: 'd'.repeat(128),
+      size: 7, disposition: 'download' as const, requiredBy: ['RootProj'] }], issues: [] };
   const dispatch = modDispatcher({ start: async (...args) => { calls.push(args); return { taskId: trace }; },
-    report: async taskId => { calls.push(taskId); return { report: null, errorCode: 'CANCELLED' }; } });
+    report: async taskId => { calls.push(taskId); return { report: null, errorCode: 'CANCELLED' }; } },
+  { plan: async value => { calls.push(value); return plan; } });
   for (const mode of ['list', 'check'] as const) {
     const result = await handleMods(`mods:${mode}`, input, true, trace, dispatch);
     assert.deepEqual(result, { contractVersion: 1, requestId: id, ok: true, data: { taskId: trace } });
@@ -31,6 +36,20 @@ test('Mod IPC preserves idempotency identities and report/task channel shapes', 
   const report = await handleMods('mods:report', { ...input, payload: { taskId: trace } }, true, trace, dispatch);
   assert.ok(isModResult(report, id, 'mods:report')); assert.equal(calls.at(-1), trace);
   assert.equal(report.ok && report.data.errorCode, 'CANCELLED');
+  const planPayload = { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'c'.repeat(40) }, selections: {} };
+  const planned = await handleMods('mods:plan', { ...input, payload: planPayload }, true, trace, dispatch);
+  assert.ok(isModResult(planned, id, 'mods:plan')); assert.deepEqual(planned.ok && planned.data.plan, plan); assert.deepEqual(calls.at(-1), planPayload);
+});
+
+test('Mod plan contract rejects paths, arbitrary selections and malformed plan evidence', async () => {
+  const payload = { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'c'.repeat(40) }, selections: {} };
+  for (const bad of [{ ...payload, path: 'C:\\private' }, { ...payload, selections: { '../bad': 'DepVers1' } },
+    { ...payload, root: { ...payload.root, url: 'https://example.invalid/file.jar' } }]) {
+    const result = await handleMods('mods:plan', { ...input, payload: bad }, true, trace, async () => { throw new Error('called'); });
+    assert.equal(result.ok, false); if (!result.ok) assert.equal(result.error.code, 'INVALID_ARGUMENT');
+  }
+  const result = await handleMods('mods:plan', { ...input, payload }, true, trace, async () => ({ plan: { path: 'private' } } as never));
+  assert.equal(result.ok, false); if (!result.ok) assert.equal(result.error.code, 'UNAVAILABLE');
 });
 test('Mod IPC rejects malformed service output and redacts unexpected failures', async () => {
   for (const value of [{ taskId: id, path: 'private' }, { taskId: '../private' }, { report: null, errorCode: null }]) {

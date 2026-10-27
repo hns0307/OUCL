@@ -1,9 +1,8 @@
 import { createHash } from 'node:crypto';
-import type { ModFormat } from '../../core/mods/declarations.js';
-import type { DependencyGraphIssue } from '../../core/mods/dependency-graph.js';
 import type { PlatformModVersion } from '../../core/mods/platform.js';
 import type { ResourcePayloads } from '../../shared/contracts/resources.js';
 import { ModContractError } from '../../shared/contracts/mods.js';
+import type { ModInstallPlan, ModPlanItem } from '../../shared/contracts/mods.js';
 import type { ModInventoryContext } from './inventory.js';
 import type { ModInspectionService } from './inspection.js';
 import type { ModLibraryReader } from './library.js';
@@ -13,16 +12,6 @@ export interface ModPlanInput {
   instanceId: string; expectedRevision: number; root: ResourcePayloads['resources:download'];
   selections: Readonly<Record<string, string>>;
 }
-export interface ModPlanItem {
-  projectId: string; versionId: string; filename: string; fileId: string; sha512: string; size: number;
-  disposition: 'reuse' | 'library' | 'download'; requiredBy: string[];
-}
-export interface ModInstallPlan {
-  formatVersion: 1; planId: string; instanceId: string; instanceRevision: number; fingerprint: string;
-  minecraft: string; loader: ModFormat; rootVersionId: string; state: 'ready' | 'conflict' | 'unknown';
-  attempts: number; totalDownloadBytes: number; items: ModPlanItem[]; issues: DependencyGraphIssue[];
-}
-
 function selectedFile(version: PlatformModVersion, sha512: string | null) {
   if (!sha512) return undefined;
   const matches = version.files.filter(file => file.sha512 === sha512);

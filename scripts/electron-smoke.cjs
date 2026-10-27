@@ -23,14 +23,15 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'checkMods', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'downloadResource', 'getDownloadSettings', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateDownloadSettings', 'updateSettings']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'checkMods', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'downloadResource', 'getDownloadSettings', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'planMod', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateDownloadSettings', 'updateSettings']);
     assert.ok(renderer.nodeAbsent);
     const modErrors = await window.webContents.executeJavaScript(`(async () => {
       const id = crypto.randomUUID();
       return [await window.oucl.listMods(id, { instanceId: '../private', expectedRevision: 1 }),
-        await window.oucl.checkMods(id, { instanceId: id, expectedRevision: 1 }), await window.oucl.modReport(id)];
+        await window.oucl.checkMods(id, { instanceId: id, expectedRevision: 1 }), await window.oucl.modReport(id),
+        await window.oucl.planMod(id, { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'a'.repeat(40) }, selections: {} })];
     })()`);
-    assert.deepEqual(modErrors.map(reply => reply.ok ? 'unexpected-success' : reply.error.code), ['INVALID_ARGUMENT', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE']);
+    assert.deepEqual(modErrors.map(reply => reply.ok ? 'unexpected-success' : reply.error.code), ['INVALID_ARGUMENT', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE']);
     assert.equal(renderer.result.ok, true);
     assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'downloads.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1']);
     await window.webContents.executeJavaScript(`(async () => {
