@@ -17,6 +17,16 @@ export interface ModCandidateOption {
 export interface ModCandidateClosure { graph: DependencyGraphResult; selected: PlatformModVersion[]; options: ModCandidateOption[] }
 interface Pending { versionId: string; projectId: string | null; chain: string[] }
 
+/** Validates and bounds the private planning input before cloning any metadata. */
+export function snapshotModCandidateInput(input: ModCandidateInput): ModCandidateInput {
+  if (!input.roots.length || input.roots.length > 16 || input.roots.some(id => !resourceId(id))
+    || input.installed.length > 256 || Object.keys(input.selections).length > 256
+    || Object.entries(input.selections).some(([project, version]) => !resourceId(project) || !resourceId(version))
+    || !/^[A-Za-z0-9_.+-]{1,160}$/.test(input.minecraft) || !['fabric', 'quilt', 'forge', 'neoforge'].includes(input.loader)) throw new ModPlatformError('INVALID_ARGUMENT');
+  if (Buffer.byteLength(JSON.stringify(input)) > 8 * 1024 ** 2) throw new ModPlatformError('PLATFORM_LIMIT');
+  return structuredClone(input);
+}
+
 /** Collects pinned platform metadata only. Project-only choices stay explicit; no download or instance write is authorized. */
 export class ModCandidateService {
   private active = false;
@@ -24,12 +34,7 @@ export class ModCandidateService {
 
   async collect(input: ModCandidateInput, signal?: AbortSignal): Promise<ModCandidateClosure> {
     if (this.active) throw new ModPlatformError('PLATFORM_LIMIT');
-    if (!input.roots.length || input.roots.length > 16 || input.roots.some(id => !resourceId(id))
-      || input.installed.length > 256 || Object.keys(input.selections).length > 256
-      || Object.entries(input.selections).some(([project, version]) => !resourceId(project) || !resourceId(version))
-      || !/^[A-Za-z0-9_.+-]{1,160}$/.test(input.minecraft) || !['fabric', 'quilt', 'forge', 'neoforge'].includes(input.loader)) throw new ModPlatformError('INVALID_ARGUMENT');
-    if (Buffer.byteLength(JSON.stringify(input)) > 8 * 1024 ** 2) throw new ModPlatformError('PLATFORM_LIMIT');
-    const snapshot = structuredClone(input);
+    const snapshot = snapshotModCandidateInput(input);
     const check = (): void => { if (signal?.aborted) throw new ModPlatformError('CANCELLED'); };
     check(); this.active = true;
     try {
@@ -70,7 +75,7 @@ export class ModCandidateService {
           if (dependency.versionId) { pending.push({ versionId: dependency.versionId, projectId: dependency.projectId, chain }); continue; }
           if (!dependency.projectId) continue;
           const projectId = dependency.projectId;
-          const fixed = installed.get(projectId)?.versionId ?? snapshot.selections[projectId] ?? selected.get(projectId)?.versionId;
+          const fixed = installed.get(projectId)?.versionId ?? (Object.hasOwn(snapshot.selections, projectId) ? snapshot.selections[projectId] : undefined) ?? selected.get(projectId)?.versionId;
           if (fixed) { pending.push({ versionId: fixed, projectId, chain }); continue; }
           const existing = options.get(projectId);
           if (existing) { if (!existing.requiredBy.includes(version.projectId)) existing.requiredBy.push(version.projectId); continue; }

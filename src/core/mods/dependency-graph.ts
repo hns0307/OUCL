@@ -12,7 +12,8 @@ export interface DependencyGraphInput {
 export interface DependencyGraphIssue {
   severity: 'conflict' | 'unknown';
   code: 'MISSING_CANDIDATE' | 'PIN_CONFLICT' | 'PROJECT_CONFLICT' | 'INSTALLED_CONFLICT' | 'INCOMPATIBLE'
-    | 'UNRESOLVED_IDENTITY' | 'CYCLE' | 'DEPTH_LIMIT' | 'PROJECT_LIMIT' | 'UNKNOWN_INSTALLED' | 'TARGET_CONFLICT' | 'FILE_SELECTION';
+    | 'UNRESOLVED_IDENTITY' | 'CYCLE' | 'DEPTH_LIMIT' | 'PROJECT_LIMIT' | 'UNKNOWN_INSTALLED' | 'TARGET_CONFLICT' | 'FILE_SELECTION'
+    | 'SEARCH_LIMIT' | 'NO_SOLUTION';
   projectId: string | null;
   versionId: string | null;
   requiredBy: string[];
