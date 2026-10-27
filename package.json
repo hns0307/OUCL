@@ -21,6 +21,7 @@
     "package:exe": "pnpm build && node scripts/bootstrap-package.mjs",
     "test:bootstrap": "node scripts/bootstrap-test.mjs",
     "smoke:exe": "node scripts/bootstrap-smoke.mjs",
+    "smoke:portable": "node scripts/portable-smoke.mjs",
     "smoke:package": "node scripts/package-smoke.mjs",
     "audit:licenses": "node scripts/audit-dependencies.mjs",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"

@@ -130,6 +130,20 @@ internal static class Launcher {
     internal static string EnvironmentRoot(string executable) {
         return Path.Combine(Path.GetDirectoryName(Path.GetFullPath(executable)), "OUCL.runtime");
     }
+    // Isolate portable metadata from other OUCL copies and the legacy desktop profile.
+    internal static string[] ApplicationArguments(string executable, string[] args) {
+        for (int index = 0; index < args.Length; index++) {
+            if (args[index] == "--user-data-dir") {
+                if (index + 1 >= args.Length || String.IsNullOrWhiteSpace(args[index + 1]) || args[index + 1].StartsWith("--")) throw new ArgumentException("MISSING_PROFILE_DIRECTORY");
+                return args;
+            }
+            if (args[index].StartsWith("--user-data-dir=", StringComparison.Ordinal)) {
+                if (String.IsNullOrWhiteSpace(args[index].Substring("--user-data-dir=".Length))) throw new ArgumentException("MISSING_PROFILE_DIRECTORY");
+                return args;
+            }
+        }
+        return args.Concat(new[] {"--user-data-dir=" + Path.Combine(EnvironmentRoot(executable), "profile")}).ToArray();
+    }
     internal static void Run(Action<string> progress, string testRoot = null, Action needsDownload = null) {
         var configuration = TextResource("configuration").Trim().Split('\n');
         string runtimeHash = configuration[0].Trim(), url = configuration[1].Trim(), appHash = configuration[2].Trim();
@@ -169,7 +183,7 @@ internal static class Launcher {
             }
             Cancel.Token.ThrowIfCancellationRequested();
             var start = new ProcessStartInfo(Path.Combine(runtime, "electron.exe")); start.UseShellExecute = false; start.WorkingDirectory = application;
-            start.Arguments = Quote(application) + " " + String.Join(" ", Arguments.Select(Quote));
+            start.Arguments = Quote(application) + " " + String.Join(" ", ApplicationArguments(Assembly.GetExecutingAssembly().Location, Arguments).Select(Quote));
             start.EnvironmentVariables["OUCL_PORTABLE_ROOT"] = Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));
             start.EnvironmentVariables.Remove("ELECTRON_RUN_AS_NODE"); start.EnvironmentVariables.Remove("NODE_OPTIONS");
             start.EnvironmentVariables.Remove("ELECTRON_OVERRIDE_DIST_PATH");

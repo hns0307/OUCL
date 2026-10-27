@@ -120,13 +120,17 @@ if (!primary) app.quit();
 else void app.whenReady().then(async () => {
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => { callback(false); });
   session.defaultSession.setPermissionCheckHandler(() => false);
+  const portableRoot = process.env.OUCL_PORTABLE_ROOT; delete process.env.OUCL_PORTABLE_ROOT;
+  const portableGameDirectory = portableRoot ? path.join(portableRoot, 'OUCL.games') : undefined;
   try {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     profiles = new ProfileService(storage);
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
-    const portableRoot = process.env.OUCL_PORTABLE_ROOT; delete process.env.OUCL_PORTABLE_ROOT;
-    if (portableRoot) await roots.ensureDefault(path.join(portableRoot, 'OUCL.games'));
+    if (portableGameDirectory) {
+      try { await roots.ensureDefault(portableGameDirectory); }
+      catch { console.warn(JSON.stringify({ level: 'warn', event: 'default-root-unavailable', code: 'ROOT_UNAVAILABLE' })); }
+    }
     const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
     const vanillaMetadata = new InstallMetadataService(catalog, reader);
     const initialSettings = await storage.readSettings();
@@ -241,6 +245,7 @@ else void app.whenReady().then(async () => {
   }));
   ipcMain.handle(ROOTS_CHOOSE_CHANNEL, (event, input: unknown) => handleRoots(input, trustedSender(event), randomUUID(), async () => {
     if (!roots) throw new RootError('ROOT_UNAVAILABLE');
+    if (portableGameDirectory) return roots.ensureDefault(portableGameDirectory);
     return roots.choose(async () => {
       const owner = BrowserWindow.fromWebContents(event.sender);
       if (!owner) throw new RootError('INVALID_SENDER');

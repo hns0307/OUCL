@@ -295,3 +295,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：目录服务修复与同级资料（2026-10-28）
+
+已按用户最新心跳优先修复目录服务不可用。检查发现旧全局metadata存在owner.lock；不清理或抢占该标记。新便携EXE默认使用同级`OUCL.runtime/profile`，自动登记同级`OUCL.games`；显式`--user-data-dir`测试参数仍保留。默认根创建失败不再终止其余服务，便携`roots:choose`重试固定默认位置。旧global资料/游戏/已有选择保留，不自动迁移；新便携profile初次为空是预期隔离行为。
+
+完整`pnpm check`及随后脚本lint通过，26项引导检查通过。受限环境初次完整检查因SQLite提交/链接权限失败，切换正常权限后完整检查成功。真实修复EXE在独立中文空格目录（本地预置Electron，无公网测试）验证自动创建、正常退出重开同rootId/revision、阻塞文件原样保留及移除测试阻塞后自动重试；128项许可证审计无待审例外，打包补齐smol-toml许可。证据`docs/validation/PORTABLE-ROOTS-20261028/`和`BOOTSTRAP-0.3.0-directory-fix/`。新交付`release/OUCL-0.3.0-directory-fix.exe`，328704字节，SHA256 `dcbe8f777685efdd456ddc914a9f4a04856639f18801e92c8511afd063167bee`；旧EXE保留。Strata单次建议已审查，未直接使用其含语法错误的代码，返回service_stopped=true。下一步继续Mod确认及实际安装事务；不push、原始暂存保护不变。
+
+---
+

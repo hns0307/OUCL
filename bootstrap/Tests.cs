@@ -25,6 +25,20 @@ internal static class BootstrapTests {
         Environment.CurrentDirectory = root;
         Assert(Launcher.EnvironmentRoot(Path.Combine(root, "elsewhere", "OUCL.exe")) == Path.Combine(root, "elsewhere", "OUCL.runtime"));
         Environment.CurrentDirectory = originalDirectory;
+        string executable = Path.Combine(root, "portable 中文", "OUCL.exe");
+        string expectedProfile = "--user-data-dir=" + Path.Combine(root, "portable 中文", "OUCL.runtime", "profile");
+        Assert(Launcher.ApplicationArguments(executable, new string[0])[0] == expectedProfile);
+        string[] defaults = Launcher.ApplicationArguments(executable, new[] {"--disable-gpu"});
+        Assert(defaults.Length == 2 && defaults[0] == "--disable-gpu" && defaults[1] == expectedProfile);
+        string[] explicitProfile = new[] {"--user-data-dir=" + Path.Combine(root, "test profile"), "--disable-gpu"};
+        Assert(Object.ReferenceEquals(Launcher.ApplicationArguments(executable, explicitProfile), explicitProfile));
+        string[] splitProfile = new[] {"--user-data-dir", Path.Combine(root, "test profile")};
+        Assert(Object.ReferenceEquals(Launcher.ApplicationArguments(executable, splitProfile), splitProfile));
+        foreach (string[] invalid in new[] { new[] {"--user-data-dir"}, new[] {"--user-data-dir="}, new[] {"--user-data-dir", "--disable-gpu"} }) {
+            bool rejected = false;
+            try { Launcher.ApplicationArguments(executable, invalid); } catch (ArgumentException) { rejected = true; }
+            Assert(rejected);
+        }
         using (var context = new BootstrapContext()) {
             var window = (DownloadWindow)typeof(BootstrapContext).GetField("window", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);
             Assert(window.IsHandleCreated && !window.Visible);

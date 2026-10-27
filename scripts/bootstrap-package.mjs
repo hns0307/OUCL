@@ -8,12 +8,15 @@ import { realpath } from 'node:fs/promises';
 if (process.platform !== 'win32' || process.arch !== 'x64') throw new Error('WINDOWS_X64_REQUIRED');
 const meta = JSON.parse(await readFile('package.json', 'utf8'));
 if (!/^\d+\.\d+\.\d+$/.test(meta.version)) throw new Error('INVALID_VERSION');
+const tag = process.env.OUCL_BUILD_TAG ?? '';
+if (tag && !/^[a-z][a-z0-9-]{0,39}$/.test(tag)) throw new Error('INVALID_BUILD_TAG');
+const artifactVersion = `${meta.version}${tag ? `-${tag}` : ''}`;
 const work = path.resolve('.test-build', `bootstrap-${meta.version}-${Date.now()}`); await mkdir(work, { recursive: true });
 const app = path.join(work, 'app'); await mkdir(app);
 await cp('dist', path.join(app, 'dist'), { recursive: true });
 await writeFile(path.join(app, 'package.json'), JSON.stringify({ name: 'oucl', version: meta.version, main: 'dist/main/index.cjs' }));
 const notices = [];
-for (const name of ['react', 'react-dom', 'zustand']) notices.push(`--- ${name} ---\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`);
+for (const name of ['react', 'react-dom', 'zustand', 'smol-toml']) notices.push(`--- ${name} ---\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`);
 const fromReact = createRequire(await realpath('node_modules/react-dom/package.json'));
 notices.push(`--- scheduler ---\n${await readFile(path.join(path.dirname(fromReact.resolve('scheduler/package.json')), 'LICENSE'), 'utf8')}`);
 await writeFile(path.join(app, 'THIRD_PARTY_NOTICES.txt'), notices.join('\n'));
@@ -43,7 +46,7 @@ function run(file, args, env = process.env) {
 run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', await readFile('bootstrap/package.ps1', 'utf8')],
   { ...process.env, OUCL_APP_SOURCE: app, OUCL_APP_ZIP: path.join(work, 'app.zip') });
 await mkdir('release', { recursive: true });
-const output = path.resolve('release', `OUCL-${meta.version}.exe`);
+const output = path.resolve('release', `OUCL-${artifactVersion}.exe`);
 try { await access(output); throw new Error('RELEASE_ALREADY_EXISTS'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 const compiler = path.join(process.env.WINDIR ?? 'C:\\Windows', 'Microsoft.NET/Framework64/v4.0.30319/csc.exe');
 run(compiler, ['/nologo', '/target:winexe', '/platform:x64', '/optimize+', '/utf8output', `/out:${output}`,
@@ -52,6 +55,6 @@ run(compiler, ['/nologo', '/target:winexe', '/platform:x64', '/optimize+', '/utf
   `/resource:${path.join(work, 'configuration')},configuration`, `/resource:${path.join(work, 'app.manifest')},app-manifest`,
   `/resource:${path.join(work, 'runtime.manifest')},runtime-manifest`, `/resource:${path.join(work, 'app.zip')},application`, path.resolve('bootstrap/Launcher.cs')]);
 const report = { version: meta.version, output, bytes: (await stat(output)).size, sha256: createHash('sha256').update(await readFile(output)).digest('hex'), electron: version, runtimeChecksum: checksum, appHash };
-const evidence = `docs/validation/BOOTSTRAP-${meta.version}`;
+const evidence = `docs/validation/BOOTSTRAP-${artifactVersion}`;
 await mkdir(evidence, { recursive: true });
 await writeFile(path.join(evidence, 'package.json'), JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));

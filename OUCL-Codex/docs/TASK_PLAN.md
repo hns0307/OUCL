@@ -443,3 +443,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 37. 2026-10-28 资源库安装计划界面
 
 已下载Mod在选中ready非原版实例时可生成计划预览；界面只展示状态、文件数和待下载量，并明确不写入实例。切换实例/修订清除旧计划，vanilla/非Mod/未下载项目不显示入口。完整检查仍为459项/457 PASS/0 FAIL/2既有SKIP，证据见[MOD-PLAN-UI-20261028](../../docs/validation/MOD-PLAN-UI-20261028/REPORT.md)。确认/拒绝、持久计划、实际依赖下载和一次安装事务继续保持未完成。
+
+## 38. 2026-10-28 目录服务与便携资料隔离修复
+
+按最新用户指令优先修复目录服务不可用。便携EXE默认资料目录改为同级`OUCL.runtime/profile`，避免旧全局资料占用阻断新EXE；保留显式测试profile参数。`OUCL.games`自动创建失败只阻断当前根操作，不中止其他服务初始化；便携模式`roots:choose`重试固定默认位置。旧全局资料、owner标记和原始游戏数据均保留。完整`pnpm check`通过（新增1项根目录回归），26项引导检查通过；本地运行时预置的真实EXE首次自动创建、重开根身份不变、阻塞文件保留及排除后重试三场景通过。修复版为`release/OUCL-0.3.0-directory-fix.exe`，328704字节，SHA256 `dcbe8f777685efdd456ddc914a9f4a04856639f18801e92c8511afd063167bee`。见[PORTABLE-ROOTS-20261028](../../docs/validation/PORTABLE-ROOTS-20261028/REPORT.md)。下一步继续Mod确认及实际安装事务。

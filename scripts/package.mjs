@@ -16,7 +16,7 @@ await mkdir(appDirectory, { recursive: true });
 await cp('dist', path.join(appDirectory, 'dist'), { recursive: true, errorOnExist: true, force: false });
 await writeFile(path.join(appDirectory, 'package.json'), JSON.stringify({ name: 'oucl', version: metadata.version, main: 'dist/main/index.cjs' }, null, 2));
 const notices = ['OUCL vanilla offline launcher preview. Portable folder, unsigned, no automatic updates.', 'Electron license and Chromium notices remain beside the executable. Minecraft and Java are not bundled.'];
-for (const name of ['react', 'react-dom', 'scheduler', 'zustand']) {
+for (const name of ['react', 'react-dom', 'scheduler', 'zustand', 'smol-toml']) {
   let modulePath;
   if (name === 'scheduler') {
     const { createRequire } = await import('node:module');
