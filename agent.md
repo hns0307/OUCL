@@ -1,5 +1,15 @@
 # OUCL 下一对话交接
 
+## 最新加载器选择：本地 UI/IPC 通过（2026-10-27）
+
+f45f58c为四加载器接受凭据离线恢复；本增量shared/contracts/loader-targets.ts统一参考组合（Fabric0.16.14/Quilt0.29.2/Forge47.4.28的MC1.20.1+Java17、Neo21.1.265的MC1.21.1+Java21），不声明已验证。实际目录稳定目标优先，否则其他稳定版本；没有稳定项时不自动选预发布。主进程与UI同一Forge/Neo MC接入界限。InstallPanel跨MC/loader立即清空旧options、忽略旧promise，参考组合MC/Java可见；参数接受中禁改、旧表单应答不污染新上下文，目录错误可重新获取，未就绪/不支持组合不能提交。
+
+完整check440项438PASS/0FAIL/2原有SKIP，typecheck/lint/build通过，末尾脚本修订后lint也通过。独立Electron正式main/preload/UI，脚本进程级fetch仅固定本地响应、renderer HTTP/HTTPS被阻断，外网0；四加载器目标/Java、unsupported MC阻止、跨MC旧选项清空、快速切换旧响应不覆盖、无root不接受安装、720×560无横溢出、正常退出owner释放均通过。截图已实际检查可读性。证据docs/validation/LOADER-SELECTION-20261027/；fixture不是实际安装/游戏，不能冒充实机通过。首轮隐藏窗口超时/UnknownVizError材料保留，改独立窗口/关闭后台节流后通过，不接管用户窗口。
+
+用户当前仍要求跳过联网测试、优先加载器。下一步tests/installer.test.ts补Quilt/Fabric目标本地安装/取消/断网夹具重开：当前fixture默认Fabric0.20.1+MC fixture，只有Fabric集成，Quilt实际共享事务未独立覆盖；建议把fixture可参数化loaderKind/MC/version，保留旧测试默认，新增参考版本本地case。假制品不得记为MC实机。Forge/Neo组件级processor本地fixture已有，真实此前曾通过但保留异常历史；别为补联网/游戏矩阵重新请求外网/Windows输入。ModReader/候选已完、确认安装事务仍缺，整体0.3.0未完成。
+
+最近额度61%已用/周39%，窗口1793087081，继续前再查；剩10%及以下必须保存暂停等待实际重置。原始两份暂存排除、不push、不碰用户游戏。
+
 ## 最新加载器接入：本地接受凭据恢复（2026-10-27）
 
 用户当前优先仍“跳过联网测试，优先模组加载器”，不跑外网或已停止的窗口操作。749eadc保存ModLibraryReader；本增量LoaderService.create先调用InstallerService.findAcceptedLoader，当前registered root+规范payloadDigest+requestId经StorageClient/worker/RecordStore/TaskTable.findAccepted只读查原requests/tasks。准确接受凭据直接返回原taskId，不再依赖远程catalog；同ID不同参数新增loaders.v1 REVISION_CONFLICT，不错复用。首次请求依然核对官方目录/隔离。相同在途请求合并，最多16不同待接受请求；UI TIMEOUT和UNAVAILABLE均保留requestId。新私有find-accepted协议严格无SQL/路径/额外字段，原DB表/格式不变。

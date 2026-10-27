@@ -1,5 +1,6 @@
 export const MESSAGES = {
   requestConflict: '这次请求已用于其他安装参数，请重新提交。',
+  loaderChooseVersion: '请选择加载器版本', loaderRetryCatalog: '重新获取加载器版本', loaderTarget: '参考组合：',
   downloadSettings: '下载设置', downloadSource: '下载源', downloadOfficial: '官方源（默认）', downloadMirror: 'BMCLAPI 加速源',
   downloadAttribution: '镜像加速由 BMCLAPI（bangbang93）提供；文件仍按官方摘要完整校验。',
   downloadFileConcurrency: '同时下载文件数', downloadConnections: '单文件连接数',

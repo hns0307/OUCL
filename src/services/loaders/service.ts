@@ -5,6 +5,7 @@ import { InstallerError } from '../install/installer.js';
 import { LoaderContractError } from '../../shared/contracts/loaders.js';
 import type { LoaderData, LoaderDispatcher, LoaderPayloads } from '../../shared/contracts/loaders.js';
 import { WorkerError } from '../workers/protocol.js';
+import { canInstallLoaderMinecraft } from '../../shared/contracts/loader-targets.js';
 
 function mapped(error: unknown): LoaderContractError {
   if (error instanceof WorkerError) return new LoaderContractError(error.code === 'REVISION_CONFLICT' ? 'REVISION_CONFLICT'
@@ -17,8 +18,7 @@ function mapped(error: unknown): LoaderContractError {
 }
 
 function requireMatrix(input: LoaderPayloads['loaders:versions']): void {
-  if (input.loader === 'forge' && input.minecraftVersion !== '1.20.1'
-    || input.loader === 'neoforge' && input.minecraftVersion !== '1.21.1') throw new LoaderContractError('VERSION_UNSUPPORTED');
+  if (!canInstallLoaderMinecraft(input.loader, input.minecraftVersion)) throw new LoaderContractError('VERSION_UNSUPPORTED');
 }
 
 /** Revalidates the selected official identity before admitting the common installation transaction. */

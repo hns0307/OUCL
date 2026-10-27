@@ -4,6 +4,7 @@ import type { MessageKey } from '../shared/locales/messages.js';
 import type { InstallStage, TaskSnapshot } from '../shared/contracts/instances.js';
 import { useLauncher } from './launcher-state.js';
 import type { LoaderKind, LoaderVersionItem } from '../shared/contracts/loaders.js';
+import { canInstallLoaderMinecraft, LOADER_INSTALL_TARGETS, preferredLoaderVersion } from '../shared/contracts/loader-targets.js';
 
 const STAGE_MESSAGES: Record<InstallStage, MessageKey> = { metadata: 'stageMetadata', downloading: 'stageDownloading', materializing: 'stageMaterializing',
   committing: 'stageCommitting', completed: 'stageCompleted', failed: 'stageFailed', cancelled: 'stageCancelled', needsRecovery: 'stageRecovery', queued: 'stageQueued', preparing: 'stagePreparing' };
@@ -57,25 +58,33 @@ export function InstallPanel({ enabled, loadersEnabled, rootId, versionId }: { e
   const [busy, setBusy] = useState(false); const [error, setError] = useState<MessageKey>();
   const [loader, setLoader] = useState<'vanilla' | LoaderKind>('vanilla');
   const [loaderVersions, setLoaderVersions] = useState<LoaderVersionItem[]>([]); const [loaderVersion, setLoaderVersion] = useState(''); const [loaderBusy, setLoaderBusy] = useState(false);
+  const [loaderCatalogFor, setLoaderCatalogFor] = useState<string>(); const [loaderRefresh, setLoaderRefresh] = useState(0);
   const requestId = useRef<string | undefined>(undefined); const accepted = useRef(false);
-  useEffect(() => { setDisplayName(versionId ?? ''); requestId.current = undefined; accepted.current = false; setError(undefined); }, [versionId]);
+  const target = loader === 'vanilla' ? undefined : LOADER_INSTALL_TARGETS[loader];
+  const loaderSupported = loader === 'vanilla' || !!versionId && canInstallLoaderMinecraft(loader, versionId);
+  const catalogMatches = loader === 'vanilla' || loaderCatalogFor === `${loader}:${versionId}`;
+  useEffect(() => { setDisplayName(versionId ?? ''); requestId.current = undefined; accepted.current = false; setError(undefined); }, [versionId, rootId]);
   useEffect(() => { setIsolation(settings?.isolationDefault === false ? 'off' : 'on'); }, [versionId, settings?.isolationDefault]);
   useEffect(() => {
-    if (!window.oucl || !versionId || loader === 'vanilla' || !loadersEnabled) { setLoaderVersions([]); setLoaderVersion(''); setLoaderBusy(false); return; }
-    let active = true; setLoaderBusy(true); setError(undefined);
+    setLoaderCatalogFor(undefined); setLoaderVersions([]); setLoaderVersion('');
+    if (!window.oucl || !versionId || loader === 'vanilla' || !loadersEnabled) { setLoaderBusy(false); return; }
+    if (!canInstallLoaderMinecraft(loader, versionId)) { setLoaderBusy(false); setError('loaderVersionUnsupported'); return; }
+    let active = true; setLoaderBusy(true); setError(undefined); requestId.current = undefined; accepted.current = false;
     void window.oucl.loaderVersions({ minecraftVersion: versionId, loader }).then(result => {
       if (!active) return;
-      if (result.ok) { setLoaderVersions(result.data.items); setLoaderVersion(result.data.items.find(item => item.stable)?.loaderVersion ?? result.data.items[0]?.loaderVersion ?? ''); }
+      if (result.ok) { setLoaderVersions(result.data.items); setLoaderVersion(preferredLoaderVersion(loader, versionId, result.data.items)); setLoaderCatalogFor(`${loader}:${versionId}`); }
       else { setLoaderVersions([]); setLoaderVersion(''); setError(result.error.messageKey); }
     }).catch(() => { if (active) setError('unavailable'); }).finally(() => { if (active) setLoaderBusy(false); });
     return () => { active = false; };
-  }, [loader, loadersEnabled, versionId]);
+  }, [loader, loadersEnabled, versionId, loaderRefresh]);
   async function install(): Promise<void> {
-    if (!window.oucl || !rootId || !versionId || busy || accepted.current) return;
-    setBusy(true); setError(undefined); requestId.current ??= crypto.randomUUID();
+    if (!window.oucl || !rootId || !versionId || busy || accepted.current || !loaderSupported || !catalogMatches
+      || loader !== 'vanilla' && (!loaderVersion || !loaderVersions.some(item => item.loaderVersion === loaderVersion))) return;
+    setBusy(true); setError(undefined); const id = requestId.current ??= crypto.randomUUID();
     try {
-      const result = loader === 'vanilla' ? await window.oucl.createInstance(requestId.current, { rootId, mcVersionId: versionId, displayName: displayName.trim(), isolation })
-        : await window.oucl.createLoaderInstance(requestId.current, { rootId, minecraftVersion: versionId, loader, loaderVersion, displayName: displayName.trim(), isolation: 'on' });
+      const result = loader === 'vanilla' ? await window.oucl.createInstance(id, { rootId, mcVersionId: versionId, displayName: displayName.trim(), isolation })
+        : await window.oucl.createLoaderInstance(id, { rootId, minecraftVersion: versionId, loader, loaderVersion, displayName: displayName.trim(), isolation: 'on' });
+      if (requestId.current !== id) { await refreshGame(); return; }
       if (!result.ok) { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT' && result.error.code !== 'UNAVAILABLE') requestId.current = undefined; return; }
       accepted.current = true; await refreshGame();
     } catch { setError('unavailable'); } finally { setBusy(false); }
@@ -83,17 +92,20 @@ export function InstallPanel({ enabled, loadersEnabled, rootId, versionId }: { e
   if (!enabled) return null;
   return <div className="installation-column"><section className="card install-confirm" aria-labelledby="install-title"><h2 id="install-title">{MESSAGES.installTitle}</h2>
     {!versionId ? <div className="empty-state"><span className="empty-glyph">↓</span><p>{MESSAGES.installPrompt}</p></div> : <><div className="selected-version">{versionId}</div>
-      <label>{MESSAGES.uiLoader}<select value={loader} onChange={event => { setLoader(event.target.value as typeof loader); requestId.current = undefined; accepted.current = false; }}>
+      <label>{MESSAGES.uiLoader}<select value={loader} disabled={busy} onChange={event => { setLoader(event.target.value as typeof loader); requestId.current = undefined; accepted.current = false; }}>
         <option value="vanilla">{MESSAGES.uiVanilla}</option>{loadersEnabled && <><option value="fabric">Fabric</option><option value="quilt">Quilt</option><option value="forge">Forge</option><option value="neoforge">NeoForge</option></>}
       </select></label>
-      {loader !== 'vanilla' && <label>{MESSAGES.loaderVersion}<select value={loaderVersion} disabled={loaderBusy || loaderVersions.length === 0} onChange={event => { setLoaderVersion(event.target.value); requestId.current = undefined; accepted.current = false; }}>
-        {loaderVersions.map(item => <option key={item.loaderVersion} value={item.loaderVersion}>{item.loaderVersion}{item.stable ? ` · ${MESSAGES.loaderStable}` : ''}</option>)}
+      {loader !== 'vanilla' && <label>{MESSAGES.loaderVersion}<select value={catalogMatches ? loaderVersion : ''} disabled={busy || !catalogMatches || loaderBusy || loaderVersions.length === 0} onChange={event => { setLoaderVersion(event.target.value); requestId.current = undefined; accepted.current = false; }}>
+        <option value="" disabled>{MESSAGES.loaderChooseVersion}</option>
+        {(catalogMatches ? loaderVersions : []).map(item => <option key={item.loaderVersion} value={item.loaderVersion}>{item.loaderVersion}{item.stable ? ` · ${MESSAGES.loaderStable}` : ''}</option>)}
       </select></label>}
-      <label>{MESSAGES.instanceName}<input value={displayName} maxLength={80} onChange={event => { setDisplayName(event.target.value); requestId.current = undefined; accepted.current = false; }} /></label>
-      <select aria-label={MESSAGES.isolationOn} value={loader === 'vanilla' ? isolation : 'on'} disabled={loader !== 'vanilla'} onChange={event => { setIsolation(event.target.value as 'on' | 'off'); requestId.current = undefined; accepted.current = false; }}><option value="on">{MESSAGES.isolationOn}</option><option value="off">{MESSAGES.isolationOff}</option></select>
+      {target && <p className="storage-note loader-target">{MESSAGES.loaderTarget} Minecraft {target.minecraftVersion} · {target.loaderVersion} · Java {target.javaMajor}</p>}
+      {loader !== 'vanilla' && loaderSupported && !loaderBusy && loaderVersions.length === 0 && <button disabled={busy} onClick={() => { setLoaderRefresh(value => value + 1); }}>{MESSAGES.loaderRetryCatalog}</button>}
+      <label>{MESSAGES.instanceName}<input value={displayName} disabled={busy} maxLength={80} onChange={event => { setDisplayName(event.target.value); requestId.current = undefined; accepted.current = false; }} /></label>
+      <select aria-label={MESSAGES.isolationOn} value={loader === 'vanilla' ? isolation : 'on'} disabled={busy || loader !== 'vanilla'} onChange={event => { setIsolation(event.target.value as 'on' | 'off'); requestId.current = undefined; accepted.current = false; }}><option value="on">{MESSAGES.isolationOn}</option><option value="off">{MESSAGES.isolationOff}</option></select>
       {loader !== 'vanilla' && <p className="storage-note">{MESSAGES.loaderUnverified}</p>}
       <p className="storage-note">{MESSAGES.installHint}</p>{!rootId && <p>{MESSAGES.chooseRootFirst}</p>}
-      <button className="primary" disabled={busy || loaderBusy || !rootId || !displayName.trim() || accepted.current || loader !== 'vanilla' && !loaderVersion} onClick={() => { void install(); }}>{busy || loaderBusy ? MESSAGES.installAccepting : MESSAGES.installConfirm}</button>
+      <button className="primary" disabled={busy || loaderBusy || !loaderSupported || !catalogMatches || !rootId || !displayName.trim() || accepted.current || loader !== 'vanilla' && !loaderVersion} onClick={() => { void install(); }}>{busy || loaderBusy ? MESSAGES.installAccepting : MESSAGES.installConfirm}</button>
     </>}{error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}</section>
     {tasks.some(t => t.kind === 'install') && <section className="card"><h2>{MESSAGES.tasksTitle}</h2>{tasks.filter(t => t.kind === 'install').slice(-6).map(task => <InstallTask key={task.taskId} initial={task} onSettled={refreshGame} />)}</section>}
   </div>;

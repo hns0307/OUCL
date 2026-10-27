@@ -19,4 +19,3 @@ A1-04b补充：私有存储消息现包含object:lookup/sourceKey、object:remem
 # 2026-10-27 接受凭据只读查询
 
 固定私有指令find-accepted与accept使用相同ownerId/requestId/taskKind/payloadDigest严格schema，但只查既有requests/tasks，不插入、恢复或更新任务；返回原StoredTask或缺失，参数/类型不符为REVISION_CONFLICT，不接受SQL/路径/额外字段。RecordStore持有原lease并串行派发，复用现有SQLite表/事务格式。用于加载器接受结果丢失后的本地恢复；renderer没有该原始指令权限。
-
