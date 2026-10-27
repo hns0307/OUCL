@@ -24,6 +24,7 @@ import { ModArchiveError, scanModArchive } from '../mods/archive.js';
 import { parseModArchiveRequest } from './mod-archive-protocol.js';
 import { modReportRecordId, parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
 import { assertModPlanTransition, modPlanRecordId, parseStoredModPlan } from '../storage/mod-plans.js';
+import { modConfirmationDigest } from '../mods/plan-identity.js';
 import { assertModTransactionTransition, modTransactionRecordId, parseModTransaction } from '../storage/mod-transactions.js';
 
 const port = parentPort;
@@ -61,8 +62,39 @@ async function storage(directory: string): Promise<void> {
         let modReport;
         let modPlan;
         let modTransaction;
+        let modConfirmations;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'mod-confirm:accept' || command.kind === 'mod-confirm:list') {
+          const root = await store.read('installation', parseInstallation);
+          if (!root) throw new WorkerError('INVALID_RECORD');
+          const ownerId = root.data.rootId;
+          if (command.kind === 'mod-confirm:list') {
+            modConfirmations = await store.readModConfirmations(ownerId);
+            for (const confirmation of modConfirmations) {
+              const plan = await store.read(modPlanRecordId(confirmation.planRequestId), parseStoredModPlan);
+              if (!plan || plan.data.rootId !== ownerId || plan.data.requestId !== confirmation.planRequestId
+                || plan.data.status !== 'preview' || plan.data.plan.state !== 'ready'
+                || confirmation.payloadDigest !== modConfirmationDigest(confirmation.planRequestId, plan.data.plan.planId)) throw new WorkerError('NEEDS_RECOVERY');
+            }
+          } else {
+            const id = command.planRequestId.toLowerCase();
+            const plan = await store.read(modPlanRecordId(id), parseStoredModPlan);
+            if (!plan || plan.data.rootId !== ownerId || plan.data.requestId !== id || plan.data.plan.planId !== command.planId) throw new WorkerError('REVISION_CONFLICT');
+            if (plan.data.status === 'cancelled') throw new WorkerError('CANCELLED');
+            if (plan.revision !== 1 || plan.data.plan.state !== 'ready') throw new WorkerError('INVALID_RECORD');
+            const digest = modConfirmationDigest(id, command.planId);
+            task = await store.findAcceptedTask(ownerId, id, 'mod-install', digest);
+            if (!task) {
+              const instance = await store.read(instanceRecordId(plan.data.plan.instanceId), parseInstanceRecord);
+              if (!instance || instance.data.summary.rootId !== ownerId || instance.data.phase !== 'ready'
+                || instance.revision !== plan.data.plan.instanceRevision || !instance.data.loader || instance.data.loader.kind === 'vanilla'
+                || instance.data.loader.kind !== plan.data.plan.loader || instance.data.summary.mcVersionId !== plan.data.plan.minecraft) throw new WorkerError('REVISION_CONFLICT');
+              if ((await store.readModConfirmations(ownerId)).length >= 1000) throw new WorkerError('QUEUE_FULL');
+              task = await store.acceptTask(ownerId, id, 'mod-install', digest);
+            }
+          }
+        }
         else if (command.kind === 'mod-jobs:get') modJobs = await store.read('mod-jobs', parseModJobs);
         else if (command.kind === 'mod-jobs:set') modJobs = await store.write('mod-jobs', command.expectedRevision, command.data, parseModJobs);
         else if (command.kind === 'mod-txn:get' || command.kind === 'mod-txn:set') {
@@ -82,6 +114,8 @@ async function storage(directory: string): Promise<void> {
           if (command.kind === 'mod-plan:get') modPlan = previous;
           else {
             assertModPlanTransition(previous?.data, command.data);
+            if (command.data.status === 'cancelled' && await store.findAcceptedTask(command.data.rootId, command.data.requestId,
+              'mod-install', modConfirmationDigest(command.data.requestId, command.data.plan.planId))) throw new WorkerError('CANCEL_TOO_LATE');
             modPlan = await store.write(recordId, command.expectedRevision, command.data, parseStoredModPlan);
           }
         }
@@ -125,7 +159,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

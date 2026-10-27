@@ -61,6 +61,7 @@ export class ModPlanService {
   private async persist(revision: number, data: StoredModPlan): Promise<RecordEnvelope<StoredModPlan>> {
     try { return await this.storage.writeModPlan(data.requestId, revision, data); }
     catch (error) {
+      if (error instanceof WorkerError && error.code === 'CANCEL_TOO_LATE') throw new ModContractError('CANCEL_TOO_LATE');
       if (error instanceof WorkerError && ['TIMEOUT', 'REVISION_CONFLICT'].includes(error.code)) {
         // An acknowledgement can be lost after JSON publication. Only exact durable evidence can finish this operation.
         const saved = await this.record(data.requestId);

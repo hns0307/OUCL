@@ -335,3 +335,11 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+
+## 最新检查点：Mod确认接纳互锁（2026-10-28）
+
+新增固定私有mod-confirm:accept/list、StorageClient.acceptModConfirmation/readModConfirmations；TaskKind增加mod-install但公共TaskSnapshot尚未扩展。主进程通用accept不能创建该kind。worker内确认/取消按消息顺序串行，计划UUID=tasks/requests请求UUID、digest=modConfirmationDigest(计划UUID,planId)，首次检查根/preview ready/实例修订MC loader，重试直接返回原task（不重放）。确认后ModPlanService.cancel明确CANCEL_TOO_LATE。SQL固定有界恢复清单最多1000项，worker核对每项计划，避免另写JSON索引造成断电孤儿；既有任务重开把running置needsRecovery，清单不能自动重跑。无新依赖/表/公共通道或按钮。
+
+pnpm check 495项/493PASS/0FAIL/2既有SKIP；Electron45正式dist worker完整15项mod-plans测试PASS。运行器scripts/mod-confirmation-runtime.mjs；首次计数误配16实际15，修正后明确通过，原TAP保留报告。材料docs/validation/MOD-CONFIRMATION-20261028/及docs/contracts/MOD_CONFIRMATION.md。未联网/未启动MC/不碰用户数据。
+
+下一步：实测Java事实（生产context.java仍null）、公共确认服务编排preparation/transaction、任务订阅/取消/重连/退出等待，最后UI确认按钮与0.3重打包。现有SQLite清单可直接供执行器initialize，先核对mod-txn日志与modCommitId，不自动重放未知下载/提交。产品尚未创建任何mod-install任务。保留旧EXE及zip/txt/stash，不push。

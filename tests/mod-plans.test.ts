@@ -13,8 +13,12 @@ import { parseReply, parseStorageRequest, WorkerError } from '../src/services/wo
 import { ModContractError } from '../src/shared/contracts/mods.js';
 import type { ModInstallPlan, ModPayloads } from '../src/shared/contracts/mods.js';
 import { handleMods, modDispatcher } from '../src/ipc/mods.js';
+import { modReadyInstance } from './fixtures/mod-ready-instance.js';
+import { modConfirmationDigest } from '../src/services/mods/plan-identity.js';
+import { controlTask } from '../src/core/task/machine.js';
 
-const entry = new URL('../src/services/workers/entry.js', import.meta.url);
+const entry = process.env.OUCL_MOD_PLAN_BUNDLED_WORKER === '1'
+  ? new URL('../../dist/workers/entry.cjs', import.meta.url) : new URL('../src/services/workers/entry.js', import.meta.url);
 const rootId = '00000000-0000-4000-8000-000000000001';
 const instanceId = '00000000-0000-4000-8000-000000000002';
 const input: ModPayloads['mods:plan'] = { instanceId, expectedRevision: 1,
@@ -40,6 +44,73 @@ async function fixture() {
 }
 const unavailablePlanner = { plan: async (): Promise<never> => { throw new Error('SHOULD_NOT_REPEAT_METADATA'); } };
 const inspection = { start: async () => ({ taskId: randomUUID() }), report: async () => ({ report: null, errorCode: null }) };
+
+test('durable confirmation wins cancellation, joins retries and is discoverable after worker restart', async () => {
+  const f = await fixture(); const data = stored();
+  let taskId: string;
+  try {
+    await f.storage.writeInstance(instanceId, 0, modReadyInstance(rootId, instanceId));
+    await f.storage.writeModPlan(data.requestId, 0, data);
+    const first = await f.storage.acceptModConfirmation(data.requestId.toUpperCase(), data.plan.planId, true); taskId = first.taskId;
+    assert.equal(first.kind, 'mod-install');
+    assert.equal((await f.storage.acceptModConfirmation(data.requestId, data.plan.planId, true)).taskId, taskId);
+    await assert.rejects(f.storage.writeModPlan(data.requestId, 1, { ...data, status: 'cancelled' }), { code: 'CANCEL_TOO_LATE' });
+    const service = new ModPlanService(f.storage, unavailablePlanner);
+    try { await assert.rejects(service.cancel(data.requestId, data.plan.planId), { code: 'CANCEL_TOO_LATE' }); }
+    finally { await service.close(); }
+    const current = await f.storage.update(rootId, taskId, first.execution.revision, controlTask(first.execution, 'start').execution);
+    assert.equal(current.execution.state, 'running');
+  } finally { await f.storage.close(); }
+  const reopened = await StorageClient.open(entry, f.directory);
+  try {
+    const rows = await reopened.readModConfirmations(); assert.equal(rows.length, 1);
+    assert.equal(rows[0]!.planRequestId, data.requestId); assert.equal(rows[0]!.task.taskId, taskId);
+    assert.equal(rows[0]!.payloadDigest, modConfirmationDigest(data.requestId, data.plan.planId));
+    assert.equal(rows[0]!.task.execution.state, 'needsRecovery');
+    assert.equal((await reopened.acceptModConfirmation(data.requestId, data.plan.planId, true)).taskId, taskId);
+    assert.equal((await reopened.readModPlan(data.requestId))!.data.status, 'preview');
+  } finally { await reopened.close(); }
+});
+
+test('cancel wins confirmation and rejected admission never creates an orphan task', async () => {
+  const f = await fixture(); const data = stored();
+  try {
+    await f.storage.writeInstance(instanceId, 0, modReadyInstance(rootId, instanceId));
+    await f.storage.writeModPlan(data.requestId, 0, data);
+    // Deliberately queue both messages: the storage worker serializes their decision point.
+    const cancelled = f.storage.writeModPlan(data.requestId, 1, { ...data, status: 'cancelled' });
+    const admission = f.storage.acceptModConfirmation(data.requestId, data.plan.planId, true);
+    await cancelled; await assert.rejects(admission, { code: 'CANCELLED' });
+    assert.deepEqual(await f.storage.readModConfirmations(), []);
+  } finally { await f.storage.close(); }
+});
+
+test('admission rejects stale, foreign, unknown and substituted previews before allocating tasks', async () => {
+  const f = await fixture();
+  try {
+    const data = stored(); await f.storage.writeModPlan(data.requestId, 0, data);
+    await assert.rejects(f.storage.acceptModConfirmation(data.requestId, data.plan.planId, true), { code: 'REVISION_CONFLICT' });
+    await f.storage.writeInstance(instanceId, 0, modReadyInstance(rootId, instanceId));
+    await assert.rejects(f.storage.acceptModConfirmation(data.requestId, '0'.repeat(64), true), { code: 'REVISION_CONFLICT' });
+    const foreign = { ...stored(), rootId: randomUUID() }; await f.storage.writeModPlan(foreign.requestId, 0, foreign);
+    await assert.rejects(f.storage.acceptModConfirmation(foreign.requestId, foreign.plan.planId, true), { code: 'REVISION_CONFLICT' });
+    const body = { ...preview(), state: 'unknown' as const }; body.planId = modPlanDigest(body);
+    const unknown = { ...stored(), plan: body }; await f.storage.writeModPlan(unknown.requestId, 0, unknown);
+    await assert.rejects(f.storage.acceptModConfirmation(unknown.requestId, unknown.plan.planId, true), { code: 'INVALID_RECORD' });
+    assert.deepEqual(await f.storage.readModConfirmations(), []);
+  } finally { await f.storage.close(); }
+});
+
+test('confirmation bridge rejects false confirmation, extra fields and generic acceptance bypass', () => {
+  const command = { kind: 'mod-confirm:accept', planRequestId: randomUUID(), planId: 'a'.repeat(64), confirmed: true };
+  for (const bad of [{ ...command, confirmed: false }, { ...command, path: 'private' }, { ...command, planRequestId: '../escape' },
+    { kind: 'accept', ownerId: rootId, requestId: randomUUID(), taskKind: 'mod-install', payloadDigest: 'a'.repeat(64) }]) {
+    assert.throws(() => parseStorageRequest({ version: 1, id: randomUUID(), command: bad }));
+  }
+  const reply = { version: 1, kind: 'response', id: randomUUID(), ok: true };
+  assert.throws(() => parseReply({ ...reply, modConfirmations: new Array(1001).fill({}) }));
+  assert.throws(() => parseReply({ ...reply, modConfirmations: [{ planRequestId: randomUUID(), payloadDigest: 'a'.repeat(64), task: {} }] }));
+});
 
 test('saved plan schema binds request, target and content digests, and rejects mutable evidence', () => {
   const data = stored(); assert.deepEqual(parseStoredModPlan(data), data);

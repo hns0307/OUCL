@@ -5,9 +5,10 @@ import type { Execution } from '../../core/task/machine.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { StorageError } from './files.js';
 
-export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check'] as const;
+export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check', 'mod-install'] as const;
 export type TaskKind = typeof TASK_KINDS[number];
 export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
+export interface ModConfirmation { planRequestId: string; payloadDigest: string; task: StoredTask }
 const STATES = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
 const KINDS: readonly string[] = TASK_KINDS;
 
@@ -31,6 +32,20 @@ function identity(value: string): void { if (!UUID_PATTERN.test(value)) throw ne
 /** SQLite-only tasks and request deduplication, called exclusively while RecordStore owns its lease. */
 export class TaskTable {
   constructor(private readonly db: DatabaseSync) {}
+
+  /** Fixed bounded recovery inventory; never accepts arbitrary SQL or a caller-selected task kind. */
+  modConfirmations(ownerId: string): ModConfirmation[] {
+    identity(ownerId);
+    const rows = this.db.prepare("SELECT request_id, payload_digest, task_id FROM requests WHERE owner_id=? AND kind='mod-install' ORDER BY request_id LIMIT 1001").all(ownerId);
+    if (rows.length > 1000) throw new StorageError('NEEDS_RECOVERY');
+    return rows.map(row => {
+      if (typeof row.request_id !== 'string' || typeof row.payload_digest !== 'string' || !/^[a-f0-9]{64}$/.test(row.payload_digest)
+        || typeof row.task_id !== 'string') throw new StorageError('NEEDS_RECOVERY');
+      identity(row.request_id); const task = this.get(ownerId, row.task_id);
+      if (!task || task.kind !== 'mod-install') throw new StorageError('NEEDS_RECOVERY');
+      return { planRequestId: row.request_id, payloadDigest: row.payload_digest, task };
+    });
+  }
 
   /** Read-only acceptance lookup; an absent request never allocates a task or changes its state. */
   findAccepted(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): StoredTask | undefined {

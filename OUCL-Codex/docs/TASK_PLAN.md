@@ -459,3 +459,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 ## 41. 2026-10-28 Mod新增文件事务与恢复基础
 
 ModTransactionService已实现固定worker日志、gameDir占用、私有暂存副本/三摘要复验、独占新增、实例modCommitId+revision JSON提交点及索引恢复。失败只回退身份/内容仍属于本次的文件并保留材料，外部修改/外来锁不覆盖或清除；取消/未知提交结果以精确JSON证明处理。完整`pnpm check`491项/489 PASS/0 FAIL/2既有SKIP，11项事务测试在Electron45+正式打包worker下全部通过；证据[MOD-TRANSACTION-20261028](../../docs/validation/MOD-TRANSACTION-20261028/REPORT.md)。仍是未接公共确认任务的内部API；下一步接持久确认/取消互锁、实测Java及任务/UI，最后再打包完整Mod功能，不把内部事务测试当产品交付。
+
+## 42. 2026-10-28 Mod确认持久接纳与取消互锁
+
+固定worker确认入口复用既有SQLite tasks/requests事务，绑定计划UUID/精确planId，重复确认恢复同一任务；与取消计划串行互锁，确认后cancelPlan明确CANCEL_TOO_LATE。新增当前根固定有界恢复清单，复核计划证据，无新增表/依赖/公共IPC。完整`pnpm check`495项/493 PASS/0 FAIL/2既有SKIP，Electron45+正式worker的15项计划测试全部通过，证据[MOD-CONFIRMATION-20261028](../../docs/validation/MOD-CONFIRMATION-20261028/REPORT.md)。仍未在产品装配确认执行器，不开放按钮、不重放在途未知任务；下一步接实测Java、准备/事务编排和任务/UI。

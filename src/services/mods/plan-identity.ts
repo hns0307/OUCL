@@ -10,6 +10,10 @@ export function canonicalModPlanInput(input: ModPayloads['mods:plan']): ModPaylo
 export function modPlanInputDigest(input: ModPayloads['mods:plan']): string {
   return createHash('sha256').update(JSON.stringify(canonicalModPlanInput(input))).digest('hex');
 }
+/** Confirmation always binds the immutable preview, independent of retry request IDs. */
+export function modConfirmationDigest(planRequestId: string, planId: string): string {
+  return createHash('sha256').update(JSON.stringify({ planRequestId: planRequestId.toLowerCase(), planId, confirmed: true })).digest('hex');
+}
 /** Local content identity only; this digest is never presented as upstream authentication. */
 export function modPlanDigest(plan: Omit<ModInstallPlan, 'planId'>): string {
   const body = { formatVersion: plan.formatVersion, instanceId: plan.instanceId, instanceRevision: plan.instanceRevision,

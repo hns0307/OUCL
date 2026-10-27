@@ -3,7 +3,7 @@ import type { ResourceLibrary } from '../storage/resources.js';
 import { Worker } from 'node:worker_threads';
 import { randomUUID } from 'node:crypto';
 import type { Execution } from '../../core/task/machine.js';
-import type { StoredTask, TaskKind } from '../storage/tasks.js';
+import type { StoredTask, TaskKind, ModConfirmation } from '../storage/tasks.js';
 import { parseReply, parseStorageRequest, WorkerError } from './protocol.js';
 import type { StorageCommand } from './protocol.js';
 import type { IndexedObject } from '../storage/object-index.js';
@@ -17,7 +17,7 @@ import type { GameSessions } from '../storage/game-sessions.js';
 import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
 import type { StoredModPlan } from '../storage/mod-plans.js';
 import type { ModTransaction } from '../storage/mod-transactions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction> };
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[] };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -82,7 +82,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }), ...(reply.modConfirmations === undefined ? {} : { modConfirmations: reply.modConfirmations }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -111,6 +111,15 @@ export class StorageClient {
   }
   async readModPlan(requestId: string): Promise<RecordEnvelope<StoredModPlan> | undefined> {
     return (await this.request({ kind: 'mod-plan:get', requestId })).modPlan;
+  }
+  /** Durable admission only; executors must separately revalidate and run the accepted task. */
+  async acceptModConfirmation(planRequestId: string, planId: string, confirmed: true): Promise<StoredTask> {
+    const result = (await this.request({ kind: 'mod-confirm:accept', planRequestId, planId, confirmed })).task;
+    if (!result || result.kind !== 'mod-install') throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  async readModConfirmations(): Promise<ModConfirmation[]> {
+    const result = (await this.request({ kind: 'mod-confirm:list' })).modConfirmations;
+    if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
   }
   async writeModPlan(requestId: string, expectedRevision: number, data: StoredModPlan): Promise<RecordEnvelope<StoredModPlan>> {
     const result = (await this.request({ kind: 'mod-plan:set', requestId, expectedRevision, data })).modPlan;

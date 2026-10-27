@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: durable confirmation wins cancellation, joins retries and is discoverable after worker restart
+ok 1 - durable confirmation wins cancellation, joins retries and is discoverable after worker restart
+  ---
+  duration_ms: 116.0778
+  type: 'test'
+  ...
+# Subtest: cancel wins confirmation and rejected admission never creates an orphan task
+ok 2 - cancel wins confirmation and rejected admission never creates an orphan task
+  ---
+  duration_ms: 65.5271
+  type: 'test'
+  ...
+# Subtest: admission rejects stale, foreign, unknown and substituted previews before allocating tasks
+ok 3 - admission rejects stale, foreign, unknown and substituted previews before allocating tasks
+  ---
+  duration_ms: 76.0491
+  type: 'test'
+  ...
+# Subtest: confirmation bridge rejects false confirmation, extra fields and generic acceptance bypass
+ok 4 - confirmation bridge rejects false confirmation, extra fields and generic acceptance bypass
+  ---
+  duration_ms: 0.4076
+  type: 'test'
+  ...
+# Subtest: saved plan schema binds request, target and content digests, and rejects mutable evidence
+ok 5 - saved plan schema binds request, target and content digests, and rejects mutable evidence
+  ---
+  duration_ms: 0.7018
+  type: 'test'
+  ...
+# Subtest: private plan bridge rejects paths, mismatched request identities and forged status revisions
+ok 6 - private plan bridge rejects paths, mismatched request identities and forged status revisions
+  ---
+  duration_ms: 0.3083
+  type: 'test'
+  ...
+# Subtest: real plan worker persists immutable previews, enforces CAS, and retains cancelled records across restart
+ok 7 - real plan worker persists immutable previews, enforces CAS, and retains cancelled records across restart
+  ---
+  duration_ms: 93.1319
+  type: 'test'
+  ...
+# Subtest: unknown saved plan formats stop writes and preserve original JSON byte for byte
+ok 8 - unknown saved plan formats stop writes and preserve original JSON byte for byte
+  ---
+  duration_ms: 85.3683
+  type: 'test'
+  ...
+# Subtest: plan retries and a real storage restart return the same saved evidence without repeating metadata work
+ok 9 - plan retries and a real storage restart return the same saved evidence without repeating metadata work
+  ---
+  duration_ms: 91.1469
+  type: 'test'
+  ...
+# Subtest: same in-flight plan joins with independent outputs; other requests are bounded and inputs are snapshotted
+ok 10 - same in-flight plan joins with independent outputs; other requests are bounded and inputs are snapshotted
+  ---
+  duration_ms: 48.1771
+  type: 'test'
+  ...
+# Subtest: cancellation is durable, checks exact plan identity and never reactivates the same request
+ok 11 - cancellation is durable, checks exact plan identity and never reactivates the same request
+  ---
+  duration_ms: 80.5871
+  type: 'test'
+  ...
+# Subtest: lost write acknowledgement reconciles only exactly committed plan evidence
+ok 12 - lost write acknowledgement reconciles only exactly committed plan evidence
+  ---
+  duration_ms: 71.4144
+  type: 'test'
+  ...
+# Subtest: closing joins a cancellation already being persisted and rejects later operations
+ok 13 - closing joins a cancellation already being persisted and rejects later operations
+  ---
+  duration_ms: 59.2358
+  type: 'test'
+  ...
+# Subtest: closing an active metadata preview aborts and joins it without publishing a plan
+ok 14 - closing an active metadata preview aborts and joins it without publishing a plan
+  ---
+  duration_ms: 55.3273
+  type: 'test'
+  ...
+# Subtest: public saved-plan operations validate correlation, redact private records and refuse untrusted cancellation
+ok 15 - public saved-plan operations validate correlation, redact private records and refuse untrusted cancellation
+  ---
+  duration_ms: 68.6833
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1001.8247
