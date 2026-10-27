@@ -269,3 +269,13 @@ pnpm smoke:package：真实默认exe入口、无Node、9能力/18方法、打包
 
 ---
 
+## 最新检查点：0.3.0便携目录与版本设置交付（2026-10-28）
+
+`main`与`mod_loaders`现均指向`e93adf5`。0.3.0外层EXE向应用传递自身目录；全新配置会实际建立同级`release/OUCL.games`，已有自选游戏根不被覆盖。选中实例后的版本设置可通过严格`instance-folders.v1`打开游戏目录、Mods、存档、资源包、光影、截图和日志目录；renderer只传实例UUID与固定键，主进程从持久实例记录重建真实隔离/共享gameDir并拒绝链接逃逸。
+
+最终`pnpm check`458项/456 PASS/0 FAIL/2既有系统能力SKIP，typecheck/lint/coverage/build通过；`pnpm test:bootstrap`19项通过；`pnpm smoke:exe final`真实启动319,488字节EXE并复用同级runtime，33方法/15能力、renderer无Node、owner释放通过；`pnpm smoke`本地Electron安全与界面通过。交付`release/OUCL-0.3.0.exe`，SHA256 `c1ebf29f195c2553386508faaef73dade3a6419928b96d012fc2086789b251cb`，证据`docs/validation/BOOTSTRAP-0.3.0/`。按用户要求未联网、未启动真实MC、未动用户游戏数据。
+
+完整Mod玩家确认/取消、递归依赖实际下载、下载后逐JAR复验和一次安装事务仍未完成；下次继续该已批准范围，不因0.3.0包装完成而误报完整四加载器与Mod总计划结束。原`OUCL-Codex-Package.zip`和`OUCL.txt`从保护stash恢复为工作区原始文件且继续不提交；保护stash不要删除。不push。
+
+---
+

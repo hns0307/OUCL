@@ -431,3 +431,7 @@ LaunchService与固定session JSON/worker、既有tasks订阅扩展及game/sessi
 2026-10-26真实诊断捕获Fabric profile UND_ERR_CONNECT_TIMEOUT（此前独立同址读取通过），Quilt profile/Maven亦有连接超时。后台profile只对CATALOG_UNAVAILABLE最多3次有限重试，不可信/坏元数据不重试，取消不开始下一次；无新依赖/IPC/存储格式。409测试407PASS/0FAIL/2原有SKIP及完整检查通过。Fabric已进入实际字节下载，官方一次JAR超时保留缓存；BMCLAPI再次尝试已全量校验进入物化，最终ready及菜单仍待。证据docs/validation/LOADERS-NETWORK-20261026/REPORT.md；不关闭四加载器矩阵或0.3.0。
 
 2026-10-26检查点：只读Mod固定版本候选递归服务完成，项目级依赖保留明确候选选择、已装不升级、有界/取消/去重，417测试415PASS/0FAIL/2原有SKIP及完整检查通过；尚无确认IPC/实际安装事务。Fabric实际官方信任根+镜像字节下载ready及测试FerriteCore加载通过，但实机退出4294967295，正常退出/重开未通过；用户物理Esc停止界面自动化，已停止全部窗口输入并保存，监督器已结束。Quilt/完整矩阵/0.3.0仍未完成。证据LOADERS-NETWORK-20261026/REPORT.md及MOD_DEPENDENCY_GRAPH.md。
+
+## 35. 2026-10-28 便携目录、版本设置与0.3.0交付
+
+`main`和`mod_loaders`已合并并对齐到`e93adf5`。首次运行0.3.0 EXE且没有既有游戏根记录时，在EXE同级创建并登记`OUCL.games`；已有自选根保持优先。实例版本设置新增受控的游戏目录、Mods、存档、资源包、光影、截图和日志入口，渲染层不接触路径。完整`pnpm check`为458项/456 PASS/0 FAIL/2既有系统能力SKIP，`test:bootstrap`19项通过，真实EXE隔离启动及本地Electron smoke通过。交付`release/OUCL-0.3.0.exe`，319,488字节，SHA256 `c1ebf29f195c2553386508faaef73dade3a6419928b96d012fc2086789b251cb`；证据见[BOOTSTRAP-0.3.0](../../docs/validation/BOOTSTRAP-0.3.0/REPORT.md)。按用户要求未联网、未启动真实游戏；Mod确认/实际依赖下载/一次提交事务仍继续进行，不能把EXE包装视为完整原计划结束。
