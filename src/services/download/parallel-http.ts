@@ -1,5 +1,5 @@
 import type { FileHandle } from 'node:fs/promises';
-import { HttpTransfer, diskError, writableStaging } from './http.js';
+import { HttpTransfer, diskError, writableStaging, retryAfter } from './http.js';
 import { DownloadError, parseTransferRecord } from './types.js';
 import type { TransferCheckpoint, TransferOptions, TransferRecord } from './types.js';
 import { RequestBudget } from './request-budget.js';
@@ -32,7 +32,7 @@ export class ParallelHttpTransfer {
       try {
         response = await this.request(current.url, { redirect: 'error', credentials: 'omit', signal: controller.signal,
           headers: { Range: `bytes=${current.bytesDone}-${current.bytesDone}`, 'accept-encoding': 'identity' } });
-        if (response.status === 429 || response.status === 503) throw new DownloadError('RETRY_LATER');
+        if ([408, 429, 500, 502, 503, 504].includes(response.status)) throw new DownloadError('RETRY_LATER', retryAfter(response));
         const tag = response.headers.get('etag');
         return responseRange(response, current.bytesDone, current.bytesDone, current.expected.size) && strongTag(tag) ? tag : undefined;
       } catch (error) { throw options.signal?.aborted ? new DownloadError('CANCELLED') : error instanceof DownloadError ? error : new DownloadError(controller.signal.aborted ? 'TIMEOUT' : 'NETWORK_FAILED'); }

@@ -73,3 +73,19 @@ test('loader Maven resolver rejects malformed proof, unsafe size, bad evidence a
   const controller = new AbortController(); controller.abort();
   await assert.rejects(new LoaderMavenResolver(reply(sidecarHash, '4')).plan(profile, evidence, controller.signal), { code: 'CANCELLED' });
 });
+
+test('Maven size retries do not refetch a successful checksum and cancellation interrupts its backoff', async () => {
+  const url = 'https://maven.fabricmc.net/example/library.jar'; let gets = 0; let heads = 0;
+  const request: typeof fetch = async (_input, options) => {
+    if (options?.method !== 'HEAD') { gets++; return new Response(sidecarHash); }
+    if (++heads < 3) throw new TypeError('connection reset');
+    return new Response(null, { headers: { 'content-length': '4' } });
+  };
+  const proof = await readOfficialMavenProof(request, url); assert.equal(proof.sha1, sidecarHash); assert.equal(proof.size, 4);
+  assert.equal(gets, 1); assert.equal(heads, 3);
+  const controller = new AbortController(); heads = 0;
+  await assert.rejects(readOfficialMavenProof(async (_input, options) => {
+    if (options?.method !== 'HEAD') return new Response(sidecarHash);
+    heads++; setTimeout(() => controller.abort(), 20); throw new TypeError('reset');
+  }, url, controller.signal), { code: 'CANCELLED' }); assert.equal(heads, 1);
+});

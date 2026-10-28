@@ -1,3 +1,4 @@
+import { retryDelay } from '../network/backoff.js';
 import { bmclapiArtifactUrl, isMirrorArtifactUrl } from '../../core/download/sources.js';
 import { DEFAULT_DOWNLOAD_PREFERENCES, isDownloadPreferences } from '../../shared/contracts/download-preferences.js';
 import type { DownloadPreferences } from '../../shared/contracts/download-preferences.js';
@@ -27,14 +28,31 @@ export function mirrorFetch(request: typeof fetch): typeof fetch {
 export class SourceTransfer {
   constructor(private readonly preferences: () => Readonly<DownloadPreferences> = () => DEFAULT_DOWNLOAD_PREFERENCES,
     private readonly request: typeof fetch = fetch, private readonly budget = new RequestBudget()) {}
+  /** Retries only transient transport failures, always from the latest acknowledged durable prefix. */
   async run(file: string, record: TransferRecord, checkpoint: TransferCheckpoint, options: TransferOptions = {}): Promise<TransferRecord> {
     const preferences = { ...this.preferences() };
     if (!isDownloadPreferences(preferences)) throw new DownloadError('INVALID_TRANSFER');
     let current = parseTransferRecord(record);
+    const save: TransferCheckpoint = async (revision, next) => { await checkpoint(revision, next); current = next; };
+    for (let attempt = 0; ; attempt++) {
+      if (options.signal?.aborted) throw new DownloadError('CANCELLED');
+      try { return await this.transfer(file, current, save, options, preferences); }
+      catch (error) {
+        if (error instanceof DownloadError && error.category === 'disk') throw error;
+        if (options.signal?.aborted) throw new DownloadError('CANCELLED');
+        if (!(error instanceof DownloadError) || !['NETWORK_FAILED', 'TIMEOUT', 'RETRY_LATER'].includes(error.code)
+          || attempt >= 2 || (error.retryAfterMs ?? 0) > 30000) throw error;
+        try { await retryDelay(attempt, options.signal, error.retryAfterMs); }
+        catch { throw new DownloadError('CANCELLED'); }
+      }
+    }
+  }
+  private async transfer(file: string, record: TransferRecord, checkpoint: TransferCheckpoint, options: TransferOptions, preferences: Readonly<DownloadPreferences>): Promise<TransferRecord> {
+    let current = parseTransferRecord(record);
     if (current.state !== 'partial') return current;
     const save: TransferCheckpoint = async (revision, next) => { try { await checkpoint(revision, next); } catch { throw new DownloadError('NEEDS_RECOVERY'); } current = next; };
     const route = async (source: 'official' | 'bmclapi'): Promise<void> => {
-      if (current.transportSource === source && source === 'official' || current.transportSource === undefined && source === 'official') return;
+      if (current.transportSource === source || current.transportSource === undefined && source === 'official') return;
       const next = { ...current }; delete next.etag; delete next.lastModified;
       await save(current.revision, parseTransferRecord({ ...next, transportSource: source, revision: current.revision + 1, bytesDone: 0, state: 'partial' }));
     };

@@ -22,7 +22,7 @@ function validators(response: Response): Validators {
   if (modified !== null && modified.length <= 80 && Number.isFinite(Date.parse(modified)) && new Date(modified).toUTCString() === modified) return { lastModified: modified };
   return {};
 }
-function retryAfter(response: Response): number | undefined {
+export function retryAfter(response: Response): number | undefined {
   const value = response.headers.get('retry-after');
   if (value === null || value.length > 80) return undefined;
   const delay = /^\d+$/.test(value) ? Number(value) * 1000 : Date.parse(value) - Date.now();
@@ -102,7 +102,7 @@ export class HttpTransfer {
           response = await this.request(current.url, { headers, signal: controller.signal, redirect: 'error', credentials: 'omit' });
           clearTimeout(timer);
           if (options.signal?.aborted) throw new DownloadError('CANCELLED');
-          if (response.status === 429 || response.status === 503) throw new DownloadError('RETRY_LATER', retryAfter(response));
+          if ([408, 429, 500, 502, 503, 504].includes(response.status)) throw new DownloadError('RETRY_LATER', retryAfter(response));
           const encoding = response.headers.get('content-encoding');
           if (encoding !== null && encoding.toLowerCase() !== 'identity') throw new DownloadError('BAD_RESPONSE');
           let badRange = false;
@@ -132,7 +132,7 @@ export class HttpTransfer {
             if (length !== undefined && length !== current.expected.size) throw new DownloadError('BAD_RESPONSE');
             const receivedValidator = validators(response);
             await save({ ...receivedValidator, bytesDone: 0 }, true);
-          } else throw new DownloadError('NETWORK_FAILED');
+          } else throw new DownloadError('BAD_RESPONSE');
           if (badRange) {
             if (attempt > 0) throw new DownloadError('BAD_RESPONSE');
             controller.abort(); await reset(); continue;

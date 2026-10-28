@@ -1,3 +1,4 @@
+import { retryDelay } from '../network/backoff.js';
 import { createHash } from 'node:crypto';
 import type { LoaderProfile } from '../../core/loaders/types.js';
 import type { DownloadSpec } from '../download/types.js';
@@ -68,44 +69,49 @@ export class LoaderMavenResolver {
 
 }
 
-/** Reads a SHA-1 sidecar and authoritative size from the exact admitted official Maven artifact URL. */
+/** Reads independent bounded official checksum and size proofs without spending one request's deadline on the other. */
 export async function readOfficialMavenProof(request: typeof fetch, url: string,
   signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (signal?.aborted) throw new LoaderMavenError('CANCELLED');
-    try { return await readOfficialMavenProofOnce(request, url, signal); }
-    catch (error) {
-      if (!(error instanceof LoaderMavenError) || error.code !== 'NETWORK_FAILED' || attempt === 2) throw error;
-    }
-  }
-  throw new LoaderMavenError('NETWORK_FAILED');
+  if (!isArtifactUrl(url)) throw new LoaderMavenError('INVALID_METADATA');
+  const proof = await retryMavenRequest(async attemptSignal => {
+    const response = await request(`${url}.sha1`, { method: 'GET', redirect: 'error', credentials: 'omit', signal: attemptSignal,
+      headers: { accept: 'text/plain', 'accept-encoding': 'identity' } });
+    try {
+      const declared = response.headers.get('content-length'); const encoding = response.headers.get('content-encoding');
+      if (response.status !== 200 || !response.body || declared !== null && (!/^\d+$/.test(declared) || Number(declared) > SIDECAR_LIMIT)
+        || encoding !== null && encoding !== 'identity') throw new LoaderMavenError('NETWORK_FAILED');
+      const chunks: Uint8Array[] = []; let bytes = 0;
+      for await (const chunk of response.body) { bytes += chunk.byteLength; if (bytes > SIDECAR_LIMIT) throw new LoaderMavenError('INVALID_METADATA'); chunks.push(chunk); }
+      const body = Buffer.concat(chunks); const value = body.toString('ascii').trim();
+      if (!/^[a-fA-F0-9]{40}$/.test(value)) throw new LoaderMavenError('INVALID_METADATA');
+      return { sha1: value.toLowerCase(), anchor: createHash('sha256').update(body).digest('hex') };
+    } finally { if (response.body && !response.body.locked) await response.body.cancel().catch(() => {}); }
+  }, signal);
+  const size = await retryMavenRequest(async attemptSignal => {
+    const response = await request(url, { method: 'HEAD', redirect: 'error', credentials: 'omit', signal: attemptSignal,
+      headers: { 'accept-encoding': 'identity' } });
+    try {
+      const length = response.headers.get('content-length');
+      if (response.status !== 200 || length === null || !/^\d+$/.test(length)) throw new LoaderMavenError('NETWORK_FAILED');
+      const size = Number(length);
+      if (!Number.isSafeInteger(size) || size < 1 || size > LIBRARY_LIMIT) throw new LoaderMavenError('INVALID_METADATA');
+      return size;
+    } finally { if (response.body && !response.body.locked) await response.body.cancel().catch(() => {}); }
+  }, signal);
+  return { ...proof, size };
 }
 
-async function readOfficialMavenProofOnce(request: typeof fetch, url: string,
-  signal?: AbortSignal): Promise<{ sha1: string; size: number; anchor: string }> {
-  if (!isArtifactUrl(url)) throw new LoaderMavenError('INVALID_METADATA');
-  const controller = new AbortController(); const abort = (): void => controller.abort();
-  signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) controller.abort();
-  const timer = setTimeout(() => { controller.abort(); }, 12000);
-  try {
-    const sidecar = await request(`${url}.sha1`, { method: 'GET', redirect: 'error', credentials: 'omit', signal: controller.signal,
-      headers: { accept: 'text/plain', 'accept-encoding': 'identity' } });
-    const declared = sidecar.headers.get('content-length'); const encoding = sidecar.headers.get('content-encoding');
-    if (sidecar.status !== 200 || !sidecar.body || declared !== null && (!/^\d+$/.test(declared) || Number(declared) > SIDECAR_LIMIT)
-      || encoding !== null && encoding !== 'identity') throw new LoaderMavenError('NETWORK_FAILED');
-    const chunks: Uint8Array[] = []; let bytes = 0;
-    for await (const chunk of sidecar.body) { bytes += chunk.byteLength; if (bytes > SIDECAR_LIMIT) throw new LoaderMavenError('INVALID_METADATA'); chunks.push(chunk); }
-    const body = Buffer.concat(chunks); const value = body.toString('ascii').trim();
-    if (!/^[a-fA-F0-9]{40}$/.test(value)) throw new LoaderMavenError('INVALID_METADATA');
-    const head = await request(url, { method: 'HEAD', redirect: 'error', credentials: 'omit', signal: controller.signal,
-      headers: { 'accept-encoding': 'identity' } });
-    const length = head.headers.get('content-length');
-    if (head.status !== 200 || length === null || !/^\d+$/.test(length)) throw new LoaderMavenError('NETWORK_FAILED');
-    const size = Number(length);
-    if (!Number.isSafeInteger(size) || size < 1 || size > LIBRARY_LIMIT) throw new LoaderMavenError('INVALID_METADATA');
-    return { sha1: value.toLowerCase(), size, anchor: createHash('sha256').update(body).digest('hex') };
-  } catch (error) {
-    if (error instanceof LoaderMavenError) throw error;
-    throw new LoaderMavenError(controller.signal.aborted && signal?.aborted ? 'CANCELLED' : 'NETWORK_FAILED');
-  } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); controller.abort(); }
+async function retryMavenRequest<T>(operation: (signal: AbortSignal) => Promise<T>, signal?: AbortSignal): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    if (signal?.aborted) throw new LoaderMavenError('CANCELLED');
+    const controller = new AbortController(); const abort = (): void => controller.abort();
+    signal?.addEventListener('abort', abort, { once: true });
+    const timer = setTimeout(abort, 12000);
+    let failure: LoaderMavenError;
+    try { const result = await operation(controller.signal); if (signal?.aborted) throw new LoaderMavenError('CANCELLED'); return result; }
+    catch (error) { failure = signal?.aborted ? new LoaderMavenError('CANCELLED') : error instanceof LoaderMavenError ? error : new LoaderMavenError('NETWORK_FAILED'); }
+    finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); controller.abort(); }
+    if (failure.code !== 'NETWORK_FAILED' || attempt >= 2) throw failure;
+    try { await retryDelay(attempt, signal); } catch { throw new LoaderMavenError('CANCELLED'); }
+  }
 }

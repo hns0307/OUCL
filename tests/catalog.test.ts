@@ -81,10 +81,10 @@ test('stale verified cache works offline with its original timestamp and bounded
   const offline = new OfficialMetadataReader(async () => { calls++; throw new Error('offline'); });
   const service = new CatalogService(offline, repository, () => now + 600000);
   const [a, b] = await Promise.all([service.list({ channel: 'release', limit: 10 }), service.list({ channel: 'release', limit: 10 })]);
-  assert.equal(a.cached, true); assert.equal(b.fetchedAt, stamp); assert.equal(calls, 1);
-  await service.list({ channel: 'release', limit: 10 }); assert.equal(calls, 1);
+  assert.equal(a.cached, true); assert.equal(b.fetchedAt, stamp); assert.equal(calls, 3);
+  await service.list({ channel: 'release', limit: 10 }); assert.equal(calls, 3);
   const fresh = new CatalogService(offline, repository, () => now + 1);
-  assert.equal((await fresh.list({ channel: 'release', limit: 1 })).cached, true); assert.equal(calls, 1);
+  assert.equal((await fresh.list({ channel: 'release', limit: 1 })).cached, true); assert.equal(calls, 3);
 });
 
 test('invalid cache and corrupt fresh metadata never acquire trust through fallback', async () => {
