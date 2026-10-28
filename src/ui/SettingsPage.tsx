@@ -4,6 +4,8 @@ import type { MessageKey } from '../shared/locales/messages.js';
 import { RootSettings } from './RootSettings.js';
 import { useLauncher } from './launcher-state.js';
 import { DownloadSettings } from './DownloadSettings.js';
+import { AppearanceSettings } from './AppearanceSettings.js';
+import { MemoryControl } from './MemoryControl.js';
 
 /** Saves real launch preferences and native Java selections with conflict recovery. */
 export function SettingsPage({ enabled, rootsEnabled, downloadsEnabled }: { enabled: boolean; rootsEnabled: boolean; downloadsEnabled: boolean }) {
@@ -23,16 +25,16 @@ export function SettingsPage({ enabled, rootsEnabled, downloadsEnabled }: { enab
     try { const result = await window.oucl.chooseJava(request.current); if (result.ok) { request.current = undefined; await refreshSettings(); } else { setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT') request.current = undefined; } }
     catch { setError('unavailable'); } finally { setChoosing(false); }
   }
-  return <div className="settings-grid"><RootSettings enabled={rootsEnabled} onRootChange={setRoot} />
-    <section className="panel"><div className="section-heading"><span className="section-number">02</span><h2>{MESSAGES.javaTitle}</h2></div>
+  return <div className="settings-grid"><details className="settings-disclosure settings-appearance"><summary>{MESSAGES.uiAppearance}</summary><AppearanceSettings /></details><details className="settings-disclosure" open={!settings?.rootId}><summary>{MESSAGES.storageTitle}<span className="muted small">{settings?.rootId ? MESSAGES.rootReady : MESSAGES.chooseRootFirst}</span></summary><RootSettings enabled={rootsEnabled} onRootChange={setRoot} /></details>
+    <details className="settings-disclosure" open={!settings?.javaId}><summary>{MESSAGES.javaTitle}<span className="muted small">{settings?.javaId ? MESSAGES.javaConfigured : MESSAGES.javaNotConfigured}</span></summary><section className="panel"><div className="section-heading"><span className="section-number">02</span><h2>{MESSAGES.javaTitle}</h2></div>
       <p data-java-ready={Boolean(settings?.javaId)}>{settings?.javaId ? MESSAGES.javaConfigured : MESSAGES.javaNotConfigured}</p><p className="muted">{MESSAGES.uiJavaHint}</p>
-      <button disabled={!enabled || choosing} onClick={() => { void choose(); }}>{choosing ? MESSAGES.javaChoosing : MESSAGES.javaChoose}</button></section>
+      <button disabled={!enabled || choosing} onClick={() => { void choose(); }}>{choosing ? MESSAGES.javaChoosing : MESSAGES.javaChoose}</button></section></details>
     <section className="panel settings-launch"><div className="section-heading"><span className="section-number">03</span><h2>{MESSAGES.uiLaunchSettings}</h2></div>
-      <label className="setting-row"><span><strong>{MESSAGES.uiMemory}</strong><small>{MESSAGES.uiMemoryHint}</small></span><input aria-label={MESSAGES.uiMemory} type="number" min={512} max={65536} step={1} value={Number.isNaN(memory) ? '' : memory} onChange={e => { setMemory(e.target.valueAsNumber); setSaved(false); }} /></label>
-      <div className="memory-presets">{[2048, 4096, 8192].map(n => <button className="chip" key={n} onClick={() => { setMemory(n); setSaved(false); }}>{n / 1024} GiB</button>)}</div>
+      <MemoryControl value={memory} disabled={!enabled || saving} onChange={value => { setMemory(value); setSaved(false); }} />
+      <details className="advanced-settings"><summary>{MESSAGES.uiAdvancedLaunch}</summary>
       <label className="setting-row"><span><strong>{MESSAGES.uiDefaultIsolation}</strong><small>{MESSAGES.uiIsolationHint}</small></span><input type="checkbox" checked={isolation} onChange={e => { setIsolation(e.target.checked); setSaved(false); }} /></label>
-      <div className="save-row"><button disabled={!enabled || !settings || saving || !Number.isSafeInteger(memory) || memory < 512 || memory > 65536} onClick={() => { void save(); }}>{saving ? MESSAGES.uiSaving : MESSAGES.uiSave}</button><span role="status" className="success">{saved ? MESSAGES.uiSaved : ''}</span></div>
-    </section><section className="panel"><div className="section-heading"><span className="section-number">04</span><h2>{MESSAGES.uiAbout}</h2></div><p>{MESSAGES.uiVersion}</p><p className="muted">{MESSAGES.uiAboutDescription}</p><p className="muted small">{MESSAGES.gameKeepAlive}</p></section>
+      </details><div className="save-row"><button disabled={!enabled || !settings || saving || !Number.isSafeInteger(memory) || memory < 512 || memory > 65536} onClick={() => { void save(); }}>{saving ? MESSAGES.uiSaving : MESSAGES.uiSave}</button><span role="status" className="success">{saved ? MESSAGES.uiSaved : ''}</span></div>
+    </section><details className="settings-disclosure settings-about"><summary>{MESSAGES.uiAbout}</summary><section className="panel"><p>{MESSAGES.uiVersion}</p><p className="muted">{MESSAGES.uiAboutDescription}</p><p className="muted small">{MESSAGES.gameKeepAlive}</p></section></details>
     <DownloadSettings enabled={downloadsEnabled} />
     {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}
   </div>;

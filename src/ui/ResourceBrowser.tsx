@@ -1,3 +1,4 @@
+import { ResourceIcon } from './ResourceIcon.js';
 import { useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
@@ -18,6 +19,9 @@ export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, i
   enabled: boolean; kind: ResourceKind; libraryOnly: boolean; modPlansEnabled: boolean; instance?: InstanceSummary;
 }) {
   const { rootId, tasks, refreshGame } = useLauncher();
+  const [listWidth, setListWidth] = useState(60); const [dropHover, setDropHover] = useState(false);
+  const resourceGrid = useRef<HTMLDivElement>(null);
+  const draggedProject = useRef<string | undefined>(undefined);
   const [query, setQuery] = useState(''); const [gameVersion, setGameVersion] = useState(''); const [loader, setLoader] = useState('');
   const [search, setSearch] = useState({ query: '', gameVersion: '', loader: '', offset: 0 }); const [refresh, setRefresh] = useState(0);
   const [projects, setProjects] = useState<ResourceProject[]>([]); const [total, setTotal] = useState(0);
@@ -119,14 +123,20 @@ export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, i
         <select aria-label={MESSAGES.uiLoader} value={loader} onChange={e => { setLoader(e.target.value); }}><option value="">{MESSAGES.uiAllLoaders}</option>{['fabric', 'quilt', 'forge', 'neoforge', 'iris', 'optifine', 'vanilla', 'minecraft', 'canvas'].map(item => <option key={item} value={item}>{item}</option>)}</select>
         <button disabled={!enabled || busy} type="submit">{MESSAGES.uiSearch}</button>
       </form>
-      <div className="resource-grid"><section className="panel resource-results" aria-busy={busy}>
+      <div className="resource-grid" ref={resourceGrid} style={{ gridTemplateColumns: `minmax(0, ${listWidth}fr) 10px minmax(220px, ${100 - listWidth}fr)` }}><section className="panel resource-results" aria-busy={busy}>
         <div className="section-heading"><h2>{MESSAGES.uiDiscover}</h2><span className="muted small">{total.toLocaleString()} {MESSAGES.uiResults}</span></div>
-        {busy ? <p role="status">{MESSAGES.uiLoading}</p> : projects.length === 0 ? <p className="empty-state">{MESSAGES.uiNoResults}</p> : projects.map(p => <button className="resource-row" aria-pressed={selected?.projectId === p.projectId} key={p.projectId} onClick={() => { setSelected(p); }}>
-          <span className="resource-monogram">{p.title.slice(0, 1)}</span><span className="resource-info"><strong>{p.title}</strong><span>{p.author} · {p.downloads.toLocaleString()} {MESSAGES.uiDownloadsCount}</span><small>{p.description}</small></span><span className="row-arrow">›</span>
+        {busy ? <p role="status">{MESSAGES.uiLoading}</p> : projects.length === 0 ? <p className="empty-state">{MESSAGES.uiNoResults}</p> : projects.map(p => <button className="resource-row" draggable onDragStart={event => { draggedProject.current = p.projectId; event.dataTransfer.setData('application/x-oucl-resource', p.projectId); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => { draggedProject.current = undefined; setDropHover(false); }} aria-pressed={selected?.projectId === p.projectId} key={p.projectId} onClick={() => { setSelected(p); }}>
+          <ResourceIcon projectId={p.projectId} title={p.title} /><span className="resource-info"><strong>{p.title}</strong><span>{p.author} · {p.downloads.toLocaleString()} {MESSAGES.uiDownloadsCount}</span><small>{p.description}</small></span><span className="row-arrow">›</span>
         </button>)}
         <div className="pagination"><button className="secondary" disabled={busy || search.offset === 0} onClick={() => { setSearch(s => ({ ...s, offset: Math.max(0, s.offset - 20) })); }}>{MESSAGES.uiPrevious}</button>
           <span className="muted small">{Math.floor(search.offset / 20) + 1}</span><button className="secondary" disabled={busy || search.offset + 20 >= total || search.offset >= 10000} onClick={() => { setSearch(s => ({ ...s, offset: s.offset + 20 })); }}>{MESSAGES.uiNext}</button></div>
-      </section><aside className="panel resource-detail">
+      </section><div className="resource-splitter" role="separator" tabIndex={0} aria-label={MESSAGES.uiResizePanel} aria-orientation="vertical" aria-valuemin={30} aria-valuemax={70} aria-valuenow={listWidth}
+        onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); }} onPointerMove={event => { if (!event.currentTarget.hasPointerCapture(event.pointerId)) return; const bounds = resourceGrid.current?.getBoundingClientRect(); if (bounds) setListWidth(Math.max(30, Math.min(70, Math.round((event.clientX - bounds.left) / bounds.width * 100)))); }}
+        onPointerUp={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); }}
+        onKeyDown={event => { if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return; event.preventDefault(); setListWidth(value => Math.max(30, Math.min(70, value + (event.key === 'ArrowLeft' ? -5 : 5)))); }} />
+      <aside className={`panel resource-detail ${dropHover ? 'drop-hover' : ''}`} onDragOver={event => { if (!draggedProject.current) return; event.preventDefault(); event.dataTransfer.dropEffect = 'copy'; setDropHover(true); }} onDragLeave={() => { setDropHover(false); }}
+        onDrop={event => { const id = event.dataTransfer.getData('application/x-oucl-resource'); const project = projects.find(p => p.projectId === id && id === draggedProject.current); if (!project) return; event.preventDefault(); setSelected(project); setDropHover(false); draggedProject.current = undefined; }}>
+        <p className="resource-drop-hint">{dropHover ? MESSAGES.uiDropReady : MESSAGES.uiDropDownload}</p>
         {!selected ? <div className="empty-state"><span className="empty-glyph">↓</span><h2>{MESSAGES.uiChooseResource}</h2><p>{MESSAGES.uiResourceDetailHint}</p></div> : <><span className="eyebrow">MODRINTH</span><h2>{selected.title}</h2><p className="muted">{selected.author}</p>
           {versionBusy ? <p role="status">{MESSAGES.uiLoading}</p> : versions.length === 0 ? <p>{MESSAGES.uiNoVersions}</p> : <>
             <label>{MESSAGES.uiResourceVersion}<select value={versionId} onChange={e => { const v = versions.find(v => v.versionId === e.target.value); setVersionId(e.target.value); setFileId(v?.files.find(f => f.primary)?.fileId ?? v?.files[0]?.fileId ?? ''); }}>{versions.map(v => <option key={v.versionId} value={v.versionId}>{v.name}</option>)}</select></label>
