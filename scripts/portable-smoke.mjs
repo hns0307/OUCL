@@ -60,10 +60,18 @@ async function run(f, blocked = false) {
       clearTimeout(request.timer); pending.delete(value.id);
       if (value.error) request.reject(new Error(value.error.message)); else request.resolve(value.result);
     });
-    const value = await evaluate(`(async () => {
+    // The first page can navigate while the portable preload is attaching. Retry only this read-only readiness probe.
+    let value;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      try { value = await evaluate(`(async () => {
       for (let i=0;i<100 && !document.querySelector('[data-status="connected"]');i++) await new Promise(r=>setTimeout(r,50));
       return { handshake: await window.oucl.handshake(), roots: await window.oucl.listRoots(), noNode: typeof require === 'undefined' && typeof process === 'undefined' };
-    })()`);
+    })()`); break; }
+      catch (error) {
+        if (!(error instanceof Error) || !error.message.includes('Execution context was destroyed') || attempt === 29) throw error;
+        await wait(100);
+      }
+    }
     assert.ok(value.handshake.ok && value.noNode && value.roots.ok);
     for (const capability of ['roots.v1', 'catalog.v1', 'instances.v2', 'mods.v1']) assert.ok(value.handshake.data.capabilities.includes(capability));
     if (blocked) {
@@ -105,6 +113,6 @@ const fresh = await fixture('中文 自动目录', false);
 const first = await run(fresh); const second = await run(fresh);
 assert.deepEqual(second, first, 'RESTART_CHANGED_REGISTRATION');
 await run(await fixture('目录失败重试', true), true);
-const evidence = path.resolve('docs/validation/PORTABLE-ROOTS-20261028'); await mkdir(evidence, { recursive: true });
+const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/PORTABLE-ROOTS-20261028'); await mkdir(evidence, { recursive: true });
 await writeFile(path.join(evidence, 'smoke.json'), JSON.stringify(report, null, 2));
 console.log(JSON.stringify(report, null, 2));

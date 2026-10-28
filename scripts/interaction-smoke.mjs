@@ -9,6 +9,6 @@ const environment = { ...process.env, OUCL_INTERACTION_PROFILE: profile }; delet
 for (let pass = 1; pass <= 2; pass++) {
   const child = spawn(electron, [path.resolve('scripts/electron-interaction-smoke.cjs')], { env: { ...environment, OUCL_INTERACTION_PASS: String(pass) }, windowsHide: true, stdio: 'inherit' });
   const code = await new Promise((resolve, reject) => { child.once('error', reject); child.once('exit', resolve); }); assert.equal(code, 0);
-  const report = JSON.parse(await readFile(`docs/validation/UI-20261028/pass-${pass}.json`, 'utf8')); assert.equal(report.status, 'PASS');
+  const report = JSON.parse(await readFile(path.join(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/UI-20261028', `pass-${pass}.json`), 'utf8')); assert.equal(report.status, 'PASS');
   await assert.rejects(access(path.join(profile, 'metadata/owner.lock')), { code: 'ENOENT' });
 }

@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 app.disableHardwareAcceleration();
 const profile = path.resolve(process.env.OUCL_INTERACTION_PROFILE || '');
 assert.ok(profile.startsWith(path.resolve('.test-build') + path.sep) && path.basename(profile).startsWith('interaction-'));
-const pass = Number(process.env.OUCL_INTERACTION_PASS); const evidence = path.resolve('docs/validation/UI-20261028');
+const pass = Number(process.env.OUCL_INTERACTION_PASS); const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/UI-20261028');
 const icon = nativeImage.createFromBitmap(Buffer.from(Array.from({ length: 16 * 16 }, () => [80, 130, 175, 255]).flat()), { width: 16, height: 16 }).toPNG();
 const fixtureFile = path.join(profile, 'fixture-icon.png');
 let nativeChoosers = 0; const requests = []; let started = false; let failed = false;

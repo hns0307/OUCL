@@ -15,10 +15,10 @@ const deadline = setTimeout(() => { child.kill(); }, 60000);
 try {
   const [exitCode] = await once(child, 'close');
   const count = name => Number(new RegExp(`^# ${name} (\\d+)$`, 'm').exec(output)?.[1] ?? -1);
-  const report = { status: exitCode === 0 && !oversized && count('tests') === 29 && count('pass') === 29 && count('fail') === 0 ? 'PASS' : 'FAIL',
+  const report = { status: exitCode === 0 && !oversized && count('tests') === 30 && count('pass') === 30 && count('fail') === 0 ? 'PASS' : 'FAIL',
     timestamp: new Date().toISOString(), electron: JSON.parse(await readFile('node_modules/electron/package.json', 'utf8')).version,
     mode: 'Electron as Node, bundled production worker, real filesystem and SQLite', tests: count('tests'), pass: count('pass'), fail: count('fail'), exitCode };
-  const evidence = path.resolve('docs/validation/MOD-RESULTS-20261028'); await mkdir(evidence, { recursive: true });
+  const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/MOD-RESULTS-20261028'); await mkdir(evidence, { recursive: true });
   await writeFile(path.join(evidence, 'electron-runtime.json'), JSON.stringify(report, null, 2));
   if (report.status !== 'PASS') await writeFile(path.join(evidence, 'electron-runtime-failure.txt'), output);
   console.log(JSON.stringify(report)); if (report.status !== 'PASS') process.exitCode = 1;

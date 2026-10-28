@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, writeFile, lstat, cp, readdir, realpath } fro
 import path from 'node:path';
 import assert from 'node:assert/strict';
 const meta = JSON.parse(await readFile('package.json', 'utf8'));
-const evidence = path.resolve(`docs/validation/BOOTSTRAP-${meta.version}`); await mkdir(evidence, { recursive: true });
+const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? `docs/validation/BOOTSTRAP-${meta.version}`); await mkdir(evidence, { recursive: true });
 const profile = await mkdtemp(path.resolve('.test-build/bootstrap-profile-'));
 const testHarness = process.env.OUCL_COLD_START_HARNESS;
 let executable = process.env.OUCL_EXE_TEST_PATH ?? path.resolve(`release/OUCL-${meta.version}.exe`);
@@ -46,7 +46,7 @@ try {
     return { connected:!!document.querySelector('[data-status="connected"]'), noNode:typeof require==='undefined' && typeof process==='undefined', handshake:await window.oucl.handshake(), methods:Object.keys(window.oucl) };
   })()`, awaitPromise: true, returnByValue: true });
   assert.equal(result.exceptionDetails, undefined); const value = result.result.value;
-  assert.ok(value.connected && value.noNode && value.handshake.ok); assert.equal(value.methods.length, 36); assert.equal(value.handshake.data.capabilities.length, 15);
+  assert.ok(value.connected && value.noNode && value.handshake.ok); assert.equal(value.methods.length, 44); assert.equal(value.handshake.data.capabilities.length, 16);
   if (!testHarness) {
     const expectedApplication = path.join(await realpath(runtimeRoot), `app-${JSON.parse(await readFile(path.join(evidence, 'package.json'), 'utf8')).appHash}`, 'dist/renderer/index.html');
     assert.equal(decodeURIComponent(new URL(page.url).pathname).replace(/^\//, '').replaceAll('/', path.sep).toLowerCase(), expectedApplication.toLowerCase());

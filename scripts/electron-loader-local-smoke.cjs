@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 
 app.disableHardwareAcceleration();
 const requests = []; let started = false;
-const directory = path.resolve('docs/validation/LOADER-SELECTION-20261027');
+const directory = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/LOADER-SELECTION-20261027');
 const timeout = setTimeout(() => { console.error('LOCAL_LOADER_TIMEOUT'); app.once('will-quit', () => { app.exit(1); }); app.quit(); }, 60000);
 // Test-only transport injection. Never calls the real fetch or changes the production entry.
 globalThis.fetch = async input => {

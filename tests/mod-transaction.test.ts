@@ -1,3 +1,6 @@
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash, randomUUID } from 'node:crypto';
@@ -388,3 +391,47 @@ test('transaction records reject future formats, arbitrary operations and change
     await assert.rejects(f.storage().writeModTransaction(id, 1, next), { code: 'INVALID_RECORD' }); assert.deepEqual(await readFile(file), before);
   } finally { await f.close(); }
 });
+
+// Dedicated child mode uses no test-runner subprocess isolation, so killing this PID also ends its storage worker.
+if (process.env.OUCL_TXN_KILL_POINT) {
+  test('transaction kill child', async () => {
+    const f = await fixture();
+    await writeFile(path.join(f.game, 'external-sentinel.txt'), 'preserve external data');
+    f.dependencies.checkpoint = async point => {
+      if (point !== process.env.OUCL_TXN_KILL_POINT) return;
+      await writeFile(process.env.OUCL_TXN_KILL_MARKER!, JSON.stringify({ base: f.base, game: f.game, metadata: f.metadata }));
+      await new Promise<void>(() => {});
+    };
+    await f.make().commit(f.prepared);
+  });
+} else {
+  test('real process termination preserves transaction evidence and refuses stale-owner replay at three commit boundaries', async () => {
+    for (const point of ['staged', 'linked', 'instance-published']) {
+      const directory = await mkdtemp(path.resolve('.test-build/mod-kill-'));
+      const marker = path.join(directory, 'checkpoint.json');
+      const child = spawn(process.execPath, ['--test', '--test-isolation=none', '--test-name-pattern=^transaction kill child$', fileURLToPath(import.meta.url)], {
+        env: { ...process.env, OUCL_TXN_KILL_POINT: point, OUCL_TXN_KILL_MARKER: marker }, windowsHide: true, stdio: 'ignore'
+      });
+      const ended = once(child, 'close');
+      try {
+        let state: { game: string; metadata: string } | undefined;
+        for (let attempt = 0; attempt < 400; attempt++) {
+          try { state = JSON.parse(await readFile(marker, 'utf8')) as typeof state; break; }
+          catch (error) { if (!(error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT')) throw error; }
+          await new Promise(resolve => setTimeout(resolve, 25));
+        }
+        assert.ok(state, point + ': child checkpoint missing');
+        child.kill(); await ended;
+        const lease = await readFile(path.join(state.metadata, 'owner.lock'));
+        const files = await readdir(state.metadata);
+        const evidence = new Map(await Promise.all(files.filter(name => name.endsWith('.json')).map(async name => [name, await readFile(path.join(state!.metadata, name))] as const)));
+        await assert.rejects(StorageClient.open(entry, state.metadata), { code: 'STORE_BUSY' });
+        assert.deepEqual(await readFile(path.join(state.metadata, 'owner.lock')), lease);
+        for (const [name, bytes] of evidence) assert.deepEqual(await readFile(path.join(state.metadata, name)), bytes);
+        assert.equal(await readFile(path.join(state.game, 'external-sentinel.txt'), 'utf8'), 'preserve external data');
+        const mods = await readdir(path.join(state.game, 'mods')).catch(() => [] as string[]);
+        assert.equal(mods.filter(name => name.endsWith('.jar')).length, point === 'staged' ? 0 : point === 'linked' ? 1 : 2);
+      } finally { if (child.exitCode === null && child.signalCode === null) child.kill(); await ended; }
+    }
+  });
+}

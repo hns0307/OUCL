@@ -8,7 +8,7 @@ const { pathToFileURL } = require('node:url');
 app.disableHardwareAcceleration();
 const base = path.resolve(process.env.OUCL_MOD_PLAN_UI_ROOT ?? '');
 assert.ok(base.startsWith(path.resolve('.test-build') + path.sep) && path.basename(base).startsWith('mod-plan-ui-'));
-const evidence = path.resolve('docs/validation/MOD-PUBLIC-20261028');
+const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/MOD-PUBLIC-20261028');
 const profile = path.join(base, 'profile');
 const rootId = '00000000-0000-4000-8000-000000000001'; const instanceId = '00000000-0000-4000-8000-000000000002';
 let window; let storage; let plans; let installs; let finishing = false;
