@@ -1,4 +1,5 @@
 import { createResourcesBridge } from './preload-resources.js';
+import { createDesktopBridge } from './preload-desktop.js';
 import { contextBridge, ipcRenderer } from 'electron';
 import { CONTRACT_VERSION, HANDSHAKE_CHANNEL, HANDSHAKE_TIMEOUT_MS, isHandshakeResult } from '../shared/contracts/handshake.js';
 import type { LauncherBridge, HandshakeResult } from '../shared/contracts/handshake.js';
@@ -32,6 +33,7 @@ const bridge: LauncherBridge = Object.freeze({
   ...createProfilesBridge(),
   ...createGameBridge(),
   ...createResourcesBridge(),
+  ...createDesktopBridge(),
   ...createLoadersBridge(),
   ...createInstancesV2Bridge(),
   ...createInstanceFoldersBridge(ipcRenderer),

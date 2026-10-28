@@ -37,6 +37,15 @@ export class ModrinthClient {
     finally { clearTimeout(timer); this.active--; }
   }
   /** Searches the selected project type, preserving server pagination and version/loader facets. */
+  async iconUrl(projectId: string): Promise<string> {
+    if (!resourceId(projectId)) throw new ResourceContractError('INVALID_ARGUMENT');
+    const { value } = await this.get(`project/${projectId}`); const project = object(value);
+    if (project.id !== projectId || typeof project.icon_url !== 'string') return '';
+    const url = new URL(project.icon_url);
+    return url.protocol === 'https:' && url.hostname === 'cdn.modrinth.com' && !url.port && !url.username && !url.password && !url.search && !url.hash
+      && url.pathname.startsWith(`/data/${projectId}/`) && /\.(png|jpe?g|webp)$/i.test(url.pathname) ? url.href : '';
+  }
+  /** Searches one resource type without exposing upstream image URLs to the renderer. */
   async search(query: ResourceQuery): Promise<ResourceData['resources:search']> {
     const facets = [[`project_type:${query.kind}`], ...(query.gameVersion ? [[`versions:${query.gameVersion}`]] : []), ...(query.loader ? [[`categories:${query.loader}`]] : [])];
     const { value } = await this.get('search', new URLSearchParams({ query: query.query, facets: JSON.stringify(facets), offset: String(query.offset), limit: '20', index: query.query ? 'relevance' : 'downloads' }));

@@ -1,3 +1,4 @@
+import type { DesktopBridge } from './desktop.js';
 import type { ResourcesBridge } from './resources.js';
 import type { MessageKey } from '../locales/messages.js';
 import type { RootsBridge } from './roots.js';
@@ -13,7 +14,7 @@ import type { InstanceFoldersBridge } from './instance-folders.js';
 export const CONTRACT_VERSION = 1 as const;
 export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
 export const HANDSHAKE_TIMEOUT_MS = 3000;
-export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1', 'downloads.v1'] as const;
+export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1', 'downloads.v1', 'desktop.v1'] as const;
 export type Capability = typeof CAPABILITIES[number];
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -39,7 +40,7 @@ export interface HandshakeData {
 }
 export type HandshakeResult = { contractVersion: 1; requestId: string; ok: true; data: HandshakeData }
   | { contractVersion: 1; requestId: string; ok: false; error: AppError };
-export interface LauncherBridge extends RootsBridge, InstancesV2Bridge, InstanceFoldersBridge, CatalogBridge, InstanceBridge, ProfilesBridge, GameBridge, ResourcesBridge, LoadersBridge, ModsBridge { handshake(): Promise<HandshakeResult> }
+export interface LauncherBridge extends RootsBridge, InstancesV2Bridge, InstanceFoldersBridge, CatalogBridge, InstanceBridge, ProfilesBridge, GameBridge, ResourcesBridge, LoadersBridge, ModsBridge, DesktopBridge { handshake(): Promise<HandshakeResult> }
 
 /** Accepts a plain DTO with exact keys, excluding arrays and null. */
 export function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {

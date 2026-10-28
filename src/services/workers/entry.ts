@@ -18,6 +18,7 @@ import { parseArchiveValidationRequest } from './archive-validation-protocol.js'
 import { instanceRecordId, parseInstanceIndex, parseInstanceRecord } from '../storage/instance-records.js';
 import { parseLaunchProfiles } from '../storage/launch-profiles.js';
 import { parseResourceLibrary } from '../storage/resources.js';
+import { parseDesktop } from '../storage/desktop.js';
 import { parseSettings } from '../storage/settings.js';
 import { parseGameSessions } from '../storage/game-sessions.js';
 import { ModArchiveError, scanModArchive } from '../mods/archive.js';
@@ -57,7 +58,7 @@ async function storage(directory: string): Promise<void> {
         let instance;
         let profiles;
         let sessions;
-        let settings;
+        let settings; let desktop;
         let resources;
         let modJobs;
         let modReport;
@@ -145,6 +146,8 @@ async function storage(directory: string): Promise<void> {
         else if (command.kind === 'update') task = await store.updateTask(command.ownerId, command.taskId, command.expectedRevision, command.execution);
         else if (command.kind === 'resources:get') resources = await store.read('resource-library', parseResourceLibrary);
         else if (command.kind === 'resources:set') resources = await store.write('resource-library', command.expectedRevision, command.data, parseResourceLibrary);
+        else if (command.kind === 'desktop:get') desktop = await store.read('desktop', parseDesktop);
+        else if (command.kind === 'desktop:set') desktop = await store.write('desktop', command.expectedRevision, command.data, parseDesktop);
         else if (command.kind === 'settings:get') settings = await store.read('launch-settings', parseSettings);
         else if (command.kind === 'settings:set') settings = await store.write('launch-settings', command.expectedRevision, command.data, parseSettings);
         else if (command.kind === 'sessions:get') sessions = await store.read('game-sessions', parseGameSessions);
@@ -176,7 +179,7 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

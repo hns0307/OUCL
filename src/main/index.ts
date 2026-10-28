@@ -1,3 +1,8 @@
+import { ModrinthClient } from '../services/resources/modrinth.js';
+import { DesktopService } from '../services/desktop/service.js';
+import { DesktopImages } from './desktop-images.js';
+import { DESKTOP_CHANNELS } from '../shared/contracts/desktop.js';
+import { handleDesktop } from '../ipc/desktop.js';
 import { ResourceService } from '../services/resources/service.js';
 import { DEFAULT_DOWNLOAD_PREFERENCES } from '../shared/contracts/download-preferences.js';
 import type { DownloadPreferences } from '../shared/contracts/download-preferences.js';
@@ -68,6 +73,7 @@ import { InstanceFolderError, InstanceFolderService } from '../services/install/
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
+let desktop: DesktopService | undefined; let desktopImages: DesktopImages | undefined;
 let resources: ResourceService | undefined;
 let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
 let downloadPreferencesRevision = 0;
@@ -128,7 +134,7 @@ else void app.whenReady().then(async () => {
   try {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
-    profiles = new ProfileService(storage);
+    profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient());
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     if (portableGameDirectory) {
       try { await roots.ensureDefault(portableGameDirectory); }
@@ -172,7 +178,7 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
   });
   ipcMain.handle(INSTANCE_FOLDER_CHANNEL, async (event, input: unknown) => {
     const traceId = randomUUID(); const fallback = typeof input === 'object' && input !== null && 'requestId' in input && typeof input.requestId === 'string' ? input.requestId : traceId;
@@ -217,6 +223,16 @@ else void app.whenReady().then(async () => {
   for (const channel of GAME_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleGame(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!gameAdapter) throw new InstanceContractError('UNAVAILABLE'); return gameAdapter.dispatcher(event.sender.id)(selected, payload, requestId);
   }));
+  const iconSelections = new Map<number, Promise<string>>();
+  for (const channel of DESKTOP_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleDesktop(channel, input, trustedSender(event), randomUUID(), desktop, async () => {
+    const pending = iconSelections.get(event.sender.id); if (pending) return pending;
+    const job = (async () => {
+      const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: MESSAGES.uiCustomIcon, extensions: ['png', 'jpg', 'jpeg', 'webp'] }] });
+      if (!trustedSender(event)) throw new Error('INVALID_SENDER'); if (selection.canceled || !selection.filePaths[0]) return '';
+      return DesktopImages.local(selection.filePaths[0]);
+    })(); iconSelections.set(event.sender.id, job); void job.finally(() => { iconSelections.delete(event.sender.id); }).catch(() => {}); return job;
+  }, id => desktopImages?.icon(id) ?? Promise.resolve('')));
   for (const channel of PROFILE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleProfiles(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!profiles || !storage) throw new ProfileContractError('UNAVAILABLE');
     const dispatch = profileDispatcher(profiles, storage, async id => {

@@ -84,9 +84,9 @@ try {
   const observed = evaluated.result.value;
   assert.ok(observed.connected && observed.noNode);
   assert.equal(observed.title, 'OUCL');
-  assert.deepEqual([...observed.methods].sort(), ['catalog', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createOfflineAccount', 'downloadResource', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listRoots', 'listSessions', 'listTasks', 'openResourceLibrary', 'resourceLibrary', 'resourceVersions', 'searchResources', 'stopGame', 'subscribeTask', 'updateSettings']);
+  assert.deepEqual([...observed.methods].sort(), ['cancelModPlan', 'catalog', 'checkMods', 'chooseDesktopIcon', 'chooseJava', 'chooseRoot', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'deleteForumDraft', 'downloadResource', 'getDesktop', 'getDownloadSettings', 'getModPlan', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'planMod', 'resourceIcon', 'resourceLibrary', 'resourceVersions', 'saveForumDraft', 'searchResources', 'stopGame', 'subscribeTask', 'updateAppearance', 'updateDownloadSettings', 'updateSettings']);
   assert.equal(observed.handshake.ok, true);
-  assert.deepEqual(observed.handshake.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1']);
+  assert.deepEqual(observed.handshake.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'downloads.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'desktop.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1']);
   assert.ok((await lstat(path.join(profile, 'metadata', 'tasks.sqlite'))).isFile(), 'METADATA_NOT_IN_TEMP_PROFILE');
   const source = await readFile('dist/main/index.cjs');
   const packaged = await readFile(path.join(directory, 'resources/app/dist/main/index.cjs'));

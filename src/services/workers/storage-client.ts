@@ -1,6 +1,7 @@
 import type { LaunchSettings } from '../storage/settings.js';
 import type { ModInstallResult } from '../storage/mod-results.js';
 import type { ResourceLibrary } from '../storage/resources.js';
+import type { DesktopState } from '../../shared/contracts/desktop.js';
 import { Worker } from 'node:worker_threads';
 import { randomUUID } from 'node:crypto';
 import type { Execution } from '../../core/task/machine.js';
@@ -18,7 +19,7 @@ import type { GameSessions } from '../storage/game-sessions.js';
 import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
 import type { StoredModPlan } from '../storage/mod-plans.js';
 import type { ModTransaction } from '../storage/mod-transactions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; modResult?: RecordEnvelope<ModInstallResult> };
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; desktop?: RecordEnvelope<DesktopState>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; modResult?: RecordEnvelope<ModInstallResult> };
 
 interface Pending {
   resolve: (data: StorageData) => void;
@@ -83,7 +84,7 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }), ...(reply.modConfirmations === undefined ? {} : { modConfirmations: reply.modConfirmations }), ...(reply.modResult === undefined ? {} : { modResult: reply.modResult }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.desktop === undefined ? {} : { desktop: reply.desktop }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }), ...(reply.modConfirmations === undefined ? {} : { modConfirmations: reply.modConfirmations }), ...(reply.modResult === undefined ? {} : { modResult: reply.modResult }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
@@ -157,6 +158,12 @@ export class StorageClient {
   }
 
   /** Reads only the fixed launch settings domain. */
+  async readDesktop(): Promise<RecordEnvelope<DesktopState> | undefined> { return (await this.request({ kind: 'desktop:get' })).desktop; }
+  /** Fixed desktop CAS write using the existing JSON journal and worker. */
+  async writeDesktop(expectedRevision: number, data: DesktopState): Promise<RecordEnvelope<DesktopState>> {
+    const result = (await this.request({ kind: 'desktop:set', expectedRevision, data })).desktop; if (!result) throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  /** Reads launch preferences independently of appearance. */
   async readSettings(): Promise<RecordEnvelope<LaunchSettings> | undefined> { return (await this.request({ kind: 'settings:get' })).settings; }
   /** Atomically persists a revision-checked settings change. */
   async writeSettings(expectedRevision: number, data: LaunchSettings): Promise<RecordEnvelope<LaunchSettings>> {
