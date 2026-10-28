@@ -487,3 +487,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 47. 2026-10-28 分发源契约与本地签名适配器
 
 按原完整方案预留DistributionSource、版本化签名信封、目标环境及add/replace/keep/remove操作，增加纯差异预览；破坏性操作要求受管UUID和预期旧SHA256同时匹配。未知文件/存档/私人配置不因缺项删除，任一冲突不给变化。仅tests内存适配器用临时Ed25519密钥真实验证，无main装配/后台连接/远程更新/新依赖。证据docs/validation/DISTRIBUTION-CONTRACT-20261028/，契约DISTRIBUTION_SOURCE.md。Mod安装EXE已于1f523be保存实际便携三场景证据，仍保留四加载器实机/完整中断矩阵未验证。
+
+交付收尾：28a29b4后main与mod_loaders已快进对齐，release/OUCL-0.3.0-mod-install.exe及本地便携三场景证据已生成，旧交付物保留、未push。最终516项/514PASS/0FAIL/2既有SKIP；公共Mod安装本增量可供体验，完整原计划仅剩尚未证明的真实四加载器运行/中断矩阵等验收缺项，不将其记为通过。
