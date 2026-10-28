@@ -88,5 +88,6 @@ void (async () => {
   await mkdir(evidence, { recursive: true }); await writeFile(fixtureFile, icon); app.setPath('userData', profile);
   app.on('ready', () => { session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (_details, callback) => callback({ cancel: true })); });
   app.on('browser-window-created', (_event, window) => { window.webContents.setBackgroundThrottling(false); window.webContents.once('did-finish-load', () => { void run(window); }); });
+  require('./electron-network-fixture.cjs')(globalThis.fetch);
   require('../dist/main/index.cjs');
 })().catch(error => { console.error(error); clearTimeout(timeout); app.exit(1); });

@@ -1,3 +1,4 @@
+import { createDesktopFetch } from './network.js';
 import { ModrinthClient } from '../services/resources/modrinth.js';
 import { DesktopService } from '../services/desktop/service.js';
 import { DesktopImages } from './desktop-images.js';
@@ -10,7 +11,7 @@ import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../
 import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
 import { handleResources } from '../ipc/resources.js';
 import { ensureChildDirectory } from '../services/install/instance-files.js';
-import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session, shell, net } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { mkdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
@@ -38,7 +39,7 @@ import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '..
 import { handleProfiles } from '../ipc/profiles.js';
 import { profileDispatcher } from '../ipc/profiles-adapter.js';
 import { LaunchService } from '../services/launch/service.js';
-import { JavaRuntimeService } from '../services/java/runtime.js';
+import { JavaRuntimeService, isJavaMetadataUrl } from '../services/java/runtime.js';
 import { GameAdapter } from '../ipc/game-adapter.js';
 import { handleGame } from '../ipc/game.js';
 import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
@@ -138,23 +139,24 @@ else void app.whenReady().then(async () => {
   try {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
-    profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient());
+    const networkFetch = createDesktopFetch(options => net.request(options));
+    profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient(networkFetch));
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     if (portableGameDirectory) {
       try { await roots.ensureDefault(portableGameDirectory); }
       catch { console.warn(JSON.stringify({ level: 'warn', event: 'default-root-unavailable', code: 'ROOT_UNAVAILABLE' })); }
     }
-    const reader = new OfficialMetadataReader(); catalog = new CatalogService(reader, storage);
+    const reader = new OfficialMetadataReader(networkFetch); catalog = new CatalogService(reader, storage);
     const vanillaMetadata = new InstallMetadataService(catalog, reader);
     const initialSettings = await storage.readSettings();
     downloadPreferences = initialSettings?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
     downloadPreferencesRevision = initialSettings?.revision ?? 0;
-    const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
+    const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(networkFetch, isOfficialLoaderMetadataUrl));
     const service: InstallerService = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
-      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver()),
-      new InstallerPreparationService(vanillaMetadata, loaderClient, new InstallerArtifactResolver()),
-      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable, () => downloadPreferences);
-    const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service);
+      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver(networkFetch)),
+      new InstallerPreparationService(vanillaMetadata, loaderClient, new InstallerArtifactResolver(networkFetch)),
+      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable, () => downloadPreferences, networkFetch);
+    const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service, new OfficialMetadataReader(networkFetch, isJavaMetadataUrl));
     await service.initialize(); installer = service;
     instanceFolders = new InstanceFolderService(storage);
     loaders = new LoaderService(loaderClient, service);
@@ -162,13 +164,13 @@ else void app.whenReady().then(async () => {
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
-    const resourceService = new ResourceService(storage, service); await resourceService.initialize(); resources = resourceService;
+    const resourceService = new ResourceService(storage, service, new ModrinthClient(networkFetch)); await resourceService.initialize(); resources = resourceService;
     // A damaged or newer Mod record must not disable existing launch/install capabilities.
     try {
       const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
       const context = modInventoryContext(storage, new InstalledLanguageReader(scanner), new InstalledJavaFacts(profiles));
       const inventory = new ModInventoryService(context, scanner);
-      const platform = new ModrinthModClient(); const inspections = new ModInspectionService(context, inventory, platform);
+      const platform = new ModrinthModClient(networkFetch); const inspections = new ModInspectionService(context, inventory, platform);
       const modTasks = new ModTaskService(storage, inventory, inspections);
       modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
       modPlans = new ModPlanService(storage, modPlanner);

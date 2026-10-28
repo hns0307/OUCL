@@ -1,4 +1,8 @@
-import { mkdir, mkdtemp } from 'node:fs/promises';
+import { net } from 'electron';
+import { createDesktopFetch } from '../../src/main/network.js';
+import { ObjectStore } from '../../src/services/objects/store.js';
+import { HashPool } from '../../src/services/workers/hash-pool.js';
+import { mkdir, mkdtemp, cp } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { StorageClient } from '../../src/services/workers/storage-client.js';
@@ -12,7 +16,7 @@ import { InstallerArtifactResolver } from '../../src/services/loaders/installer-
 import { LoaderInstallMetadataService } from '../../src/services/loaders/install-metadata.js';
 import { LoaderMavenResolver } from '../../src/services/loaders/maven.js';
 import { ProfileService } from '../../src/services/launch/profiles.js';
-import { JavaRuntimeService } from '../../src/services/java/runtime.js';
+import { JavaRuntimeService, isJavaMetadataUrl } from '../../src/services/java/runtime.js';
 import { DEFAULT_DOWNLOAD_PREFERENCES } from '../../src/shared/contracts/download-preferences.js';
 
 const kind = process.env.OUCL_LOADER_TEST_KIND ?? 'forge';
@@ -47,19 +51,32 @@ const registration = await storage.readInstallation();
 if (registration && registration.data.dataDirectory !== games) throw new Error('INVALID_TEST_REGISTRATION');
 const rootId = registration?.data.rootId ?? randomUUID();
 if (!registration) await storage.createInstallation({ rootId, dataDirectory: games });
-const reader = new OfficialMetadataReader(); const vanilla = new InstallMetadataService(new CatalogService(reader, storage), reader);
-const catalog = new LoaderMetadataClient(new OfficialMetadataReader(fetch, isOfficialLoaderMetadataUrl));
-const service: InstallerService = new InstallerService(storage, entry, vanilla, new LoaderInstallMetadataService(vanilla, catalog, new LoaderMavenResolver()),
-  new InstallerPreparationService(vanilla, catalog, new InstallerArtifactResolver()),
+if (!reuse && process.env.OUCL_LOADER_TEST_CACHE) {
+  const cache = path.resolve(process.env.OUCL_LOADER_TEST_CACHE);
+  if (!cache.startsWith(path.resolve('.test-build') + path.sep) || !cache.endsWith(path.join('games', 'store', 'objects'))) throw new Error('INVALID_TEST_CACHE');
+  await mkdir(path.join(games, 'store'), { recursive: true });
+  await cp(cache, path.join(games, 'store', 'objects'), { recursive: true, dereference: false, force: false, errorOnExist: true });
+  const hashes = new HashPool(entry); let objects: ObjectStore | undefined;
+  try { objects = await ObjectStore.open(path.join(games, 'store'), storage, hashes); await objects.rebuildIndex(); }
+  finally { await objects?.close(); await hashes.close(); }
+}
+const transport = process.env.OUCL_LOADER_TEST_SYSTEM_NETWORK === '1' ? createDesktopFetch(options => net.request(options)) : fetch;
+let networkDisabled = false;
+const request: typeof fetch = (input, init) => { if (networkDisabled) throw new Error('UNEXPECTED_NETWORK_ON_REOPEN'); return transport(input, init); };
+const reader = new OfficialMetadataReader(request); const vanilla = new InstallMetadataService(new CatalogService(reader, storage), reader);
+const catalog = new LoaderMetadataClient(new OfficialMetadataReader(request, isOfficialLoaderMetadataUrl));
+const service: InstallerService = new InstallerService(storage, entry, vanilla, new LoaderInstallMetadataService(vanilla, catalog, new LoaderMavenResolver(request)),
+  new InstallerPreparationService(vanilla, catalog, new InstallerArtifactResolver(request)),
   async (major, consumer, signal): Promise<string> => (await java.ensure(major, consumer, signal)).executable,
-  () => ({ ...DEFAULT_DOWNLOAD_PREFERENCES, source: process.env.OUCL_LOADER_DOWNLOAD_SOURCE === 'bmclapi' ? 'bmclapi' : 'official' }));
-const profiles = new ProfileService(storage); const java: JavaRuntimeService = new JavaRuntimeService(profiles, service);
+  () => ({ ...DEFAULT_DOWNLOAD_PREFERENCES, source: process.env.OUCL_LOADER_DOWNLOAD_SOURCE === 'bmclapi' ? 'bmclapi' : 'official' }), request);
+const profiles = new ProfileService(storage); const java: JavaRuntimeService = new JavaRuntimeService(profiles, service, new OfficialMetadataReader(request, isJavaMetadataUrl));
 console.log(JSON.stringify({ event: 'test-started', kind, minecraftVersion, loaderVersion, workspace }));
 try {
   await service.initialize();
   if (process.env.OUCL_LOADER_TEST_REOPEN === '1') {
     const instance = (await service.listV2(rootId)).find(item => item.loader.kind === kind && item.state === 'ready');
     if (!instance) throw new Error('READY_TEST_INSTANCE_MISSING');
+    networkDisabled = true;
     globalThis.fetch = async () => { throw new Error('UNEXPECTED_NETWORK_ON_REOPEN'); };
     await service.prepareLaunch(instance.instanceId, instance.revision, new AbortController().signal);
     console.log(JSON.stringify({ event: 'official-reopen-offline-verified', kind, instanceId: instance.instanceId, workspace }));

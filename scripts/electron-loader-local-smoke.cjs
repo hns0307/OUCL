@@ -77,5 +77,6 @@ async function run(window) {
   app.setPath('userData', profile);
   app.whenReady().then(() => { session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (_details, callback) => { callback({ cancel: true }); }); });
   app.on('browser-window-created', (_event, window) => { window.webContents.setBackgroundThrottling(false); window.webContents.once('did-finish-load', () => { void run(window); }); });
+  require('./electron-network-fixture.cjs')(globalThis.fetch);
   require('../dist/main/index.cjs');
 })().catch(error => { clearTimeout(timeout); console.error(error); app.exit(1); });

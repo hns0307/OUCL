@@ -30,3 +30,6 @@ ArtifactTransfer拒绝同key并发物理写入，后续协调器负责合并消�
 SourceTransfer在单个文件传输边界内最多三轮尝试，覆盖NETWORK_FAILED、TIMEOUT和可等待的RETRY_LATER；250/500ms退避可取消，Retry-After更长时优先，超过30秒不提前重试。404等永久HTTP错误归BAD_RESPONSE，不进入瞬时故障重试循环；既有并行到串行验证回退仍有自身一次尝试。每轮从最新确认checkpoint重新打开staging，不绕过逐字节哈希；同源镜像保留前缀，跨源仍清验证器/偏移。单文件开始时冻结下载偏好，后续重试不偷偷换设置；磁盘/NEEDS_RECOVERY优先于同时发生的取消。429/503及408/500/502/504作为临时响应处理。
 
 目录JSON读取对临时连接/408/5xx最多三次尝试；429和其他永久HTTP状态不在内部提前重试，摘要/长度/编码错误保持拒绝。Maven官方SHA1 sidecar和HEAD大小分别拥有12秒、三次的预算，可取消退避，HEAD重试不重新获取已验证sidecar；body与请求所有者在下一轮前退出。无新增公开IPC、持久字段、依赖或源白名单。具体测试和参考取舍见../validation/NETWORK-FIX-20261028/REPORT.md。
+
+
+同轮完整安装进一步触发Electron内置Undici不可捕获断言；桌面生产通过main/network.ts将Electron net.request一跳流适配显式注入下载/目录/加载器/资源/Java，不修改测试默认传输。HTTPS和证书验证保持，禁止环境会话Cookie和认证凭据，手动跳转仍交既有白名单验证。无Node解析器接管/全局fetch替换或新依赖；普通Node单测通过注入传输继续运行。

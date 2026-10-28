@@ -111,7 +111,7 @@ export class InstallerService {
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService,
     private readonly loaderMetadata?: LoaderInstallMetadataService, private readonly installerPreparation?: InstallerPreparationService,
     private readonly processorJava?: (major: 17 | 21, consumerId: string, signal: AbortSignal) => Promise<string>,
-    private readonly downloadPreferences: () => Readonly<DownloadPreferences> = () => DEFAULT_DOWNLOAD_PREFERENCES) {}
+    private readonly downloadPreferences: () => Readonly<DownloadPreferences> = () => DEFAULT_DOWNLOAD_PREFERENCES, private readonly request: typeof fetch = fetch) {}
 
   /** Publishes an immutable, content-addressed official JVM only after all files verify. Never overwrites an existing runtime. */
   async prepareJava(pack: JavaPackage, consumerId: string, signal: AbortSignal): Promise<string> {
@@ -161,7 +161,7 @@ export class InstallerService {
       try {
         const objects = await ObjectStore.open(store, this.storage, hashes);
         const concurrency = (): number => this.downloadPreferences().fileConcurrency;
-        const coordinator = new DownloadCoordinator(new ArtifactTransfer(new SourceTransfer(this.downloadPreferences, fetch, this.requestBudget), this.storage, objects), objects, concurrency);
+        const coordinator = new DownloadCoordinator(new ArtifactTransfer(new SourceTransfer(this.downloadPreferences, this.request, this.requestBudget), this.storage, objects), objects, concurrency);
         return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects, concurrency), views: new FileViewService(store, objects, hashes) };
       } catch (error) { await hashes.close(); await extractor.close(); await installerExtractor.close(); throw error; }
     })();

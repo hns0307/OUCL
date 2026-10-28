@@ -129,6 +129,7 @@ async function run(window) {
   app.on('browser-window-created', (_event, window) => {
     window.webContents.once('did-finish-load', () => { void run(window); });
   });
+  if (offlineCatalog) require('./electron-network-fixture.cjs')(globalThis.fetch);
   require('../dist/main/index.cjs');
 })();
 
