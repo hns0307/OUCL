@@ -146,9 +146,15 @@ export class ModInstallTaskService {
       else {
         const plan = await this.storage.readModPlan(input.planRequestId); let assessment: ModReport | null = null;
         if (plan && error instanceof ModPreparationError && error.assessment) {
+          // Preparation can fail before a real inventory exists. Preserve dependency facts, but never
+          // attach issue IDs to files that were not projected into this report's empty inventory.
           const inventory = { instanceId: plan.data.plan.instanceId, revision: plan.data.plan.instanceRevision,
-            fingerprint: plan.data.plan.fingerprint, items: [], local: error.assessment.local };
-          assessment = publicModReport(inventory, { inventory, platform: error.assessment.platform, platformFailures: [] });
+            fingerprint: plan.data.plan.fingerprint, items: [], local: { ...error.assessment.local,
+              issues: error.assessment.local.issues.map(issue => ({ ...issue, fileId: '' })) } };
+          const states = [error.assessment.local.state, error.assessment.platform.state];
+          const state = states.includes('unsatisfied') ? 'unsatisfied' : states.includes('unknown') ? 'unknown' : 'satisfied';
+          assessment = publicModReport(inventory, { inventory, platform: { ...error.assessment.platform, state,
+            issues: error.assessment.platform.issues.map(issue => ({ ...issue, fileId: '' })) }, platformFailures: [] });
         }
         const code = typeof error === 'object' && error !== null && 'code' in error && isModCode(error.code) ? error.code : 'SCAN_FAILED';
         job.task = await this.finish(job.task, job.controller.signal.aborted ? 'cancelled' : 'failed', code, assessment);

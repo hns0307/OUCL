@@ -132,11 +132,12 @@ test('failed preparation persists bounded assessment and immutable task/plan ass
     const saved = (await f.storage().readModResult(taskId))!;
     assert.equal(saved.data.errorCode, 'MODS_INCOMPATIBLE'); assert.equal(saved.data.assessment!.localState, 'unsatisfied');
     assert.equal(saved.data.assessment!.issues[0]!.requirement, '>=2');
+    assert.equal(saved.data.assessment!.issues[0]!.fileId, '');
     await assert.rejects(f.storage().writeModResult(taskId, saved.revision, { ...saved.data, errorCode: 'FILES_CHANGED' }), { code: 'INVALID_RECORD' });
     assert.throws(() => parseModInstallResult({ ...saved.data, path: 'private' }), { code: 'INVALID_RECORD' });
     assert.throws(() => parseModInstallResult({ ...saved.data, formatVersion: 2 }), { code: 'INVALID_RECORD' });
     assert.throws(() => parseModInstallResult({ ...saved.data, state: 'completed' }), { code: 'INVALID_RECORD' });
-  } finally { await service.close(); await f.close(); }
+  } finally { try { await service.close(); } finally { await f.close(); } }
 });
 
 test('lost result acknowledgement resolves only exact durable content and restarts without replay', async () => {
