@@ -1,5 +1,21 @@
 # OUCL 下一对话交接
 
+## 当前有效交接：界面优化（2026-10-28）
+
+分支mod_loaders。本次目标已实现并通过验证：可收起侧栏、论坛UI及可替换前端接口、配色/品牌图标/首页布局、低频设置折叠、内存滑块、资源自身图标与拖动。用户直接批准固定外观/草稿记录和受控图标接口，并补充接口便于以后接后台；不连接后台、不恢复此前Esc停止的游戏操作、不跑外网测试。
+
+代码提交：dfff42b修复既有Mod失败报告；473eb7e新增desktop.v1及固定desktop.json/worker/CAS和受控图标；6af8f0e完整UI与隔离窗口脚本。证据与交接另行提交，以git log为准。512项510 PASS/0 FAIL/2原有SKIP，typecheck/lint/build通过；最后样式整理后再次类型/lint/build及两轮窗口重开验证通过。证据docs/validation/UI-20261028/REPORT.md，接口docs/contracts/DESKTOP_UI.md。
+
+论坛只投影真实本地草稿，支持分类/搜索/列表/详情/编辑/删除；ForumDataSource有list/read和可选publish，默认不发布，不在renderer直接fetch。desktop记录独立于启动/下载设置；六个新方法，总42方法/16能力。图标由主进程本地选择或官方项目/CDN读取、限流/限体积/重编码PNG；renderer仍无外部图片或网络。内存滑块沿用原保存与真实启动参数；布局支持人物左右、间距、卡片排序/隐藏和键盘替代。
+
+实际窗口验收使用独立档案、真实main/preload/worker，所有网络为固定本地夹具，外网0；本地图标对话框返回自有文件，随后走真实读取与Electron重编码，不称人工操作原生选择器。测试覆盖侧栏/配色/暗色预览跨侧栏保存、图标、滑块、折叠、论坛草稿、资源拖入/图标、分栏键盘调宽、720×560四页与正常重开/owner释放。
+
+预览：release/OUCL-0.3.0-ui-20261028.exe，353280字节，SHA256 aef57c68e112a5ce88853acc2bce814cf3fba8ce72385767c9ea28e23bc2f65f。本地打包及静态嵌入ZIP验证，不是完整0.3发布，没有运行该EXE的冷/热网络验证；不合并main、不push、不覆盖旧包或停止用户游戏。用户试用前需正常退出旧OUCL。既有加载器/Mod产品接入和实机矩阵缺项继续保留，不以本UI完成覆盖。
+
+整库首轮既有Mod失败报告引用空库存外的文件且总体兼容状态矛盾，close抛NEEDS_RECOVERY遗留测试worker；只结束已确认的测试子进程后做最小修正，原用例自然退出及整库通过，未放宽schema/删owner/操作游戏。原始OUCL-Codex-Package.zip与OUCL.txt当前为未跟踪文件，继续排除，以真实git status为准，不照历史快照重新暂存。
+
+## 以下为历史检查点，不覆盖上述当前交付
+
 ## 2026-10-27 便携目录与版本设置检查点（额度暂停）
 
 当前分支`mod_loaders`，HEAD仍196bfd7，工作区新增便携目录/版本设置增量待提交。用户明确要求EXE同级自动游戏主目录、版本设置文件夹入口、完成后合并main并生成0.3 EXE，允许Strata。Strata本地模型ready且仅审查方案；采纳外层Bootstrap传可信目录和opaque ID+enum契约，拒绝其改Installation格式/拒绝旧根建议。实现：Launcher.cs传`OUCL_PORTABLE_ROOT`；main仅在没有Installation记录时创建并注册`OUCL.games`，已有自选根不覆盖；新增`instance-folders.v1`，主进程从持久实例元数据重建实际隔离/共享gameDir，只打开game/mods/saves/resourcepacks/shaderpacks/screenshots/logs，拒绝链接逃逸；首页新增版本设置面板；package/UI版本预置0.3.0。

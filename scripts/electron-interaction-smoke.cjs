@@ -57,7 +57,7 @@ async function run(window) {
       const appearance = (await evaluate('window.oucl.getDesktop()')).data.appearance; assert.equal(appearance.homeOrder[0], 'game'); assert.equal(appearance.layout, 'profile-left'); assert.ok(appearance.icon.startsWith('data:image/png'));
       assert.equal(await evaluate(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()`), '#407da0');
       await writeFile(path.join(evidence, 'settings.png'), (await window.webContents.capturePage()).toPNG());
-      await evaluate(`document.querySelectorAll('.palette-button')[2].click();document.querySelector('.sidebar-toggle').click()`); await wait(`!document.querySelector('.sidebar-toggle').disabled`);
+      await evaluate(`document.querySelectorAll('.palette-button')[2].click();document.querySelector('.sidebar-toggle').click()`); await wait(`!document.querySelector('.app-shell').classList.contains('sidebar-collapsed') && !document.querySelector('.sidebar-toggle').disabled`);
       assert.equal(await evaluate(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()`), '#b3a0df');
       await pause(250);
       await writeFile(path.join(evidence, 'dark-preview.png'), (await window.webContents.capturePage()).toPNG());

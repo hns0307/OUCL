@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0-ui-20261028",
+  "bytes": 353280,
+  "sha256": "AEF57C68E112A5CE88853ACC2BCE814CF3FBA8CE72385767C9EA28E23BC2F65F",
+  "embeddedDesktopContracts": true,
+  "embeddedFiles": 8,
+  "executedExe": false,
+  "networkRequests": 0
+}
