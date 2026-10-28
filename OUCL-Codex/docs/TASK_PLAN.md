@@ -483,3 +483,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 46. 2026-10-28 Mod公共确认与任务界面
 
 从最新78bb260保留桌面/论坛改动继续；旧报告失败已dfff42b修复。mods:confirm/installState、mod-install任务列表/控制/订阅投影、main真实准备/事务装配及资源库确认界面已接通。计划UUID幂等、接纳后走任务取消、提交后拒绝取消；刷新恢复原任务，结果保存原修订证据。完整513项/511PASS/0FAIL/2既有SKIP，Electron正式worker29项通过，真实组件确认/拒绝/重载失败报告及正式入口44方法/16能力通过。证据docs/validation/MOD-PUBLIC-20261028/。下一生成保留旧交付物的0.3.0更新EXE并本地预置运行时验证；真实四加载器运行矩阵、断电全矩阵及未来分发适配器未补写通过。
+
+## 47. 2026-10-28 分发源契约与本地签名适配器
+
+按原完整方案预留DistributionSource、版本化签名信封、目标环境及add/replace/keep/remove操作，增加纯差异预览；破坏性操作要求受管UUID和预期旧SHA256同时匹配。未知文件/存档/私人配置不因缺项删除，任一冲突不给变化。仅tests内存适配器用临时Ed25519密钥真实验证，无main装配/后台连接/远程更新/新依赖。证据docs/validation/DISTRIBUTION-CONTRACT-20261028/，契约DISTRIBUTION_SOURCE.md。Mod安装EXE已于1f523be保存实际便携三场景证据，仍保留四加载器实机/完整中断矩阵未验证。

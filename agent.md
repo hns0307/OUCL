@@ -401,3 +401,11 @@ initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务�
 下一步：生成保留旧文件的0.3.0-mod-install EXE，本地预置Electron的portable三场景实测，再合并main与交付链接。尚缺真实四加载器运行矩阵（用户要求跳过联网/游戏）、完整断电矩阵及DistributionSource/签名分发契约适配器（搜索src未找到，不能标完成）。完整目标未结束，自动化保持。不要回退旧16d1ca7；不push，原zip/txt/stash与旧release保留。
 
 公共Mod功能已提交0084b08，生成release/OUCL-0.3.0-mod-install.exe（363008B，SHA256 ed97b39bcc3781537848cc7c4feaacbae59ee32ef63baabb6d8b3dba41b03ea5），真实EXE本地预置Electron三场景通过；docs/validation/BOOTSTRAP-0.3.0-mod-install/保留包与portable证据。旧EXE保持。下一补原批准DistributionSource/签名分发清单契约与测试适配器（只接口/本地夹具，不接后台），然后同步main/最终交接；不把四加载器实机缺项关闭。
+
+## 最新检查点：Mod可确认安装与0.3 EXE交付（2026-10-28）
+
+代码0084b08、包证据1f523be后已补原计划DistributionSource/版本化Ed25519签名信封/四操作及纯差异预览，只在tests有临时密钥的内存验证适配器，无产品导入/后台或远程更新。受管UUID+旧摘要同时匹配才replace/remove，未知/遗漏文件保留；任何冲突不提供变化。实际更新仍需配置可信来源、公钥/轮换策略、验证目标和文件/会话/修订并复用事务，不能直接执行纯diff。契约docs/contracts/DISTRIBUTION_SOURCE.md。
+
+最终pnpm check516/514PASS/0FAIL/2既有SKIP，type/lint/build通过。Mod产品公共确认与窗口/29项正式worker证据见MOD-PUBLIC-20261028；新包release/OUCL-0.3.0-mod-install.exe（363008字节，SHA256 ed97b39bcc3781537848cc7c4feaacbae59ee32ef63baabb6d8b3dba41b03ea5），固定Electron本地预置下三场景真实EXE通过：同级自动目录/重开稳定/失败重试，见BOOTSTRAP-0.3.0-mod-install。已有桌面/论坛UI全部保留。旧16d1ca7 WIP已被dfff42b和后续完整检查解决，不再按旧失败暂停。
+
+交付边界：已接入实际确认安装到实例/任务/受控结果，未联网，未启动真实MC或接管用户游戏窗口。四加载器各自主菜单/测试Mod/正常退出/再次启动及原版回归的完整实机矩阵仍未完成，不能凭服务夹具关闭；完整断电/kill矩阵亦保留。未来后台/签名源不启用。自动化尚未停止，因为完整目标验收缺项仍在。下一轮先读最新HEAD和额度，不重复实现已交付功能；无联网/游戏授权变更时仅推进未完成的本地恢复验证和明确契约缺项。原zip/txt/stash/旧EXE不动，不push。
