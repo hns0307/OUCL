@@ -1,0 +1,12 @@
+{"workspace":"D:\\MC_start\\OUCL\\.test-build\\final-vanilla-rs8OIk","stage":"metadata","state":"queued"}
+{"workspace":"D:\\MC_start\\OUCL\\.test-build\\final-vanilla-rs8OIk","stage":"downloading","state":"running"}
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"NETWORK_FAILED"}
+{"workspace":"D:\\MC_start\\OUCL\\.test-build\\final-vanilla-rs8OIk","stage":"failed","state":"failed"}
+file:///D:/MC_start/OUCL/.test-build/final-vanilla.mjs:4
+try{await service.initialize();const task=await service.create(randomUUID(),{rootId,mcVersionId:'1.20.1',displayName:'Final vanilla verification',isolation:'on'});let prior='';for(;;){const current=await service.task(rootId,task.taskId);if(prior!==current.stage){console.log(JSON.stringify({workspace:root,stage:current.stage,state:current.task.execution.state}));prior=current.stage;}if(['completed','failed','cancelled','needsRecovery'].includes(current.task.execution.state)){if(current.task.execution.state!=='completed')throw Error('OFFICIAL_INSTALL_FAILED');break;}await new Promise(r=>setTimeout(r,1000));}}finally{await service.close();await storage.close();}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+Error: OFFICIAL_INSTALL_FAILED
+    at file:///D:/MC_start/OUCL/.test-build/final-vanilla.mjs:4:532
+
+Node.js v24.21.0

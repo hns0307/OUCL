@@ -489,3 +489,11 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 按原完整方案预留DistributionSource、版本化签名信封、目标环境及add/replace/keep/remove操作，增加纯差异预览；破坏性操作要求受管UUID和预期旧SHA256同时匹配。未知文件/存档/私人配置不因缺项删除，任一冲突不给变化。仅tests内存适配器用临时Ed25519密钥真实验证，无main装配/后台连接/远程更新/新依赖。证据docs/validation/DISTRIBUTION-CONTRACT-20261028/，契约DISTRIBUTION_SOURCE.md。Mod安装EXE已于1f523be保存实际便携三场景证据，仍保留四加载器实机/完整中断矩阵未验证。
 
 交付收尾：28a29b4后main与mod_loaders已快进对齐，release/OUCL-0.3.0-mod-install.exe及本地便携三场景证据已生成，旧交付物保留、未push。最终516项/514PASS/0FAIL/2既有SKIP；公共Mod安装本增量可供体验，完整原计划仅剩尚未证明的真实四加载器运行/中断矩阵等验收缺项，不将其记为通过。
+
+
+## 2026-10-28 0.3.0最终整合与验证批准
+
+用户直接要求实施《OUCL 0.3.0 最终整合与验证》，状态APPROVED / IN_PROGRESS，当前G2。允许独立测试实例的联网及游戏窗口实测，覆盖此前对应停止限制；保留用户数据/旧EXE/原始资料/stash。不新增业务契约、依赖或存储格式，最终包OUCL-0.3.0-final.exe，本地提交并对齐main/mod_loaders，不push。具体证据见根docs/validation/FINAL-0.3.0-20261028/，未运行项不得标通过。
+
+
+2026-10-28最终整合交付：0.3全部既有增量保持，正式EXE release/OUCL-0.3.0-final.exe 363008字节，SHA256 3a63f5d7aaff7a7b7d5f3560b9925d75158310bcba76943f1d683a703686ec80。517项515PASS/0FAIL/2原有SKIP、正式Electron worker30PASS、界面重开、最终包官方冷/热及便携三场景通过。Forge/NeoForge各两次主菜单、FerriteCore和退出0；Fabric基本菜单/重开/退出0但测试Mod下载失败；Quilt安装/重试和原版新装受网络失败阻塞。公共Mod窗口公网安装成功及全断电矩阵未验收。新增三点真实进程中断安全阻断测试，不等同自动恢复。统一报告根docs/validation/FINAL-0.3.0-20261028/REPORT.md；完整实机验收仍开放，不push。

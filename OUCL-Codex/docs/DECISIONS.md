@@ -335,3 +335,11 @@
 2026-10-28原批准Mod确认方案实施：沿用mods.v1增加严格confirm/installState，task投影增加mod-install，main真实装配准备/文件事务；资源库明确确认并恢复原task。无新依赖/持久格式/远程能力，原私有结果记录与JSON/SQL流程保持。沿用此前已批准确认/取消/订阅及界面授权，不把本地夹具当游戏验收。证据docs/validation/MOD-PUBLIC-20261028/。
 
 2026-10-28原批准DistributionSource预留实施：仅纯契约与差异预览、tests内存签名适配器，符合原完整方案明确授权；无新依赖、后台、公开入口或远程更新。启用真实源仍需另行配置可信来源/公钥及签名验证策略，不将测试密钥视为部署批准。
+
+
+## 2026-10-28 0.3.0最终整合与验证批准
+
+用户直接要求实施《OUCL 0.3.0 最终整合与验证》，状态APPROVED / IN_PROGRESS，当前G2。允许独立测试实例的联网及游戏窗口实测，覆盖此前对应停止限制；保留用户数据/旧EXE/原始资料/stash。不新增业务契约、依赖或存储格式，最终包OUCL-0.3.0-final.exe，本地提交并对齐main/mod_loaders，不push。具体证据见根docs/validation/FINAL-0.3.0-20261028/，未运行项不得标通过。
+
+
+2026-10-28最终整合交付：0.3全部既有增量保持，正式EXE release/OUCL-0.3.0-final.exe 363008字节，SHA256 3a63f5d7aaff7a7b7d5f3560b9925d75158310bcba76943f1d683a703686ec80。517项515PASS/0FAIL/2原有SKIP、正式Electron worker30PASS、界面重开、最终包官方冷/热及便携三场景通过。Forge/NeoForge各两次主菜单、FerriteCore和退出0；Fabric基本菜单/重开/退出0但测试Mod下载失败；Quilt安装/重试和原版新装受网络失败阻塞。公共Mod窗口公网安装成功及全断电矩阵未验收。新增三点真实进程中断安全阻断测试，不等同自动恢复。统一报告根docs/validation/FINAL-0.3.0-20261028/REPORT.md；完整实机验收仍开放，不push。

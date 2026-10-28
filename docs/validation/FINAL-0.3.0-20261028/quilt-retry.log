@@ -1,0 +1,12 @@
+{"event":"test-started","kind":"quilt","minecraftVersion":"1.20.1","loaderVersion":"0.29.2","workspace":"D:\\MC_start\\OUCL\\.test-build\\official-loader-qt5HtQ"}
+{"event":"test-progress","stage":"metadata","state":"queued","bytesDone":0}
+{"level":"warn","event":"instance-install-failed","stage":"metadata","code":"CATALOG_UNAVAILABLE"}
+{"event":"test-progress","stage":"failed","state":"failed","bytesDone":0}
+file:///D:/MC_start/OUCL/.test-build/tests/runtime/official-loader-install.js:108
+        if (task.task.execution.state !== "completed" || !task.instance) throw new Error("OFFICIAL_INSTALL_FAILED");
+                                                                               ^
+
+Error: OFFICIAL_INSTALL_FAILED
+    at file:///D:/MC_start/OUCL/.test-build/tests/runtime/official-loader-install.js:108:80
+
+Node.js v24.22.0

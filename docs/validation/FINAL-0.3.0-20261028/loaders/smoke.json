@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-10-28T13:37:32.919Z",
+  "status": "PASS",
+  "productionMainAndPreload": true,
+  "fixtureMetadata": true,
+  "externalNetworkRequests": 0,
+  "installationAdmitted": false,
+  "selections": [
+    {
+      "loader": "fabric",
+      "selectedVersion": "0.16.14",
+      "javaMajor": 17,
+      "unverified": true
+    },
+    {
+      "loader": "quilt",
+      "selectedVersion": "0.29.2",
+      "javaMajor": 17,
+      "unverified": true
+    },
+    {
+      "loader": "forge",
+      "selectedVersion": "47.4.28",
+      "javaMajor": 17,
+      "unverified": true
+    },
+    {
+      "loader": "neoforge",
+      "selectedVersion": "21.1.265",
+      "javaMajor": 21,
+      "unverified": true
+    }
+  ],
+  "unsupportedMatrixBlocked": true,
+  "staleCatalogResponseIgnored": true,
+  "oldMinecraftOptionsCleared": true,
+  "smallWindowNoOverflow": true,
+  "metadataRequests": 8,
+  "ownerReleased": true
+}

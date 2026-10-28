@@ -411,3 +411,6 @@ initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务�
 交付边界：已接入实际确认安装到实例/任务/受控结果，未联网，未启动真实MC或接管用户游戏窗口。四加载器各自主菜单/测试Mod/正常退出/再次启动及原版回归的完整实机矩阵仍未完成，不能凭服务夹具关闭；完整断电/kill矩阵亦保留。未来后台/签名源不启用。自动化尚未停止，因为完整目标验收缺项仍在。下一轮先读最新HEAD和额度，不重复实现已交付功能；无联网/游戏授权变更时仅推进未完成的本地恢复验证和明确契约缺项。原zip/txt/stash/旧EXE不动，不push。
 
 同步完成：main与mod_loaders已对齐28a29b4（其后仅此交接文字），正式Mod功能包与便携证据已交付。最终工作区只留原OUCL-Codex-Package.zip、OUCL.txt未跟踪，stash原样保留。下一心跳先核对额度，再审剩余验收缺项；不要重复写已完成确认功能、分发契约或覆盖旧EXE，不push。
+
+
+2026-10-28最终整合交付：0.3全部既有增量保持，正式EXE release/OUCL-0.3.0-final.exe 363008字节，SHA256 3a63f5d7aaff7a7b7d5f3560b9925d75158310bcba76943f1d683a703686ec80。517项515PASS/0FAIL/2原有SKIP、正式Electron worker30PASS、界面重开、最终包官方冷/热及便携三场景通过。Forge/NeoForge各两次主菜单、FerriteCore和退出0；Fabric基本菜单/重开/退出0但测试Mod下载失败；Quilt安装/重试和原版新装受网络失败阻塞。公共Mod窗口公网安装成功及全断电矩阵未验收。新增三点真实进程中断安全阻断测试，不等同自动恢复。统一报告根docs/validation/FINAL-0.3.0-20261028/REPORT.md；完整实机验收仍开放，不push。
