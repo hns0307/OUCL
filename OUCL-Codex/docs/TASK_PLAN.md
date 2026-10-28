@@ -497,3 +497,9 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 
 
 2026-10-28最终整合交付：0.3全部既有增量保持，正式EXE release/OUCL-0.3.0-final.exe 363008字节，SHA256 3a63f5d7aaff7a7b7d5f3560b9925d75158310bcba76943f1d683a703686ec80。517项515PASS/0FAIL/2原有SKIP、正式Electron worker30PASS、界面重开、最终包官方冷/热及便携三场景通过。Forge/NeoForge各两次主菜单、FerriteCore和退出0；Fabric基本菜单/重开/退出0但测试Mod下载失败；Quilt安装/重试和原版新装受网络失败阻塞。公共Mod窗口公网安装成功及全断电矩阵未验收。新增三点真实进程中断安全阻断测试，不等同自动恢复。统一报告根docs/validation/FINAL-0.3.0-20261028/REPORT.md；完整实机验收仍开放，不push。
+
+
+2026-10-28网络失败修复授权：用户要求修复下载网络失败，允许大量参考甚至照用MC_start下X-CL/XMCL、KAMUCL；覆盖此前仅借鉴不复制的限制，但具体第三方内容仍核对许可。本轮G2先实现同一可信地址有界重试/可取消退避与持久前缀恢复，无新依赖、公开契约或存储格式；不降低HTTPS/官方摘要/镜像白名单。系统网络差异探测与联网验证仅独立测试根，待证据，不预记通过。
+
+
+2026-10-28网络失败修复交付：在用户明确允许参考/照用X-CL/XMCL、KAMUCL范围内，独立实现有界退避、持久前缀续传/同镜像保持、永久HTTP错误分类、Maven校验摘要与HEAD独立预算。完整Quilt复验进一步触发Electron内置Undici Parser.finish assert(!this.paused)致命断言，因此桌面main显式注入Electron net.request一跳流，保持HTTPS/证书/无会话Cookie/跳转白名单，未加依赖或公开契约/存储字段。528项526PASS/0FAIL/2原有SKIP，正式main/窗口两轮及加载器选择、最终EXE便携和官方冷/热通过。Fabric/Quilt官方依赖证明、FerriteCore下载通过；Quilt742454177字节计划、3652项物化、ready提交及禁网重开启动准备实际通过（复制并重新验证历史对象缓存，不冒充全部冷下载）。旧崩溃锁/数据原样保留，未补记游戏菜单矩阵。交付release/OUCL-0.3.0-network-fix.exe，364544字节，SHA256 04d8ddd7062c03e71e320e60b35f4b60105727568d441bb26930156ebf800e7b；仅重试候选另保留，统一证据docs/validation/NETWORK-FIX-20261028/REPORT.md。不push。

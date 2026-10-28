@@ -1,0 +1,16 @@
+
+[10820:1028/222738.837:ERROR:net\disk_cache\cache_util_win.cc:25] Unable to move the cache: 拒绝访问。 (0x5)
+[10820:1028/222738.837:ERROR:net\disk_cache\cache_util_win.cc:25] Unable to move the cache: 操作成功完成。 (0x0)
+[10820:1028/222738.838:ERROR:net\disk_cache\disk_cache.cc:293] Unable to create cache
+[10820:1028/222738.838:ERROR:gpu\ipc\host\gpu_disk_cache.cc:737] Gpu Cache Creation failed: -2
+[10820:1028/222738.838:ERROR:net\disk_cache\disk_cache.cc:293] Unable to create cache
+[10820:1028/222738.838:ERROR:gpu\ipc\host\gpu_disk_cache.cc:737] Gpu Cache Creation failed: -2
+INTERACTION_PASS_1
+
+[6912:1028/222741.817:ERROR:net\disk_cache\cache_util_win.cc:25] Unable to move the cache: 拒绝访问。 (0x5)
+[6912:1028/222741.817:ERROR:net\disk_cache\cache_util_win.cc:25] Unable to move the cache: 拒绝访问。 (0x5)
+[6912:1028/222741.852:ERROR:net\disk_cache\disk_cache.cc:293] Unable to create cache
+[6912:1028/222741.852:ERROR:gpu\ipc\host\gpu_disk_cache.cc:737] Gpu Cache Creation failed: -2
+[6912:1028/222741.852:ERROR:net\disk_cache\disk_cache.cc:293] Unable to create cache
+[6912:1028/222741.852:ERROR:gpu\ipc\host\gpu_disk_cache.cc:737] Gpu Cache Creation failed: -2
+INTERACTION_PASS_2

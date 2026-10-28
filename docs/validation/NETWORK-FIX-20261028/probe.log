@@ -1,0 +1,7 @@
+
+{"host":"meta.fabricmc.net","kind":"node","proxyConfigured":false,"code":"UND_ERR_CONNECT_TIMEOUT"}
+{"host":"meta.fabricmc.net","kind":"system","proxyConfigured":false,"code":23}
+{"host":"meta.quiltmc.org","kind":"node","proxyConfigured":false,"status":200,"bytes":1502}
+{"host":"meta.quiltmc.org","kind":"system","proxyConfigured":false,"status":200,"bytes":1502}
+{"host":"maven.fabricmc.net","kind":"node","proxyConfigured":false,"code":"UND_ERR_CONNECT_TIMEOUT"}
+{"host":"maven.fabricmc.net","kind":"system","proxyConfigured":false,"code":"ERR_STREAM_PREMATURE_CLOSE"}

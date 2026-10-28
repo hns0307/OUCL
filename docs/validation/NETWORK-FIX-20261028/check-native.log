@@ -1,0 +1,12 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+
+D:\MC_start\OUCL\scripts\electron-network-fixture.cjs
+  7:64   error  'AbortController' is not defined  no-undef
+  7:103  error  'Headers' is not defined          no-undef
+
+✖ 2 problems (2 errors, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.
+[ELIFECYCLE] Command failed with exit code 1.
