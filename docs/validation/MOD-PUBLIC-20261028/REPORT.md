@@ -12,3 +12,5 @@
 UI验收首轮在重载暂未挂载元素时直接访问dataset导致测试表达式抛错，另补充夹具instances:list响应；修正等待后通过。不是产品安装成功证据，不掩盖失败或增加公网测试。
 
 边界：本轮没有真实MC菜单/测试Mod/退出重启矩阵、全量断电/kill、未来签名分发适配器验证；完整原计划仍有验收缺项，不停用自动化。旧EXE和原始zip/txt/stash保留，不push。
+
+交付增量：source0084b08构建release/OUCL-0.3.0-mod-install.exe，363008字节，SHA256 ed97b39bcc3781537848cc7c4feaacbae59ee32ef63baabb6d8b3dba41b03ea5。本地预置固定Electron的真实EXE三场景PASS：首次创建同级OUCL.games/profile、重开保持根身份、同名阻塞文件保留及排除后重试。见../BOOTSTRAP-0.3.0-mod-install/package.json与portable.json；没有公网冷启动/真实MC验证。

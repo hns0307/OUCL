@@ -399,3 +399,5 @@ initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务�
 最终pnpm check513/511PASS/0FAIL/2既有SKIP，正式Electron worker29测试PASS；主入口本地fixture44方法/16能力PASS；真实UI夹具验证取消、确认未知失败不提交、重载同任务、stale及窄窗PASS，订阅fixture明确使用getTask回退；真实准备/下载/JAR/事务成功在服务层测试，不冒充窗口成功。bootstrap26、licenses128无待审通过。报告docs/validation/MOD-PUBLIC-20261028/与MOD_PUBLIC_INSTALL.md，旧失败TAP保留。
 
 下一步：生成保留旧文件的0.3.0-mod-install EXE，本地预置Electron的portable三场景实测，再合并main与交付链接。尚缺真实四加载器运行矩阵（用户要求跳过联网/游戏）、完整断电矩阵及DistributionSource/签名分发契约适配器（搜索src未找到，不能标完成）。完整目标未结束，自动化保持。不要回退旧16d1ca7；不push，原zip/txt/stash与旧release保留。
+
+公共Mod功能已提交0084b08，生成release/OUCL-0.3.0-mod-install.exe（363008B，SHA256 ed97b39bcc3781537848cc7c4feaacbae59ee32ef63baabb6d8b3dba41b03ea5），真实EXE本地预置Electron三场景通过；docs/validation/BOOTSTRAP-0.3.0-mod-install/保留包与portable证据。旧EXE保持。下一补原批准DistributionSource/签名分发清单契约与测试适配器（只接口/本地夹具，不接后台），然后同步main/最终交接；不把四加载器实机缺项关闭。
