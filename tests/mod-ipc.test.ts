@@ -41,6 +41,23 @@ test('Mod IPC preserves idempotency identities and report/task channel shapes', 
   assert.ok(isModResult(planned, id, 'mods:plan')); assert.deepEqual(planned.ok && planned.data.plan, plan); assert.deepEqual(calls.at(-1), planPayload);
 });
 
+test('confirmation IPC requires explicit exact consent and returns only stable task references', async () => {
+  const calls: unknown[] = [];
+  const dispatch = modDispatcher({ start: async () => ({ taskId: trace }), report: async () => ({ report: null, errorCode: null }) }, undefined, undefined, {
+    confirm: async value => { calls.push(value); return { taskId: trace }; }, state: async () => ({ task: null, errorCode: null, assessment: null }),
+  });
+  const payload = { planRequestId: id, planId: 'a'.repeat(64), confirmed: true };
+  const admitted = await handleMods('mods:confirm', { ...input, payload }, true, trace, dispatch);
+  assert.equal(admitted.ok && admitted.data.taskId, trace); assert.deepEqual(calls, [payload]);
+  for (const invalid of [{ ...payload, confirmed: false }, { ...payload, path: 'private' }, { ...payload, confirmed: undefined }]) {
+    const result = await handleMods('mods:confirm', { ...input, payload: invalid }, true, trace, dispatch);
+    assert.equal(result.ok, false);
+  }
+  assert.equal(calls.length, 1);
+  const state = await handleMods('mods:installState', { ...input, payload: { planRequestId: id } }, true, trace, dispatch);
+  assert.ok(isModResult(state, id, 'mods:installState')); assert.deepEqual(state.ok && state.data, { task: null, errorCode: null, assessment: null });
+});
+
 test('Mod plan contract rejects paths, arbitrary selections and malformed plan evidence', async () => {
   const payload = { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'c'.repeat(40) }, selections: {} };
   for (const bad of [{ ...payload, path: 'C:\\private' }, { ...payload, selections: { '../bad': 'DepVers1' } },

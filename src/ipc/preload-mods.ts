@@ -18,5 +18,6 @@ async function request<C extends ModChannel>(channel: C, payload: ModPayloads[C]
 export function createModsBridge(): ModsBridge {
   return { listMods: (id, input) => request('mods:list', input, id), checkMods: (id, input) => request('mods:check', input, id),
     modReport: taskId => request('mods:report', { taskId }), planMod: (id, input) => request('mods:plan', input, id),
-    getModPlan: planRequestId => request('mods:planState', { planRequestId }), cancelModPlan: (id, input) => request('mods:cancelPlan', input, id) };
+    getModPlan: planRequestId => request('mods:planState', { planRequestId }), cancelModPlan: (id, input) => request('mods:cancelPlan', input, id),
+    confirmModPlan: (id, input) => request('mods:confirm', input, id), modInstallState: planRequestId => request('mods:installState', { planRequestId }) };
 }

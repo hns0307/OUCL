@@ -4,6 +4,8 @@ import type { ModChannel, ModData, ModDispatcher, ModPayloads, ModResult } from 
 import type { ModTaskService } from '../services/mods/tasks.js';
 import type { ModInstallPlanner } from '../services/mods/planner.js';
 import type { ModPlanService } from '../services/mods/plans.js';
+import type { ModInstallTaskService } from '../services/mods/install-tasks.js';
+import { isModCode } from '../shared/contracts/mods.js';
 
 /** Checks the sender and exact envelope before dispatch, then validates every public result. */
 export async function handleMods<C extends ModChannel>(channel: C, input: unknown, trusted: boolean, traceId: string,
@@ -23,10 +25,15 @@ export async function handleMods<C extends ModChannel>(channel: C, input: unknow
 
 /** Resolves only controlled instance/task identities; list and check share durable task admission. */
 export function modDispatcher(service: Pick<ModTaskService, 'start' | 'report'>, planner?: Pick<ModInstallPlanner, 'plan'>,
-  plans?: Pick<ModPlanService, 'create' | 'get' | 'cancel'>): ModDispatcher {
+  plans?: Pick<ModPlanService, 'create' | 'get' | 'cancel'>, installs?: Pick<ModInstallTaskService, 'confirm' | 'state'>): ModDispatcher {
   return async <C extends ModChannel>(channel: C, payload: ModPayloads[C], requestId: string): Promise<ModData[C]> => {
     let data: ModData[ModChannel];
-    if (channel === 'mods:report' && isModPayload(payload, 'mods:report')) data = await service.report(payload.taskId);
+    if (channel === 'mods:confirm' && isModPayload(payload, 'mods:confirm') && installs) {
+      try { data = await installs.confirm(payload); }
+      catch (error) { throw new ModContractError(typeof error === 'object' && error !== null && 'code' in error && isModCode(error.code) ? error.code : 'NEEDS_RECOVERY'); }
+    }
+    else if (channel === 'mods:installState' && isModPayload(payload, 'mods:installState') && installs) data = await installs.state(payload.planRequestId);
+    else if (channel === 'mods:report' && isModPayload(payload, 'mods:report')) data = await service.report(payload.taskId);
     else if (channel === 'mods:plan' && isModPayload(payload, 'mods:plan') && plans) data = { plan: await plans.create(requestId, payload) };
     else if (channel === 'mods:plan' && isModPayload(payload, 'mods:plan') && planner) data = { plan: await planner.plan(payload) };
     else if (channel === 'mods:planState' && isModPayload(payload, 'mods:planState') && plans) data = await plans.get(payload.planRequestId);

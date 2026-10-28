@@ -4,6 +4,10 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { isModCode, ModContractError } from '../../shared/contracts/mods.js';
 import type { ModCode } from '../../shared/contracts/mods.js';
 import type { ModReport } from '../../shared/contracts/mods-report.js';
+import type { ModInstallationState } from '../../shared/contracts/mods.js';
+import type { InstanceData, TaskSnapshot } from '../../shared/contracts/instances.js';
+import { instanceFailure } from '../../shared/contracts/instances.js';
+import { randomUUID } from 'node:crypto';
 import type { StoredTask } from '../storage/tasks.js';
 import type { ModTransaction } from '../storage/mod-transactions.js';
 import type { StorageClient } from '../workers/storage-client.js';
@@ -165,7 +169,46 @@ export class ModInstallTaskService {
     if (!UUID_PATTERN.test(taskId)) throw new ModContractError('INVALID_ARGUMENT');
     const root = await this.root(); const task = await this.storage.get(root, taskId.toLowerCase());
     if (!task || task.kind !== 'mod-install') return undefined;
-    return this.lost.has(task.taskId) ? { ...task, execution: { ...task.execution, state: 'needsRecovery' } } : task;
+    return this.lost.has(task.taskId) ? { ...task, execution: { ...task.execution, state: 'needsRecovery', revision: task.execution.revision + 1 } } : task;
+  }
+  /** Public projection contains no object references, paths, tool arguments or private source metadata. */
+  async taskView(root: string, taskId: string): Promise<InstanceData['tasks:get'] | undefined> {
+    if (root !== await this.root()) throw new ModContractError('ROOT_UNAVAILABLE');
+    const task = await this.get(taskId); if (!task) return undefined;
+    const state = task.execution.state;
+    const stage = terminal(task) ? state as TaskSnapshot['stage'] : state === 'queued' ? 'queued'
+      : state === 'committing' ? 'committing' : state === 'running' ? 'downloading' : 'preparing';
+    const snapshot: TaskSnapshot = { taskId: task.taskId, kind: 'mod-install', state, stage,
+      revision: task.execution.revision, bytesDone: task.execution.bytesDone,
+      ...(task.execution.bytesTotal === undefined ? {} : { bytesTotal: task.execution.bytesTotal }) };
+    if (state === 'failed' || state === 'needsRecovery') {
+      const failed = instanceFailure(randomUUID(), state === 'needsRecovery' ? 'NEEDS_RECOVERY' : 'INSTALL_FAILED', randomUUID());
+      if (!failed.ok) snapshot.error = failed.error;
+    }
+    return { snapshot };
+  }
+  async list(root: string): Promise<TaskSnapshot[]> {
+    if (root !== await this.root()) throw new ModContractError('ROOT_UNAVAILABLE');
+    const snapshots: TaskSnapshot[] = [];
+    for (const accepted of await this.storage.readModConfirmations()) {
+      const view = await this.taskView(root, accepted.task.taskId); if (view) snapshots.push(view.snapshot);
+    }
+    return snapshots;
+  }
+  async state(planRequestId: string): Promise<ModInstallationState> {
+    if (!UUID_PATTERN.test(planRequestId)) throw new ModContractError('INVALID_ARGUMENT');
+    const root = await this.root(); const id = planRequestId.toLowerCase();
+    const plan = await this.storage.readModPlan(id);
+    if (!plan || plan.data.rootId !== root || plan.data.requestId !== id) throw new ModContractError('NOT_FOUND');
+    const accepted = (await this.storage.readModConfirmations()).find(item => item.planRequestId === id);
+    if (!accepted) return { task: null, errorCode: null, assessment: null };
+    const view = await this.taskView(root, accepted.task.taskId); if (!view) throw new ModContractError('NEEDS_RECOVERY');
+    const result = await this.storage.readModResult(accepted.task.taskId);
+    if (result && (result.data.rootId !== root || result.data.taskId !== accepted.task.taskId || result.data.planRequestId !== id
+      || result.data.planId !== plan.data.plan.planId || result.data.instanceId !== plan.data.plan.instanceId
+      || result.data.instanceRevision !== plan.data.plan.instanceRevision)) throw new ModContractError('NEEDS_RECOVERY');
+    return { task: view.snapshot, errorCode: view.snapshot.state === 'needsRecovery' ? 'NEEDS_RECOVERY' : result?.data.errorCode ?? null,
+      assessment: result?.data.assessment ?? null };
   }
   async cancel(taskId: string): Promise<void> {
     const task = await this.get(taskId); if (!task) throw new ModContractError('TASK_NOT_FOUND');

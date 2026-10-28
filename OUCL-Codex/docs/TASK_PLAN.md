@@ -479,3 +479,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 ## 45. 2026-10-28 安装结果WIP与额度暂停
 
 固定mod-result记录/worker/执行器写入已在工作分支推进，但新增检查证据测试仍失败NEEDS_RECOVERY，完整检查未通过；不得视为完成或合并main。见docs/validation/MOD-RESULTS-20261028/REPORT.md。额度5小时91%已用、resetsAt=1793148801，暂停等待实际重置，恢复时先修复该测试和清理保证，再完整验证。上次已验证主分支仍1edbc41。
+
+## 46. 2026-10-28 Mod公共确认与任务界面
+
+从最新78bb260保留桌面/论坛改动继续；旧报告失败已dfff42b修复。mods:confirm/installState、mod-install任务列表/控制/订阅投影、main真实准备/事务装配及资源库确认界面已接通。计划UUID幂等、接纳后走任务取消、提交后拒绝取消；刷新恢复原任务，结果保存原修订证据。完整513项/511PASS/0FAIL/2既有SKIP，Electron正式worker29项通过，真实组件确认/拒绝/重载失败报告及正式入口44方法/16能力通过。证据docs/validation/MOD-PUBLIC-20261028/。下一生成保留旧交付物的0.3.0更新EXE并本地预置运行时验证；真实四加载器运行矩阵、断电全矩阵及未来分发适配器未补写通过。

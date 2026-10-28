@@ -387,3 +387,15 @@ initialize以readModConfirmations枚举，交叉核对mod-txn绑定；有事务�
 已停止本轮运行会话（全套4106、runtime44814已Ctrl-C退出；旧69264/57564亦已停止），没有游戏进程操作。原始zip/txt/stash及旧EXE保留，不push。
 
 **额度等待已开始**：get_usage_limits五小时91%使用，resetsAt=1793148801；周89%使用，resetsAt=1793601420。下一心跳先核对实际窗口重置及所有可用窗口剩余>=20%，未满足安静等待、不开发。满足后先修复此WIP再续公共确认/结果查询/任务快照/main装配/UI；不得回退丢弃当前代码，也不得把WIP当完整目标交付。
+
+## 最新检查点：Mod公共确认/结果/任务接入（2026-10-28）
+
+额度已实际重置（5小时1%、周0%）后从最新78bb260继续；发现另一批准UI增量已dfff42b修复旧失败（空库存问题fileId和状态不一致），本轮保留所有desktop/论坛改动，不重复修复。当前主线main历史仍待合并，工作分支mod_loaders。
+
+增加mods:confirm(显式confirmed:true+planRequestId/planId)->taskId、mods:installState(planRequestId)->ModInstallationState(task/errorCode/assessment)。Storage/结果格式不变。私有install-tasks新增state/list/taskView严格复核根/plan/task/result关联；公开mod-install快照进入现有列表/get/订阅/取消；main装配真实preparation/transaction/任务服务，关闭先等待安装执行器。cancel通过公共InstanceContractError映射，提交后CANCEL_TOO_LATE。lost状态用递增投影revision；InstallTask接收新initial快照以显示未知恢复状态。
+
+资源库ModInstallConfirmation明示确认、查询进度/失败证据，结果轮询和原UUID恢复，确认后隐藏cancelPlan，走原任务取消。原实例revision更新后仍能展示已接纳历史结果，但不能重放旧计划；新的计划需再次生成。items增加projectId/versionId展示。无新依赖/远程服务/用户数据迁移。
+
+最终pnpm check513/511PASS/0FAIL/2既有SKIP，正式Electron worker29测试PASS；主入口本地fixture44方法/16能力PASS；真实UI夹具验证取消、确认未知失败不提交、重载同任务、stale及窄窗PASS，订阅fixture明确使用getTask回退；真实准备/下载/JAR/事务成功在服务层测试，不冒充窗口成功。bootstrap26、licenses128无待审通过。报告docs/validation/MOD-PUBLIC-20261028/与MOD_PUBLIC_INSTALL.md，旧失败TAP保留。
+
+下一步：生成保留旧文件的0.3.0-mod-install EXE，本地预置Electron的portable三场景实测，再合并main与交付链接。尚缺真实四加载器运行矩阵（用户要求跳过联网/游戏）、完整断电矩阵及DistributionSource/签名分发契约适配器（搜索src未找到，不能标完成）。完整目标未结束，自动化保持。不要回退旧16d1ca7；不push，原zip/txt/stash与旧release保留。

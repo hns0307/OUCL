@@ -9,12 +9,13 @@ import { resourceFailure } from '../shared/contracts/resources.js';
 import { useLauncher } from './launcher-state.js';
 import { InstallTask } from './InstallPanel.js';
 import { UUID_PATTERN } from '../shared/contracts/handshake.js';
+import { ModInstallConfirmation } from './ModInstallConfirmation.js';
 
 const size = (bytes: number): string => bytes < 1024 ? `${bytes} B` : bytes < 1024 ** 2 ? `${(bytes / 1024).toFixed(1)} KiB` : `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
 function rememberPlan(key: string, requestId?: string): void {
   try { if (requestId) localStorage.setItem(key, requestId); else localStorage.removeItem(key); } catch { /* Browser storage is optional; the durable plan remains in the main process. */ }
 }
-/** Real Modrinth browsing and verified library downloads. No loader or instance installation is implied. */
+/** Verified library downloads and explicit, durable Mod installation plans for the selected instance. */
 export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, instance }: {
   enabled: boolean; kind: ResourceKind; libraryOnly: boolean; modPlansEnabled: boolean; instance?: InstanceSummary;
 }) {
@@ -31,22 +32,27 @@ export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, i
   const [error, setError] = useState<MessageKey>(); const [libraryError, setLibraryError] = useState<MessageKey>();
   const [plan, setPlan] = useState<ModInstallPlan>(); const [planning, setPlanning] = useState<string>(); const [planError, setPlanError] = useState<MessageKey>();
   const [planRequestId, setPlanRequestId] = useState<string>(); const [planCancelled, setPlanCancelled] = useState(false); const [cancelling, setCancelling] = useState(false);
+  const [installationAccepted, setInstallationAccepted] = useState(false);
   const activePlanRequest = useRef<string | undefined>(undefined);
   const requests = useRef(new Map<string, string>());
   const planPointer = `oucl.mod-plan:${rootId}:${instance?.instanceId}`;
   useEffect(() => {
     setPlan(undefined); setPlanError(undefined); setPlanning(undefined); setPlanRequestId(undefined); setPlanCancelled(false); setCancelling(false);
-    activePlanRequest.current = undefined;
+    activePlanRequest.current = undefined; setInstallationAccepted(false);
     if (!rootId || !modPlansEnabled || !instance || instance.state !== 'ready' || !window.oucl) return;
     let requestId: string | null;
     try { requestId = localStorage.getItem(planPointer); } catch { return; }
     if (!requestId || !UUID_PATTERN.test(requestId)) return;
     let active = true; const selectedRequest = requestId; activePlanRequest.current = selectedRequest; setPlanning('restore');
-    void window.oucl.getModPlan(selectedRequest).then(result => {
+    void window.oucl.getModPlan(selectedRequest).then(async result => {
       if (!active || activePlanRequest.current !== selectedRequest) return;
       if (result.ok) {
         if (result.data.status === 'cancelled') { rememberPlan(planPointer); return; }
-        if (result.data.plan.instanceId !== instance.instanceId || result.data.plan.instanceRevision !== instance.revision) {
+        const installation = await window.oucl!.modInstallState(selectedRequest);
+        if (!active || activePlanRequest.current !== selectedRequest) return;
+        if (!installation.ok) { setPlanError(installation.error.messageKey); return; }
+        setInstallationAccepted(installation.data.task !== null);
+        if (result.data.plan.instanceId !== instance.instanceId || result.data.plan.instanceRevision !== instance.revision && !installation.data.task) {
           rememberPlan(planPointer); setPlanError('modsStale'); return;
         }
         setPlan(result.data.plan); setPlanRequestId(selectedRequest);
@@ -91,7 +97,7 @@ export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, i
     const key = `plan:${instance.instanceId}:${instance.revision}:${item.projectId}:${item.versionId}:${item.fileId}`;
     const requestId = requests.current.get(key) ?? crypto.randomUUID(); requests.current.set(key, requestId);
     activePlanRequest.current = requestId;
-    setPlanning(item.taskId); setPlanError(undefined); setPlan(undefined); setPlanRequestId(undefined); setPlanCancelled(false);
+    setPlanning(item.taskId); setPlanError(undefined); setPlan(undefined); setPlanRequestId(undefined); setPlanCancelled(false); setInstallationAccepted(false);
     try {
       const result = await window.oucl.planMod(requestId, { instanceId: instance.instanceId, expectedRevision: instance.revision,
         root: { projectId: item.projectId, versionId: item.versionId, fileId: item.fileId }, selections: {} });
@@ -159,10 +165,10 @@ export function ResourceBrowser({ enabled, kind, libraryOnly, modPlansEnabled, i
           {plan?.rootVersionId === item.versionId && plan.instanceId === instance?.instanceId && <div className="mod-plan-preview" data-plan-state={plan.state}>
             <strong>{planCancelled ? MESSAGES.modsPlanCancelled : plan.state === 'ready' ? MESSAGES.modsPlanReady : plan.state === 'conflict' ? MESSAGES.modsPlanConflict : MESSAGES.modsPlanUnknown}</strong>
             <p>{MESSAGES.modsPlanFiles}: {plan.items.length} · {MESSAGES.modsPlanDownload}: {size(plan.totalDownloadBytes)}</p>
-            <ul>{plan.items.map(file => <li key={file.projectId}><strong>{file.filename}</strong> · Modrinth · {size(file.size)} · {file.disposition === 'reuse' ? MESSAGES.modsPlanReuse : file.disposition === 'library' ? MESSAGES.uiDownloaded : MESSAGES.modsPlanDownload}
+            <ul>{plan.items.map(file => <li key={file.projectId}><strong>{file.filename}</strong> · Modrinth · {file.projectId} / {file.versionId} · {size(file.size)} · {file.disposition === 'reuse' ? MESSAGES.modsPlanReuse : file.disposition === 'library' ? MESSAGES.uiDownloaded : MESSAGES.modsPlanDownload}
               {file.requiredBy.length > 0 && <p className="muted small">{MESSAGES.modsRequiredBy}: {file.requiredBy.map(id => plan.items.find(parent => parent.projectId === id)?.filename ?? id).join(' · ')}</p>}</li>)}</ul>
-            <p className="muted small">{MESSAGES.modsPlanPreviewOnly}</p>
-            {!planCancelled && planRequestId && <button className="secondary" disabled={cancelling || !!planning} onClick={() => { void cancelPlan(); }}>{cancelling ? MESSAGES.uiSubmitting : MESSAGES.modsPlanCancel}</button>}
+            {!planCancelled && planRequestId && <ModInstallConfirmation key={planRequestId} plan={plan} planRequestId={planRequestId} onAccepted={setInstallationAccepted} onRefresh={refreshGame} />}
+            {!planCancelled && !installationAccepted && planRequestId && <button className="secondary" disabled={cancelling || !!planning} onClick={() => { void cancelPlan(); }}>{cancelling ? MESSAGES.uiSubmitting : MESSAGES.modsPlanCancel}</button>}
           </div>}
         </article>;
       })}

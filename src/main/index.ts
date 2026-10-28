@@ -66,6 +66,9 @@ import { ModrinthModClient } from '../services/mods/modrinth.js';
 import { ModLibraryReader } from '../services/mods/library.js';
 import { ModDependencyResolver } from '../services/mods/resolver.js';
 import { ModInstallPlanner } from '../services/mods/planner.js';
+import { ModInstallPreparation } from '../services/mods/preparation.js';
+import { ModTransactionService } from '../services/mods/transaction.js';
+import { ModInstallTaskService } from '../services/mods/install-tasks.js';
 import { ModPlanService } from '../services/mods/plans.js';
 import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
 import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
@@ -86,6 +89,7 @@ let loaders: LoaderService | undefined;
 let mods: ModTaskService | undefined;
 let modPlanner: ModInstallPlanner | undefined;
 let modPlans: ModPlanService | undefined;
+let modInstalls: ModInstallTaskService | undefined;
 let instanceFolders: InstanceFolderService | undefined;
 let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
@@ -169,12 +173,21 @@ else void app.whenReady().then(async () => {
       modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
       modPlans = new ModPlanService(storage, modPlanner);
       await modTasks.initialize(); mods = modTasks;
+      const preparation = new ModInstallPreparation(storage, { planner: modPlanner, library: new ModLibraryReader(storage, scanner, platform),
+        inspections, inventory, context, platform, transfer: service, scanner });
+      const installations = new ModInstallTaskService(storage, preparation, new ModTransactionService(storage, { context, inventory, scanner }));
+      await installations.initialize(); modInstalls = installations;
     } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
-    const resourceTasks = resources; const games = gameAdapter; const modTasks = mods;
+    const resourceTasks = resources; const games = gameAdapter; const modTasks = mods; const installations = modInstalls;
     installerAdapter = new InstallerAdapter(service, storage, {
-      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id),
-      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : [])],
-      cancel: async (root, id) => { if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
+      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id) ?? await installations?.taskView(root, id),
+      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : []), ...(installations ? await installations.list(root) : [])],
+      cancel: async (root, id) => { if (installations && await installations.taskView(root, id)) {
+        try { await installations.cancel(id); }
+        catch (error) { throw new InstanceContractError(error instanceof ModContractError && error.code === 'CANCEL_TOO_LATE' ? 'CANCEL_TOO_LATE'
+          : error instanceof ModContractError && error.code === 'NEEDS_RECOVERY' ? 'NEEDS_RECOVERY' : 'INVALID_TASK_STATE'); }
+      }
+        else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
@@ -194,7 +207,7 @@ else void app.whenReady().then(async () => {
   });
   for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
-    return modDispatcher(mods, modPlanner, modPlans)(selected, payload, requestId);
+    return modDispatcher(mods, modPlanner, modPlans, modInstalls)(selected, payload, requestId);
   }));
   ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
     const registered = await storage?.readInstallation();
@@ -286,7 +299,7 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
-    installerAdapter?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    installerAdapter?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });
 

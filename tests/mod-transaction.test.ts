@@ -112,6 +112,10 @@ test('confirmed executor joins duplicate requests and commits real files once wi
     await service.initialize(); const accepted = await service.confirm(confirmation(f));
     assert.equal((await service.confirm(confirmation(f))).taskId, accepted.taskId);
     const task = await finished(service, accepted.taskId); assert.equal(task.execution.state, 'completed');
+    const publicState = await service.state(f.prepared.planRequestId);
+    assert.equal(publicState.task!.kind, 'mod-install'); assert.equal(publicState.task!.state, 'completed');
+    assert.equal(publicState.errorCode, null); assert.equal(JSON.stringify(publicState).includes(f.games), false);
+    assert.equal((await service.list(rootId))[0]!.taskId, accepted.taskId);
     assert.equal(task.execution.bytesDone, 5); assert.equal(preparations, 1);
     assert.equal((await f.storage().readInstance(instanceId))!.data.modCommitId, accepted.taskId);
     assert.equal((await f.storage().readModResult(accepted.taskId))!.data.state, 'completed');

@@ -15,6 +15,9 @@ function bytes(value: number): string {
 }
 function terminal(snapshot: TaskSnapshot): boolean { return ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(snapshot.state); }
 function taskLabel(snapshot: TaskSnapshot): MessageKey {
+  if (snapshot.kind === 'mod-install') return snapshot.state === 'completed' ? 'modsInstalled'
+    : snapshot.state === 'failed' ? 'modsInstallFailed' : snapshot.state === 'cancelled' ? 'modsInstallCancelled'
+      : snapshot.state === 'needsRecovery' ? 'modsInstallRecovery' : 'modsInstalling';
   if (snapshot.kind !== 'mod-check') return STAGE_MESSAGES[snapshot.stage];
   return snapshot.state === 'completed' ? 'modsCheckCompleted' : snapshot.state === 'failed' ? 'modsCheckFailed'
     : snapshot.state === 'cancelled' ? 'modsCheckCancelled' : snapshot.state === 'needsRecovery' ? 'modsCheckRecovery' : 'modsChecking';
@@ -22,6 +25,7 @@ function taskLabel(snapshot: TaskSnapshot): MessageKey {
 
 export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled: (snapshot: TaskSnapshot) => void }) {
   const [snapshot, setSnapshot] = useState(initial); const [error, setError] = useState<MessageKey>(); const [cancelling, setCancelling] = useState(false);
+  useEffect(() => { setSnapshot(current => initial.revision > current.revision ? initial : current); }, [initial]);
   useEffect(() => {
     if (!window.oucl) return; let active = true; let dispose: (() => void) | undefined; let timer: ReturnType<typeof setInterval> | undefined;
     const bridge = window.oucl;
