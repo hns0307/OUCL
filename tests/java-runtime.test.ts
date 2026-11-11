@@ -38,3 +38,21 @@ test('cancelled or unsupported Java never downloads or registers', async () => {
   await assert.rejects(service.ensure(25, java.javaId, new AbortController().signal), { code: 'JAVA_INCOMPATIBLE' });
   await assert.rejects(service.ensure(17, java.javaId, AbortSignal.abort()), { code: 'CANCELLED' });
 });
+
+test('inspection and runtime share selected-candidate priority and measurement budget; registration cannot substitute a patch', async () => {
+  const { InstalledJavaFacts } = await import('../src/services/mods/java-facts.js');
+  const selected = { ...java, version: '17.0.1' }; const fallback = { ...java, javaId: '00000000-0000-4000-8000-000000000002', executable: 'D:\\fallback\\java.exe' };
+  const saved = { javas: [fallback, selected], selectedJavaId: selected.javaId, accounts: [], requests: [] };
+  const calls: Array<{ file: string; timeout: number | undefined }> = [];
+  const probe = new JavaProbe();
+  probe.probe = async (file, options) => { calls.push({ file, timeout: options?.timeoutMs }); return { ...selected, architecture: 'x64', os: 'windows' }; };
+  const facts = new InstalledJavaFacts({ list: async () => saved }, probe);
+  const service = new JavaRuntimeService({ list: async () => saved, registerJava: async () => selected },
+    { prepareJava: async () => { throw new Error('UNEXPECTED'); } }, { read: async () => { throw new Error('UNEXPECTED_NETWORK'); } }, probe, {});
+  assert.equal(await facts.read(17), selected.version);
+  assert.equal((await service.ensure(17, java.javaId, new AbortController().signal)).version, selected.version);
+  assert.deepEqual(calls, [{ file: selected.executable, timeout: 8000 }, { file: selected.executable, timeout: 8000 }]);
+  const changed = new JavaRuntimeService({ list: async () => saved, registerJava: async () => fallback },
+    { prepareJava: async () => { throw new Error('UNEXPECTED'); } }, { read: async () => { throw new Error('UNEXPECTED_NETWORK'); } }, probe, {});
+  await assert.rejects(changed.ensure(17, java.javaId, new AbortController().signal), { code: 'JAVA_INCOMPATIBLE' });
+});

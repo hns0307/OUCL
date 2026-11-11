@@ -24,6 +24,7 @@ export function artifactProofKey(value: Pick<DownloadArtifact, 'url' | 'sha1'>):
 function component(value: string): string {
   try { return validateComponent(value); } catch { throw new InstallPlanError('INVALID_INSTALL_PATH'); }
 }
+
 function coordinate(name: string, overrideClassifier?: string): { path: string; classifier: string } {
   if (!/^[\w.-]+:[\w.-]+:[\w.+-]+(?::[\w.+-]+)?(?:@[\w.-]+)?$/.test(name) || name.length > 256) throw new InstallPlanError('INVALID_LIBRARY');
   const [body = '', extension = 'jar'] = name.split('@');

@@ -34,7 +34,7 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
       void (async () => {
         const result = await bridge.getTask(taskId);
         if (result.ok && result.data.result && 'sessionId' in result.data.result) { const state = await bridge.getSession(result.data.result.sessionId); if (active && state.ok) setLocal(state.data); }
-        if (active) { setError(snapshot.error?.messageKey ?? (snapshot.state === 'cancelled' ? 'stageCancelled' : undefined)); setPending(false); launchId.current = undefined; stopId.current = undefined; }
+        if (active) { setError(snapshot.error?.messageKey ?? (snapshot.state === 'cancelled' ? 'stageCancelled' : snapshot.state === 'needsRecovery' ? 'stageRecovery' : snapshot.state === 'failed' ? 'stageFailed' : undefined)); setPending(false); launchId.current = undefined; stopId.current = undefined; }
       })().catch(() => { if (active) { setPending(false); setError('unavailable'); } });
     };
     void bridge.subscribeTask(taskId, receive).then(subscription => {
@@ -59,8 +59,8 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
   return <div className="launch-controls" data-game-state={session?.state ?? 'idle'}>
     <button className="primary" disabled={pending || busy || !accountId} onClick={() => { void launch(); }}>{pending ? MESSAGES.launchPreparing : session?.state === 'running' ? MESSAGES.gameRunning : MESSAGES.launchGame}</button>
     {!accountId && <span className="storage-note">{MESSAGES.chooseAccountFirst}</span>}
-    {pending && !session && <p className="storage-note" role="status">{MESSAGES.javaAutoPreparing}</p>}
-    {session && <p role="status">{session.state === 'running' ? MESSAGES.gameRunning : session.state === 'stopping' ? MESSAGES.gameStopping : session.state === 'unknown' ? MESSAGES.gameUnknown : `${MESSAGES.gameExited}${session.exitCode === undefined ? '' : ` · ${MESSAGES.exitCode} ${session.exitCode}`}`}</p>}
+    {pending && (!session || session.state === 'exited') && <p className="storage-note" role="status">{MESSAGES.javaAutoPreparing}</p>}
+    {session && !(session.state === 'exited' && (pending || error)) && <p role="status">{session.state === 'running' ? MESSAGES.gameRunning : session.state === 'stopping' ? MESSAGES.gameStopping : session.state === 'unknown' ? MESSAGES.gameUnknown : `${MESSAGES.gameExited}${session.exitCode === undefined ? '' : ` · ${MESSAGES.exitCode} ${session.exitCode}`}`}</p>}
     {session?.state === 'running' && <><p className="storage-note">{MESSAGES.gameKeepAlive}</p><label className="force-confirm"><input type="checkbox" checked={confirmed} onChange={event => { setConfirmed(event.target.checked); }} />{MESSAGES.confirmForceStop}</label><button disabled={!confirmed || pending} onClick={() => { void stop(); }}>{MESSAGES.forceStop}</button></>}
     {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}
   </div>;

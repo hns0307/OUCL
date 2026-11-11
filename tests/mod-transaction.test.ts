@@ -32,6 +32,9 @@ import { assertModTransactionTransition, modTransactionRecordId, parseModTransac
 import type { ModTransaction } from '../src/services/storage/mod-transactions.js';
 import { ModArchiveError } from '../src/services/mods/archive.js';
 import { ModInstallTaskService } from '../src/services/mods/install-tasks.js';
+import { matchesLaunchProjection } from '../src/services/install/launch-inputs.js';
+import { isModData } from '../src/shared/contracts/mods.js';
+import { GameProcessService } from '../src/services/launch/process.js';
 
 const entry = process.env.OUCL_MOD_TXN_BUNDLED_WORKER === '1'
   ? pathToFileURL(path.resolve('dist/workers/entry.cjs')) : new URL('../src/services/workers/entry.js', import.meta.url);
@@ -95,6 +98,41 @@ async function fixture() {
 }
 async function noLease(game: string): Promise<void> { await assert.rejects(readFile(path.join(game, 'oucl.session.lock')), { code: 'ENOENT' }); }
 
+test('real Mod transaction and launch finalization exclude each other using the same gameDir lease', async () => {
+  const f = await fixture();
+  const java = { executable: 'D:\\Fixture\\java.exe', major: 17 as const, version: '17.0.16', vendor: 'fixture', architecture: 'x64' as const, os: 'windows' as const };
+  const plan = { executableRef: instanceId, cwd: f.game, args: [], redactedPreview: [] };
+  const processes = new GameProcessService({ probe: { probe: async () => java }, start: () => { throw new Error('MUST_NOT_SPAWN'); } });
+  const options = { expectedVersion: java.version, finalize: async () => plan, commitPermit: async () => {}, recheck: async () => {} };
+  try {
+    await assert.rejects(processes.launch(instanceId, java.executable, 17, plan, { ...options, finalize: async () => {
+      const token = await readFile(path.join(f.game, 'oucl.session.lock'), 'utf8');
+      await assert.rejects(f.make().commit(f.prepared), { code: 'INSTANCE_BUSY' });
+      assert.equal(await readFile(path.join(f.game, 'oucl.session.lock'), 'utf8'), token);
+      assert.equal((await f.storage().readInstance(instanceId))!.revision, 1);
+      throw Object.assign(new Error('STOP_FIXTURE'), { code: 'CANCELLED' });
+    } }), { code: 'CANCELLED' });
+    await noLease(f.game);
+  } finally { await f.close(); }
+  const other = await fixture();
+  try {
+    let entered!: () => void; let release!: () => void;
+    const started = new Promise<void>(resolve => { entered = resolve; }); const gate = new Promise<void>(resolve => { release = resolve; });
+    let scans = 0;
+    const transaction = new ModTransactionService(other.repository(), { ...other.dependencies, inventory: { scan: async (...args) => {
+      if (++scans === 1) { entered(); await gate; }
+      return other.dependencies.inventory.scan(...args);
+    } } });
+    const committing = transaction.commit(other.prepared);
+    await started;
+    try {
+      await assert.rejects(processes.launch(instanceId, java.executable, 17, { ...plan, cwd: other.game }, options), { code: 'INSTANCE_BUSY' });
+      assert.equal((await other.storage().readInstance(instanceId))!.revision, 1);
+    } finally { release(); }
+    assert.equal((await committing).phase, 'committed'); await noLease(other.game);
+  } finally { await other.close(); }
+});
+
 const confirmation = (f: Awaited<ReturnType<typeof fixture>>) => ({ planRequestId: f.prepared.planRequestId, planId: f.prepared.planId, confirmed: true as const });
 async function finished(service: ModInstallTaskService, taskId: string) {
   for (let attempt = 0; attempt < 200; attempt++) {
@@ -121,6 +159,13 @@ test('confirmed executor joins duplicate requests and commits real files once wi
     assert.equal((await service.list(rootId))[0]!.taskId, accepted.taskId);
     assert.equal(task.execution.bytesDone, 5); assert.equal(preparations, 1);
     assert.equal((await f.storage().readInstance(instanceId))!.data.modCommitId, accepted.taskId);
+    const committed = (await f.storage().readInstance(instanceId))!;
+    const transaction = (await f.storage().readModTransaction(accepted.taskId))!.data;
+    const projection = { schemaVersion: 1, revision: 1, data: f.instance };
+    assert.equal(matchesLaunchProjection(projection, committed, transaction), true);
+    assert.equal(matchesLaunchProjection(projection, committed, { ...transaction, phase: 'applying' }), false);
+    assert.equal(matchesLaunchProjection(projection, committed, { ...transaction, afterInstanceDigest: '0'.repeat(64) }), false);
+    assert.equal(matchesLaunchProjection({ ...projection, data: { ...f.instance, summary: { ...f.instance.summary, displayName: 'tampered' } } }, committed, transaction), false);
     assert.equal((await f.storage().readModResult(accepted.taskId))!.data.state, 'completed');
     await service.close(); await f.reopen();
     const restored = new ModInstallTaskService(f.storage(), { prepare: async () => { throw new Error('NO_REPLAY'); } }, f.make());
@@ -169,6 +214,8 @@ test('executor cancellation waits for preparation cleanup and leaves no transact
   } }, f.make());
   try {
     const accepted = await service.confirm(confirmation(f)); await started;
+    const running = await service.state(f.prepared.planRequestId);
+    assert.equal(running.task?.stage, 'preparing'); assert.equal(isModData(running, 'mods:installState'), true);
     let settled = false; const cancelled = service.cancel(accepted.taskId).then(() => { settled = true; });
     await new Promise(resolve => setTimeout(resolve, 20)); assert.equal(settled, false); release(); await cancelled;
     assert.equal((await service.get(accepted.taskId))!.execution.state, 'cancelled');
@@ -399,13 +446,13 @@ if (process.env.OUCL_TXN_KILL_POINT) {
     await writeFile(path.join(f.game, 'external-sentinel.txt'), 'preserve external data');
     f.dependencies.checkpoint = async point => {
       if (point !== process.env.OUCL_TXN_KILL_POINT) return;
-      await writeFile(process.env.OUCL_TXN_KILL_MARKER!, JSON.stringify({ base: f.base, game: f.game, metadata: f.metadata }));
+      await writeFile(process.env.OUCL_TXN_KILL_MARKER!, JSON.stringify({ base: f.base, game: f.game, metadata: f.metadata, taskId: f.prepared.consumerId }));
       await new Promise<void>(() => {});
     };
     await f.make().commit(f.prepared);
   });
 } else {
-  test('real process termination preserves transaction evidence and refuses stale-owner replay at three commit boundaries', async () => {
+  test('real process termination recovers owned transactions at three commit boundaries', async () => {
     for (const point of ['staged', 'linked', 'instance-published']) {
       const directory = await mkdtemp(path.resolve('.test-build/mod-kill-'));
       const marker = path.join(directory, 'checkpoint.json');
@@ -414,7 +461,7 @@ if (process.env.OUCL_TXN_KILL_POINT) {
       });
       const ended = once(child, 'close');
       try {
-        let state: { game: string; metadata: string } | undefined;
+        let state: { game: string; metadata: string; taskId: string } | undefined;
         for (let attempt = 0; attempt < 400; attempt++) {
           try { state = JSON.parse(await readFile(marker, 'utf8')) as typeof state; break; }
           catch (error) { if (!(error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT')) throw error; }
@@ -425,12 +472,29 @@ if (process.env.OUCL_TXN_KILL_POINT) {
         const lease = await readFile(path.join(state.metadata, 'owner.lock'));
         const files = await readdir(state.metadata);
         const evidence = new Map(await Promise.all(files.filter(name => name.endsWith('.json')).map(async name => [name, await readFile(path.join(state!.metadata, name))] as const)));
-        await assert.rejects(StorageClient.open(entry, state.metadata), { code: 'STORE_BUSY' });
-        assert.deepEqual(await readFile(path.join(state.metadata, 'owner.lock')), lease);
-        for (const [name, bytes] of evidence) assert.deepEqual(await readFile(path.join(state.metadata, name)), bytes);
+        if (process.platform !== 'win32') {
+          await assert.rejects(StorageClient.open(entry, state.metadata), { code: 'STORE_BUSY' });
+          assert.deepEqual(await readFile(path.join(state.metadata, 'owner.lock')), lease);
+          for (const [name, bytes] of evidence) assert.deepEqual(await readFile(path.join(state.metadata, name)), bytes);
+          continue;
+        }
         assert.equal(await readFile(path.join(state.game, 'external-sentinel.txt'), 'utf8'), 'preserve external data');
         const mods = await readdir(path.join(state.game, 'mods')).catch(() => [] as string[]);
         assert.equal(mods.filter(name => name.endsWith('.jar')).length, point === 'staged' ? 0 : point === 'linked' ? 1 : 2);
+        const storage = await StorageClient.open(entry, state.metadata);
+        try {
+          const context = async () => ({ instanceId, revision: (await storage.readInstance(instanceId))!.revision,
+            modsDirectory: path.join(state!.game, 'mods'), environment: { loader: 'fabric' as const,
+              versions: { minecraft: '1.20.1', fabricloader: '0.16.14', java: '17.0.16' }, languageVersions: {} } });
+          const scanner = new ModArchiveReader(entry); const inventory = new ModInventoryService(context, scanner);
+          const transaction = new ModTransactionService(storage, { context, scanner, inventory });
+          const expected = point === 'instance-published' ? 'committed' : 'rolledBack';
+          assert.equal((await transaction.recover(state.taskId)).phase, expected);
+          assert.equal((await transaction.recover(state.taskId)).phase, expected);
+          assert.equal(await readFile(path.join(state.game, 'external-sentinel.txt'), 'utf8'), 'preserve external data');
+          assert.equal((await readdir(path.join(state.game, 'mods')).catch(() => [] as string[])).filter(name => name.endsWith('.jar')).length, expected === 'committed' ? 2 : 0);
+          await noLease(state.game);
+        } finally { await storage.close(); }
       } finally { if (child.exitCode === null && child.signalCode === null) child.kill(); await ended; }
     }
   });

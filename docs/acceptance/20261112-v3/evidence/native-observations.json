@@ -1,0 +1,50 @@
+{
+  "coldPreview": {
+    "app_name": "electron.exe",
+    "element_count": 50,
+    "elements_complete": true,
+    "invalidated_snapshot_ids": [
+      "s00000003"
+    ],
+    "pid": 24520,
+    "returned_element_count": 4,
+    "snapshot_id": "s00000008",
+    "timeout_ms": 1000,
+    "total_element_count": 50,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/product/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - [34] Button \"选择样本并检查\" [actions=[invoke]]\n                        - [43] Text \": FerriteCore 6.0.1 · \" [actions=[text]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 1044,
+      "y": 465
+    },
+    "window_id": 722832,
+    "window_title": "OUCL"
+  },
+  "hotMismatch": {
+    "app_name": "electron.exe",
+    "element_count": 39,
+    "elements_complete": true,
+    "invalidated_snapshot_ids": [
+      "s00000010"
+    ],
+    "pid": 39052,
+    "returned_element_count": 5,
+    "snapshot_id": "s00000015",
+    "timeout_ms": 1000,
+    "total_element_count": 39,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/product/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - [33] Text \"当前仅支持指定的测试样本，检查不会创建游戏实例。\" [actions=[text]]\n                      - [34] Button \"选择样本并检查\" [actions=[invoke]]\n                        - [35] Text \"当前仅支持已选定的测试样本。\" [actions=[text]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 1044,
+      "y": 465
+    },
+    "window_id": 1247606,
+    "window_title": "OUCL"
+  }
+}

@@ -9,6 +9,7 @@ export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod
 export type TaskKind = typeof TASK_KINDS[number];
 export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
 export interface ModConfirmation { planRequestId: string; payloadDigest: string; task: StoredTask }
+export interface ModTargetAdmission { requestId: string; payloadDigest: string; task: StoredTask }
 const STATES = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
 const KINDS: readonly string[] = TASK_KINDS;
 
@@ -32,6 +33,37 @@ function identity(value: string): void { if (!UUID_PATTERN.test(value)) throw ne
 /** SQLite-only tasks and request deduplication, called exclusively while RecordStore owns its lease. */
 export class TaskTable {
   constructor(private readonly db: DatabaseSync) {}
+
+  /** Reads both sides of each requested domain's acceptance inventory without changing storage. */
+  modTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[]): ModTargetAdmission[] {
+    identity(ownerId);
+    if (kinds.length < 1 || kinds.length > 2 || new Set(kinds).size !== kinds.length
+      || kinds.some(kind => kind !== 'mod-check' && kind !== 'mod-install')) throw new StorageError('INVALID_RECORD');
+    const result: ModTargetAdmission[] = [];
+    const requestIds = new Set<string>();
+    for (const kind of kinds) {
+      const requests = this.db.prepare('SELECT request_id, payload_digest, task_id FROM requests WHERE owner_id=? AND kind=? LIMIT 1001').all(ownerId, kind);
+      const tasks = this.db.prepare('SELECT id FROM tasks WHERE owner_id=? AND kind=? LIMIT 1001').all(ownerId, kind);
+      if (requests.length > 1000 || tasks.length > 1000 || requests.length !== tasks.length) throw new StorageError('NEEDS_RECOVERY');
+      const remaining = new Set<string>();
+      for (const row of tasks) {
+        if (typeof row.id !== 'string' || !UUID_PATTERN.test(row.id) || remaining.has(row.id.toLowerCase())) throw new StorageError('NEEDS_RECOVERY');
+        remaining.add(row.id.toLowerCase());
+      }
+      for (const row of requests) {
+        if (typeof row.request_id !== 'string' || !UUID_PATTERN.test(row.request_id)
+          || typeof row.payload_digest !== 'string' || !/^[a-f0-9]{64}$/.test(row.payload_digest)
+          || typeof row.task_id !== 'string' || !UUID_PATTERN.test(row.task_id)
+          || requestIds.has(row.request_id.toLowerCase()) || !remaining.delete(row.task_id.toLowerCase())) throw new StorageError('NEEDS_RECOVERY');
+        requestIds.add(row.request_id.toLowerCase());
+        const task = this.get(ownerId, row.task_id);
+        if (!task || task.kind !== kind) throw new StorageError('NEEDS_RECOVERY');
+        result.push({ requestId: row.request_id, payloadDigest: row.payload_digest, task });
+      }
+      if (remaining.size) throw new StorageError('NEEDS_RECOVERY');
+    }
+    return result;
+  }
 
   /** Fixed bounded recovery inventory; never accepts arbitrary SQL or a caller-selected task kind. */
   modConfirmations(ownerId: string): ModConfirmation[] {

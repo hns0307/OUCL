@@ -11,6 +11,12 @@ import { artifactSpec } from '../.test-build/src/services/install/metadata-objec
 import { restoreInstallMetadata } from '../.test-build/src/services/install/installer.js';
 import { prepareInstanceDirectories, prepareInstanceNatives, viewTarget } from '../.test-build/src/services/install/instance-files.js';
 import { planOfflineLaunch } from '../.test-build/src/core/launch/plan.js';
+import { JavaProbe } from '../.test-build/src/services/java/probe.js';
+import { verifyLaunchInputs } from '../.test-build/src/services/install/launch-inputs.js';
+import { ModInventoryService } from '../.test-build/src/services/mods/inventory.js';
+import { modInventoryContext } from '../.test-build/src/services/mods/context.js';
+import { ModArchiveReader } from '../.test-build/src/services/workers/mod-archive-reader.js';
+import { InstalledLanguageReader } from '../.test-build/src/services/mods/languages.js';
 import { GameProcessService } from '../.test-build/src/services/launch/process.js';
 
 // Runs only the dedicated official-game validation instance, never an arbitrary user game folder.
@@ -54,7 +60,22 @@ try {
     java: { javaId: '00000000-0000-4000-8000-000000000017', major: 17, architecture: 'x64' },
     account: { gameName: 'OUCL_Test1', uuid: '00000000-0000-4000-8000-000000000001' },
     assets: prepared.assets, memoryMiB: 2048, launcherVersion: '0.2.3' });
-  stage = 'spawn'; const session = await games.launch(source.instanceId, executable, 17, plan);
+  const signal = new globalThis.AbortController().signal;
+  const runtime = { dataDirectory: installation.data.dataDirectory, rootId: installation.data.rootId, hashes, extractor, views };
+  const baseline = await verifyLaunchInputs(runtime, envelope, prepared, signal);
+  const measured = await new JavaProbe().probe(executable, { signal });
+  const scanner = new ModArchiveReader(entry);
+  const inventory = new ModInventoryService(modInventoryContext(storage, new InstalledLanguageReader(scanner), { read: async () => measured.version }), scanner);
+  const mods = await inventory.scan(source.instanceId, envelope.revision, signal);
+  const recheck = async () => {
+    assert.deepEqual(await storage.readInstance(source.instanceId), envelope);
+    await verifyLaunchInputs(runtime, envelope, prepared, signal, undefined, baseline.nativeFiles);
+    const current = await inventory.scan(source.instanceId, envelope.revision, signal);
+    assert.equal(current.fingerprint, mods.fingerprint); assert.equal(current.local.state, 'satisfied');
+  };
+  stage = 'spawn'; const session = await games.launch(source.instanceId, executable, 17, plan, {
+    expectedVersion: measured.version, signal, finalize: async () => { await recheck(); return plan; }, commitPermit: async () => {}, recheck,
+  });
   report = { status: 'RUNNING', fixture: false, packagedPayload: false, versionId: '1.20.1', instanceId: source.instanceId,
     sessionId: session.sessionId, spawnObserved: true, dependenciesReverified: required.length, nativeTreeReverified: true,
     accountIsValidationFixture: true, productionAccountPolicyFrozen: false, menuVisuallyVerified: false, worldVisuallyVerified: false };

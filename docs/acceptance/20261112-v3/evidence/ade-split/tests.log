@@ -1,0 +1,63 @@
+✔ spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease (45.7468ms)
+✔ gameDir lease excludes another instance and foreign marker is never removed (13.719ms)
+✔ spawn exception and asynchronous start failure leave no falsely running session or lease (40.6063ms)
+✔ only explicit confirmed force stop kills; graceful rejection preserves the live JVM (18.4704ms)
+✔ changed lease after process exit remains unknown and blocks future launches (21.3431ms)
+✔ Java mismatch, failed probe and pre-spawn cancellation cannot create game effects (1.9602ms)
+✔ finalization holds the sole lease, blocks same-major patch substitution and releases on rejection (32.1456ms)
+✔ cancel during finalization drains the callback before lease release and never permits spawn (15.4689ms)
+✔ failure after commit permission still releases owned lease without invoking start (13.7347ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (3.9819ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (1.9418ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (1.2292ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (121.7396ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (0.7461ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (0.4028ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (0.3961ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (0.3606ms)
+✔ library views reject case, file-directory and differing-content collisions (0.4079ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (1.1483ms)
+✔ actual installer commits a complete private instance and reuses shared files across a second instance (1116.4372ms)
+✔ Fabric installation uses the same transaction and reopens with its pinned loader plan (804.7609ms)
+✔ fabric reference target installs privately and reopens without metadata or transfer access (1534.9249ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ fabric cancellation stays unlaunchable and a new request can install the same display name (828.5887ms)
+✔ quilt reference target installs privately and reopens without metadata or transfer access (1561.4791ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ quilt cancellation stays unlaunchable and a new request can install the same display name (858.7892ms)
+✔ request idempotency rejects changed payload and same-name admission never overwrites an instance (650.4076ms)
+{"level":"warn","event":"instance-install-failed","stage":"metadata","code":"CANCELLED"}
+✔ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (813.3413ms)
+{"level":"warn","event":"instance-install-failed","stage":"materializing","code":"NEEDS_RECOVERY"}
+✔ same index ID with different bytes is preserved and stops safely rather than becoming ready (434.3807ms)
+✔ installed objects stay owned once while launch tasks, subscriptions, natural exit and session history persist (1205.0259ms)
+✔ explicit stop is durable, cannot act without confirmation and waits for the actual owned process close (940.6189ms)
+✔ new inherited isolation captures the saved default and remains stable after settings change and retry (646.5353ms)
+✔ launch rejects changed revisions, inventories, native trees, profiles and unknown constraints under the real lease (5977.1416ms)
+✔ accepted cancellation drains locked verification and a lost commit-permit acknowledgement never spawns (1742.7176ms)
+✔ prepared launch final verification succeeds with every materialization and extraction capability disabled (857.1654ms)
+✔ instance folder contract accepts only opaque identity and fixed folder keys (1.3464ms)
+✔ folder resolver uses the actual isolated game directory (21.9864ms)
+✔ folder resolver uses the actual shared game directory (8.623ms)
+✔ folder resolver rejects a linked allowlisted directory that escapes the instance (10.7297ms)
+✔ modern launch retains one argument per value, absolute Windows paths and inherited client jar (4.7316ms)
+✔ legacy JVM fallback and virtual assets use the supplied actual game directory (0.8989ms)
+✔ Forge module exclusion follows the inherited physical client JAR without changing version identity (0.5774ms)
+✔ JNA writes temporary DLLs outside the verified native directory (1.3383ms)
+✔ Java mismatch, invalid identities, memory and launcher version fail before execution (2.861ms)
+✔ conflicting JVM settings, unknown placeholders and oversized argv cannot silently launch (4.2328ms)
+✔ assetIndex id overrides legacy name and additional official argument bindings are literal (0.4041ms)
+✔ native runtime caches stay private and outside the verified immutable natives (0.4193ms)
+✔ Java facts measure selected compatible registered JVM and never trust persisted version text (2.0342ms)
+✔ missing, failed or changed-major JVM leaves unknown and does not discover a runtime (0.4052ms)
+✔ Java facts cancel by joining probe close, reject overlapping work and detect profile changes (0.7891ms)
+✔ Mod context requests the real metadata Java major and propagates measured facts without inference (6.5448ms)
+✔ metadata reconstruction preserves the original official index path and input record (0.9747ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20224.5382

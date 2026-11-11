@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { crc32 } from 'node:zlib';
@@ -21,6 +21,10 @@ import { ProfileService } from '../src/services/launch/profiles.js';
 import { GameAdapter } from '../src/ipc/game-adapter.js';
 import { InstallerAdapter } from '../src/ipc/installer-adapter.js';
 import type { TaskChangedEvent } from '../src/shared/contracts/instances.js';
+import { HashPool } from '../src/services/workers/hash-pool.js';
+import { NativeExtractor } from '../src/services/workers/native-extractor.js';
+import { FileViewService } from '../src/services/install/file-views.js';
+import { verifyLaunchInputs } from '../src/services/install/launch-inputs.js';
 
 const entry = new URL('../src/services/workers/entry.js', import.meta.url);
 const rootId = '00000000-0000-4000-8000-000000000001';
@@ -103,7 +107,7 @@ async function fixture(loaderKind: MetadataLoaderKind = 'fabric', minecraftVersi
   const createService = (repository: StorageClient): InstallerService => new InstallerService(repository, entry,
     new InstallMetadataService(new CatalogService(reader, repository), reader), createLoaderMetadata(repository));
   const service = createService(storage);
-  return { root, storage, service, createService, metadataDirectory, dataDirectory, requests: () => requests,
+  return { root, storage, service, createService, metadataDirectory, dataDirectory, indexHash, requests: () => requests,
     metadataRequests: () => metadataRequests, waitForFetch: () => fetchStarted, delay: () => { delayed = true; }, resume: () => { delayed = false; },
     offline: () => { offline = true; },
     async close() { await service.close(); globalThis.fetch = originalFetch; await storage.close(); assert.equal(path.dirname(root), path.resolve(tmpdir())); assert.ok(path.basename(root).startsWith('oucl-installer-')); await rm(root, { recursive: true, force: true }); } };
@@ -126,6 +130,7 @@ test('actual installer commits a complete private instance and reuses shared fil
     const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.equal(completed.instance?.state, 'ready');
     const instanceId = completed.instance!.instanceId; const record = await f.storage.readInstance(instanceId); assert.ok(record);
     assert.equal(record.data.phase, 'ready'); assert.equal(record.data.receipts?.length, restoreInstallMetadata(record.data).plan.views.length);
+    assert.ok(record.data.receipts?.some(receipt => receipt.area === 'assets' && receipt.path === 'indexes/fixture.json'));
     assert.deepEqual((await f.service.listV2(rootId))[0]?.loader, { kind: 'vanilla' });
     const directory = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'versions', instanceId);
     const manifest = JSON.parse(await readFile(path.join(directory, 'oucl.instance.json'), 'utf8')) as { data: unknown };
@@ -172,6 +177,9 @@ for (const target of [
       const accepted = await f.service.createLoader(request(80), { rootId, mcVersionId: target.minecraftVersion,
         displayName: `${target.kind} reference`, isolation: 'on', loader: { kind: target.kind, version: target.loaderVersion } });
       const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.ok(completed.instance);
+      const another = await f.service.createLoader(request(81), { rootId, mcVersionId: target.minecraftVersion,
+        displayName: `${target.kind} shared client`, isolation: 'on', loader: { kind: target.kind, version: target.loaderVersion } });
+      assert.equal((await finished(f.service, another.taskId)).task.execution.state, 'completed');
       const stored = await f.storage.readInstance(completed.instance.instanceId); assert.ok(stored); assert.equal(stored.data.phase, 'ready');
       assert.deepEqual(stored.data.loader, { kind: target.kind, version: target.loaderVersion });
       const verified = await f.service.prepareLaunch(completed.instance.instanceId, stored.revision, new AbortController().signal);
@@ -183,7 +191,7 @@ for (const target of [
       await f.service.close(); await f.storage.close();
       const reopened = await StorageClient.open(entry, f.metadataDirectory); const restarted = f.createService(reopened);
       try {
-        await restarted.initialize(); const summaries = await restarted.listV2(rootId); assert.equal(summaries.length, 1);
+        await restarted.initialize(); const summaries = await restarted.listV2(rootId); assert.equal(summaries.length, 2);
         assert.deepEqual(summaries[0]?.loader, { kind: target.kind, version: target.loaderVersion });
         const record = await reopened.readInstance(completed.instance.instanceId); assert.ok(record);
         const offlineVerified = await restarted.prepareLaunch(completed.instance.instanceId, record.revision, new AbortController().signal);
@@ -231,15 +239,20 @@ test('cancelled install stays unready, joins transfers and a new retry can reuse
   } finally { await f.close(); }
 });
 
-test('unknown existing shared entries are preserved and leave a recovery state rather than ready', async () => {
+test('same index ID with different bytes is preserved and stops safely rather than becoming ready', async () => {
   const f = await fixture();
   try {
     const indexes = path.join(f.dataDirectory, 'store', 'views', rootId, 'assets', 'indexes'); await mkdir(indexes, { recursive: true });
     const foreign = path.join(indexes, 'fixture.json');
-    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, 'foreign contents');
+    // Exercise the active ordinary-directory fallback too when Windows cannot create a junction.
+    const activeIndexes = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'assets', 'indexes');
+    await mkdir(activeIndexes, { recursive: true });
+    const activeForeign = path.join(activeIndexes, 'fixture.json');
+    const existingIndex = JSON.stringify({ objects: {} }); assert.notEqual(sha1(existingIndex), f.indexHash);
+    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, existingIndex); await writeFile(activeForeign, existingIndex);
     const accepted = await f.service.create(request(40), input); const result = await finished(f.service, accepted.taskId);
     assert.equal(result.task.execution.state, 'needsRecovery'); assert.equal(result.instance?.state, 'needsRecovery');
-    assert.equal(await readFile(foreign, 'utf8'), 'foreign contents');
+    assert.equal(await readFile(foreign, 'utf8'), existingIndex); assert.equal(await readFile(activeForeign, 'utf8'), existingIndex);
   } finally { await f.close(); }
 });
 
@@ -318,4 +331,101 @@ test('new inherited isolation captures the saved default and remains stable afte
     assert.deepEqual(await f.service.create(request(70), chosen), accepted);
     assert.equal((await f.service.list(rootId))[0]?.isolation, 'off');
   } finally { await f.close(); }
+});
+
+test('launch rejects changed revisions, inventories, native trees, profiles and unknown constraints under the real lease', async () => {
+  for (const scenario of ['revision', 'inventory', 'native', 'profile', 'unknown', 'after-permit'] as const) {
+    const f = await fixture(); let game: LaunchService | undefined; let starts = 0; let probes = 0; let verifies = 0;
+    let prepared!: Awaited<ReturnType<InstallerService['prepareLaunch']>>;
+    try {
+      const accepted = await f.service.create(request(80), input); const ready = await finished(f.service, accepted.taskId); assert.ok(ready.instance);
+      const instanceId = ready.instance.instanceId; const revision = ready.instance.revision;
+      const profiles = new ProfileService(f.storage, { probe: async () => measuredJava });
+      const account = await profiles.createOffline(request(81), { displayName: 'Test', gameName: 'Player_1' }); await profiles.registerJava(measuredJava.executable);
+      const installer = {
+        prepareLaunch: async (...args: Parameters<InstallerService['prepareLaunch']>) => {
+          prepared = await f.service.prepareLaunch(...args);
+          if (scenario === 'unknown') { const mods = path.join(prepared.layout.gameDirectory, 'mods'); await mkdir(mods, { recursive: true }); await writeFile(path.join(mods, 'unknown.jar'), 'not a jar'); }
+          return prepared;
+        },
+        inspectLaunchMods: f.service.inspectLaunchMods.bind(f.service),
+        verifyPreparedLaunch: async (...args: Parameters<InstallerService['verifyPreparedLaunch']>) => {
+          if (++verifies === 2 && scenario === 'after-permit') {
+            const current = (await f.storage.readInstance(instanceId))!;
+            await f.storage.writeInstance(instanceId, current.revision, { ...current.data, summary: { ...current.data.summary, revision: current.revision + 1 } });
+          }
+          return f.service.verifyPreparedLaunch(...args);
+        },
+      };
+      const processes = new GameProcessService({ probe: { probe: async () => {
+        if (++probes === 1) {
+          if (scenario === 'revision') {
+            const current = (await f.storage.readInstance(instanceId))!;
+            await f.storage.writeInstance(instanceId, current.revision, { ...current.data, summary: { ...current.data.summary, revision: current.revision + 1 } });
+          }
+          if (scenario === 'inventory') { const mods = path.join(prepared.layout.gameDirectory, 'mods'); await mkdir(mods, { recursive: true }); await writeFile(path.join(mods, 'late.jar'), 'changed'); }
+          if (scenario === 'native') await writeFile(path.join(prepared.layout.versionDirectory, 'natives', 'added.dll'), 'changed');
+          if (scenario === 'profile') await profiles.createOffline(request(82), { displayName: 'Changed', gameName: 'Player_2' });
+        }
+        return measuredJava;
+      } }, start: () => { starts++; throw new Error('UNEXPECTED_SPAWN'); } });
+      game = new LaunchService(f.storage, profiles, installer, processes, () => 16 * 1024 ** 3); await game.initialize();
+      const launched = await game.launch(request(83), { instanceId, accountId: account.accountId, expectedRevision: revision });
+      const outcome = await gameFinished(game, launched.taskId);
+      assert.equal(starts, 0, scenario);
+      assert.equal(outcome.task.execution.state, scenario === 'native' || scenario === 'after-permit' ? 'needsRecovery' : 'failed', scenario);
+      assert.equal(outcome.session.spawned, false, scenario);
+      await assert.rejects(readFile(path.join(prepared.layout.gameDirectory, 'oucl.session.lock')), { code: 'ENOENT' });
+    } finally { await game?.close(); await f.close(); }
+  }
+});
+
+test('accepted cancellation drains locked verification and a lost commit-permit acknowledgement never spawns', async () => {
+  for (const scenario of ['cancel', 'lost-permit'] as const) {
+    const f = await fixture(); let game: LaunchService | undefined; let release!: () => void; let entered!: () => void; let starts = 0;
+    const started = new Promise<void>(resolve => { entered = resolve; }); const gate = new Promise<void>(resolve => { release = resolve; });
+    let directory = '';
+    const originalUpdate = f.storage.update.bind(f.storage);
+    try {
+      const installed = await f.service.create(request(90), input); const ready = await finished(f.service, installed.taskId); assert.ok(ready.instance);
+      const profiles = new ProfileService(f.storage, { probe: async () => measuredJava });
+      const account = await profiles.createOffline(request(91), { displayName: 'Test', gameName: 'Player_1' }); await profiles.registerJava(measuredJava.executable);
+      const installer = {
+        prepareLaunch: async (...args: Parameters<InstallerService['prepareLaunch']>) => { const result = await f.service.prepareLaunch(...args); directory = result.layout.gameDirectory; return result; },
+        inspectLaunchMods: f.service.inspectLaunchMods.bind(f.service),
+        verifyPreparedLaunch: async (...args: Parameters<InstallerService['verifyPreparedLaunch']>) => {
+          if (scenario === 'cancel') { entered(); await gate; }
+          return f.service.verifyPreparedLaunch(...args);
+        },
+      };
+      if (scenario === 'lost-permit') f.storage.update = async (...args) => {
+        const result = await originalUpdate(...args);
+        if (args[3].state === 'committing') throw Object.assign(new Error('LOST_ACK'), { code: 'TIMEOUT' });
+        return result;
+      };
+      const processes = new GameProcessService({ probe: { probe: async () => measuredJava }, start: () => { starts++; throw new Error('UNEXPECTED'); } });
+      game = new LaunchService(f.storage, profiles, installer, processes, () => 16 * 1024 ** 3); await game.initialize();
+      const task = await game.launch(request(92), { instanceId: ready.instance.instanceId, accountId: account.accountId, expectedRevision: ready.instance.revision });
+      if (scenario === 'cancel') { await started; await game.cancel(rootId, task.taskId); assert.ok(await readFile(path.join(directory, 'oucl.session.lock'))); release(); }
+      const result = await gameFinished(game, task.taskId);
+      assert.equal(result.task.execution.state, scenario === 'cancel' ? 'cancelled' : 'needsRecovery');
+      assert.equal(starts, 0); assert.equal(result.session.spawned, false);
+      await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
+    } finally { release?.(); await game?.close(); f.storage.update = originalUpdate; await f.close(); }
+  }
+});
+
+test('prepared launch final verification succeeds with every materialization and extraction capability disabled', async () => {
+  const f = await fixture(); const hashes = new HashPool(entry); let writes = 0;
+  try {
+    const task = await f.service.create(request(95), input); const ready = await finished(f.service, task.taskId); assert.ok(ready.instance);
+    const signal = new AbortController().signal;
+    const witness = await f.service.prepareLaunch(ready.instance.instanceId, ready.instance.revision, signal);
+    const views = new FileViewService(witness.layout.storeDirectory, { lookup: async () => { throw new Error('UNEXPECTED_STORE_LOOKUP'); } }, hashes);
+    views.materialize = async () => { writes++; throw new Error('UNEXPECTED_MATERIALIZE'); };
+    const extractor = new NativeExtractor(entry); extractor.run = async () => { writes++; throw new Error('UNEXPECTED_EXTRACT'); };
+    const record = (await f.storage.readInstance(ready.instance.instanceId))!;
+    const result = await verifyLaunchInputs({ dataDirectory: f.dataDirectory, rootId, hashes, extractor, views }, record, witness.prepared, signal, undefined, witness.nativeFiles);
+    assert.deepEqual(result.nativeFiles, witness.nativeFiles); assert.ok(result.nativeFiles.length > 0); assert.equal(writes, 0);
+  } finally { await hashes.close(); await f.close(); }
 });

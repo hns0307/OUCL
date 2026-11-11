@@ -61,3 +61,15 @@ test('platform transport bounds status, rate-limit cooldown, malformed text, can
   const during = new AbortController(); const cancelling = new ModrinthModClient(async () => { during.abort(); throw new Error('private path'); });
   await assert.rejects(cancelling.version('version1', during.signal), { code: 'CANCELLED' });
 });
+
+test('transient platform failures retry once and cancellation stops the retry', async () => {
+  let calls = 0;
+  const client = new ModrinthModClient(async () => { if (++calls === 1) throw new Error('connection closed'); return response(raw()); });
+  assert.equal((await client.version('version1')).versionId, 'version1'); assert.equal(calls, 2);
+  let failures = 0;
+  await assert.rejects(new ModrinthModClient(async () => { failures++; throw new Error('offline'); }).version('version1'), { code: 'NETWORK_FAILED' });
+  assert.equal(failures, 2);
+  const controller = new AbortController(); let cancelledCalls = 0;
+  const cancelled = new ModrinthModClient(async () => { cancelledCalls++; setTimeout(() => controller.abort(), 10); throw new Error('offline'); });
+  await assert.rejects(cancelled.version('version1', controller.signal), { code: 'CANCELLED' }); assert.equal(cancelledCalls, 1);
+});

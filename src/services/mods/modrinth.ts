@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { resourceFilename, resourceId } from '../../shared/contracts/resources.js';
 import { isModrinthFileUrl } from '../resources/modrinth.js';
 import type { ModFormat } from '../../core/mods/declarations.js';
@@ -53,6 +54,16 @@ export class ModrinthModClient {
   constructor(private readonly request: typeof fetch = fetch) {}
 
   private async read(endpoint: string, signal?: AbortSignal, hashes?: readonly string[]): Promise<{ value: unknown; evidence: PlatformModVersion['evidence'] }> {
+    for (let attempt = 0; ; attempt++) {
+      try { return await this.readOnce(endpoint, signal, hashes); }
+      catch (error) {
+        if (!(error instanceof ModPlatformError) || error.code !== 'NETWORK_FAILED' || attempt >= 1) throw error;
+        try { await delay(250, undefined, { signal }); } catch { throw new ModPlatformError('CANCELLED'); }
+      }
+    }
+  }
+
+  private async readOnce(endpoint: string, signal?: AbortSignal, hashes?: readonly string[]): Promise<{ value: unknown; evidence: PlatformModVersion['evidence'] }> {
     if (this.active >= 4) throw new ModPlatformError('PLATFORM_LIMIT');
     if (Date.now() < this.cooldown) throw new ModPlatformError('RETRY_LATER');
     if (signal?.aborted) throw new ModPlatformError('CANCELLED');

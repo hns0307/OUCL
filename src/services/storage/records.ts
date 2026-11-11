@@ -7,6 +7,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { TaskTable } from './tasks.js';
 import type { StoredTask, TaskKind } from './tasks.js';
 import type { Execution } from '../../core/task/machine.js';
+import { isOwnerGuardFile } from './owner-guard.js';
 
 export interface RecordEnvelope<T> { schemaVersion: 1; revision: number; data: T }
 export type Checkpoint = 'prepared' | 'applying' | 'staged' | 'renamed' | 'committed';
@@ -38,25 +39,27 @@ export class RecordStore {
   private available = false;
   private closed = false;
   private tail: Promise<void> = Promise.resolve();
-  private constructor(private readonly directory: string, private readonly db: DatabaseSync, private readonly token: string) {}
+  private constructor(private readonly directory: string, private readonly db: DatabaseSync, private readonly token: string, private readonly externalOwner: boolean) {}
 
   /** Opens a dedicated, existing, non-linked directory and claims an exclusive fail-closed lease. */
-  static async open(directory: string): Promise<RecordStore> {
+  static async open(directory: string, externalToken?: string): Promise<RecordStore> {
     let root: string;
     try { root = await guardDirectory(directory); }
     catch (error) { throw error instanceof StorageError ? error : new StorageError('STORAGE_IO'); }
     const leasePath = path.join(root, 'owner.lock');
-    const token = randomUUID();
+    const token = externalToken ?? randomUUID();
     let lease;
-    try { lease = await open(leasePath, 'wx'); } catch (error) {
-      throw new StorageError(hasCode(error, 'EEXIST') ? 'STORE_BUSY' : 'STORAGE_IO');
-    }
+    if (externalToken === undefined) {
+      try { lease = await open(leasePath, 'wx'); } catch (error) {
+        throw new StorageError(hasCode(error, 'EEXIST') ? 'STORE_BUSY' : 'STORAGE_IO');
+      }
+    } else if ((await readRegular(leasePath, 200))?.toString('utf8') !== externalToken) throw new StorageError('STORE_BUSY');
     let db: DatabaseSync | undefined;
     try {
-      await lease.writeFile(token); await lease.sync(); await lease.close();
+      if (lease) { await lease.writeFile(token); await lease.sync(); await lease.close(); }
       const databasePath = path.join(root, 'tasks.sqlite');
       const exists = await guardDatabase(databasePath);
-      if (!exists && (await readdir(root)).some(name => name !== 'owner.lock')) throw new StorageError('NEEDS_RECOVERY');
+      if (!exists && (await readdir(root)).some(name => name !== 'owner.lock' && !(externalToken && isOwnerGuardFile(name)))) throw new StorageError('NEEDS_RECOVERY');
       db = new DatabaseSync(databasePath);
       if (exists) {
         const application = db.prepare('PRAGMA application_id').get();
@@ -72,10 +75,10 @@ export class RecordStore {
         CREATE TABLE requests (owner_id TEXT NOT NULL, request_id TEXT NOT NULL, kind TEXT NOT NULL,
           payload_digest TEXT NOT NULL, task_id TEXT NOT NULL UNIQUE REFERENCES tasks(id), PRIMARY KEY (owner_id, request_id));
         PRAGMA application_id=${APPLICATION_ID}; PRAGMA user_version=${STORE_VERSION}; COMMIT;`);
-      return new RecordStore(root, db, token);
+      return new RecordStore(root, db, token, externalToken !== undefined);
     } catch (error) {
-      db?.close(); await lease.close().catch(() => {});
-      if (await ownsLease(leasePath, token)) await unlink(leasePath);
+      db?.close(); await lease?.close().catch(() => {});
+      if (externalToken === undefined && await ownsLease(leasePath, token)) await unlink(leasePath);
       throw error instanceof StorageError ? error : new StorageError('NEEDS_RECOVERY');
     }
   }
@@ -171,6 +174,14 @@ export class RecordStore {
     });
   }
 
+  /** Reads the bounded, bidirectionally checked inventory for the selected Mod domains. */
+  readModTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[]) {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).modTargetAdmissions(ownerId, kinds);
+    });
+  }
+
   /** Reads an exact accepted request without changing the task or request journal. */
   findAcceptedTask(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): Promise<StoredTask | undefined> {
     return this.serial(async () => {
@@ -256,6 +267,10 @@ export class RecordStore {
     return this.serial(async () => {
       this.db.close(); this.closed = true; this.available = false;
       const lease = path.join(this.directory, 'owner.lock');
+      if (this.externalOwner) {
+        if ((await readRegular(lease, 200))?.toString('utf8') !== this.token) throw new StorageError('NEEDS_RECOVERY');
+        return;
+      }
       if (!await ownsLease(lease, this.token)) throw new StorageError('NEEDS_RECOVERY');
       await unlink(lease);
     });

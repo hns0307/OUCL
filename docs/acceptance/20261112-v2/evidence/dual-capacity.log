@@ -1,0 +1,9 @@
+✔ real SQLite target inventory retains both complete 1000-row domains and rejects either overflow (114.2993ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.4141

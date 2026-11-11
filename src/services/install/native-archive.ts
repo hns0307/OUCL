@@ -82,7 +82,8 @@ function parse(bytes: Buffer, exclude: readonly string[], maximumEntries = MAX_E
       || Boolean(external & 0x10) && !identity.directory) unsafe();
     if (identity.directory && (size !== 0 || crc !== 0)) bad();
     extra(bytes.subarray(cursor + 46 + nameLength, cursor + 46 + nameLength + extraLength));
-    if (bytes.readUInt16LE(start + 4) !== version || bytes.readUInt16LE(start + 6) !== flags || bytes.readUInt16LE(start + 8) !== method) bad();
+    // Some valid JAR writers record an older local minimum than the central directory.
+    if (bytes.readUInt16LE(start + 4) > version || bytes.readUInt16LE(start + 6) !== flags || bytes.readUInt16LE(start + 8) !== method) bad();
     const localCrc = bytes.readUInt32LE(start + 14); const localCompressed = bytes.readUInt32LE(start + 18); const localSize = bytes.readUInt32LE(start + 22);
     if (flags & 8 ? (localCrc !== 0 && localCrc !== crc || localCompressed !== 0 && localCompressed !== compressedSize || localSize !== 0 && localSize !== size)
       : localCrc !== crc || localCompressed !== compressedSize || localSize !== size) bad();

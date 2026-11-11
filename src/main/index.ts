@@ -14,6 +14,7 @@ import { ensureChildDirectory } from '../services/install/instance-files.js';
 import { app, BrowserWindow, dialog, ipcMain, session, shell, net } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -32,6 +33,10 @@ import { InstallMetadataService } from '../services/catalog/install-metadata.js'
 import { InstallerService } from '../services/install/installer.js';
 import { InstallerAdapter } from '../ipc/installer-adapter.js';
 import { handleInstances } from '../ipc/instances.js';
+import { TargetAdapter } from '../ipc/task-targets.js';
+import { TARGET_CAPABILITY, TARGET_CHANNEL } from '../shared/contracts/task-targets.js';
+import { instanceFailure } from '../shared/contracts/instances.js';
+import { exactObject, UUID_PATTERN } from '../shared/contracts/handshake.js';
 import { INSTANCE_CHANNELS, INSTANCES_CAPABILITY, TASKS_CAPABILITY, TASK_EVENT_CHANNEL, InstanceContractError } from '../shared/contracts/instances.js';
 import type { InstanceDispatcher } from '../shared/contracts/instances.js';
 import { ProfileService } from '../services/launch/profiles.js';
@@ -63,6 +68,10 @@ import { modInventoryContext } from '../services/mods/context.js';
 import { InstalledJavaFacts } from '../services/mods/java-facts.js';
 import { ModInventoryService } from '../services/mods/inventory.js';
 import { ModInspectionService } from '../services/mods/inspection.js';
+import { ModMaintenancePreviewService } from '../services/mods/maintenance-preview.js';
+import { MaintenancePreviewJobs } from '../services/mods/maintenance-jobs.js';
+import { handleMaintenancePreview } from '../ipc/maintenance-preview.js';
+import { MAINTENANCE_PREVIEW_CAPABILITY, MAINTENANCE_PREVIEW_CHANNELS } from '../shared/contracts/mod-maintenance-preview.js';
 import { ModrinthModClient } from '../services/mods/modrinth.js';
 import { ModLibraryReader } from '../services/mods/library.js';
 import { ModDependencyResolver } from '../services/mods/resolver.js';
@@ -73,6 +82,10 @@ import { ModInstallTaskService } from '../services/mods/install-tasks.js';
 import { ModPlanService } from '../services/mods/plans.js';
 import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
 import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
+import { PACK_CAPABILITY, PACK_CHANNEL } from '../shared/contracts/packs.js';
+import { handleFixedPack } from '../ipc/packs.js';
+import { FixedPackReader } from '../services/packs/fixed-reader.js';
+import { FixedPackCoordinator } from '../services/packs/coordinator.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
@@ -86,9 +99,11 @@ let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
 let installer: InstallerService | undefined;
 let installerAdapter: InstallerAdapter | undefined;
+let targetAdapter: TargetAdapter | undefined;
 let loaders: LoaderService | undefined;
 let mods: ModTaskService | undefined;
 let modPlanner: ModInstallPlanner | undefined;
+let maintenancePreviews: MaintenancePreviewJobs | undefined;
 let modPlans: ModPlanService | undefined;
 let modInstalls: ModInstallTaskService | undefined;
 let instanceFolders: InstanceFolderService | undefined;
@@ -96,6 +111,9 @@ let profiles: ProfileService | undefined;
 let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
 const javaSelections = new Map<string, Promise<string | undefined>>();
 const pendingSelections = new Set<string>();
+const fixedPackWorker = path.join(__dirname, '../workers/fixed-pack.cjs');
+const fixedPackReader = existsSync(fixedPackWorker) ? new FixedPackReader(fixedPackWorker) : undefined;
+const fixedPackCoordinator = fixedPackReader ? new FixedPackCoordinator((file, signal) => fixedPackReader.preview(file, signal)) : undefined;
 
 /** Authorizes exact application document, current window and primary frame before any service access. */
 function trustedSender(event: IpcMainInvokeEvent): boolean {
@@ -117,8 +135,8 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
-  window.webContents.once('destroyed', () => { sessions.delete(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
-  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
+  window.webContents.once('destroyed', () => { sessions.delete(id); fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
   window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => { event.preventDefault(); });
@@ -171,6 +189,12 @@ else void app.whenReady().then(async () => {
       const context = modInventoryContext(storage, new InstalledLanguageReader(scanner), new InstalledJavaFacts(profiles));
       const inventory = new ModInventoryService(context, scanner);
       const platform = new ModrinthModClient(networkFetch); const inspections = new ModInspectionService(context, inventory, platform);
+      const modStorage = storage;
+      maintenancePreviews = new MaintenancePreviewJobs(new ModMaintenancePreviewService(async (instanceId, signal) => {
+        const registered = await modStorage.readInstallation();
+        if (!registered) throw new ModContractError('ROOT_UNAVAILABLE');
+        return { rootId: registered.data.rootId, inventory: await context(instanceId, signal) };
+      }, inspections));
       const modTasks = new ModTaskService(storage, inventory, inspections);
       modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
       modPlans = new ModPlanService(storage, modPlanner);
@@ -192,8 +216,23 @@ else void app.whenReady().then(async () => {
         else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
+  if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls);
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+  });
+  ipcMain.handle(PACK_CHANNEL, (event, input: unknown) => handleFixedPack(input, trustedSender(event), randomUUID(), async requestId => {
+    if (!fixedPackCoordinator) throw new Error('UNAVAILABLE');
+    return fixedPackCoordinator.inspect(event.sender.id, requestId, () => trustedSender(event), async () => {
+      const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: 'Modrinth modpack', extensions: ['mrpack'] }] });
+      return selection.canceled ? undefined : selection.filePaths[0];
+    });
+  }));
+  ipcMain.handle(TARGET_CHANNEL, (event, input: unknown) => {
+    const traceId = randomUUID();
+    if (targetAdapter) return targetAdapter.handle(input, trustedSender(event), event.sender.id, traceId);
+    const id = exactObject(input, ['contractVersion', 'requestId', 'payload']) && typeof input.requestId === 'string' && UUID_PATTERN.test(input.requestId) ? input.requestId : traceId;
+    return instanceFailure(id, trustedSender(event) ? 'UNAVAILABLE' : 'INVALID_SENDER', traceId);
   });
   ipcMain.handle(INSTANCE_FOLDER_CHANNEL, async (event, input: unknown) => {
     const traceId = randomUUID(); const fallback = typeof input === 'object' && input !== null && 'requestId' in input && typeof input.requestId === 'string' ? input.requestId : traceId;
@@ -211,6 +250,8 @@ else void app.whenReady().then(async () => {
     if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
     return modDispatcher(mods, modPlanner, modPlans, modInstalls)(selected, payload, requestId);
   }));
+  for (const channel of MAINTENANCE_PREVIEW_CHANNELS) ipcMain.handle(channel, (event, input: unknown) =>
+    handleMaintenancePreview(channel, input, trustedSender(event), randomUUID(), maintenancePreviews && mods ? maintenancePreviews : undefined));
   ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
     const registered = await storage?.readInstallation();
     if (!installer || registered?.data.rootId !== rootId) throw new Error('UNAVAILABLE');
@@ -301,7 +342,7 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
-    installerAdapter?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    targetAdapter?.close(); installerAdapter?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });
 

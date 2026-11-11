@@ -3,15 +3,30 @@ import { UUID_PATTERN } from '../shared/contracts/handshake.js';
 import { instanceFailure, isInstancePayload, isInstanceResult, isTaskChangedEvent, TASK_EVENT_CHANNEL } from '../shared/contracts/instances.js';
 import type { InstanceBridge, InstanceChannel, InstancePayloads, InstanceResult, TaskChangedEvent, TaskSnapshot } from '../shared/contracts/instances.js';
 
-async function request<C extends InstanceChannel>(channel: C, payload: InstancePayloads[C], requestId: string = crypto.randomUUID()): Promise<InstanceResult<C>> {
+async function request<C extends InstanceChannel>(channel: C, payload: InstancePayloads[C], requestId: string = crypto.randomUUID(),
+  onLateResult?: (result: InstanceResult<C>) => void): Promise<InstanceResult<C>> {
   if (!UUID_PATTERN.test(requestId) || !isInstancePayload(payload, channel)) return instanceFailure(crypto.randomUUID(), 'INVALID_ARGUMENT', crypto.randomUUID());
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let timedOut = false;
   try {
-    const deadline = new Promise<InstanceResult<C>>(resolve => { timer = setTimeout(() => { resolve(instanceFailure(requestId, 'TIMEOUT', requestId)); }, 3000); });
-    const result: unknown = await Promise.race([ipcRenderer.invoke(channel, { contractVersion: 1, requestId, payload }), deadline]);
+    // Keep observing invoke after the public deadline: a late subscription still owns main resources.
+    const invocation = ipcRenderer.invoke(channel, { contractVersion: 1, requestId, payload }).then((value: unknown) => {
+      if (timedOut && isInstanceResult(value, requestId, channel)) onLateResult?.(value);
+      return value;
+    });
+    const deadline = new Promise<InstanceResult<C>>(resolve => { timer = setTimeout(() => {
+      timedOut = true; resolve(instanceFailure(requestId, 'TIMEOUT', requestId));
+    }, 3000); });
+    const result: unknown = await Promise.race([invocation, deadline]);
     return isInstanceResult(result, requestId, channel) ? result : instanceFailure(requestId, 'UNAVAILABLE', requestId);
   } catch { return instanceFailure(requestId, 'UNAVAILABLE', requestId); }
   finally { clearTimeout(timer); }
+}
+
+/** Releases only an abandoned observation; a failed cleanup gets at most one transient retry. */
+async function releaseLateSubscription(subscriptionId: string): Promise<void> {
+  const result = await request('events:unsubscribe', { subscriptionId });
+  if (!result.ok && ['TIMEOUT', 'UNAVAILABLE'].includes(result.error.code)) await request('events:unsubscribe', { subscriptionId });
 }
 
 /** Exposes only fixed task/instance methods; renderer subscription disposal never cancels a task. */
@@ -53,7 +68,9 @@ export function createInstanceBridge(): InstanceBridge {
         if (subscription.id) void request('events:unsubscribe', { subscriptionId: subscription.id });
       };
       ipcRenderer.on(TASK_EVENT_CHANNEL, receive);
-      const result = await request('tasks:subscribe', { taskId });
+      const result = await request('tasks:subscribe', { taskId }, crypto.randomUUID(), late => {
+        if (late.ok && late.data.snapshot.taskId === taskId) void releaseLateSubscription(late.data.subscriptionId);
+      });
       if (!result.ok) { dispose(); return { result, dispose }; }
       subscription.id = result.data.subscriptionId; sequence = result.data.seq;
       if (overflow) {

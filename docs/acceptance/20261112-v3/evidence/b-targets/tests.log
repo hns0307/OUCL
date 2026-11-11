@@ -1,0 +1,26 @@
+▶ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain
+  ✔ missing (569.2653ms)
+  ✔ changed (456.9217ms)
+✔ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain (1028.2325ms)
+▶ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed
+  ✔ future-envelope (462.3412ms)
+  ✔ future-plan (453.3099ms)
+  ✔ cross-root (441.7334ms)
+  ✔ request-mismatch (422.6174ms)
+  ✔ digest-mismatch (513.1739ms)
+  ✔ foreign-instance (546.4835ms)
+✔ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed (2841.6353ms)
+✔ acceptance real worker: controlled target-clock crossing 2000ms returns TIMEOUT and keeps worker alive (510.4083ms)
+ℹ Real worker + SQLite; deterministic injected target-reader Date.now, not wall-clock performance evidence.
+✔ acceptance main adapter: real 2500ms deadline retains global pending slots and late replies do not publish snapshots (2510.0068ms)
+ℹ main real-timer deadline observed 2507ms; storage/projection are controlled doubles
+✔ acceptance main adapter: at most 16 bounded snapshots / 16MiB serialized payload and 256 cursor references (188.7947ms)
+ℹ 14113008 serialized bytes across 16 x 2000-row snapshots; bound check, not JS heap measurement
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7256.681

@@ -16,7 +16,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import type { JavaRuntimeService } from '../java/runtime.js';
 
 export interface LaunchRequest { instanceId: string; accountId: string; expectedRevision: number }
-interface Job { task: StoredTask; controller: AbortController; changes: Promise<void>; done: Promise<void> }
+interface Job { task: StoredTask; controller: AbortController; changes: Promise<void>; done: Promise<void>; commitUncertain?: boolean }
 export interface GameTaskView { task: StoredTask; session: SavedSession }
 export class LaunchServiceError extends Error { constructor(readonly code: LaunchFailure | 'CANCEL_TOO_LATE' | 'INVALID_TASK_STATE') { super(code); this.name = 'LaunchServiceError'; } }
 const failure = (error: unknown): LaunchFailure => {
@@ -37,7 +37,7 @@ export class LaunchService {
   private closed = false;
   private idleListener?: () => void;
   constructor(private readonly storage: StorageClient, private readonly profiles: Pick<ProfileService, 'list'>,
-    private readonly installer: Pick<InstallerService, 'prepareLaunch'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem,
+    private readonly installer: Pick<InstallerService, 'prepareLaunch' | 'verifyPreparedLaunch' | 'inspectLaunchMods'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem,
     private readonly javaRuntime?: Pick<JavaRuntimeService, 'ensure'>) {}
 
   /** Normal restart preserves exited history. A previous running record cannot become an owned process by PID guesswork. */
@@ -76,6 +76,7 @@ export class LaunchService {
         sessionId: task.taskId, instanceId: canonical.instanceId, state: 'unknown', revision: 1, startedAt: new Date().toISOString() } });
       this.start(task, async job => {
         const accountData = await this.profiles.list(); const account = accountData.accounts.find(item => item.accountId === canonical.accountId);
+        const rootSnapshot = await this.storage.readInstallation();
         if (!account) throw new LaunchServiceError('AUTH_REQUIRED');
         if (2048 * 1024 ** 2 > this.physicalMemory() * 0.75) throw new LaunchPlanError('MEMORY_OUT_OF_RANGE');
         const record = await this.storage.readInstance(canonical.instanceId);
@@ -87,11 +88,31 @@ export class LaunchService {
           : accountData.javas.find(item => item.javaId === accountData.selectedJavaId);
         if (!java) throw new GameProcessError('JAVA_INCOMPATIBLE');
         this.check(job);
+        const profileSnapshot = await this.profiles.list();
+        if (profileSnapshot.selectedJavaId !== java.javaId
+          || JSON.stringify(profileSnapshot.accounts.find(item => item.accountId === canonical.accountId)) !== JSON.stringify(account)) throw new LaunchServiceError('REVISION_CONFLICT');
+        const settingsSnapshot = await this.storage.readSettings();
+        const baseline = await this.installer.inspectLaunchMods(canonical.instanceId, canonical.expectedRevision, java.version, job.controller.signal);
+        const fresh = async (): Promise<void> => {
+          const current = await this.storage.readInstance(canonical.instanceId);
+          if (JSON.stringify(current) !== JSON.stringify(record) || JSON.stringify(await this.storage.readInstallation()) !== JSON.stringify(rootSnapshot)
+            || JSON.stringify(await this.profiles.list()) !== JSON.stringify(profileSnapshot)
+            || JSON.stringify(await this.storage.readSettings()) !== JSON.stringify(settingsSnapshot)) throw new LaunchServiceError('REVISION_CONFLICT');
+        };
+        const verify = async (): Promise<void> => {
+          await fresh();
+          await this.installer.verifyPreparedLaunch(canonical.instanceId, canonical.expectedRevision, verified.nativeFiles, job.controller.signal);
+          const inventory = await this.installer.inspectLaunchMods(canonical.instanceId, canonical.expectedRevision, java.version, job.controller.signal);
+          if (inventory.fingerprint !== baseline.fingerprint) throw new LaunchServiceError('REVISION_CONFLICT');
+          if (inventory.local.state !== 'satisfied') throw new LaunchServiceError('DEPENDENCY_MISSING');
+          await fresh(); this.check(job);
+        };
         const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: (await this.storage.readSettings())?.data.memoryMiB ?? 2048, launcherVersion: '0.3.0' });
-        await this.event(job, 'transferred'); this.check(job); await this.event(job, 'verified');
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.3.0' });
+        await this.event(job, 'transferred'); this.check(job);
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
-          { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2 });
+          { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,
+            finalize: async () => { await verify(); return plan; }, commitPermit: () => this.commitPermit(job), recheck: verify });
         this.owned.add(session.sessionId); this.observe(session.sessionId);
         await this.save(task.taskId, current => ({ ...current!, spawned: true, snapshot: current!.snapshot.revision > session.revision ? current!.snapshot : session }));
         await this.event(job, 'committed');
@@ -130,16 +151,36 @@ export class LaunchService {
         const saved = this.records().find(item => item.taskId === task.taskId || item.stopTaskIds.includes(task.taskId));
         const reason = job.controller.signal.aborted ? 'CANCELLED' : failure(error);
         if (saved) await this.save(saved.taskId, current => ({ ...current!, errors: [...(current!.errors ?? []).filter(item => item.taskId !== task.taskId), { taskId: task.taskId, code: reason }] }));
-        if (this.owned.has(task.taskId) || reason === 'NEEDS_RECOVERY') await this.change(job, state => controlTask(state, 'interrupted').execution);
+        if (job.commitUncertain || this.owned.has(task.taskId) || reason === 'NEEDS_RECOVERY') await this.change(job, state => controlTask(state, 'interrupted').execution);
         else { if (reason !== 'CANCELLED') await this.event(job, 'failed'); await this.event(job, 'cleaned'); }
       }
     })().finally(() => { this.jobs.delete(task.taskId); }); void job.done.catch(() => {});
   }
   private check(job: Job): void { if (job.controller.signal.aborted) throw new GameProcessError('CANCELLED'); }
+  /** Shares cancel's durable queue: a dropped verified event can never grant permission to spawn. */
+  private commitPermit(job: Job): Promise<void> {
+    return this.change(job, state => {
+      this.check(job);
+      if (state.state !== 'verifying') throw new GameProcessError('CANCELLED');
+      const next = applyWorkerEvent(state, { kind: 'verified', attempt: state.attempt, sequence: state.lastSequence + 1 }).execution;
+      if (next.state !== 'committing') throw new GameProcessError('LAUNCH_FAILED');
+      job.commitUncertain = true;
+      return next;
+    }).then(() => { job.commitUncertain = false; });
+  }
   private change(job: Job, transform: (state: Execution) => Execution): Promise<void> {
     const operation = job.changes.then(async () => {
       const next = transform(job.task.execution); if (next === job.task.execution) return;
-      job.task = await this.storage.update(job.task.ownerId, job.task.taskId, job.task.execution.revision, next);
+      try { job.task = await this.storage.update(job.task.ownerId, job.task.taskId, job.task.execution.revision, next); }
+      catch (error) {
+        // A lost permit acknowledgement may already have committed. Reconcile while still
+        // inside the same queue, before a pending cancel can observe the stale verifying state.
+        if (job.commitUncertain) {
+          const current = await this.storage.get(job.task.ownerId, job.task.taskId);
+          if (current && current.ownerId === job.task.ownerId && current.taskId === job.task.taskId && current.kind === job.task.kind) job.task = current;
+        }
+        throw error;
+      }
     }); job.changes = operation.catch(() => {}); return operation;
   }
   private event(job: Job, kind: 'transferred' | 'verified' | 'committed' | 'failed' | 'cleaned'): Promise<void> {

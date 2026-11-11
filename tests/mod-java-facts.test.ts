@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { InstalledJavaFacts } from '../src/services/mods/java-facts.js';
 import { JavaProbeError } from '../src/services/java/probe.js';
 import type { LaunchProfiles, RegisteredJava } from '../src/services/storage/launch-profiles.js';
 import { modInventoryContext } from '../src/services/mods/context.js';
 import { modReadyInstance } from './fixtures/mod-ready-instance.js';
+import { restoreInstallMetadata } from '../src/services/install/installer.js';
 
 const registered = (major: 17 | 21, name: string): RegisteredJava => ({ javaId: randomUUID(), major, version: `${major}.0.1`, vendor: 'fixture', executable: `D:\\fixture\\${name}\\java.exe` });
 const measured = (java: RegisteredJava, version = '17.0.13+7') => ({ ...java, version, architecture: 'x64' as const, os: 'windows' as const });
@@ -45,9 +46,22 @@ test('Java facts cancel by joining probe close, reject overlapping work and dete
 
 test('Mod context requests the real metadata Java major and propagates measured facts without inference', async () => {
   const rootId = randomUUID(); const instanceId = randomUUID(); const record = modReadyInstance(rootId, instanceId); const majors: number[] = [];
+  record.receipts!.push({ area: 'assets', path: 'indexes/5.json',
+    artifactId: `sha1-${createHash('sha1').update(record.metadata!.assetIndexBody).digest('hex')}`, mode: 'copy' });
   const storage = { readInstallation: async () => ({ schemaVersion: 1 as const, revision: 1, data: { rootId, dataDirectory: 'D:\\fixture' } }),
     readInstance: async () => ({ schemaVersion: 1 as const, revision: 1, data: record }) };
   const context = modInventoryContext(storage, undefined, { read: async major => { majors.push(major); return '17.0.13+7'; } });
   assert.equal((await context(instanceId)).environment.versions.java, '17.0.13+7'); assert.deepEqual(majors, [17]);
   assert.equal((await modInventoryContext(storage)(instanceId)).environment.versions.java, null);
+});
+
+test('metadata reconstruction preserves the original official index path and input record', () => {
+  const record = modReadyInstance(randomUUID(), randomUUID());
+  record.receipts!.push({ area: 'assets', path: 'indexes/5.json',
+    artifactId: `sha1-${createHash('sha1').update(record.metadata!.assetIndexBody).digest('hex')}`, mode: 'copy' });
+  const before = structuredClone(record);
+  const restored = restoreInstallMetadata(record);
+  assert.deepEqual(restored.plan.views.filter(view => view.area === 'assets' && view.path.startsWith('indexes/'))
+    .map(view => view.path), ['indexes/5.json']);
+  assert.deepEqual(record, before);
 });

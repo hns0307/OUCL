@@ -15,7 +15,8 @@ function record(isolation: 'on' | 'off'): InstanceRecord {
     downloads: { client: { url: 'https://piston-data.mojang.com/objects/fixture/client.jar', sha1: 'a'.repeat(40), size: 8 } },
     assetIndex: { id: '5', url: 'https://piston-meta.mojang.com/v1/packages/fixture/5.json', sha1: createHash('sha1').update(assetIndexBody).digest('hex'), size: Buffer.byteLength(assetIndexBody) } }) + '\n';
   return { formatVersion: 2, loader: { kind: 'vanilla' }, phase: 'ready', summary: { instanceId, rootId, taskId: randomUUID(), displayName: 'Test', mcVersionId: '1.20.1', isolation, state: 'ready', revision: 1 },
-    metadata: { versionDocuments: { '1.20.1': body }, metadataSha1ByVersion: { '1.20.1': createHash('sha1').update(body).digest('hex') }, assetIndexBody }, objects: {}, receipts: [] };
+    metadata: { versionDocuments: { '1.20.1': body }, metadataSha1ByVersion: { '1.20.1': createHash('sha1').update(body).digest('hex') }, assetIndexBody }, objects: {},
+    receipts: [{ area: 'assets', path: 'indexes/5.json', artifactId: `sha1-${createHash('sha1').update(assetIndexBody).digest('hex')}`, mode: 'copy' }] };
 }
 
 test('instance folder contract accepts only opaque identity and fixed folder keys', () => {

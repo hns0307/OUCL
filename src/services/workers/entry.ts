@@ -3,6 +3,7 @@ import path from 'node:path';
 import { RecordStore } from '../storage/records.js';
 import { guardDirectory, StorageError } from '../storage/files.js';
 import { parseStorageRequest, WorkerError } from './protocol.js';
+import { readModTargets } from './mod-targets.js';
 import type { WorkerCode, WorkerReply } from './protocol.js';
 import { ObjectIndex } from '../storage/object-index.js';
 import { parseInstallation } from '../storage/installation.js';
@@ -34,8 +35,8 @@ if (!port) throw new WorkerError('INVALID_MESSAGE');
 const send = (value: WorkerReply): void => { port.postMessage(value); };
 const code = (error: unknown): WorkerCode => error instanceof StorageError || error instanceof WorkerError ? error.code : 'WORKER_FAILED';
 
-async function storage(directory: string): Promise<void> {
-  const store = await RecordStore.open(directory);
+async function storage(directory: string, ownerToken?: string): Promise<void> {
+  const store = await RecordStore.open(directory, ownerToken);
   try { await store.recover(); } catch (error) { await store.close(); throw error; }
   let index: ObjectIndex | undefined;
   let transfers: TransferDatabase | undefined;
@@ -65,9 +66,11 @@ async function storage(directory: string): Promise<void> {
         let modPlan;
         let modTransaction;
         let modConfirmations;
+        let modTargets;
         let modResult;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'mod-targets:read') modTargets = await readModTargets(store, command);
         else if (command.kind === 'mod-confirm:accept' || command.kind === 'mod-confirm:list') {
           const root = await store.read('installation', parseInstallation);
           if (!root) throw new WorkerError('INVALID_RECORD');
@@ -179,12 +182,12 @@ async function storage(directory: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }), ...(modTargets === undefined ? {} : { modTargets }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });
   });
-  send({ version: 1, kind: 'ready' });
+  send({ version: 1, kind: 'ready', features: ['mod-targets.read.v1'] });
 }
 
 async function hashFile(file: string, maximumBytes: number): Promise<void> {
@@ -242,6 +245,9 @@ void (async () => {
   }
   else if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,version'
     && 'directory' in input && typeof input.directory === 'string') await storage(input.directory);
+  else if (input.kind === 'storage' && Object.keys(input).sort().join(',') === 'directory,kind,ownerToken,version'
+    && 'directory' in input && typeof input.directory === 'string' && 'ownerToken' in input
+    && typeof input.ownerToken === 'string' && /^oucl-owner-v2:[a-f0-9-]{36}:\d+:\d+$/.test(input.ownerToken)) await storage(input.directory, input.ownerToken);
   else if (input.kind === 'hash-session' && Object.keys(input).sort().join(',') === 'kind,version') startHashSession(port);
   else if (input.kind === 'hash' && Object.keys(input).sort().join(',') === 'file,kind,maximumBytes,version'
     && 'file' in input && typeof input.file === 'string' && path.isAbsolute(input.file)

@@ -8,6 +8,7 @@ import type { Execution } from '../../core/task/machine.js';
 import type { StoredTask, TaskKind, ModConfirmation } from '../storage/tasks.js';
 import { parseReply, parseStorageRequest, WorkerError } from './protocol.js';
 import type { StorageCommand } from './protocol.js';
+import type { ModTargets, ModTargetsInput } from './mod-targets.js';
 import type { IndexedObject } from '../storage/object-index.js';
 import type { Installation } from '../storage/installation.js';
 import type { RecordEnvelope } from '../storage/records.js';
@@ -19,12 +20,14 @@ import type { GameSessions } from '../storage/game-sessions.js';
 import type { ModJobs, StoredModReport } from '../storage/mod-jobs.js';
 import type { StoredModPlan } from '../storage/mod-plans.js';
 import type { ModTransaction } from '../storage/mod-transactions.js';
-type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; desktop?: RecordEnvelope<DesktopState>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; modResult?: RecordEnvelope<ModInstallResult> };
+import { OwnerGuard } from '../storage/owner-guard.js';
+import { StorageError } from '../storage/files.js';
+type StorageData = { task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; desktop?: RecordEnvelope<DesktopState>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; modResult?: RecordEnvelope<ModInstallResult>; modTargets?: ModTargets };
 
 interface Pending {
   resolve: (data: StorageData) => void;
   reject: (error: WorkerError) => void;
-  timer: ReturnType<typeof setTimeout>;
+  timer: ReturnType<typeof setTimeout> | undefined;
 }
 
 /** Single SQLite writer in a worker, with a bounded number of outstanding requests.
@@ -33,9 +36,12 @@ interface Pending {
 export class StorageClient {
   private readonly pending = new Map<string, Pending>();
   private stopped = false;
+  private targetFeature = false;
+  /** True only after a new storage worker explicitly advertises its target reader. */
+  get supportsModTargets(): boolean { return this.targetFeature; }
   private closing = false;
   private readonly ended: Promise<void>;
-  private constructor(private readonly worker: Worker, private readonly timeoutMs: number) {
+  private constructor(private readonly worker: Worker, private readonly timeoutMs: number, private readonly owner?: OwnerGuard) {
     this.ended = new Promise(resolve => { worker.once('exit', () => { this.fail(); resolve(); }); });
     worker.on('error', () => { this.fail(); });
   }
@@ -43,8 +49,13 @@ export class StorageClient {
   /** Starts only the repository-owned worker entry; directory is supplied by a trusted platform adapter. */
   static async open(entry: string | URL, directory: string, timeoutMs = 10000): Promise<StorageClient> {
     if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120000) throw new WorkerError('INVALID_MESSAGE');
-    const worker = new Worker(entry, { workerData: { version: 1, kind: 'storage', directory }, resourceLimits: { maxOldGenerationSizeMb: 128 } });
-    const client = new StorageClient(worker, timeoutMs);
+    let owner: OwnerGuard | undefined;
+    try { if (process.platform === 'win32') owner = await OwnerGuard.acquire(directory); }
+    catch (error) { throw new WorkerError(error instanceof StorageError ? error.code : 'STORAGE_IO'); }
+    let worker: Worker;
+    try { worker = new Worker(entry, { workerData: { version: 1, kind: 'storage', directory, ...(owner ? { ownerToken: owner.token } : {}) }, resourceLimits: { maxOldGenerationSizeMb: 128 } }); }
+    catch (error) { owner?.abandon(); throw error; }
+    const client = new StorageClient(worker, timeoutMs, owner);
     try {
       await new Promise<void>((resolve, reject) => {
         const timer = setTimeout(() => { reject(new WorkerError('TIMEOUT')); }, timeoutMs);
@@ -57,7 +68,7 @@ export class StorageClient {
         const receive = (input: unknown): void => {
           try {
             const reply = parseReply(input);
-            if (reply.kind === 'ready') finish();
+            if (reply.kind === 'ready') { client.targetFeature = reply.features?.includes('mod-targets.read.v1') ?? false; finish(); }
             else finish(new WorkerError(reply.kind === 'startup-failed' ? reply.code : 'INVALID_MESSAGE'));
           } catch { finish(new WorkerError('INVALID_MESSAGE')); }
         };
@@ -65,7 +76,7 @@ export class StorageClient {
       });
       worker.on('message', input => { client.receive(input); });
       return client;
-    } catch (error) { await worker.terminate(); await client.ended; throw error; }
+    } catch (error) { await worker.terminate(); await client.ended; owner?.abandon(); throw error; }
   }
 
   private fail(): void {
@@ -84,16 +95,16 @@ export class StorageClient {
       if (reply.ok) pending.resolve({ ...(reply.task === undefined ? {} : { task: reply.task }), ...(reply.object === undefined ? {} : { object: reply.object }),
         ...(reply.installation === undefined ? {} : { installation: reply.installation }), ...(reply.catalog === undefined ? {} : { catalog: reply.catalog }),
         ...(reply.transfer === undefined ? {} : { transfer: reply.transfer }), ...(reply.instances === undefined ? {} : { instances: reply.instances }),
-        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.desktop === undefined ? {} : { desktop: reply.desktop }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }), ...(reply.modConfirmations === undefined ? {} : { modConfirmations: reply.modConfirmations }), ...(reply.modResult === undefined ? {} : { modResult: reply.modResult }) }); else pending.reject(new WorkerError(reply.code));
+        ...(reply.instance === undefined ? {} : { instance: reply.instance }), ...(reply.profiles === undefined ? {} : { profiles: reply.profiles }), ...(reply.sessions === undefined ? {} : { sessions: reply.sessions }), ...(reply.settings === undefined ? {} : { settings: reply.settings }), ...(reply.desktop === undefined ? {} : { desktop: reply.desktop }), ...(reply.resources === undefined ? {} : { resources: reply.resources }), ...(reply.modJobs === undefined ? {} : { modJobs: reply.modJobs }), ...(reply.modReport === undefined ? {} : { modReport: reply.modReport }), ...(reply.modPlan === undefined ? {} : { modPlan: reply.modPlan }), ...(reply.modTransaction === undefined ? {} : { modTransaction: reply.modTransaction }), ...(reply.modConfirmations === undefined ? {} : { modConfirmations: reply.modConfirmations }), ...(reply.modResult === undefined ? {} : { modResult: reply.modResult }), ...(reply.modTargets === undefined ? {} : { modTargets: reply.modTargets }) }); else pending.reject(new WorkerError(reply.code));
     } catch { this.fail(); void this.worker.terminate(); }
   }
 
-  private request(command: StorageCommand, shuttingDown = false): Promise<StorageData> {
+  private request(command: StorageCommand, shuttingDown = false, untilReply = false): Promise<StorageData> {
     if (this.stopped || this.closing && !shuttingDown) return Promise.reject(new WorkerError('WORKER_FAILED'));
     if (this.pending.size >= 32 && !shuttingDown) return Promise.reject(new WorkerError('QUEUE_FULL'));
     const request = parseStorageRequest({ version: 1, id: randomUUID(), command });
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
+      const timer = untilReply ? undefined : setTimeout(() => {
         // Keep the slot until the worker replies/exits: timeouts must not permit an unbounded hidden backlog.
         reject(new WorkerError('TIMEOUT'));
       }, this.timeoutMs);
@@ -125,6 +136,15 @@ export class StorageClient {
   async acceptModConfirmation(planRequestId: string, planId: string, confirmed: true): Promise<StoredTask> {
     const result = (await this.request({ kind: 'mod-confirm:accept', planRequestId, planId, confirmed })).task;
     if (!result || result.kind !== 'mod-install') throw new WorkerError('INVALID_MESSAGE'); return result;
+  }
+  /** Reads proven targets only when the worker has advertised the matching protocol. */
+  async readModTargets(input: ModTargetsInput): Promise<ModTargets> {
+    if (!this.targetFeature) throw new WorkerError('WORKER_FAILED');
+    const result = (await this.request({ kind: 'mod-targets:read', ...input }, false, true)).modTargets;
+    if (!result || result.rootId !== input.rootId.toLowerCase() || result.rootRevision !== input.rootRevision
+      || result.items.some(item => item.instanceId !== input.instanceId.toLowerCase() || !input.kinds.some(kind => kind === item.task.kind)))
+      throw new WorkerError('INVALID_MESSAGE');
+    return result;
   }
   async readModConfirmations(): Promise<ModConfirmation[]> {
     const result = (await this.request({ kind: 'mod-confirm:list' })).modConfirmations;
@@ -254,7 +274,7 @@ export class StorageClient {
     if (this.stopped) { await this.ended; return; }
     if (this.closing) { await this.ended; return; }
     this.closing = true;
-    try { await this.request({ kind: 'close' }, true); await this.ended; }
+    try { await this.request({ kind: 'close' }, true); await this.ended; await this.owner?.close(); }
     catch (error) { await this.worker.terminate(); await this.ended; throw error; }
   }
 }

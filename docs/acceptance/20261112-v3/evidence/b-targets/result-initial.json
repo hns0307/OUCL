@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "scope": "dedicated target boundaries; no GUI/game/full suite",
+  "source": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\",
+  "test": "tests/acceptance-task-targets.test.ts"
+}

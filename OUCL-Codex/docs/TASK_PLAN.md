@@ -503,3 +503,63 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 
 
 2026-10-28网络失败修复交付：在用户明确允许参考/照用X-CL/XMCL、KAMUCL范围内，独立实现有界退避、持久前缀续传/同镜像保持、永久HTTP错误分类、Maven校验摘要与HEAD独立预算。完整Quilt复验进一步触发Electron内置Undici Parser.finish assert(!this.paused)致命断言，因此桌面main显式注入Electron net.request一跳流，保持HTTPS/证书/无会话Cookie/跳转白名单，未加依赖或公开契约/存储字段。528项526PASS/0FAIL/2原有SKIP，正式main/窗口两轮及加载器选择、最终EXE便携和官方冷/热通过。Fabric/Quilt官方依赖证明、FerriteCore下载通过；Quilt742454177字节计划、3652项物化、ready提交及禁网重开启动准备实际通过（复制并重新验证历史对象缓存，不冒充全部冷下载）。旧崩溃锁/数据原样保留，未补记游戏菜单矩阵。交付release/OUCL-0.3.0-network-fix.exe，364544字节，SHA256 04d8ddd7062c03e71e320e60b35f4b60105727568d441bb26930156ebf800e7b；仅重试候选另保留，统一证据docs/validation/NETWORK-FIX-20261028/REPORT.md。不push。
+
+## 2026-10-29 功能生态与架构差距分析（文档任务）
+
+用户要求梳理MC_start的KAMUCL/X-CL，并具体比较同功能深度、完整功能域及主流启动器生态，给出可行性与执行方案。本次仅源码/文档审查，报告见根[功能与架构对照](../../docs/FEATURE_ARCHITECTURE_COMPARISON_20261029.md)。包含18项同功能差距、完整功能域、PCL/Prism/HMCL补充基准与候选增量/验收；建议不构成新增IPC、存储、依赖或后续阶段批准，不改变既有G2范围与验收缺项。
+
+## 2026-10-29 组合生态继续分析与本地参考库
+
+用户追加要求：分析不同功能的组合生态，综合单项差距给出结果；有额度持续分析、额度不足等待刷新，允许把相关源码复制到新建库。当前仅文档/源码研究授权；交付索引：根docs/FEATURE_ECOSYSTEM_PLAN_20261029.md（16组合）、IMPLEMENTATION_RESEARCH_20261029.md（V1/V2细化及R01–R06队列）。独立本地库D:/MC_start/OUCL-reference-library归档23份源码/许可并固定提交与SHA256，无remote，不进入产品源码。新的业务/API/schema/依赖仍PENDING。额度等待沿用既有20%入等待/10%保存边界；已建立本聊天分析心跳oucl-2，不恢复另一个聊天的暂停实施任务。
+
+2026-10-29持续研究补充：根docs/SCALE_RETRY_RETENTION_RESEARCH_20261029.md记录当前规模上限、六个既有独立验证根的只读文件统计、重连/重试差异及备份/GC组合方案；未更改限额/产品行为，不把样本文件数当实际占用或整包通过。
+
+2026-10-29跨市场/overlay研究：新增根docs/IDENTITY_OVERLAY_RESEARCH_20261029.md，核查来源身份/字节/实例入口/受管归属/玩家意图差异，列禁用/固定/config与包升级冲突方案；统一研究入口根docs/RESEARCH_INDEX.md。参考库新增4份已固定源码，现27份。仍仅分析，所有新增产品schema/provider/API为PENDING。
+
+2026-10-29环境专题：新增根docs/ENVIRONMENT_OFFLINE_RESEARCH_20261029.md，核对Mod/启动Java选择域与探测预算差异、自动登记全局选择影响、启动运行时复验范围，以及离线事实/服务器包环境绑定的候选方案。仅静态研究，无真实复现、产品接口或存储改动。
+
+2026-10-29研究收敛：IMPLEMENTATION_RESEARCH §7补UI状态/动作核查、证据优先级及P-A至P-E开题包。精确修正：资源库已有重试按钮，差距在跨任务域重试/恢复语义不一致；总报告S01同步修订。其他静态风险未复现，未改产品接口/实现，未运行测试。
+
+2026-10-29订阅/分页审查：IMPLEMENTATION_RESEARCH §8统一问题账本U01–U10，明确preload已有乱序/旧revision保护及观察/业务分离；任务首100条与非活动优先排序为产品完整性缺口，其余迟到订阅/跨实例目标等为未复现风险。研究不改契约或实现，不称测试通过。
+
+2026-10-29研究局部验证：既有installer-adapter用例11PASS/0FAIL/0SKIP；只读真实adapter+mock仓库夹具复现U04首100条遗漏追加活动任务，分页/状态过滤可取回。证据根docs/validation/RESEARCH-OBSERVATION-20261029/。未运行UI/Electron/游戏，无产品修改，不视为完整check或功能验收。
+
+2026-10-29额度实际刷新（窗口1793230781、初查0%已用）后继续研究：U08真实preload/adapter+内存IPC夹具复现TIMEOUT后的迟到订阅保留，sender销毁可清理且业务未取消；U05真实ModPanel effect+替代hooks复现跨实例活动任务选取。证据RESEARCH-OBSERVATION-20261029报告§5–7，均非真实窗口验证或产品修复，无新依赖/业务改动。
+
+2026-10-29研究追加：U07观察静默失效已由真实preload/adapter+内存IPC及正式错误类型受控复现；主动查询可确认任务不存在，退订不取消任务，非真实窗口/正常删除触发验收。细节根docs/validation/RESEARCH-OBSERVATION-20261029/REPORT.md §8。方案仍候选，无产品/契约变更。
+
+2026-10-29环境研究受控验证：真实InstalledJavaFacts/JavaRuntimeService/JavaProbe+模拟子进程，2秒与默认8秒预算下选择不同Java17补丁版本，合成版本约束判断不同；无真实Java/网络/登记写入或产品修复。证据RESEARCH-OBSERVATION-20261029报告§9，J2开题应覆盖该场景。
+
+2026-10-29 R02服务研究：真实LaunchService/GameProcessService与真实目录锁、模拟存储/预检/Java/进程，expectedRevision1预检后仓库更新为格式有效revision2，模拟spawn仍发生；非真实Mod事务或游戏复现。锁后复核/共享租约方案及验收根docs/validation/RESEARCH-OBSERVATION-20261029/REPORT.md §10，未实施产品修正。
+
+2026-10-29研究收敛交付：RESEARCH_INDEX已重写为单一综合结论，9份材料/引用、18单项、16组合、6类受控PASS结果与27参考文件哈希均核对；src/tests/package/lock无研究改动。交付核对根docs/validation/RESEARCH-OBSERVATION-20261029/DELIVERY_AUDIT.md。当前分析目标已覆盖，不将真实产品缺项记通过；无新样本/代码/明确问题时停止重复自动研究，后续实施按精确增量审批。
+
+2026-11-01用户授权安全所有者接管设计与实施，见 DECISIONS 同日记录；Windows 独占句柄竞争、强制终止释放及双竞争单赢家 spike 通过，证据 `docs/work-packages/P-A/runs/20261101-owner-lock/RECOVERY-SPIKE.md`。旧 UUID 锁缺乏原持有者身份，不能用新锁推断旧持有者失效；现有锁保留，生产实现与实际恢复验收仍未完成。
+
+2026-11-05续验：独立 Windows SQLite guard 文件的重命名、删除及所在目录重命名在持锁时均被阻止；主进程持锁可跨 worker 退出。专用子进程试验两次因原预期不符而失败，修正为报告实测现象后重跑；此试验不证明真实游戏生命周期。详细结果及限制见上述 RECOVERY-SPIKE。旧锁接管、新版生产租约及 A10 产品恢复验收仍未完成，不得标记整个验收通过。
+
+2026-11-05租约实现及验收续进：Windows 主进程持有新格式 guard，保留旧版锁互斥；旧 UUID 和损坏/未知证据保持阻断。537测试535通过、2既有跳过，三个真实进程中断点事务恢复通过；v15产品窗口显示准备完成。cua-driver拒绝强制结束引导器派生的产品进程，产品中断重开未验收；完整证据见 `docs/work-packages/P-A/runs/20261105-owner-guard/REPORT.md`，A10仍开放。
+
+2026-11-05续验：在独立根构造已知的新格式遗留锁后，v15产品可读取旧档案、创建新档案，并在正常退出重开后从界面找回新档案；这是构造状态下的接管证据，不替代真实产品强制中断证据。A10仍开放。
+
+2026-11-06用户允许无法验收且影响较小的项目跳过；当前工作区 `pnpm check` 551 项中 549 通过、2 项系统能力跳过，`pnpm test:bootstrap` 34 项通过。产品进程强制终止后遗留锁复验本轮暂列 DEFERRED，保留风险与真实状态；既有不同候选的实机证据不能等同当前全部改动的统一产品包验收，见 `docs/work-packages/P-A/runs/20261106-acceptance-review/REPORT.md`。
+
+2026-11-06续验：当前源码生成独立候选 v16，经 cua-driver 在预置运行时的新测试根启动显示准备完成，正常关闭释放 owner 标记；未进行 v16 的安装、游戏运行及任务观察完整产品链验证，详见同一报告。
+
+2026-11-06续验：v16 在新游戏根通过产品界面安装原版 1.20.1、自动准备 Java 17.0.15，游戏两次进入主菜单且退出 0，中间启动器正常退出重开；安装任务状态显示已确认。Fabric 清单读取和重试失败，官方元数据地址独立探测连接超时，本轮 Fabric 未完成；证据 `docs/work-packages/P-A/runs/20261106-v16-vanilla/REPORT.md`。
+
+2026-11-06资源搜索超时显示零结果的修复：搜索失败不再显示结果数/空结果并禁用分页，保留错误和重试。完整检查571项569通过2跳过；v17产品窗口的成功结果与真实空结果通过，网络恢复后失败场景未能复现。v17同时包含工作区后来出现的任务中心相关改动，验证范围和限制见同一报告。
+
+2026-11-10 P-D首片：用户直接回复“是”批准准确Java绑定、现有锁内最终复核、unknown阻止启动与提交后保守needsRecovery，见DECISIONS同日记录及 docs/work-packages/P-D/REVIEW-20261110.md。当前IN_PROGRESS，不扩展公开IPC/持久格式/依赖，不覆盖其他工作包改动和历史验收缺项。
+
+2026-11-10至11-11 P-A续验：v17 Fabric 0.20.1 热缓存安装、游戏退出0；资源库确认安装 FerriteCore 6.0.1 后游戏实际加载并退出0。v17真实搜索超时显示错误而不误报空结果。启动任务误标“安装完成”已修正，v19界面确认显示“启动请求完成”；工作区当时590项测试588通过2跳过。后续 P-D 等改动不被上述结果覆盖，详见 `docs/work-packages/P-A/runs/20261110-v17-fabric/REPORT.md`。
+
+2026-11-11续验：v19 重用既有 Fabric 实例进入游戏主菜单，日志确认 FerriteCore 6.0.1，正常退出码0；这是热启动，不等同当前进行中 P-D 的验收。
+
+2026-11-11 Quilt 安装失败：只读核对显示上游相同资源索引 ID `5` 的不同 SHA1 投影到同一共享路径，旧文件保留、实例 needsRecovery。路径别名或独立投影会改变存储/启动架构，候选及验证范围见 `docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md`，须明确批准后实施；不清理失败现场。
+
+2026-11-11 P-D首片实现及验证：按2026-11-10批准实现Java候选/精确版本绑定、现有gameDir锁内实例/Mod/启动文件复验、取消及提交许可互锁；unknown阻止启动并解释，许可后异常保守needsRecovery。真实存储/Mod事务争锁21项通过，Java 8/17/21真实属性探测通过；独立目录完整pnpm check为612项608通过/0失败/4跳过，类型/lint/build通过。详情与限制见根docs/work-packages/P-D/IMPLEMENTATION-20261111.md；真实产品游戏入口及外部编辑原子隔离仍未验收，未新增IPC、持久格式或依赖，未提交/发布。
+
+2026-11-11用户明确选择资源索引隔离方案 A：新投影按官方 ID 与 SHA1 区分，旧实例沿用原收据；批准记录见 DECISIONS。实施和隔离验证进行中，不清理 Quilt 失败现场。
+
+2026-11-11 P-C只读预览接入：用户直接回复“接入”，批准按 docs/work-packages/P-C/PREVIEW-CONTRACT-20261111.md 接入严格IPC、短期内存观察及只读界面。已开始实施；独立验证及Electron窗口证据未完成时不记交付。文件启停/卸载与持久格式仍须分别批准。

@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-29",
+  "head": "b87be9dc8d3640468dbb069d29e70b6af5712d7d",
+  "scope": "P-B read-only design; current worktree inputs, not assumed HEAD; no product tests rerun",
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 13587,
+      "sha256": "bd863a1adcc170276465c629e3c32c22d342186412d3735bceccb0ed1cf944b4"
+    },
+    {
+      "path": "OUCL-Codex/docs/TASK_PLAN.md",
+      "bytes": 73724,
+      "sha256": "79b55303d7003be1b78f5420a844b4c4251ab519db1b15b676de7a9bdd5ab498"
+    },
+    {
+      "path": "OUCL-Codex/docs/DECISIONS.md",
+      "bytes": 55798,
+      "sha256": "687454dbb53e84a4a38c312b0cfa2474d1331c4c42e72581cb05f748c8687b60"
+    },
+    {
+      "path": "docs/RESEARCH_INDEX.md",
+      "bytes": 8120,
+      "sha256": "d981894d69a4c2515736ac3d1b720f25de10140473fad2bf9fb2e19bd8b0aa22"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_RESEARCH_20261029.md",
+      "bytes": 32536,
+      "sha256": "4dc113eebf2be354ebe622d32ce591bded1c9cea9508b20b51b215ae101d1c21"
+    },
+    {
+      "path": "docs/validation/RESEARCH-OBSERVATION-20261029/REPORT.md",
+      "bytes": 14962,
+      "sha256": "faebdeebde01e9462b177118b4960833d0dfdd7ef89df5f350539c2f1a00eedc"
+    },
+    {
+      "path": "docs/validation/RESEARCH-OBSERVATION-20261029/pagination-result.json",
+      "bytes": 296,
+      "sha256": "6259713397e5ee1fa9ed1ccde92b851ab18ff710380d09c98d976f10fe8c18f8"
+    },
+    {
+      "path": "docs/validation/RESEARCH-OBSERVATION-20261029/component-target-result.json",
+      "bytes": 269,
+      "sha256": "61f194e64c48cb70a5a2911a79850540ce47db114d379d2f0df0b34aad782eae"
+    },
+    {
+      "path": "docs/validation/RESEARCH-OBSERVATION-20261029/silent-observation-result.json",
+      "bytes": 341,
+      "sha256": "98f64b52fbbac10930e21b0986d28909fc2d85370700ebf37a01cc193037993f"
+    },
+    {
+      "path": "docs/validation/RESEARCH-OBSERVATION-20261029/late-subscription-result.json",
+      "bytes": 315,
+      "sha256": "471fb5c174608f15bb1c4719e0a7dc6b85133e96efd9659a1540d6330e3c0778"
+    },
+    {
+      "path": "src/ui/launcher-state.ts",
+      "bytes": 3142,
+      "sha256": "f081cc0b68adf5c9070eed95efdb82149752e98408c65dab9aa9c7ae807c24f3"
+    },
+    {
+      "path": "src/ui/InstallPanel.tsx",
+      "bytes": 11837,
+      "sha256": "867cbc47c98b9fea4fd1e631ee92f9966c34b104adc7d42216263402b1519892"
+    },
+    {
+      "path": "src/ui/ModPanel.tsx",
+      "bytes": 9317,
+      "sha256": "0b374356cff3ddd6052f7b6bcfa4a5414b52fed7656d39ceb97d6ed014f251a2"
+    },
+    {
+      "path": "src/ui/App.tsx",
+      "bytes": 12770,
+      "sha256": "881446a9e2c026df8143a1a72f07e8b06d4ceeb55af34d48b36518804a27f26b"
+    },
+    {
+      "path": "src/ui/ResourceBrowser.tsx",
+      "bytes": 20888,
+      "sha256": "2e49591cce5e9954ee48878792340255db8ae438a5de134167e9a4492b478b13"
+    },
+    {
+      "path": "src/ui/ModInstallConfirmation.tsx",
+      "bytes": 3969,
+      "sha256": "ed188ce478719c6e6838e710cba2cbc5bed28c6727c1cc5651296d1bbaf88244"
+    },
+    {
+      "path": "src/ipc/preload-instances.ts",
+      "bytes": 4203,
+      "sha256": "7898fbb81dd53f98c77de35924863f49a6c864adca8c34a25f04b0ba9c9ebb4e"
+    },
+    {
+      "path": "src/ipc/installer-adapter.ts",
+      "bytes": 15785,
+      "sha256": "12ba677ecdbf3b1bc0a8f4c2475a8123a87e1476e51784f2b2bb0847a9e0774a"
+    },
+    {
+      "path": "src/shared/contracts/instances.ts",
+      "bytes": 17616,
+      "sha256": "3f4240b14be1a8e5845b103137284ce08556a1bf8867b7d8990d9bc861d98244"
+    },
+    {
+      "path": "src/services/mods/tasks.ts",
+      "bytes": 15450,
+      "sha256": "e075acdf7afd57e8e1c18f5643416b5642e32914e4941277bce75f5ea2c3477a"
+    },
+    {
+      "path": "src/services/mods/install-tasks.ts",
+      "bytes": 17097,
+      "sha256": "67b2aa64e1d3e3c9fb463307e73e83cf00e91423d1d10662429f6e890162ee3d"
+    },
+    {
+      "path": "src/services/storage/mod-jobs.ts",
+      "bytes": 3196,
+      "sha256": "271def951d9b817af1468d09c1dd555e3843370540e9e8fd5b40faecb1f0fdc4"
+    },
+    {
+      "path": "src/main/index.ts",
+      "bytes": 25643,
+      "sha256": "7580626ec31231b68c3e54766fbf4c4c701c5e04ee99e4179ba635250d48abd3"
+    },
+    {
+      "path": "src/core/task/machine.ts",
+      "bytes": 5176,
+      "sha256": "654a01dfbb30b4ef531e2d6664a8be220fad8101da885f36ca1ff764065f9ef0"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1866,
+      "sha256": "32187020e1edfc45ca4f0fe7e568cc5c39941833ad22ae666f3464f604f2b9c5"
+    }
+  ]
+}

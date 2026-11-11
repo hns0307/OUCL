@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
-import type { InstallStage, TaskSnapshot } from '../shared/contracts/instances.js';
+import type { InstallStage, InstanceBridge, TaskSnapshot } from '../shared/contracts/instances.js';
+import { TaskObserverPool } from './task-observer.js';
+import type { TaskObservation } from './task-observer.js';
+import { rendererTaskReads } from './task-query.js';
+import { instanceFailure } from '../shared/contracts/instances.js';
 import { useLauncher } from './launcher-state.js';
 import type { LoaderKind, LoaderVersionItem } from '../shared/contracts/loaders.js';
 import { canInstallLoaderMinecraft, LOADER_INSTALL_TARGETS, preferredLoaderVersion } from '../shared/contracts/loader-targets.js';
@@ -15,6 +19,12 @@ function bytes(value: number): string {
 }
 function terminal(snapshot: TaskSnapshot): boolean { return ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(snapshot.state); }
 function taskLabel(snapshot: TaskSnapshot): MessageKey {
+  if (snapshot.kind === 'launch' || snapshot.kind === 'stop') {
+    if (snapshot.state === 'cancelled') return 'stageCancelled';
+    if (snapshot.state === 'needsRecovery') return 'stageRecovery';
+    if (snapshot.kind === 'launch') return snapshot.state === 'completed' ? 'launchTaskDone' : snapshot.state === 'failed' ? 'launchTaskFailed' : 'launchTaskPending';
+    return snapshot.state === 'completed' ? 'stopTaskDone' : snapshot.state === 'failed' ? 'stopTaskFailed' : 'stopTaskPending';
+  }
   if (snapshot.kind === 'mod-install') return snapshot.state === 'completed' ? 'modsInstalled'
     : snapshot.state === 'failed' ? 'modsInstallFailed' : snapshot.state === 'cancelled' ? 'modsInstallCancelled'
       : snapshot.state === 'needsRecovery' ? 'modsInstallRecovery' : 'modsInstalling';
@@ -23,22 +33,35 @@ function taskLabel(snapshot: TaskSnapshot): MessageKey {
     : snapshot.state === 'cancelled' ? 'modsCheckCancelled' : snapshot.state === 'needsRecovery' ? 'modsCheckRecovery' : 'modsChecking';
 }
 
+let observationContext: { bridge: InstanceBridge; rootId: string | undefined; pool: TaskObserverPool; visibility: () => void } | undefined;
+function taskPool(bridge: InstanceBridge, rootId: string | undefined): TaskObserverPool {
+  if (observationContext?.bridge === bridge && observationContext.rootId === rootId) return observationContext.pool;
+  if (observationContext) { observationContext.pool.close(); document.removeEventListener('visibilitychange', observationContext.visibility); }
+  const valid = (): boolean => observationContext?.pool === pool && !document.hidden;
+  const pool = new TaskObserverPool({
+    getTask: async taskId => await rendererTaskReads.run(() => bridge.getTask(taskId), valid)
+      ?? instanceFailure<'tasks:get'>(crypto.randomUUID(), 'UNAVAILABLE', crypto.randomUUID()),
+    subscribeTask: async (taskId, listener) => await rendererTaskReads.run(() => bridge.subscribeTask(taskId, listener), valid)
+      ?? { result: instanceFailure<'tasks:subscribe'>(crypto.randomUUID(), 'UNAVAILABLE', crypto.randomUUID()), dispose: () => {} },
+  }); const visibility = (): void => { pool.setVisible(!document.hidden); };
+  visibility(); document.addEventListener('visibilitychange', visibility);
+  observationContext = { bridge, rootId, pool, visibility }; return pool;
+}
+
 export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onSettled: (snapshot: TaskSnapshot) => void }) {
   const [snapshot, setSnapshot] = useState(initial); const [error, setError] = useState<MessageKey>(); const [cancelling, setCancelling] = useState(false);
+  const rootId = useLauncher(state => state.rootId);
+  const [observation, setObservation] = useState<TaskObservation>({ snapshot: initial, connection: 'unconfirmed' });
+  const reconnect = useRef<(() => void) | undefined>(undefined);
   useEffect(() => { setSnapshot(current => initial.revision > current.revision ? initial : current); }, [initial]);
   useEffect(() => {
-    if (!window.oucl) return; let active = true; let dispose: (() => void) | undefined; let timer: ReturnType<typeof setInterval> | undefined;
-    const bridge = window.oucl;
-    void bridge.subscribeTask(initial.taskId, value => { if (active) setSnapshot(value); }).then(subscription => {
-      if (!active) { subscription.dispose(); return; }
-      dispose = subscription.dispose;
-      if (!subscription.result.ok) {
-        timer = setInterval(() => { void bridge.getTask(initial.taskId).then(result => { if (active && result.ok) setSnapshot(result.data.snapshot); }); }, 1000);
-        setError(subscription.result.error.messageKey);
-      }
-    }).catch(() => { if (active) setError('unavailable'); });
-    return () => { active = false; dispose?.(); clearInterval(timer); };
-  }, [initial.taskId]);
+    if (!window.oucl) return;
+    const observer = taskPool(window.oucl, rootId).observe(initial, value => {
+      setObservation(value); setSnapshot(current => value.snapshot.revision >= current.revision ? value.snapshot : current);
+    });
+    reconnect.current = observer.reconnect;
+    return () => { reconnect.current = undefined; observer.dispose(); };
+  }, [initial.taskId, rootId]);
   useEffect(() => { if (terminal(snapshot)) onSettled(snapshot); }, [snapshot.state, onSettled]);
   async function cancel(): Promise<void> {
     if (!window.oucl || cancelling) return; setCancelling(true); setError(undefined);
@@ -47,17 +70,24 @@ export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onS
   }
   return <article className="install-task" data-task-id={snapshot.taskId} data-task-state={snapshot.state}>
     <div className="task-heading"><strong>{MESSAGES[taskLabel(snapshot)]}</strong>
-      {!terminal(snapshot) && <button disabled={cancelling || snapshot.state === 'committing' || snapshot.state === 'cancelling'} onClick={() => { void cancel(); }}>{MESSAGES.cancelTask}</button>}
+      {!terminal(snapshot) && <button disabled={cancelling || snapshot.state === 'committing' || snapshot.state === 'cancelling'} onClick={() => { void cancel(); }}>{MESSAGES[snapshot.kind === 'install' ? 'cancelTask' : 'taskCancelGeneric']}</button>}
     </div>
     {snapshot.bytesTotal !== undefined && <><progress max={snapshot.bytesTotal || 1} value={snapshot.bytesDone} /><p className="storage-note">{MESSAGES.preparedBytes} {bytes(snapshot.bytesDone)} / {bytes(snapshot.bytesTotal)}</p></>}
-    {(cancelling || snapshot.state === 'cancelling') && !terminal(snapshot) && <p role="status">{MESSAGES.cancellingTask}</p>}
+    {(cancelling || snapshot.state === 'cancelling') && !terminal(snapshot) && <p role="status">{MESSAGES[snapshot.kind === 'install' ? 'cancellingTask' : 'taskCancellingGeneric']}</p>}
+    <p className="storage-note" role="status" data-observation-state={observation.connection}>
+      {MESSAGES[observation.connection === 'confirmed' ? 'taskObservationConfirmed' : observation.connection === 'connecting' || observation.connection === 'rechecking' ? 'taskObservationChecking' : 'taskObservationUnconfirmed']}
+      {observation.lastConfirmedAt !== undefined && <> · {MESSAGES.taskObservationLastConfirmed} {new Date(observation.lastConfirmedAt).toLocaleTimeString()}</>}
+      {observation.code === 'TASK_NOT_FOUND' && <> · {MESSAGES.taskObservationNotFound}</>}
+      {observation.code === 'ROOT_UNAVAILABLE' && <> · {MESSAGES.rootUnavailable}</>}
+    </p>
+    {(observation.connection === 'unavailable' || observation.connection === 'unconfirmed') && <button onClick={() => { reconnect.current?.(); }}>{MESSAGES.taskObservationReconnect}</button>}
     {(error || snapshot.error) && <p role="alert" className="form-error">{MESSAGES[error ?? snapshot.error!.messageKey]}</p>}
   </article>;
 }
 
 /** Connects the approved vanilla instance/task flow; all network, files and process work stays behind preload. */
 export function InstallPanel({ enabled, loadersEnabled, rootId, versionId }: { enabled: boolean; loadersEnabled: boolean; rootId: string | undefined; versionId: string | undefined }) {
-  const { settings, tasks, refreshGame } = useLauncher();
+  const { settings, refreshGame } = useLauncher();
   const [displayName, setDisplayName] = useState(''); const [isolation, setIsolation] = useState<'on' | 'off'>('on');
   const [busy, setBusy] = useState(false); const [error, setError] = useState<MessageKey>();
   const [loader, setLoader] = useState<'vanilla' | LoaderKind>('vanilla');
@@ -111,6 +141,5 @@ export function InstallPanel({ enabled, loadersEnabled, rootId, versionId }: { e
       <p className="storage-note">{MESSAGES.installHint}</p>{!rootId && <p>{MESSAGES.chooseRootFirst}</p>}
       <button className="primary" disabled={busy || loaderBusy || !loaderSupported || !catalogMatches || !rootId || !displayName.trim() || accepted.current || loader !== 'vanilla' && !loaderVersion} onClick={() => { void install(); }}>{busy || loaderBusy ? MESSAGES.installAccepting : MESSAGES.installConfirm}</button>
     </>}{error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}</section>
-    {tasks.some(t => t.kind === 'install') && <section className="card"><h2>{MESSAGES.tasksTitle}</h2>{tasks.filter(t => t.kind === 'install').slice(-6).map(task => <InstallTask key={task.taskId} initial={task} onSettled={refreshGame} />)}</section>}
   </div>;
 }

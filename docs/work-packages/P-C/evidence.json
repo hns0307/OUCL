@@ -1,0 +1,84 @@
+{
+  "inputs": [
+    {
+      "sha256": "79b55303d7003be1b78f5420a844b4c4251ab519db1b15b676de7a9bdd5ab498",
+      "path": "OUCL-Codex/docs/TASK_PLAN.md"
+    },
+    {
+      "sha256": "687454dbb53e84a4a38c312b0cfa2474d1331c4c42e72581cb05f748c8687b60",
+      "path": "OUCL-Codex/docs/DECISIONS.md"
+    },
+    {
+      "sha256": "bd863a1adcc170276465c629e3c32c22d342186412d3735bceccb0ed1cf944b4",
+      "path": "AGENTS.md"
+    },
+    {
+      "sha256": "d981894d69a4c2515736ac3d1b720f25de10140473fad2bf9fb2e19bd8b0aa22",
+      "path": "docs/RESEARCH_INDEX.md"
+    },
+    {
+      "sha256": "4dc113eebf2be354ebe622d32ce591bded1c9cea9508b20b51b215ae101d1c21",
+      "path": "docs/IMPLEMENTATION_RESEARCH_20261029.md"
+    },
+    {
+      "sha256": "649dd9dc9074162878f827e8992b22686ad10ba9bad30141ca201d2004fb7581",
+      "path": "docs/IDENTITY_OVERLAY_RESEARCH_20261029.md"
+    },
+    {
+      "sha256": "0b374356cff3ddd6052f7b6bcfa4a5414b52fed7656d39ceb97d6ed014f251a2",
+      "path": "src/ui/ModPanel.tsx"
+    },
+    {
+      "sha256": "2999b7b44cdf574faab4f428f165fdb8248dacf996eeb4098072d9ad339e7cc1",
+      "path": "src/services/mods/inventory.ts"
+    },
+    {
+      "sha256": "3d07051c3967875a44b5352afcbda369914650e7fb1513e41445331898b71b0c",
+      "path": "src/services/mods/transaction.ts"
+    },
+    {
+      "sha256": "71a081704913d0542c46911bc15c91137d97de58c0b01d5b34712ea251b9bc5e",
+      "path": "src/services/storage/mod-transactions.ts"
+    },
+    {
+      "sha256": "02064eb346a83cda679f3da2d8107e21758267c2e3b5deb48ddca740609466b8",
+      "path": "src/core/mods/check.ts"
+    },
+    {
+      "sha256": "191e420094d6289eed91494a185510cdee3cd48b02fd691ad7278f21f03bad95",
+      "path": "src/core/mods/platform.ts"
+    },
+    {
+      "sha256": "705d058b1cac1bebc6489cbf76be21ed918a30940d7827c1d8e2fe3173d1f03d",
+      "path": "src/services/launch/process.ts"
+    }
+  ],
+  "scope": "read-only source review and document validation; no product execution",
+  "validation": {
+    "brokenLocalLinks": [],
+    "referenceHashesMatch": true,
+    "recoveryValidated": false,
+    "productTestsRun": false
+  },
+  "date": "2026-10-29",
+  "head": "b87be9dc8d3640468dbb069d29e70b6af5712d7d",
+  "limitations": [
+    "No Windows no-clobber primitive experiment",
+    "No runtime maintenance implementation",
+    "No actual game or player data touched"
+  ],
+  "references": [
+    {
+      "manifestMatch": true,
+      "path": "KAMUCL/src/main/core/modManagement.ts",
+      "commit": "30874ab871c8ee00c1edab275bb3aeb25704330b",
+      "sha256": "cec66fa8d8047126807286cac04a144737558596c62cef31addbb3b7ce900365"
+    },
+    {
+      "manifestMatch": true,
+      "path": "KAMUCL/src/main/core/modTransaction.ts",
+      "commit": "30874ab871c8ee00c1edab275bb3aeb25704330b",
+      "sha256": "02b1ed2bb3f06b01282df9becbb2582d9440e19c9a839dc6cd3f5c290d885a76"
+    }
+  ]
+}

@@ -81,6 +81,11 @@ export class ModTaskService {
     const operation = this.admissions.then(() => this.admit(requestId, mode, input));
     this.admissions = operation.then(() => {}, () => {}); return operation;
   }
+  /** Serializes a trusted target read with the complete task and index admission transaction. */
+  withTargetRead<T>(read: () => Promise<T>): Promise<T> {
+    const operation = this.admissions.then(read);
+    this.admissions = operation.then(() => {}, () => {}); return operation;
+  }
   private async admit(requestId: string, mode: 'list' | 'check', input: { instanceId: string; expectedRevision: number }): Promise<{ taskId: string }> {
     if (this.closed) throw new ModContractError('UNAVAILABLE');
     if (!UUID_PATTERN.test(requestId) || mode !== 'list' && mode !== 'check' || !isModPayload(input, mode === 'list' ? 'mods:list' : 'mods:check')) throw new ModContractError('INVALID_ARGUMENT');
@@ -173,7 +178,14 @@ export class ModTaskService {
   private async taskView(root: string, record: ModJobRecord): Promise<InstanceData['tasks:get']> {
     const task = this.jobs.get(record.taskId)?.task ?? await this.storage.get(root, record.taskId);
     if (!task || task.kind !== 'mod-check') throw new InstanceContractError('NEEDS_RECOVERY');
-    const execution = task.execution; const state = this.lost.has(record.taskId) ? 'needsRecovery' : execution.state;
+    return this.targetTaskView(root, task);
+  }
+  /** Projects a proven stored target using the same live and recovery state as the task service. */
+  targetTaskView(root: string, binding: StoredTask): InstanceData['tasks:get'] {
+    if (binding.kind !== 'mod-check' || binding.ownerId.toLowerCase() !== root.toLowerCase()) throw new InstanceContractError('NEEDS_RECOVERY');
+    const live = this.jobs.get(binding.taskId)?.task;
+    const task = live && live.execution.revision >= binding.execution.revision ? live : binding;
+    const execution = task.execution; const state = this.lost.has(task.taskId) ? 'needsRecovery' : execution.state;
     const stage = terminal(state) ? state : state === 'committing' ? 'committing' : 'preparing';
     const snapshot: TaskSnapshot = { taskId: task.taskId, kind: 'mod-check', state, stage: stage as TaskSnapshot['stage'], revision: execution.revision, bytesDone: 0 };
     if (state === 'failed' || state === 'needsRecovery') { const failed = instanceFailure(randomUUID(), state === 'needsRecovery' ? 'NEEDS_RECOVERY' : 'UNAVAILABLE', randomUUID()); if (!failed.ok) snapshot.error = failed.error; }

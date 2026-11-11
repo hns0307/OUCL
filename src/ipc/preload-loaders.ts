@@ -7,7 +7,10 @@ async function request<C extends LoaderChannel>(channel: C, payload: LoaderPaylo
   if (!UUID_PATTERN.test(requestId) || !isLoaderPayload(payload, channel)) return loaderFailure(crypto.randomUUID(), 'INVALID_ARGUMENT', crypto.randomUUID());
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const deadline = new Promise<LoaderResult<C>>(resolve => { timer = setTimeout(() => { resolve(loaderFailure(requestId, 'TIMEOUT', requestId)); }, 15000); });
+    // Catalog reads can consume three 12-second transport attempts plus bounded backoff.
+    // Creating an instance keeps its existing admission deadline; no write is replayed here.
+    const timeoutMs = channel === 'loaders:versions' ? 45000 : 15000;
+    const deadline = new Promise<LoaderResult<C>>(resolve => { timer = setTimeout(() => { resolve(loaderFailure(requestId, 'TIMEOUT', requestId)); }, timeoutMs); });
     const value: unknown = await Promise.race([ipcRenderer.invoke(channel, { contractVersion: 1, requestId, payload }), deadline]);
     return isLoaderResult(value, requestId, channel) ? value : loaderFailure(requestId, 'UNAVAILABLE', requestId);
   } catch { return loaderFailure(requestId, 'UNAVAILABLE', requestId); }

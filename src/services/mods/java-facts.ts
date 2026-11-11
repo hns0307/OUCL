@@ -1,6 +1,7 @@
 import { JavaProbe, JavaProbeError } from '../java/probe.js';
 import type { ProfileService } from '../launch/profiles.js';
 import { ModInventoryError } from './inventory.js';
+import { JAVA_PROBE_TIMEOUT_MS, registeredJavaCandidates } from '../java/selection.js';
 
 /** Reads current JVM facts from registered candidates only: no discovery, downloads or registration writes. */
 export class InstalledJavaFacts {
@@ -12,13 +13,12 @@ export class InstalledJavaFacts {
     const check = (): void => { if (signal?.aborted) throw new ModInventoryError('CANCELLED'); };
     try {
       check(); const saved = await this.profiles.list(); check();
-      const candidates = [...saved.javas].sort((a, b) => Number(b.javaId === saved.selectedJavaId) - Number(a.javaId === saved.selectedJavaId))
-        .filter(java => java.major === major);
+      const candidates = registeredJavaCandidates(saved, major);
       let version: string | null = null;
       for (const java of candidates) {
         check();
         try {
-          const measured = await this.probe.probe(java.executable, { ...(signal ? { signal } : {}), timeoutMs: 2000 }); check();
+          const measured = await this.probe.probe(java.executable, { ...(signal ? { signal } : {}), timeoutMs: JAVA_PROBE_TIMEOUT_MS }); check();
           if (measured.major === major) { version = measured.version; break; }
         } catch (error) {
           check();

@@ -22,6 +22,26 @@ internal static class BootstrapTests {
         string root = Path.GetFullPath(args[0]); Directory.CreateDirectory(root);
         Assert(Launcher.EnvironmentRoot(Path.Combine(root, "portable", "OUCL.exe")) == Path.Combine(root, "portable", "OUCL.runtime"));
         string originalDirectory = Environment.CurrentDirectory;
+        var firstError = new IOException("PREPARATION_FAILED");
+        Exception observed = null;
+        try { Launcher.WithCleanup(() => { throw firstError; }, () => { throw new IOException("CLEANUP_FAILED"); }); }
+        catch (Exception error) { observed = error; }
+        Assert(Object.ReferenceEquals(observed, firstError));
+        observed = null;
+        try { Launcher.WithCleanup(() => {}, () => { throw new IOException("CLEANUP_FAILED"); }); }
+        catch (Exception error) { observed = error; }
+        Assert(observed != null && observed.Message == "CLEANUP_FAILED");
+        bool cleaned = false; Launcher.WithCleanup(() => {}, () => { cleaned = true; }); Assert(cleaned);
+        var start = new System.Diagnostics.ProcessStartInfo(); start.Arguments = "application";
+        start.EnvironmentVariables["CHROME_CRASHPAD_PIPE_NAME"] = "test-parent-pipe";
+        start.EnvironmentVariables["CHROME_CRASHPAD_SERVER_URL"] = "https://invalid.example/";
+        Launcher.ConfigureRuntimeLogging(start, root);
+        string log = Path.Combine(root, "logs", "electron.log");
+        Assert(start.EnvironmentVariables["ELECTRON_LOG_FILE"] == log && start.EnvironmentVariables["CHROME_LOG_FILE"] == log);
+        Assert(start.Arguments.Contains("--log-file=" + log));
+        Assert(!start.EnvironmentVariables.ContainsKey("CHROME_CRASHPAD_PIPE_NAME") && !start.EnvironmentVariables.ContainsKey("CHROME_CRASHPAD_SERVER_URL"));
+        Assert(Launcher.FailureMessage(new System.Net.WebException()).Contains("下载失败"));
+        Assert(Launcher.FailureMessage(new IOException("HASH_MISMATCH")).Contains("校验失败"));
         Environment.CurrentDirectory = root;
         Assert(Launcher.EnvironmentRoot(Path.Combine(root, "elsewhere", "OUCL.exe")) == Path.Combine(root, "elsewhere", "OUCL.runtime"));
         Environment.CurrentDirectory = originalDirectory;

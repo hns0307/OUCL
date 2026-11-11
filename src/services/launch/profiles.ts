@@ -26,16 +26,19 @@ export class ProfileService {
   /** Reads trusted internal profiles, including the private executable/UUID; adapters must project a public DTO. */
   async list(): Promise<LaunchProfiles> { return (await this.read()).data; }
   /** Persists the measured explicitly chosen JVM; reselecting the same path preserves its opaque reference. */
-  registerJava(executable: string): Promise<RegisteredJava> {
+  registerJava(executable: string, signal?: AbortSignal, expectedProfiles?: LaunchProfiles): Promise<RegisteredJava> {
     if (this.closed) return Promise.reject(new ProfileError('STORAGE_UNAVAILABLE'));
-    const result = this.register(executable); this.jobs.add(result);
+    const result = this.register(executable, signal, expectedProfiles); this.jobs.add(result);
     void result.finally(() => { this.jobs.delete(result); }).catch(() => {}); return result;
   }
-  private async register(executable: string): Promise<RegisteredJava> {
+  private async register(executable: string, signal?: AbortSignal, expectedProfiles?: LaunchProfiles): Promise<RegisteredJava> {
     let runtime: JavaRuntime;
-    try { runtime = await this.probe.probe(executable); } catch { throw new ProfileError('JAVA_INVALID'); }
+    try { runtime = await this.probe.probe(executable, signal ? { signal } : {}); } catch { throw new ProfileError('JAVA_INVALID'); }
     return this.serial(async () => {
+      if (signal?.aborted) throw new ProfileError('JAVA_INVALID');
       const current = await this.read();
+      if (signal?.aborted) throw new ProfileError('JAVA_INVALID');
+      if (expectedProfiles && JSON.stringify(current.data) !== JSON.stringify(expectedProfiles)) throw new ProfileError('JAVA_INVALID');
       const executable = normalizeDataDirectory(runtime.executable);
       const existing = current.data.javas.find(java => java.executable.toLowerCase() === executable.toLowerCase());
       if (!existing && current.data.javas.length >= 32) throw new ProfileError('STORAGE_UNAVAILABLE');

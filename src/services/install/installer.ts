@@ -31,7 +31,7 @@ import { InstallDownloadService } from './downloads.js';
 import type { InstallDownloadProgress } from './downloads.js';
 import { artifactSpec } from './metadata-object.js';
 import { FileViewService } from './file-views.js';
-import { ensureChildDirectory, prepareInstanceDirectories, prepareInstanceNatives, viewTarget, writeDerivedJson } from './instance-files.js';
+import { ensureChildDirectory, instanceGameLayout, prepareInstanceDirectories, prepareInstanceNatives, viewTarget, writeDerivedJson } from './instance-files.js';
 import { hasCode } from '../storage/files.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { verifyLaunchInputs } from './launch-inputs.js';
@@ -45,6 +45,11 @@ import type { PreparedInstallerMetadata } from '../loaders/installer-install-met
 import { processInstallerWorkspace } from '../loaders/installer-processing.js';
 import { publishProcessorOutputs } from '../loaders/processor-outputs.js';
 import type { PersistedLoaderMetadata } from '../storage/instance-records.js';
+import { ModInventoryService } from '../mods/inventory.js';
+import { modInventoryContext } from '../mods/context.js';
+import { InstalledLanguageReader } from '../mods/languages.js';
+import { ModArchiveReader } from '../workers/mod-archive-reader.js';
+import type { NativeFileFact } from './launch-snapshot.js';
 
 export class InstallerError extends Error {
   readonly category: 'disk' | 'biz' | 'system' | 'cancelled';
@@ -108,6 +113,7 @@ export class InstallerService {
   private closed = false;
   private closing?: Promise<void>;
   private readonly requestBudget = new RequestBudget();
+  private inspectingLaunchMods = false;
   constructor(private readonly storage: StorageClient, private readonly entry: string | URL, private readonly metadata: InstallMetadataService,
     private readonly loaderMetadata?: LoaderInstallMetadataService, private readonly installerPreparation?: InstallerPreparationService,
     private readonly processorJava?: (major: 17 | 21, consumerId: string, signal: AbortSignal) => Promise<string>,
@@ -195,9 +201,28 @@ export class InstallerService {
         if (!this.installerPreparation) throw new InstallerError('NEEDS_RECOVERY');
         await this.installerPreparation.reopen(loader, { ...runtime, extractor: runtime.installerExtractor }, signal);
       }
-      return verifyLaunchInputs(runtime, record, restoreInstallMetadata(record.data), signal);
+      const transaction = record.data.modCommitId ? await this.storage.readModTransaction(record.data.modCommitId) : undefined;
+      return verifyLaunchInputs(runtime, record, restoreInstallMetadata(record.data), signal, transaction?.data);
     });
     this.fileTail = operation.then(() => {}, () => {}); return operation;
+  }
+  /** Read-only final verification; caller holds the existing gameDir lease. No fileTail or repair is entered. */
+  async verifyPreparedLaunch(instanceId: string, expectedRevision: number, nativeFiles: readonly NativeFileFact[], signal: AbortSignal) {
+    if (this.closed) throw new InstallerError('INSTALL_FAILED');
+    const runtime = await this.resources(); const record = await this.storage.readInstance(instanceId);
+    if (!record || record.data.phase !== 'ready' || record.data.summary.rootId !== runtime.rootId || record.revision !== expectedRevision) throw new InstallerError('NEEDS_RECOVERY');
+    const transaction = record.data.modCommitId ? await this.storage.readModTransaction(record.data.modCommitId) : undefined;
+    return verifyLaunchInputs(runtime, record, restoreInstallMetadata(record.data), signal, transaction?.data, nativeFiles);
+  }
+  /** Binds the local active inventory check to this launch's actual Java version; never selects a second JVM. */
+  async inspectLaunchMods(instanceId: string, expectedRevision: number, javaVersion: string, signal: AbortSignal) {
+    if (this.closed || this.inspectingLaunchMods) throw new InstallerError('INSTALL_FAILED');
+    this.inspectingLaunchMods = true;
+    try {
+      const scanner = new ModArchiveReader(this.entry);
+      const context = modInventoryContext(this.storage, new InstalledLanguageReader(scanner), { read: async () => javaVersion });
+      return await new ModInventoryService(context, scanner).scan(instanceId, expectedRevision, signal);
+    } finally { this.inspectingLaunchMods = false; }
   }
   /** Persists idempotent acceptance and reserved identity before admitting background network/filesystem work. */
   create(requestId: string, input: CreateInstanceInput): Promise<{ taskId: string }> {
@@ -374,7 +399,10 @@ export class InstallerService {
           if (item.instanceId === record.summary.instanceId) continue;
           const previous = (await this.storage.readInstance(item.instanceId))?.data;
           for (const receipt of previous?.receipts ?? []) {
-            if (receipt.area !== 'assets' && receipt.area !== 'libraries') continue;
+            if (receipt.area === 'version' && receipt.path === 'client.jar' && previous?.phase === 'ready') {
+              const previousLayout = instanceGameLayout(runtime.dataDirectory, previous.summary, restoreInstallMetadata(previous));
+              if (path.resolve(previousLayout.jar).toLowerCase() !== path.resolve(directories.layout.jar).toLowerCase()) continue;
+            } else if (receipt.area !== 'assets' && receipt.area !== 'libraries') continue;
             const object = previous?.objects?.[receipt.artifactId]; if (object) inherited.set(`${receipt.area}:${receipt.path.toLowerCase()}`, { digest: object.digest, mode: receipt.mode });
           }
         }

@@ -160,14 +160,14 @@ internal static class Launcher {
                 if (Directory.Exists(runtime)) runtime += "-" + Guid.NewGuid().ToString("N");
                 string staging = Path.Combine(root, ".download-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(staging);
                 string archive = Path.Combine(staging, "runtime.zip");
-                try {
+                WithCleanup(() => {
                     if (needsDownload != null) needsDownload();
                     Download(url, archive, progress); progress("正在校验运行环境……");
                     if (Hash(archive) != runtimeHash) throw new IOException("HASH_MISMATCH");
                     using (var stream = File.OpenRead(archive)) Extract(stream, Path.Combine(staging, "runtime"));
                     if (!Verify(Path.Combine(staging, "runtime"), TextResource("runtime-manifest"))) throw new IOException("RUNTIME_MISMATCH");
                     Directory.Move(Path.Combine(staging, "runtime"), runtime);
-                } finally { SafeCleanup(root, staging); }
+                }, () => SafeCleanup(root, staging));
             }
             progress("正在准备 OUCL……");
             string application = FindCache(root, "app-" + appHash, TextResource("app-manifest"));
@@ -175,20 +175,54 @@ internal static class Launcher {
                 application = Path.Combine(root, "app-" + appHash);
                 if (Directory.Exists(application)) application += "-" + Guid.NewGuid().ToString("N");
                 string staging = Path.Combine(root, ".app-" + Guid.NewGuid().ToString("N"));
-                try {
+                WithCleanup(() => {
                     using (var embedded = Assembly.GetExecutingAssembly().GetManifestResourceStream("application")) Extract(embedded, staging);
                     if (!Verify(staging, TextResource("app-manifest"))) throw new IOException("APPLICATION_MISMATCH");
                     Directory.Move(staging, application);
-                } finally { SafeCleanup(root, staging); }
+                }, () => SafeCleanup(root, staging));
             }
             Cancel.Token.ThrowIfCancellationRequested();
             var start = new ProcessStartInfo(Path.Combine(runtime, "electron.exe")); start.UseShellExecute = false; start.WorkingDirectory = application;
             start.Arguments = Quote(application) + " " + String.Join(" ", ApplicationArguments(Assembly.GetExecutingAssembly().Location, Arguments).Select(Quote));
+            ConfigureRuntimeLogging(start, root);
             start.EnvironmentVariables["OUCL_PORTABLE_ROOT"] = Path.GetDirectoryName(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));
             start.EnvironmentVariables.Remove("ELECTRON_RUN_AS_NODE"); start.EnvironmentVariables.Remove("NODE_OPTIONS");
             start.EnvironmentVariables.Remove("ELECTRON_OVERRIDE_DIST_PATH");
             Process.Start(start);
         }
+    }
+    // A failed best-effort cleanup must not replace the preparation failure that explains what happened.
+    internal static void WithCleanup(Action prepare, Action cleanup) {
+        Exception preparationError = null;
+        try { prepare(); }
+        catch (Exception error) { preparationError = error; throw; }
+        finally {
+            try { cleanup(); }
+            catch (Exception) { if (preparationError == null) throw; }
+        }
+    }
+    // Keep Chromium/Electron diagnostics outside the immutable, manifest-verified runtime tree.
+    internal static void ConfigureRuntimeLogging(ProcessStartInfo start, string root) {
+        string logs = Path.Combine(root, "logs"); Guard(logs); Directory.CreateDirectory(logs);
+        string log = Path.Combine(logs, "electron.log"); Guard(log);
+        start.EnvironmentVariables["ELECTRON_LOG_FILE"] = log;
+        start.EnvironmentVariables["CHROME_LOG_FILE"] = log;
+        // A launcher started by another Electron app must not join that app's crash handler.
+        start.EnvironmentVariables.Remove("CHROME_CRASHPAD_PIPE_NAME");
+        start.EnvironmentVariables.Remove("CHROME_CRASHPAD_SERVER_URL");
+        start.Arguments += " " + Quote("--log-file=" + log);
+    }
+    internal static string FailureMessage(Exception error) {
+        if (error is UnauthorizedAccessException) return "无法写入同级目录，请将 EXE 放到可写文件夹后重试。";
+        var network = error as WebException;
+        if (network != null) return "运行环境下载失败，请检查网络后重试。";
+        if (error is IOException) {
+            int code = error.HResult & 0xffff;
+            if (code == 32 || code == 33 || code == 5) return "运行文件被占用或无法访问。请关闭占用此测试目录的程序后重试。";
+            if (error.Message == "HASH_MISMATCH" || error.Message == "RUNTIME_MISMATCH" || error.Message == "APPLICATION_MISMATCH")
+                return "运行文件校验失败，请重试；已有游戏数据不会被修改。";
+        }
+        return "准备未完成，请检查目录权限、磁盘空间或文件占用后重试。";
     }
     static void SafeCleanup(string root, string directory) {
         if (!Directory.Exists(directory)) return;
@@ -241,7 +275,7 @@ internal sealed class DownloadWindow : Form {
         }
         catch (Exception error) {
             working = false; if (Launcher.Cancel.IsCancellationRequested) { Close(); return; }
-            status.Text = error is UnauthorizedAccessException ? "无法写入同级目录，请将 EXE 放到可写文件夹后重试。" : "准备未完成，请检查网络、磁盘空间，或等待另一个 OUCL 完成准备后重试。";
+            status.Text = Launcher.FailureMessage(error);
             detail.Text = "已有游戏和账户数据不会被修改。"; progress.Visible = false; cancel.Visible = false; retry.Visible = true;
             if (!Visible) Show();
         }

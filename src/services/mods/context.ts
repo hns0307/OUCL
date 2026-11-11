@@ -9,7 +9,7 @@ import type { InstalledJavaFacts } from './java-facts.js';
 
 /** Resolves only the current registered root and ready instance; directory names never come from IPC. */
 export function modInventoryContext(storage: Pick<StorageClient, 'readInstallation' | 'readInstance'>,
-  languages?: Pick<InstalledLanguageReader, 'read'>, java?: Pick<InstalledJavaFacts, 'read'>): (instanceId: string, signal?: AbortSignal) => Promise<ModInventoryContext> {
+  languages?: Pick<InstalledLanguageReader, 'read'> & Partial<Pick<InstalledLanguageReader, 'readRuntime'>>, java?: Pick<InstalledJavaFacts, 'read'>): (instanceId: string, signal?: AbortSignal) => Promise<ModInventoryContext> {
   return async (instanceId, signal) => {
     const root = await storage.readInstallation(); const record = await storage.readInstance(instanceId);
     if (!root || !record || record.data.summary.rootId !== root.data.rootId || record.data.phase !== 'ready') throw new ModInventoryError('INVALID_ARGUMENT');
@@ -18,6 +18,7 @@ export function modInventoryContext(storage: Pick<StorageClient, 'readInstallati
     const loader = record.data.loader ?? { kind: 'vanilla' as const };
     const versions: Record<string, string | null> = { minecraft: record.data.summary.mcVersionId, java: null };
     if (loader.kind !== 'vanilla') versions[{ fabric: 'fabricloader', quilt: 'quilt_loader', forge: 'forge', neoforge: 'neoforge' }[loader.kind]] = loader.version;
+    if (loader.kind === 'quilt') versions.fabricloader = languages?.readRuntime ? await languages.readRuntime(root.data.dataDirectory, record.data, signal) : null;
     const languageVersions = languages ? await languages.read(root.data.dataDirectory, record.data, signal) : {};
     if (java) versions.java = await java.read(prepared.version.javaMajor, signal);
     return { instanceId, revision: record.revision, modsDirectory: path.join(layout.gameDirectory, 'mods'),

@@ -1,0 +1,4 @@
+PASS: TIMEOUT retains identity; status expiry releases UI and retry uses a new requestId
+PASS: cancel expiry releases UI and permits a new requestId
+PASS: expiry in the post-cancel status read also permits retry
+PASS: files/severity/source/actual/depth distinguish issues; unknown IDs remain explicit; public validator rejects URL/path evidence

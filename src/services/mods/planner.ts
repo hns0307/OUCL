@@ -59,7 +59,9 @@ export class ModInstallPlanner {
       const resolution = await this.resolver.resolve({ roots: [root.version.versionId], selections: input.selections, installed,
         minecraft, loader, unknownInstalled }, signal); check();
       const resolvedRoot = resolution.selected.find(item => item.versionId === root.version.versionId);
-      if (!resolvedRoot || JSON.stringify(resolvedRoot) !== JSON.stringify(root.version)) throw new ModContractError('UNTRUSTED_METADATA');
+      // Raw response evidence can change between reads (for example, a download counter).
+      // Compare all parsed version facts while retaining each independently verified evidence record.
+      if (!resolvedRoot || JSON.stringify({ ...resolvedRoot, evidence: null }) !== JSON.stringify({ ...root.version, evidence: null })) throw new ModContractError('UNTRUSTED_METADATA');
       const versions = new Map([...installed, ...resolution.selected].map(version => [version.versionId, version]));
       const items: ModPlanItem[] = resolution.graph.nodes.flatMap(node => {
         const version = versions.get(node.versionId); if (!version) throw new ModContractError('UNTRUSTED_METADATA');

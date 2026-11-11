@@ -169,15 +169,26 @@ export class ModInstallTaskService {
     if (!UUID_PATTERN.test(taskId)) throw new ModContractError('INVALID_ARGUMENT');
     const root = await this.root(); const task = await this.storage.get(root, taskId.toLowerCase());
     if (!task || task.kind !== 'mod-install') return undefined;
+    return this.recoveryView(task);
+  }
+  private recoveryView(task: StoredTask): StoredTask {
     return this.lost.has(task.taskId) ? { ...task, execution: { ...task.execution, state: 'needsRecovery', revision: task.execution.revision + 1 } } : task;
   }
   /** Public projection contains no object references, paths, tool arguments or private source metadata. */
   async taskView(root: string, taskId: string): Promise<InstanceData['tasks:get'] | undefined> {
     if (root !== await this.root()) throw new ModContractError('ROOT_UNAVAILABLE');
     const task = await this.get(taskId); if (!task) return undefined;
+    return this.projectTask(task);
+  }
+  /** Projects an already-proven target using the same recovery view as task lookup. */
+  targetTaskView(root: string, binding: StoredTask): InstanceData['tasks:get'] {
+    if (binding.kind !== 'mod-install' || binding.ownerId.toLowerCase() !== root.toLowerCase()) throw new ModContractError('NEEDS_RECOVERY');
+    return this.projectTask(this.recoveryView(binding));
+  }
+  private projectTask(task: StoredTask): InstanceData['tasks:get'] {
     const state = task.execution.state;
     const stage = terminal(task) ? state as TaskSnapshot['stage'] : state === 'queued' ? 'queued'
-      : state === 'committing' ? 'committing' : state === 'running' ? 'downloading' : 'preparing';
+      : state === 'committing' ? 'committing' : 'preparing';
     const snapshot: TaskSnapshot = { taskId: task.taskId, kind: 'mod-install', state, stage,
       revision: task.execution.revision, bytesDone: task.execution.bytesDone,
       ...(task.execution.bytesTotal === undefined ? {} : { bytesTotal: task.execution.bytesTotal }) };

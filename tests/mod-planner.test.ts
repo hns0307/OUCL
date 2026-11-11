@@ -77,6 +77,14 @@ test('platform substitution or downloaded-root hash mismatch cannot produce a pl
     { resolve: async () => exact }).plan(input), { code: 'MODS_UNSAFE' });
 });
 
+test('planner accepts unchanged version facts when independent response evidence changes', async () => {
+  const reread = { ...rootVersion, evidence: { ...rootVersion.evidence, sha256: 'f'.repeat(64) } };
+  const resolution: ModResolution = { selected: [reread], options: [], attempts: 1,
+    graph: { state: 'resolved', issues: [], nodes: [{ projectId: 'RootProj', versionId: 'RootVer1', disposition: 'candidate', requiredBy: [], filename: 'RootProj.jar', sha512: sha512('a') }] } };
+  const planner = new ModInstallPlanner({ read: async () => rootLibrary() }, { check: async () => inspection() }, context, { resolve: async () => resolution });
+  assert.equal((await planner.plan(input)).state, 'ready');
+});
+
 test('planner cancellation joins an in-flight library read and rejects concurrent previews', async () => {
   let began!: () => void; let release!: () => void; const started = new Promise<void>(resolve => { began = resolve; });
   const gate = new Promise<void>(resolve => { release = resolve; }); const abort = new AbortController();

@@ -8,6 +8,7 @@ import { installRelativePath } from '../../core/install/assets.js';
 import { JavaProbe } from './probe.js';
 import type { ProfileService } from '../launch/profiles.js';
 import type { RegisteredJava } from '../storage/launch-profiles.js';
+import { JAVA_PROBE_TIMEOUT_MS, registeredJavaCandidates } from './selection.js';
 
 export const JAVA_INDEX = 'https://piston-meta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json';
 const COMPONENTS = { 8: 'jre-legacy', 17: 'java-runtime-gamma', 21: 'java-runtime-delta' } as const;
@@ -64,8 +65,7 @@ export class JavaRuntimeService {
     const check = (): void => { if (signal.aborted) throw new JavaRuntimeError('CANCELLED'); }; check();
     if (major !== 8 && major !== 17 && major !== 21) throw new JavaRuntimeError();
     const saved = await this.profiles.list();
-    const registered = [...saved.javas].sort((a, b) => Number(b.javaId === saved.selectedJavaId) - Number(a.javaId === saved.selectedJavaId));
-    const candidates = registered.filter(java => java.major === major).map(java => java.executable);
+    const candidates = registeredJavaCandidates(saved, major).map(java => java.executable);
     const env = this.environment;
     for (const key of ['JAVA_HOME', 'JDK_HOME']) if (env[key]) candidates.push(path.join(env[key]!, 'bin/java.exe'));
     for (const base of [env.ProgramFiles && path.join(env.ProgramFiles, 'Java'), env.ProgramFiles && path.join(env.ProgramFiles, 'Eclipse Adoptium'),
@@ -81,9 +81,13 @@ export class JavaRuntimeService {
     }
     for (const executable of [...new Set(candidates)].slice(0, 128)) {
       check();
-      let compatible = false;
-      try { compatible = (await this.probe.probe(executable, { signal })).major === major; } catch { check(); }
-      if (compatible) { check(); return this.profiles.registerJava(executable); }
+      let measured;
+      try { measured = await this.probe.probe(executable, { signal, timeoutMs: JAVA_PROBE_TIMEOUT_MS }); } catch { check(); }
+      if (measured?.major === major) {
+        check(); const registered = await this.profiles.registerJava(executable, signal, saved); check();
+        if (registered.version !== measured.version || registered.major !== measured.major) throw new JavaRuntimeError();
+        return registered;
+      }
     }
     check(); const index = JSON.parse((await this.reader.read(JAVA_INDEX)).body) as unknown; check();
     const platforms = object(index) ? index['windows-x64'] : undefined;
@@ -97,6 +101,8 @@ export class JavaRuntimeService {
     const pack = parseJavaPackage(JSON.parse(document.body) as unknown, manifest.sha1);
     const executable = await this.installer.prepareJava(pack, consumerId, signal); check();
     const runtime = await this.probe.probe(executable, { signal }); if (runtime.major !== major) throw new JavaRuntimeError();
-    check(); return this.profiles.registerJava(executable);
+    check(); const registered = await this.profiles.registerJava(executable, signal, saved); check();
+    if (registered.version !== runtime.version || registered.major !== runtime.major) throw new JavaRuntimeError();
+    return registered;
   }
 }

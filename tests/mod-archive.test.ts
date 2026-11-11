@@ -20,6 +20,14 @@ async function file(bytes: Buffer): Promise<string> {
 }
 const hash = (value: Buffer, algorithm = 'sha256'): string => createHash(algorithm).update(value).digest('hex');
 
+test('accepts a lower local ZIP version while rejecting a higher unsupported minimum', async () => {
+  const valid = modZip([['fabric.mod.json', '{"id":"example"}']]);
+  valid.writeUInt16LE(10, 4);
+  assert.equal((await scanModArchive(await file(valid))).archives[0]!.documents[0]!.body, '{"id":"example"}');
+  const invalid = Buffer.from(valid); invalid.writeUInt16LE(21, 4);
+  await assert.rejects(scanModArchive(await file(invalid)), { code: 'INVALID_ARCHIVE' });
+});
+
 test('local JAR worker returns real hashes, exact four declarations and nested evidence without writes', async () => {
   const inner = modZip([['fabric.mod.json', '{"id":"embedded"}']]);
   const bytes = modZip([['fabric.mod.json', '{"id":"outer","jars":[{"file":"nested/a.jar"}]}'], ['quilt.mod.json', '{}'],

@@ -5,6 +5,7 @@ import { InstalledLanguageReader } from '../src/services/mods/languages.js';
 import type { InstanceRecord } from '../src/services/storage/instance-records.js';
 import type { DownloadSpec } from '../src/services/download/types.js';
 import type { ModArchiveScan } from '../src/services/mods/archive.js';
+import { parseJsonModDeclarations } from '../src/core/mods/json-declarations.js';
 const sha1 = 'a'.repeat(40); const sha256 = 'b'.repeat(64);
 const spec: DownloadSpec = { url: 'https://maven.minecraftforge.net/net/minecraftforge/javafmllanguage/1.20.1-47.4.28/javafmllanguage-1.20.1-47.4.28.jar',
   expected: { algorithm: 'sha1', digest: sha1, size: 100, provenanceId: 'test-language' }, anchor: { kind: 'loader-profile', algorithm: 'sha256', digest: 'c'.repeat(64) } };
@@ -27,4 +28,19 @@ test('installed language versions are admitted only after the actual object matc
   const missing = record(); missing.objects = {};
   await assert.rejects(reader.read(root, missing), { code: 'SCAN_FAILED' });
   const vanilla = record(); delete vanilla.metadata; assert.deepEqual(await reader.read(root, vanilla), {});
+});
+
+test('Quilt exposes Fabric Loader only from its verified and exact loader declaration', async () => {
+  const root = path.resolve('language-tests'); const item = record();
+  item.metadata!.loader = { kind: 'quilt', version: '0.29.2', profileBody: '{}', profileSourceUrl: 'https://meta.quiltmc.org/v3/example', profileSha256: 'c'.repeat(64),
+    libraries: [{ path: 'org/quiltmc/quilt-loader/0.29.2/quilt-loader-0.29.2.jar', spec }] };
+  const declaration = parseJsonModDeclarations('quilt', JSON.stringify({ schema_version: 1, quilt_loader: { id: 'quilt_loader', group: 'org.quiltmc', version: '0.29.2', provides: [{ id: 'fabricloader', version: '0.17.2' }] } }));
+  const verified = { ...scan(), archives: [{ entries: [], sha256, documents: [], declarations: [declaration] }] };
+  const reader = new InstalledLanguageReader({ read: async () => verified });
+  assert.equal(await reader.readRuntime(root, item), '0.17.2');
+  const absent = structuredClone(item); absent.objects = {}; assert.equal(await reader.readRuntime(root, absent), null);
+  const duplicate = structuredClone(item); duplicate.metadata!.loader!.libraries.push(duplicate.metadata!.loader!.libraries[0]!); assert.equal(await reader.readRuntime(root, duplicate), null);
+  const wrong = structuredClone(verified); wrong.archives[0]!.declarations[0]!.mods[0]!.version = '0.28.0';
+  assert.equal(await new InstalledLanguageReader({ read: async () => wrong }).readRuntime(root, item), null);
+  await assert.rejects(new InstalledLanguageReader({ read: async () => ({ ...verified, sha1: 'f'.repeat(40) }) }).readRuntime(root, item), { code: 'SCAN_FAILED' });
 });

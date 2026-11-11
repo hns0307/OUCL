@@ -19,6 +19,13 @@ export class GameProcessError extends Error {
   }
 }
 export interface GameSession { sessionId: string; instanceId: string; state: 'running' | 'stopping' | 'exited' | 'unknown'; revision: number; startedAt: string; exitCode?: number }
+export interface LaunchFinalization {
+  expectedVersion: string;
+  finalize(runtime: JavaRuntime): Promise<LaunchPlan>;
+  commitPermit(): Promise<void>;
+  recheck(): Promise<void>;
+  signal?: AbortSignal; sessionId?: string; initialRevision?: number;
+}
 interface LiveSession { snapshot: GameSession; child: ChildProcessWithoutNullStreams; ended: Promise<void>; lines: string[] }
 interface Dependencies {
   probe?: Pick<JavaProbe, 'probe'>;
@@ -36,7 +43,8 @@ export class GameProcessService {
   }
 
   /** Caller resolves executableRef from its trusted Java registry and verifies every installed dependency first. */
-  async launch(instanceId: string, executable: string, major: 8 | 17 | 21, plan: LaunchPlan, options: { signal?: AbortSignal; sessionId?: string; initialRevision?: number } = {}): Promise<GameSession> {
+  async launch(instanceId: string, executable: string, major: 8 | 17 | 21, plan: LaunchPlan, options: LaunchFinalization): Promise<GameSession> {
+    if (!options || typeof options.finalize !== 'function' || typeof options.commitPermit !== 'function' || typeof options.recheck !== 'function') throw new GameProcessError('LAUNCH_FAILED');
     if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(instanceId)) throw new GameProcessError('LAUNCH_FAILED');
     if (options.sessionId !== undefined && (!UUID_PATTERN.test(options.sessionId) || this.live.has(options.sessionId))
       || options.initialRevision !== undefined && (!Number.isSafeInteger(options.initialRevision) || options.initialRevision < 1 || options.initialRevision >= Number.MAX_SAFE_INTEGER)) throw new GameProcessError('LAUNCH_FAILED');
@@ -45,7 +53,7 @@ export class GameProcessService {
     let runtime: JavaRuntime;
     try { runtime = await this.probe.probe(executable, options); }
     catch { cancelled(); throw new GameProcessError('JAVA_INCOMPATIBLE'); }
-    if (runtime.major !== major || runtime.architecture !== 'x64') throw new GameProcessError('JAVA_INCOMPATIBLE');
+    if (runtime.major !== major || runtime.architecture !== 'x64' || runtime.version !== options.expectedVersion || runtime.executable !== executable) throw new GameProcessError('JAVA_INCOMPATIBLE');
     const directory = await guardDirectory(plan.cwd); cancelled();
     const sessionId = options.sessionId ?? randomUUID(); const token = randomUUID(); const file = path.join(directory, 'oucl.session.lock');
     let handle;
@@ -58,13 +66,22 @@ export class GameProcessService {
     let child: ChildProcessWithoutNullStreams;
     try {
       await handle.writeFile(token); await handle.sync(); await handle.close(); cancelled();
+      // The last JVM measurement and all final facts belong to this same owned lease.
+      try { runtime = await this.probe.probe(executable, options); }
+      catch { cancelled(); throw new GameProcessError('JAVA_INCOMPATIBLE'); }
+      if (runtime.major !== major || runtime.architecture !== 'x64' || runtime.version !== options.expectedVersion || runtime.executable !== executable) throw new GameProcessError('JAVA_INCOMPATIBLE');
+      const finalPlan = await options.finalize(runtime); cancelled();
+      if (await guardDirectory(finalPlan.cwd) !== directory || finalPlan.executableRef !== plan.executableRef) throw new GameProcessError('LAUNCH_FAILED');
+      await options.commitPermit();
+      await options.recheck();
+      if (await guardDirectory(directory) !== directory || (await readRegular(file, 100))?.toString('utf8') !== token) throw new GameProcessError('NEEDS_RECOVERY');
       const env = { ...process.env };
       for (const key of Object.keys(env)) if (['JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTIONS', 'CLASSPATH'].includes(key.toUpperCase())) delete env[key];
-      child = this.start(runtime.executable, [...plan.args], { cwd: directory, env, shell: false, windowsHide: true, stdio: 'pipe' });
+      child = this.start(runtime.executable, [...finalPlan.args], { cwd: directory, env, shell: false, windowsHide: true, stdio: 'pipe' });
     } catch (error) {
       await handle.close().catch(() => {});
       try { await release(); } catch { throw new GameProcessError('NEEDS_RECOVERY'); }
-      if (error instanceof GameProcessError) throw error;
+      if (error instanceof Error && 'code' in error) throw error;
       throw new GameProcessError('LAUNCH_FAILED');
     }
     const snapshot: GameSession = { sessionId, instanceId, state: 'running', revision: options.initialRevision ?? 1, startedAt: new Date().toISOString() };

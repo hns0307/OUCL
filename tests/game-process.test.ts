@@ -23,6 +23,7 @@ async function fixture(run: (directory: string) => Promise<void>): Promise<void>
     await rm(directory, { recursive: true, force: true });
   }
 }
+function finalization(directory: string) { return { expectedVersion: runtime.version, finalize: async () => plan(directory), commitPermit: async () => {}, recheck: async () => {} }; }
 function plan(directory: string): LaunchPlan { return { executableRef: id, args: ['-Xmx1024M', 'net.minecraft.client.main.Main', '--username', 'PrivateName'], cwd: directory, redactedPreview: [] }; }
 test('spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease', () => fixture(async directory => {
   const child = new FakeProcess(); let started = false;
@@ -35,7 +36,7 @@ test('spawn is real acceptance boundary, fixed options remove ambient Java injec
     queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
   } });
   try {
-    const session = await service.launch(id, runtime.executable, 17, plan(directory)); assert.ok(started); assert.equal(session.state, 'running');
+    const session = await service.launch(id, runtime.executable, 17, plan(directory), finalization(directory)); assert.ok(started); assert.equal(session.state, 'running');
     assert.ok(await readFile(path.join(directory, 'oucl.session.lock'), 'utf8'));
     child.stdout.write('Setting user: PrivateName\nBackend library: private path\nsecret accessToken=xxx\nSound engine started\n');
     child.stderr.write('Created: textures/atlas/blocks.png-atlas\n');
@@ -47,25 +48,25 @@ test('spawn is real acceptance boundary, fixed options remove ambient Java injec
 test('gameDir lease excludes another instance and foreign marker is never removed', () => fixture(async directory => {
   const lock = path.join(directory, 'oucl.session.lock'); await writeFile(lock, 'foreign');
   const service = new GameProcessService({ probe: { probe: async () => runtime }, start: () => { throw new Error('must not spawn'); } });
-  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory)), { code: 'INSTANCE_BUSY' });
+  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'INSTANCE_BUSY' });
   assert.equal(await readFile(lock, 'utf8'), 'foreign');
 }));
 test('spawn exception and asynchronous start failure leave no falsely running session or lease', () => fixture(async directory => {
   const synchronous = new GameProcessService({ probe: { probe: async () => runtime }, start: () => { throw new Error('private diagnostic'); } });
-  await assert.rejects(synchronous.launch(id, runtime.executable, 17, plan(directory)), { code: 'LAUNCH_FAILED' });
+  await assert.rejects(synchronous.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'LAUNCH_FAILED' });
   await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
   const child = new FakeProcess();
   const asynchronous = new GameProcessService({ probe: { probe: async () => runtime }, start: () => {
     queueMicrotask(() => { child.emit('error', new Error('private')); child.emit('close', -1, null); }); return child as unknown as ChildProcessWithoutNullStreams;
   } });
-  await assert.rejects(asynchronous.launch(id, runtime.executable, 17, plan(directory)), { code: 'LAUNCH_FAILED' });
+  await assert.rejects(asynchronous.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'LAUNCH_FAILED' });
   await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
 }));
 test('only explicit confirmed force stop kills; graceful rejection preserves the live JVM', () => fixture(async directory => {
   const child = new FakeProcess(); const service = new GameProcessService({ probe: { probe: async () => runtime }, start: () => {
     queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
   } });
-  const session = await service.launch(id, runtime.executable, 17, plan(directory));
+  const session = await service.launch(id, runtime.executable, 17, plan(directory), finalization(directory));
   await assert.rejects(service.stop(session.sessionId, 'graceful', true), { code: 'STOP_UNSUPPORTED' });
   await assert.rejects(service.stop(session.sessionId, 'force', false), { code: 'CONFIRMATION_REQUIRED' }); assert.equal(child.kills.length, 0);
   const stopped = await service.stop(session.sessionId, 'force', true); assert.equal(stopped.state, 'exited'); assert.deepEqual(child.kills, ['SIGKILL']);
@@ -76,7 +77,7 @@ test('changed lease after process exit remains unknown and blocks future launche
   const child = new FakeProcess(); const service = new GameProcessService({ probe: { probe: async () => runtime }, start: () => {
     queueMicrotask(() => { child.emit('spawn'); }); return child as unknown as ChildProcessWithoutNullStreams;
   } });
-  const session = await service.launch(id, runtime.executable, 17, plan(directory));
+  const session = await service.launch(id, runtime.executable, 17, plan(directory), finalization(directory));
   const lock = path.join(directory, 'oucl.session.lock'); await unlink(lock); await writeFile(lock, 'other-owner');
   child.emit('close', 0, null); assert.equal((await service.wait(session.sessionId)).state, 'unknown');
   assert.equal(await readFile(lock, 'utf8'), 'other-owner');
@@ -84,10 +85,44 @@ test('changed lease after process exit remains unknown and blocks future launche
 }));
 test('Java mismatch, failed probe and pre-spawn cancellation cannot create game effects', () => fixture(async directory => {
   const service = new GameProcessService({ probe: { probe: async () => runtime } });
-  await assert.rejects(service.launch(id, runtime.executable, 21, plan(directory)), { code: 'JAVA_INCOMPATIBLE' });
+  await assert.rejects(service.launch(id, runtime.executable, 21, plan(directory), finalization(directory)), { code: 'JAVA_INCOMPATIBLE' });
   const abort = new AbortController(); abort.abort();
-  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), { signal: abort.signal }), { code: 'CANCELLED' });
+  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), { ...finalization(directory), signal: abort.signal }), { code: 'CANCELLED' });
   const bad = new GameProcessService({ probe: { probe: async () => { throw new Error('private'); } } });
-  await assert.rejects(bad.launch(id, runtime.executable, 17, plan(directory)), { code: 'JAVA_INCOMPATIBLE' });
-  await assert.rejects(service.launch('bad', runtime.executable, 17, plan(directory)), { code: 'LAUNCH_FAILED' });
+  await assert.rejects(bad.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'JAVA_INCOMPATIBLE' });
+  await assert.rejects(service.launch('bad', runtime.executable, 17, plan(directory), finalization(directory)), { code: 'LAUNCH_FAILED' });
+}));
+
+test('finalization holds the sole lease, blocks same-major patch substitution and releases on rejection', () => fixture(async directory => {
+  let probes = 0; let starts = 0;
+  const changed = new GameProcessService({ probe: { probe: async () => ({ ...runtime, version: ++probes === 1 ? runtime.version : '17.0.1' }) }, start: () => { starts++; throw new Error('UNEXPECTED'); } });
+  await assert.rejects(changed.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'JAVA_INCOMPATIBLE' });
+  assert.equal(starts, 0); await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
+  const service = new GameProcessService({ probe: { probe: async () => runtime } });
+  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), { ...finalization(directory), finalize: async () => {
+    assert.ok(await readFile(path.join(directory, 'oucl.session.lock'), 'utf8'));
+    await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), finalization(directory)), { code: 'INSTANCE_BUSY' });
+    throw Object.assign(new Error('REVISION_CONFLICT'), { code: 'REVISION_CONFLICT' });
+  } }), { code: 'REVISION_CONFLICT' });
+  await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
+}));
+
+test('cancel during finalization drains the callback before lease release and never permits spawn', () => fixture(async directory => {
+  const controller = new AbortController(); let permits = 0; let entered!: () => void; let release!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; }); const gate = new Promise<void>(resolve => { release = resolve; });
+  const service = new GameProcessService({ probe: { probe: async () => runtime } });
+  const pending = service.launch(id, runtime.executable, 17, plan(directory), { ...finalization(directory), signal: controller.signal,
+    finalize: async () => { entered(); await gate; return plan(directory); }, commitPermit: async () => { permits++; } });
+  await started; controller.abort(); assert.ok(await readFile(path.join(directory, 'oucl.session.lock'))); release();
+  await assert.rejects(pending, { code: 'CANCELLED' }); assert.equal(permits, 0);
+  await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
+}));
+
+test('failure after commit permission still releases owned lease without invoking start', () => fixture(async directory => {
+  let starts = 0; let permitted = false;
+  const service = new GameProcessService({ probe: { probe: async () => runtime }, start: () => { starts++; throw new Error('UNEXPECTED'); } });
+  await assert.rejects(service.launch(id, runtime.executable, 17, plan(directory), { ...finalization(directory),
+    commitPermit: async () => { permitted = true; }, recheck: async () => { throw Object.assign(new Error('FILES_CHANGED'), { code: 'REVISION_CONFLICT' }); } }), { code: 'REVISION_CONFLICT' });
+  assert.equal(permitted, true); assert.equal(starts, 0);
+  await assert.rejects(readFile(path.join(directory, 'oucl.session.lock')), { code: 'ENOENT' });
 }));

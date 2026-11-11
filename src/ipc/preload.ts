@@ -10,11 +10,14 @@ import { UUID_PATTERN } from '../shared/contracts/handshake.js';
 import { CATALOG_CHANNEL, catalogFailure, isCatalogQuery, isCatalogResult } from '../shared/contracts/catalog.js';
 import type { CatalogQuery, CatalogResult } from '../shared/contracts/catalog.js';
 import { createInstanceBridge } from './preload-instances.js';
+import { createTargetBridge } from './preload-task-targets.js';
+import { createPacksBridge } from './preload-packs.js';
 import { createProfilesBridge } from './preload-profiles.js';
 import { createGameBridge } from './preload-game.js';
 import { createLoadersBridge } from './preload-loaders.js';
 import { createInstancesV2Bridge } from './preload-instances-v2.js';
 import { createModsBridge } from './preload-mods.js';
+import { createMaintenancePreviewBridge } from './preload-maintenance-preview.js';
 import { createInstanceFoldersBridge } from './preload-instance-folders.js';
 
 async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 'choose', requestId: string, timeoutMs: number): Promise<RootsResult<T>> {
@@ -29,7 +32,9 @@ async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 
 }
 
 const bridge: LauncherBridge = Object.freeze({
+  ...createPacksBridge(),
   ...createInstanceBridge(),
+  ...createTargetBridge(),
   ...createProfilesBridge(),
   ...createGameBridge(),
   ...createResourcesBridge(),
@@ -38,6 +43,7 @@ const bridge: LauncherBridge = Object.freeze({
   ...createInstancesV2Bridge(),
   ...createInstanceFoldersBridge(ipcRenderer),
   ...createModsBridge(),
+  ...createMaintenancePreviewBridge(),
   async catalog(query: CatalogQuery): Promise<CatalogResult> {
     const requestId = globalThis.crypto.randomUUID();
     if (!isCatalogQuery(query)) return catalogFailure(requestId, 'INVALID_ARGUMENT', requestId);

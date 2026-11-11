@@ -17,6 +17,7 @@ function version(libraries: ResolvedLibrary[] = []): ResolvedClientVersion {
     assetIndexVersionId: 'base', libraries, gameArguments: [], jvmArguments: [] };
 }
 const emptyAssets = (): AssetIndexContent => ({ objects: [], virtual: false, mapToResources: false });
+
 function library(changes: Partial<ResolvedLibrary> = {}): ResolvedLibrary {
   return { name: 'org.example:library:1.0', sourceVersionId: 'base', artifact: artifact(hashes.library, 3), nativeExcludes: [], ...changes };
 }

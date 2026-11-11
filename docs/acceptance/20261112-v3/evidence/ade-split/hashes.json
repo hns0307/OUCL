@@ -1,0 +1,77 @@
+[
+  {
+    "path": "src/core/install/plan.ts",
+    "v2": "6c3de9be7933ce270abf49a085d0ad984a9aa39be29ac6dbc2afc56b2dd3498f",
+    "v3": "7cae2fe175e425ac6e4a04e88d3c3f68360ef5705f0adefe7cceb6f1b34b698a"
+  },
+  {
+    "path": "src/core/launch/plan.ts",
+    "v2": "bf5aee6d782d262f6ea51ffbc4666de1bb6c7b874726e0547ba93b6d9ca328bd",
+    "v3": "92dd235300744b034138a86993745565d13e11a0035d07672a56fbaac3ec6e06"
+  },
+  {
+    "path": "src/services/install/installer.ts",
+    "v2": "61cc82b9efd6ccf284fce40e6f90afeb44243762472eeb191721275f668578fe",
+    "v3": "602d96eaafa06f3791730b7a2793ffe2d6001bd60f80e8d8ec2a9c2ed87e8ffb"
+  },
+  {
+    "path": "src/services/launch/service.ts",
+    "v2": "1646843329cf4a1b555e0e5d1524074185a994d8a7542eebc05920083c15024a",
+    "v3": "3cba657fd5ffa5285707d6e5f2390c9fb90a3af5125e2afa42599b72ffb56f23"
+  },
+  {
+    "path": "tests/install-plan.test.ts",
+    "v2": "bc6d3efa7c3996df77a766f653600106cc567c0373f21e35c1f76d3e52a20037",
+    "v3": "e93f23ae317bcd18148f9f784670bb59746a90bf7c91f2ad25d02cc7db57ad21"
+  },
+  {
+    "path": "tests/launch-plan.test.ts",
+    "v2": "4797c669a90ffafcdc1ca8efde0b0092f9f4078d75653c02740ce18d239f652c",
+    "v3": "803d9c95a3a86aba601c6a0f85109f9ef8cf9a695f8c20c064ea7b0abae10556"
+  },
+  {
+    "path": "tests/installer.test.ts",
+    "v2": "3791a39f6fb00086ce36f435430a4abbf1111f052b3893f67bd9de0157cdac18",
+    "v3": "f92e5865f6371c29f6adb60ceea3e324a6748eff5ffa6a4acd0b707a22ae8a9f"
+  },
+  {
+    "path": "tests/mod-java-facts.test.ts",
+    "v2": "0becc4c085643ca4a459e69b8e1514357986d93d939920d4e86b83d4a06925fa",
+    "v3": "0353a200698aa7784e6611ec8b971a1892342f58653e705c83c9df865b94a011"
+  },
+  {
+    "path": "src/services/launch/process.ts",
+    "v2": "f82c3a18adcda73a2305df08782f5a4e70a6943c9c0310c38fd8ef37ad15d2bd",
+    "v3": "f82c3a18adcda73a2305df08782f5a4e70a6943c9c0310c38fd8ef37ad15d2bd"
+  },
+  {
+    "path": "src/services/java/selection.ts",
+    "v2": "8229c6a519a455e86d46c86af649089756e0c0e5225a40db0bc7b3c215ae77f2",
+    "v3": "8229c6a519a455e86d46c86af649089756e0c0e5225a40db0bc7b3c215ae77f2"
+  },
+  {
+    "path": "src/services/java/runtime.ts",
+    "v2": "c51dd118e29eeea87c0f75036336a19050416560ff63807d5b413b7e5c852ef8",
+    "v3": "c51dd118e29eeea87c0f75036336a19050416560ff63807d5b413b7e5c852ef8"
+  },
+  {
+    "path": "src/services/install/launch-inputs.ts",
+    "v2": "acf5c52d9a125a27a2e6fe4d148469a875e6ab8af63b6ac2a46bb33c8e6684f3",
+    "v3": "acf5c52d9a125a27a2e6fe4d148469a875e6ab8af63b6ac2a46bb33c8e6684f3"
+  },
+  {
+    "path": "tests/instance-folders.test.ts",
+    "v2": "d4e780c5a8ece3c38667a9cbc654337828b909a84abb6083b88adec2f1e29f8b",
+    "v3": "d4e780c5a8ece3c38667a9cbc654337828b909a84abb6083b88adec2f1e29f8b"
+  },
+  {
+    "path": "tests/game-process.test.ts",
+    "v2": "59058a510e944e920b4c3858a499eb787114426bfcff3b43d44e60fed717d6a9",
+    "v3": "59058a510e944e920b4c3858a499eb787114426bfcff3b43d44e60fed717d6a9"
+  },
+  {
+    "path": "tests/mod-transaction.test.ts",
+    "v2": "a44c90c00933bae6e5392766569ff9faf7916ff5cc86a87f70535e005a176910",
+    "v3": "a44c90c00933bae6e5392766569ff9faf7916ff5cc86a87f70535e005a176910"
+  }
+]

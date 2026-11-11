@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { ESLint } from 'eslint';
 
 test('pure path imports remain allowed while actual Node and UI capabilities stay prohibited', async () => {
-  const lint = new ESLint();
+  const lint = new ESLint({ cwd: process.env.OUCL_SOURCE_ROOT ?? process.cwd() });
   const allowed = await lint.lintText("export { validateComponent } from '../path/layout.js';", { filePath: 'src/core/install/boundary.ts' });
   assert.equal(allowed[0]?.errorCount, 0);
   for (const module of ['path', 'node:path', 'fs/promises', 'electron', 'react', 'react/jsx-runtime', 'zustand']) {
