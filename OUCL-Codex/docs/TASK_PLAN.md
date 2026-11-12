@@ -573,3 +573,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 跨聊天协调在稳定v3副本完成去别名候选回归：651项647PASS/0FAIL/4SKIP，类型/lint/build通过；专用固定worker4项、bootstrap34项及组件探针通过。v4–v6补真实产品壳报告、只读预览、A活动/B目标隔离与正式安装四任务正常重开；v5同七产物完成原版/Fabric+FerriteCore代表菜单及正常退出0；v7最终EXE真实运行时冷下载、固定样本预览/取消/不匹配、热重开与正常退出通过。B双域各1000真实计划全worker读取/重开和公共20页、1001拒绝通过；1MiB/2MiB为当前合法DTO不可达的防御上界，不冒称合法+1测试。
 
 版本入口根docs/acceptance/README.md，最终候选及剩余证据见20261112-v7/MERGE-CHECKLIST.md。代码候选bc01f07487ca7e8d76f17115ea148efcafd748c2，后继文档独立提交；EXE SHA256 c231342a5e6027b63675d743ce7b7d88e9071c49cd7c07b060980ac52991a009。A真实强制中断恢复、C/E全部回执竞态等仍未全验，完整历史方案不标全部通过；已另获批准的Quilt索引/隐藏依赖别名继续由原A包验收并排除本候选。没有新增业务授权、依赖或持久格式。不整体暂存/提交共享树，不push/发布；本地分支整合实际结果由v7后继记录。
+
+2026-11-12本地整合实录：在干净D:/MC_start/OUCL-download-main的main上，将已选择代码bc01f07及独立文档1b06f6b从b87be9d成功ff-only；活跃mod_loaders未切换、未整体暂存/提交。最终EXE已复制到该main的release/OUCL-0.3.0-acceptance-20261112-v3.exe，摘要同v7。新空测试根的A强制中断补证因CUA只允许终止其运行时直接确认进程而被拒，没有绕过，随后正常关闭、锁释放；不记kill或恢复通过。实际记录及后继报告提交见根docs/acceptance/20261112-v8/REPORT.md。没有push/发布，完整历史方案仍有清单所列待补证。

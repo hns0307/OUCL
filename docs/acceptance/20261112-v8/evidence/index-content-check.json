@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "stagedFiles": 117,
+  "substantiveDifferences": [],
+  "rawEvidenceExact": true,
+  "crlfToLf": [
+    "OUCL-Codex/docs/DECISIONS.md",
+    "OUCL-Codex/docs/TASK_PLAN.md",
+    "docs/acceptance/20261112-v3/evidence/commit-content-check.json",
+    "docs/acceptance/20261112-v3/evidence/git-commit.log",
+    "docs/acceptance/20261112-v3/evidence/git-stage-rerun.log",
+    "docs/acceptance/20261112-v3/evidence/git-stage.log",
+    "docs/acceptance/20261112-v3/stage-paths.txt"
+  ]
+}
