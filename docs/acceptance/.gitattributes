@@ -1,0 +1,5 @@
+# Preserve archived evidence bytes so SHA256 manifests remain valid after checkout.
+20261112-v4/evidence/** -text
+20261112-v5/evidence/** -text
+20261112-v6/evidence/** -text
+20261112-v7/evidence/** -text

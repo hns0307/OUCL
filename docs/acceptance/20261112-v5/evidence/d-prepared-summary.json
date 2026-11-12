@@ -1,0 +1,38 @@
+{
+  "profile": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\v4-game\\isolated\\profile",
+  "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+  "dataDirectory": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\v4-game\\isolated\\games",
+  "java": {
+    "javaId": "e8d40fff-49ff-4f19-b33a-5d95f9d081c1",
+    "major": 17,
+    "version": "17.0.15",
+    "vendor": "Microsoft"
+  },
+  "instances": [
+    {
+      "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+      "revision": 62,
+      "nativeFiles": 18,
+      "inventoryFingerprint": "1317bd858338a4a930f87d2d6397757777c32af8f027ce2be5949bfa3e40b0c2",
+      "localState": "satisfied",
+      "mods": []
+    },
+    {
+      "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "revision": 64,
+      "nativeFiles": 18,
+      "inventoryFingerprint": "b5bf8ad287773e3b3e16b07424ad4187e0bf017870d68fcc25ea55cf181a1f11",
+      "localState": "satisfied",
+      "mods": [
+        {
+          "filename": "ferritecore-6.0.1-fabric.jar",
+          "sha256": "c7ba1118a05b2da900d1c369fbe1017a3e3ec3cafe5e51398b851279b9becf24"
+        }
+      ]
+    }
+  ],
+  "copiedFiles": 14892,
+  "copiedBytes": 1608786504,
+  "rebuiltProvenanceEntries": 7146,
+  "note": "Preparation only. No GUI or Minecraft process started."
+}

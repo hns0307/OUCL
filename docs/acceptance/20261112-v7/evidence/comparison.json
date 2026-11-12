@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "auditLabels": [
+    "before-picker",
+    "after-fixed",
+    "after-cancel",
+    "after-mismatch",
+    "cold-closed",
+    "hot-opened",
+    "hot-fixed",
+    "hot-closed",
+    "final-strict"
+  ],
+  "protectedFields": [
+    "json",
+    "tables",
+    "games"
+  ],
+  "samples": [
+    {
+      "name": "OUCL-PE-Forge-Smoke-1.0.0.mrpack",
+      "sha256": "e4cf7d5607a70582cfcec200a381892a83c75e122f5be6bad926de23ff7278f2"
+    },
+    {
+      "name": "different.mrpack",
+      "sha256": "7f81fd6f3a5bd8344d030e15c144bba0ed80e8ab8b1eb8f0025eb196458b092b"
+    }
+  ],
+  "exits": [
+    {
+      "pid": 36196,
+      "exitCode": 0,
+      "hasExited": true
+    },
+    {
+      "pid": 1488,
+      "exitCode": 0,
+      "hasExited": true
+    }
+  ],
+  "scope": "Final EXE empty portable root, fixed sample read-only preview; Chromium caches excluded; no populated player-data claim; no general import or game run."
+}

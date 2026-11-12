@@ -1,0 +1,89 @@
+{
+  "beforeDestroy": {
+    "_legacy_windows": [
+      {
+        "height": 1071,
+        "is_on_screen": true,
+        "minimized": false,
+        "pid": 26448,
+        "title": "打开",
+        "width": 1782,
+        "window_id": 7078116,
+        "x": 1055,
+        "y": 510
+      },
+      {
+        "height": 1221,
+        "is_on_screen": true,
+        "minimized": false,
+        "pid": 26448,
+        "title": "OUCL",
+        "width": 1752,
+        "window_id": 1971764,
+        "x": 1044,
+        "y": 465
+      }
+    ],
+    "current_space_id": null,
+    "windows": [
+      {
+        "app_name": "electron.exe",
+        "bounds": {
+          "height": 1071,
+          "width": 1782,
+          "x": 1055,
+          "y": 510
+        },
+        "is_on_screen": true,
+        "layer": 0,
+        "minimized": false,
+        "pid": 26448,
+        "title": "打开",
+        "window_id": 7078116,
+        "z_index": 1
+      },
+      {
+        "app_name": "electron.exe",
+        "bounds": {
+          "height": 1221,
+          "width": 1752,
+          "x": 1044,
+          "y": 465
+        },
+        "is_on_screen": true,
+        "layer": 0,
+        "minimized": false,
+        "pid": 26448,
+        "title": "OUCL",
+        "window_id": 1971764,
+        "z_index": 0
+      }
+    ]
+  },
+  "afterDestroy": {
+    "_legacy_windows": [],
+    "current_space_id": null,
+    "windows": []
+  },
+  "reopen": {
+    "app_name": "electron.exe",
+    "element_count": 34,
+    "elements_complete": false,
+    "pid": 36104,
+    "returned_element_count": 3,
+    "snapshot_id": "s0000001a",
+    "timeout_ms": 1000,
+    "total_element_count": 34,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/product/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - Group \"主导航\"\n                        - [9] Text \"准备完成\" [actions=[text]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 1044,
+      "y": 465
+    },
+    "window_id": 1312456,
+    "window_title": "OUCL"
+  }
+}

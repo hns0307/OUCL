@@ -1,0 +1,4 @@
+[12:37:38] [main/INFO]: Loading Minecraft 1.20.1 with Fabric Loader 0.20.1
+	- ferritecore 6.0.1
+	- java 17
+[12:38:17] [Render thread/INFO]: Stopping!

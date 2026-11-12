@@ -7,9 +7,13 @@
 | [20261112-v1](20261112-v1/REPORT.md) | 阶段一已完成；整体未通过 | 冻结快照、完整检查、缺陷及整改安排 |
 | [20261112-v2](20261112-v2/REPORT.md) | 技术回归通过；产品及合并仍开放 | 2项UI整改、有效收据夹具、640项统一检查及候选分层 |
 | [20261112-v3](20261112-v3/REPORT.md) | 去别名候选回归通过；产品补证推进 | 651项检查、B故障/预算补证、固定样本选择/取消/重开与缺worker能力 |
+| [20261112-v4](20261112-v4/REPORT.md) | 部分产品补证完成；额度等待 | B/C持久报告、只读预览及重开；E窗口销毁/重开；D新索引准备失败保留 |
+| [20261112-v5](20261112-v5/REPORT.md) | D代表游戏链通过；B活动归属补齐 | 原版、Fabric/FerriteCore与正常重开exit0；B稳定选择的前后活动证据 |
+| [20261112-v6](20261112-v6/REPORT.md) | 全局任务中心首次/重开通过；打包待验 | 正式安装夹具4任务的产品DOM确认、持久身份及两次正常退出 |
+| [20261112-v7](20261112-v7/REPORT.md) | 最终候选EXE冷/热及固定入口通过 | 官方运行时真实下载、清单一致、样本预览/取消/不匹配、exit0及只读保持 |
 
 版本规则：每次冻结有独立快照与SHA256清单；后续整改进入新快照，不修改已验证版本来追记通过。工作包报告属于来源证据；本目录报告只对所列冻结源码和实际命令负责。产品版本0.3.0、公共契约版本与验收快照v1/v2是不同维度。
 
 当前协调聊天负责最终合并清单和统一回归；两个审查聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
 
-当前接续位置为v3报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。
+当前接续位置为v7报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。

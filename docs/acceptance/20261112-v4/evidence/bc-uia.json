@@ -1,0 +1,50 @@
+{
+  "alphaPreview": {
+    "app_name": "electron.exe",
+    "element_count": 176,
+    "elements_complete": true,
+    "invalidated_snapshot_ids": [
+      "s00000025"
+    ],
+    "pid": 34852,
+    "returned_element_count": 6,
+    "snapshot_id": "s00000026",
+    "timeout_ms": 1000,
+    "total_element_count": 176,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/v4-bc/product/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - Group \"实例模组\"\n                        - [65] Text \"报告是当时的文件观察。已知声明满足仍需实际启动验证；外部文件变化须重新检查。\" [actions=[text]]\n                          - ListItem \"alpha-dependent.jar启用预览禁用影响alpha dependent (synthetic) · alpha_dependent · 1.0.0 (fabric)来源 无法判定查看文件证据\"\n                            - [67] Button \"预览禁用影响\" [actions=[invoke]]\n                          - ListItem \"alpha-provider.jar启用预览禁用影响存在阻止因素这是只读预览，不会修改文件，也不保证游戏实际运行。资源服务暂时不可用，请检查网络后重试。此文件包含的声明：alpha_provider直接依赖此文件：alpha-dependent.jar依赖关系 (1)◦ 无法判定 · 变更前 · Modrinth · alpha-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更前 · Modrinth · alpha-provider.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更前 · Modrinth · alpha-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 不满足 · 变更后 · JAR 声明 · alpha-dependent.jar · 缺少必需模组。 alpha_dependent · 要求 >=1.0.0◦ 无法判定 · 变更后 · Modrinth · alpha-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更后 · Modrinth · alpha-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWNalpha provider (synthetic) · alpha_provider · 1.0.0 (fabric)来源 无法判定查看文件证据\"\n                            - [83] Button \"预览禁用影响\" [actions=[invoke]]\n                          - ListItem \"alpha-standalone.jar启用预览禁用影响alpha standalone (synthetic) · alpha_standalone · 1.0.0 (fabric)来源 无法判定查看文件证据\"\n                            - [125] Button \"预览禁用影响\" [actions=[invoke]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 1044,
+      "y": 465
+    },
+    "window_id": 7800224,
+    "window_title": "OUCL"
+  },
+  "betaPreview": {
+    "app_name": "electron.exe",
+    "element_count": 197,
+    "elements_complete": true,
+    "invalidated_snapshot_ids": [
+      "s0000002a"
+    ],
+    "pid": 34852,
+    "returned_element_count": 5,
+    "snapshot_id": "s0000002b",
+    "timeout_ms": 1000,
+    "total_element_count": 197,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/v4-bc/product/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - Group \"实例模组\"\n                        - [65] Text \"报告是当时的文件观察。已知声明满足仍需实际启动验证；外部文件变化须重新检查。\" [actions=[text]]\n                          - ListItem \"beta-provider.jar启用预览禁用影响存在阻止因素这是只读预览，不会修改文件，也不保证游戏实际运行。资源服务暂时不可用，请检查网络后重试。此文件包含的声明：beta_provider直接依赖此文件：beta-dependent.jar依赖关系 (1)◦ 不满足 · 变更前 · JAR 声明 · beta-dependent.jar · 依赖版本不满足声明范围。 beta_dependent · 要求 >=2.0.0 · 实际 1.0.0◦ 无法判定 · 变更前 · Modrinth · beta-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更前 · Modrinth · beta-provider.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更前 · Modrinth · beta-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 不满足 · 变更后 · JAR 声明 · beta-dependent.jar · 缺少必需模组。 beta_dependent · 要求 >=2.0.0◦ 无法判定 · 变更后 · Modrinth · beta-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN◦ 无法判定 · 变更后 · Modrinth · beta-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWNbeta provider (synthetic) · beta_provider · 1.0.0 (fabric)来源 无法判定查看文件证据\"\n                            - Group \"这是只读预览，不会修改文件，也不保证游戏实际运行。\"\n                              - [92] Text \"beta-dependent.jar\" [actions=[text]]\n                                - ListItem \"不满足 · 变更前 · JAR 声明 · beta-dependent.jar · 依赖版本不满足声明范围。 beta_dependent · 要求 >=2.0.0 · 实际 1.0.0\"\n                          - [142] Button \"检查依据与问题 (5)\" [actions=[expand]]\n                            - ListItem \"不满足 · 依赖版本不满足声明范围。JAR 声明 · beta-dependent.jar · 被谁依赖 beta_dependent → beta_provider要求 >=2.0.0实际 1.0.0DEPENDENCY_VERSION_MISMATCH\"\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 1044,
+      "y": 465
+    },
+    "window_id": 7800224,
+    "window_title": "OUCL"
+  }
+}

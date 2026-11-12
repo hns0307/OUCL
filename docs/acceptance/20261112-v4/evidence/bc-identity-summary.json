@@ -1,0 +1,22 @@
+{
+  "selectedReportIdentityAligned": true,
+  "allReturnedTargetsMatchSelected": true,
+  "sixJarsUnchanged": true,
+  "initialTasks": 2,
+  "finalTasks": 3,
+  "newTaskFromExplicitProductCheck": true,
+  "runs": [
+    "cold",
+    "hot"
+  ],
+  "instancesByRun": {
+    "cold": [
+      "40000000-0000-4000-8000-000000000002",
+      "40000000-0000-4000-8000-000000000003"
+    ],
+    "hot": [
+      "40000000-0000-4000-8000-000000000002",
+      "40000000-0000-4000-8000-000000000003"
+    ]
+  }
+}

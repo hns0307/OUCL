@@ -1,0 +1,148 @@
+{
+  "status": "BRACKETED_WITNESS_FOUND",
+  "source": "window-targets.jsonl",
+  "witnesses": [
+    {
+      "line": 35,
+      "time": "2026-11-12T04:30:49.242Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:49.210Z",
+      "finishedAt": "2026-11-12T04:30:49.242Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "a46ed517-0a4e-4206-929a-ac421d931c15",
+      "bTargetRequestId": "9004179a-53fb-48f8-9c4c-5d0a0a703f65",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 36,
+      "time": "2026-11-12T04:30:50.250Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:50.224Z",
+      "finishedAt": "2026-11-12T04:30:50.250Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "3c86e0c6-6866-4c77-9760-49f54f04636a",
+      "bTargetRequestId": "c7bddcb6-2a1f-4c63-a894-303e7309979f",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 37,
+      "time": "2026-11-12T04:30:51.258Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:51.224Z",
+      "finishedAt": "2026-11-12T04:30:51.258Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "455287a4-e493-48ca-aeb4-648fd6718309",
+      "bTargetRequestId": "b243db75-d5b3-4a6c-a187-a0208fac4c2e",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 38,
+      "time": "2026-11-12T04:30:52.247Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:52.227Z",
+      "finishedAt": "2026-11-12T04:30:52.247Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "982c0fc1-a15f-4b7b-a79f-20caab6ffea7",
+      "bTargetRequestId": "2763c523-c5d5-4789-af6d-af475cbce3ad",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 39,
+      "time": "2026-11-12T04:30:53.249Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:53.230Z",
+      "finishedAt": "2026-11-12T04:30:53.249Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "f45cea17-37bd-4155-8ac9-b2ed6218fe2c",
+      "bTargetRequestId": "a44bee64-3a6e-438d-b57c-8d85fb8a3f6c",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 41,
+      "time": "2026-11-12T04:30:54.264Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:54.245Z",
+      "finishedAt": "2026-11-12T04:30:54.264Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "5ec083b9-9164-427a-acef-c5741f38b47e",
+      "bTargetRequestId": "4ee8ca84-8b79-42b5-8803-f66155d4b91c",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 42,
+      "time": "2026-11-12T04:30:55.267Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:55.247Z",
+      "finishedAt": "2026-11-12T04:30:55.267Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "70edd801-8f0f-4c43-8e79-78cfada21afe",
+      "bTargetRequestId": "ee7a668f-ad89-48a1-b785-53cb9cab1161",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 43,
+      "time": "2026-11-12T04:30:56.283Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:56.248Z",
+      "finishedAt": "2026-11-12T04:30:56.283Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "82ab91f3-16af-464a-94e0-f3d7ab5b100c",
+      "bTargetRequestId": "263962f2-6432-4c1e-a890-a24cb3c72b95",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 44,
+      "time": "2026-11-12T04:30:57.284Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:57.254Z",
+      "finishedAt": "2026-11-12T04:30:57.283Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "8062f915-d5c9-4a9b-b5db-219dd9472df1",
+      "bTargetRequestId": "59fbdc13-a752-4450-9fe2-00e4765b5c04",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    },
+    {
+      "line": 45,
+      "time": "2026-11-12T04:30:58.275Z",
+      "taskId": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "startedAt": "2026-11-12T04:30:58.255Z",
+      "finishedAt": "2026-11-12T04:30:58.275Z",
+      "beforeState": "running",
+      "afterState": "running",
+      "aTargetRequestId": "a54ceba4-7601-4a2b-a13c-298e310bc71a",
+      "bTargetRequestId": "37ffbfaf-6086-4d45-81a8-388132cd43d6",
+      "bTaskIds": [
+        "08feb115-2678-41e2-a486-19466eeeae89"
+      ]
+    }
+  ],
+  "failures": [],
+  "limitation": "Sequential public IPC bracketing with stable selection, not an atomic transaction or actual upstream network evidence."
+}

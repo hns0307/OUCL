@@ -1,0 +1,86 @@
+[
+  {
+    "at": "2026-11-12T04:31:34.649Z",
+    "event": "harness-preflight",
+    "manifestFiles": 7,
+    "preparedInstances": [
+      "24871144-2454-505b-92aa-2741ccb05834",
+      "5297a61f-56b1-5159-a84f-440c49b9ff5b"
+    ]
+  },
+  {
+    "at": "2026-11-12T04:32:18.031Z",
+    "event": "public-invoke",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "51908983-f5f3-492f-8835-d43cdeb4e812"
+  },
+  {
+    "at": "2026-11-12T04:32:18.045Z",
+    "event": "public-result",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "51908983-f5f3-492f-8835-d43cdeb4e812",
+    "ok": true
+  },
+  {
+    "at": "2026-11-12T04:36:18.985Z",
+    "event": "harness-preflight",
+    "manifestFiles": 7,
+    "preparedInstances": [
+      "24871144-2454-505b-92aa-2741ccb05834",
+      "5297a61f-56b1-5159-a84f-440c49b9ff5b"
+    ]
+  },
+  {
+    "at": "2026-11-12T04:36:19.023Z",
+    "event": "will-quit"
+  },
+  {
+    "at": "2026-11-12T04:37:22.111Z",
+    "event": "public-invoke",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "aad13a55-8871-400b-b921-8cba33250e46"
+  },
+  {
+    "at": "2026-11-12T04:37:22.126Z",
+    "event": "public-result",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "aad13a55-8871-400b-b921-8cba33250e46",
+    "ok": true
+  },
+  {
+    "at": "2026-11-12T04:40:51.452Z",
+    "event": "will-quit"
+  },
+  {
+    "at": "2026-11-12T04:41:13.950Z",
+    "event": "harness-preflight",
+    "manifestFiles": 7,
+    "preparedInstances": [
+      "24871144-2454-505b-92aa-2741ccb05834",
+      "5297a61f-56b1-5159-a84f-440c49b9ff5b"
+    ]
+  },
+  {
+    "at": "2026-11-12T04:42:12.968Z",
+    "event": "public-invoke",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "8a77d071-f25e-4281-af03-47d211b98e66"
+  },
+  {
+    "at": "2026-11-12T04:42:12.986Z",
+    "event": "public-result",
+    "channel": "game:launch",
+    "contractVersion": 1,
+    "requestId": "8a77d071-f25e-4281-af03-47d211b98e66",
+    "ok": true
+  },
+  {
+    "at": "2026-11-12T04:43:13.565Z",
+    "event": "will-quit"
+  }
+]

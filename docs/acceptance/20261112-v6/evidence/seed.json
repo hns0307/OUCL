@@ -1,0 +1,247 @@
+{
+  "synthetic": true,
+  "profile": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\v5-global\\profile",
+  "games": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\v5-global\\synthetic-games",
+  "rootId": "50000000-0000-4000-8000-000000000001",
+  "instances": [
+    {
+      "instanceId": "528fb120-c25a-5362-a32a-bf7411524655",
+      "displayName": "GLOBAL-A Synthetic Installed Vanilla",
+      "installTaskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+      "filename": "global-a-synthetic.jar",
+      "modTaskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+      "report": {
+        "formatVersion": 1,
+        "instanceId": "528fb120-c25a-5362-a32a-bf7411524655",
+        "instanceRevision": 6,
+        "fingerprint": "e1b398e928832261a1ae6a6a5df87fa6302cc6a4622bed47f020f3869701429e",
+        "checkedAt": "2026-11-12T04:43:28.236Z",
+        "mode": "check",
+        "localState": "unsatisfied",
+        "state": "unsatisfied",
+        "files": [
+          {
+            "fileId": "3e50a9dd16494f6e38b2a98c202b6f0ea54e2765c5ad1bd4ac8d28438d3f7b39",
+            "filename": "global-a-synthetic.jar",
+            "enabled": true,
+            "size": 215,
+            "sha1": "e17ed836dfa3e55f314e15ef9d72a368719aec1b",
+            "sha256": "fcf8cc008ad2f75fbacb8c3c6dc08a1f824b417105d24f3eb0184d2a2eda345c",
+            "sha512": "4dcf40041874bec80ac73cd4a4d3fbb2f128d03315b1554c23c83825e4ccc8ce11bb7158b353cd249884d024a98687887c29a957b8859461e6d6a47048f73ac4",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "global_a_synthetic",
+                "version": "1.0.0",
+                "name": "Global A synthetic JSON only"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "unknown",
+            "source": null
+          }
+        ],
+        "issues": [
+          {
+            "scope": "local",
+            "severity": "error",
+            "code": "LOADER_MISMATCH",
+            "fileId": "3e50a9dd16494f6e38b2a98c202b6f0ea54e2765c5ad1bd4ac8d28438d3f7b39",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          },
+          {
+            "scope": "platform",
+            "severity": "unknown",
+            "code": "PLATFORM_SOURCE_UNKNOWN",
+            "fileId": "3e50a9dd16494f6e38b2a98c202b6f0ea54e2765c5ad1bd4ac8d28438d3f7b39",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          },
+          {
+            "scope": "platform",
+            "severity": "unknown",
+            "code": "NETWORK_FAILED",
+            "fileId": "",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          }
+        ]
+      }
+    },
+    {
+      "instanceId": "aea2680d-17c4-5c07-9837-8cd964a1b010",
+      "displayName": "GLOBAL-B Synthetic Installed Vanilla",
+      "installTaskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+      "filename": "global-b-synthetic.jar",
+      "modTaskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+      "report": {
+        "formatVersion": 1,
+        "instanceId": "aea2680d-17c4-5c07-9837-8cd964a1b010",
+        "instanceRevision": 6,
+        "fingerprint": "d68587169de3665077bd996daede07d159f3cc817931a8eac186d24520b0d450",
+        "checkedAt": "2026-11-12T04:43:28.884Z",
+        "mode": "check",
+        "localState": "unsatisfied",
+        "state": "unsatisfied",
+        "files": [
+          {
+            "fileId": "e8ea31d2c026d5007635ffb5d6ca811c328df65e59f479447b5a3d083cbc8e73",
+            "filename": "global-b-synthetic.jar",
+            "enabled": true,
+            "size": 215,
+            "sha1": "1774e929209b895159d94a72e37f8f5205fbe422",
+            "sha256": "d8f8415db672e9c83e24004dc916e1ea2e8a22ec2879f7e457d796b27d7bbc7e",
+            "sha512": "a5cf2d6f18239001b3310419b9baf0a7c9ded35cfd8a9281a5fc523f2f2026df179c07ca123a0678db84395734afd61d56b7276aae59fb26bd4861e985592817",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "global_b_synthetic",
+                "version": "1.0.0",
+                "name": "Global B synthetic JSON only"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "unknown",
+            "source": null
+          }
+        ],
+        "issues": [
+          {
+            "scope": "local",
+            "severity": "error",
+            "code": "LOADER_MISMATCH",
+            "fileId": "e8ea31d2c026d5007635ffb5d6ca811c328df65e59f479447b5a3d083cbc8e73",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          },
+          {
+            "scope": "platform",
+            "severity": "unknown",
+            "code": "PLATFORM_SOURCE_UNKNOWN",
+            "fileId": "e8ea31d2c026d5007635ffb5d6ca811c328df65e59f479447b5a3d083cbc8e73",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          },
+          {
+            "scope": "platform",
+            "severity": "unknown",
+            "code": "NETWORK_FAILED",
+            "fileId": "",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": null,
+            "targetVersionId": null,
+            "requirement": null,
+            "actual": [],
+            "via": []
+          }
+        ]
+      }
+    }
+  ],
+  "initialGlobal": {
+    "items": [
+      {
+        "taskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 75,
+        "bytesTotal": 75
+      },
+      {
+        "taskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 7,
+        "bytesDone": 75,
+        "bytesTotal": 75
+      },
+      {
+        "taskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      },
+      {
+        "taskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      }
+    ]
+  },
+  "reopenedGlobal": {
+    "items": [
+      {
+        "taskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 75,
+        "bytesTotal": 75
+      },
+      {
+        "taskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 7,
+        "bytesDone": 75,
+        "bytesTotal": 75
+      },
+      {
+        "taskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      },
+      {
+        "taskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      }
+    ]
+  },
+  "metadataRequests": 5,
+  "transferRequests": 1,
+  "limitation": "Formal installation effects on synthetic pinned local metadata/bytes; no real upstream client/Java/game or platform known-source evidence."
+}

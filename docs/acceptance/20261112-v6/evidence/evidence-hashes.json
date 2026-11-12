@@ -1,0 +1,46 @@
+[
+  {
+    "Hash": "5AB63190A71E6D3E7E64CE2F4F56ADEA11B4F27ABE53C9E34E3C5A5FB0756F61",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\cold-tasks.png"
+  },
+  {
+    "Hash": "001553724CB53659F569EDEF85A2E6FDA0B60D6FC8C6F5D04FFE9F1B61EF6015",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\extract.mjs"
+  },
+  {
+    "Hash": "2995BB4B4B4A01B25FE49DC40CB6DC846DA4EF23E5DACF96C71E8C4234BA39AC",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\hot-tasks.png"
+  },
+  {
+    "Hash": "F39738BAACE9DB0DAFDD0B17F5C66A9021070ABF358AA8DC159945CD7EB045A5",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\preparation.log"
+  },
+  {
+    "Hash": "63457B4F88D6DA46F3A157B91969D1458E778098CDA0F0C580FA8BBA4305D362",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\prepare.mjs"
+  },
+  {
+    "Hash": "B37789D881C9CF99A14D3BD73C2AEF3FA64E802F3D8A502648779FE30408325E",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\product-manifest.json"
+  },
+  {
+    "Hash": "A41FCD6A941F636A686070981CDD9AF62E43A25BB5D6C0F989B8241693DBDA98",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\seed.json"
+  },
+  {
+    "Hash": "AE9E340DF76AA93029D7F0D297B0CD8E1F1D3CA41DCBF956877533A4AA7861A3",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\window-cold.jsonl"
+  },
+  {
+    "Hash": "97B27FEFCD57058484299A296DEF298CD3C5685EF390E9BD93CC9E11BE470F40",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\window-extraction.json"
+  },
+  {
+    "Hash": "067C545B6BDA53D0852351F692B5ACA44BCB934305ABAC50B25E4D24FE3E45B1",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\window-hot.jsonl"
+  },
+  {
+    "Hash": "90D94D99DAC0DF85C4CCECAF15261695A72D790F54C1C98E1E7A245E628EFF73",
+    "Path": "D:\\MC_start\\OUCL\\docs\\acceptance\\20261112-v6\\evidence\\window.cjs"
+  }
+]

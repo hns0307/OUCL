@@ -1,0 +1,17 @@
+{
+  "files": 14901,
+  "dirs": 4433,
+  "issues": [],
+  "counts": {
+    "tasks": 0,
+    "requests": 0
+  },
+  "artifacts": {
+    "copy-manifest.json": "bd729133fb50d0ec7c7751b2015b5f5e972921efee391c9d4004c6475f331fc8",
+    "source-metadata.json": "a77f455b53999c831a0c5026a8e1bb53ab27976f07f2e0fd7ea80479095d11e1",
+    "prepared.json": "df7993ef5ab272fffcabafa55e51ebcb95f7673ac61681d2d593139c6c01f00e",
+    "resume.mjs": "a160c19812b70ef20a250e7b4588718728950a3c6a1aeab1fb0fc72e88f1fc8e",
+    "product-harness.cjs": "629c1f51096d2d6c19b4a810c6ddaf12bfdd01d3d54538c8a99779c436aa9e56",
+    "product-preflight.json": "6f3f748e09f3945111edb7e49bdb613c397e3e750357e2da14df080cd9b513ad"
+  }
+}

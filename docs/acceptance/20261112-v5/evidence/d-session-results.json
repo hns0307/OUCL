@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "revision": 9,
+  "data": {
+    "items": [
+      {
+        "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+        "taskId": "462d1681-17f7-404d-b223-35e0a35f26e0",
+        "snapshot": {
+          "sessionId": "462d1681-17f7-404d-b223-35e0a35f26e0",
+          "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+          "state": "exited",
+          "revision": 3,
+          "startedAt": "2026-11-12T04:32:22.503Z",
+          "exitCode": 0
+        },
+        "spawned": true,
+        "stopTaskIds": []
+      },
+      {
+        "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+        "taskId": "5c65c336-46b0-4e48-a0e5-b6d1c5f4ccf5",
+        "snapshot": {
+          "sessionId": "5c65c336-46b0-4e48-a0e5-b6d1c5f4ccf5",
+          "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+          "state": "exited",
+          "revision": 3,
+          "startedAt": "2026-11-12T04:37:30.778Z",
+          "exitCode": 0
+        },
+        "spawned": true,
+        "stopTaskIds": []
+      },
+      {
+        "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+        "taskId": "6852d3da-6cb7-4b02-87ae-35ebfcf53ead",
+        "snapshot": {
+          "sessionId": "6852d3da-6cb7-4b02-87ae-35ebfcf53ead",
+          "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+          "state": "exited",
+          "revision": 3,
+          "startedAt": "2026-11-12T04:42:21.502Z",
+          "exitCode": 0
+        },
+        "spawned": true,
+        "stopTaskIds": []
+      }
+    ]
+  }
+}
