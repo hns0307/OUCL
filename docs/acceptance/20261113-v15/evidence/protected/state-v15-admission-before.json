@@ -1,0 +1,66 @@
+{
+  "hashes": [
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000002\\mods\\alpha-dependent.jar",
+      "bytes": 227,
+      "sha256": "c20f0439d6e0b68f00af128d28df34b9aef9d1cb58b66e929b49c01812e80017"
+    },
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000002\\mods\\alpha-provider.jar",
+      "bytes": 206,
+      "sha256": "f1344fa24380e9ef53586eac0d2f9e6fa9819d7c799d0ca8ca4fab6548d7ff2f"
+    },
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000002\\mods\\alpha-standalone.jar",
+      "bytes": 207,
+      "sha256": "7c6e301b0803d145050b0cbf1e953f5644c66ed1a14c65dc5c81ee345db0f5ea"
+    },
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000003\\mods\\beta-dependent.jar",
+      "bytes": 228,
+      "sha256": "fbd71f4d0e83f364edb6a17572b4a1d704454b6e2568fa5d7ca7f5bd8f690e0b"
+    },
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000003\\mods\\beta-provider.jar",
+      "bytes": 206,
+      "sha256": "28e19d268a89e6cf6b2ddeda43e67b5526d125eecff0b7c93fd535c1e47ea9f2"
+    },
+    {
+      "relative": "roots\\40000000-0000-4000-8000-000000000001\\.minecraft\\versions\\40000000-0000-4000-8000-000000000003\\mods\\beta-standalone.jar",
+      "bytes": 207,
+      "sha256": "2c8fee3c0b2d596a26175dd23e68e361adacc61622271cfb9417157a7e7b2373"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "01ed1e64-b572-4e94-8bd1-554a5a4a657a",
+      "owner_id": "40000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "08feb115-2678-41e2-a486-19466eeeae89",
+      "owner_id": "40000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "2e678b5c-762b-4dc9-a5a8-e8114ecc7fec",
+      "owner_id": "40000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "815889c6-00d8-4ccf-be5f-3efea8d55456",
+      "owner_id": "40000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "9557e634-59b4-4503-a986-6ecec488c53a",
+      "owner_id": "40000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    }
+  ]
+}

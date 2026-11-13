@@ -1,0 +1,2726 @@
+{
+  "main": {
+    "inputs": {
+      "src/shared/contracts/handshake.ts": {
+        "bytes": 5753,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/core/path/layout.ts": {
+        "bytes": 6867,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/ranges.ts": {
+        "bytes": 6634,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/core/mods/check.ts": {
+        "bytes": 8588,
+        "imports": [
+          {
+            "path": "src/core/mods/ranges.ts",
+            "kind": "import-statement",
+            "original": "./ranges.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/files.ts": {
+        "bytes": 3682,
+        "imports": [
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/version/validation.ts": {
+        "bytes": 8494,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/core/install/assets.ts": {
+        "bytes": 2884,
+        "imports": [
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../path/layout.js"
+          },
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/install/native-archive.ts": {
+        "bytes": 18716,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:zlib",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/declarations.ts": {
+        "bytes": 3719,
+        "imports": [
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../install/assets.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/json-declarations.ts": {
+        "bytes": 4906,
+        "imports": [
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/manifest.ts": {
+        "bytes": 1059,
+        "imports": [
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/toml-declarations.ts": {
+        "bytes": 4752,
+        "imports": [
+          {
+            "path": "smol-toml",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          },
+          {
+            "path": "src/core/mods/manifest.ts",
+            "kind": "import-statement",
+            "original": "./manifest.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/archive.ts": {
+        "bytes": 4918,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          },
+          {
+            "path": "src/services/install/native-archive.ts",
+            "kind": "import-statement",
+            "original": "../install/native-archive.js"
+          },
+          {
+            "path": "src/core/mods/json-declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/json-declarations.js"
+          },
+          {
+            "path": "src/core/mods/toml-declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/toml-declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/facts.ts": {
+        "bytes": 1483,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/inventory.ts": {
+        "bytes": 7217,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/core/mods/check.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/check.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          },
+          {
+            "path": "src/services/mods/archive.ts",
+            "kind": "import-statement",
+            "original": "./archive.js"
+          },
+          {
+            "path": "src/services/mods/facts.ts",
+            "kind": "import-statement",
+            "original": "./facts.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/platform.ts": {
+        "bytes": 6914,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/shared/contracts/resources.ts": {
+        "bytes": 9883,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/resources/modrinth.ts": {
+        "bytes": 8258,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/modrinth.ts": {
+        "bytes": 10718,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:timers/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          },
+          {
+            "path": "src/services/resources/modrinth.ts",
+            "kind": "import-statement",
+            "original": "../resources/modrinth.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/inspection.ts": {
+        "bytes": 3864,
+        "imports": [
+          {
+            "path": "src/core/mods/platform.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/platform.js"
+          },
+          {
+            "path": "src/services/mods/inventory.ts",
+            "kind": "import-statement",
+            "original": "./inventory.js"
+          },
+          {
+            "path": "src/services/mods/modrinth.ts",
+            "kind": "import-statement",
+            "original": "./modrinth.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/mods/facts.ts",
+            "kind": "import-statement",
+            "original": "./facts.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/maintenance-impact.ts": {
+        "bytes": 7999,
+        "imports": [
+          {
+            "path": "src/core/mods/check.ts",
+            "kind": "import-statement",
+            "original": "./check.js"
+          },
+          {
+            "path": "src/core/mods/platform.ts",
+            "kind": "import-statement",
+            "original": "./platform.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/mods-report.ts": {
+        "bytes": 7126,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "./resources.js"
+          },
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/instances.ts": {
+        "bytes": 17616,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/mods.ts": {
+        "bytes": 13987,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods-report.ts",
+            "kind": "import-statement",
+            "original": "./mods-report.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "./resources.js"
+          },
+          {
+            "path": "src/shared/contracts/instances.ts",
+            "kind": "import-statement",
+            "original": "./instances.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/maintenance-preview.ts": {
+        "bytes": 5337,
+        "imports": [
+          {
+            "path": "src/core/mods/maintenance-impact.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/maintenance-impact.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods.js"
+          },
+          {
+            "path": "src/services/mods/facts.ts",
+            "kind": "import-statement",
+            "original": "./facts.js"
+          },
+          {
+            "path": "src/services/mods/inventory.ts",
+            "kind": "import-statement",
+            "original": "./inventory.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/maintenance-presentation.ts": {
+        "bytes": 9108,
+        "imports": [
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-declarations-protocol.ts": {
+        "bytes": 2646,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-archive-protocol.ts": {
+        "bytes": 4531,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          },
+          {
+            "path": "src/services/mods/archive.ts",
+            "kind": "import-statement",
+            "original": "../mods/archive.js"
+          },
+          {
+            "path": "src/services/workers/mod-declarations-protocol.ts",
+            "kind": "import-statement",
+            "original": "./mod-declarations-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-archive-reader.ts": {
+        "bytes": 2638,
+        "imports": [
+          {
+            "path": "node:worker_threads",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/mods/archive.ts",
+            "kind": "import-statement",
+            "original": "../mods/archive.js"
+          },
+          {
+            "path": "src/services/workers/mod-archive-protocol.ts",
+            "kind": "import-statement",
+            "original": "./mod-archive-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "tests/fixtures/mod-zip.ts": {
+        "bytes": 1540,
+        "imports": [
+          {
+            "path": "node:zlib",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "acceptance-results/c-platform-v15/entry.ts": {
+        "bytes": 418,
+        "imports": [
+          {
+            "path": "src/services/mods/inventory.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/mods/inventory.ts"
+          },
+          {
+            "path": "src/services/mods/inspection.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/mods/inspection.ts"
+          },
+          {
+            "path": "src/services/mods/modrinth.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/mods/modrinth.ts"
+          },
+          {
+            "path": "src/services/mods/maintenance-preview.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/mods/maintenance-preview.ts"
+          },
+          {
+            "path": "src/services/mods/maintenance-presentation.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/mods/maintenance-presentation.ts"
+          },
+          {
+            "path": "src/services/workers/mod-archive-reader.ts",
+            "kind": "import-statement",
+            "original": "../../src/services/workers/mod-archive-reader.ts"
+          },
+          {
+            "path": "tests/fixtures/mod-zip.ts",
+            "kind": "import-statement",
+            "original": "../../tests/fixtures/mod-zip.ts"
+          }
+        ],
+        "format": "esm"
+      }
+    },
+    "outputs": {
+      "acceptance-results/c-platform-v15/chain.mjs": {
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "smol-toml",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:timers/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:worker_threads",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:zlib",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "exports": [
+          "ModArchiveReader",
+          "ModInspectionService",
+          "ModInventoryError",
+          "ModInventoryService",
+          "ModMaintenancePreviewService",
+          "ModPlatformError",
+          "ModrinthModClient",
+          "modInventoryFingerprint",
+          "modZip",
+          "presentMaintenancePreview"
+        ],
+        "entryPoint": "acceptance-results/c-platform-v15/entry.ts",
+        "inputs": {
+          "src/services/mods/inventory.ts": {
+            "bytesInOutput": 5756
+          },
+          "src/shared/contracts/handshake.ts": {
+            "bytesInOutput": 311
+          },
+          "src/core/path/layout.ts": {
+            "bytesInOutput": 534
+          },
+          "src/core/mods/ranges.ts": {
+            "bytesInOutput": 5522
+          },
+          "src/core/mods/check.ts": {
+            "bytesInOutput": 7198
+          },
+          "src/services/storage/files.ts": {
+            "bytesInOutput": 1221
+          },
+          "src/core/install/assets.ts": {
+            "bytesInOutput": 501
+          },
+          "src/services/install/native-archive.ts": {
+            "bytesInOutput": 67
+          },
+          "src/core/mods/declarations.ts": {
+            "bytesInOutput": 1904
+          },
+          "src/core/mods/toml-declarations.ts": {
+            "bytesInOutput": 35
+          },
+          "src/services/mods/archive.ts": {
+            "bytesInOutput": 731
+          },
+          "src/services/mods/facts.ts": {
+            "bytesInOutput": 678
+          },
+          "acceptance-results/c-platform-v15/entry.ts": {
+            "bytesInOutput": 0
+          },
+          "src/core/mods/platform.ts": {
+            "bytesInOutput": 5355
+          },
+          "src/services/mods/modrinth.ts": {
+            "bytesInOutput": 9605
+          },
+          "src/shared/contracts/resources.ts": {
+            "bytesInOutput": 359
+          },
+          "src/services/resources/modrinth.ts": {
+            "bytesInOutput": 394
+          },
+          "src/services/mods/inspection.ts": {
+            "bytesInOutput": 2918
+          },
+          "src/core/mods/maintenance-impact.ts": {
+            "bytesInOutput": 5885
+          },
+          "src/shared/contracts/mods.ts": {
+            "bytesInOutput": 160
+          },
+          "src/services/mods/maintenance-preview.ts": {
+            "bytesInOutput": 3687
+          },
+          "src/services/mods/maintenance-presentation.ts": {
+            "bytesInOutput": 7319
+          },
+          "src/services/workers/mod-archive-reader.ts": {
+            "bytesInOutput": 2419
+          },
+          "src/services/workers/mod-archive-protocol.ts": {
+            "bytesInOutput": 3555
+          },
+          "src/services/workers/mod-declarations-protocol.ts": {
+            "bytesInOutput": 2114
+          },
+          "tests/fixtures/mod-zip.ts": {
+            "bytesInOutput": 1457
+          }
+        },
+        "bytes": 71013
+      }
+    }
+  },
+  "worker": {
+    "inputs": {
+      "src/services/storage/files.ts": {
+        "bytes": 3682,
+        "imports": [
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/handshake.ts": {
+        "bytes": 5753,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/core/task/machine.ts": {
+        "bytes": 5176,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/services/storage/tasks.ts": {
+        "bytes": 10973,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/task/machine.ts",
+            "kind": "import-statement",
+            "original": "../../core/task/machine.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/owner-guard.ts": {
+        "bytes": 4585,
+        "imports": [
+          {
+            "path": "node:sqlite",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/records.ts": {
+        "bytes": 16268,
+        "imports": [
+          {
+            "path": "node:sqlite",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/tasks.ts",
+            "kind": "import-statement",
+            "original": "./tasks.js"
+          },
+          {
+            "path": "src/services/storage/owner-guard.ts",
+            "kind": "import-statement",
+            "original": "./owner-guard.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/resources.ts": {
+        "bytes": 9883,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/path/layout.ts": {
+        "bytes": 6867,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/version/validation.ts": {
+        "bytes": 8494,
+        "imports": [],
+        "format": "esm"
+      },
+      "src/core/install/assets.ts": {
+        "bytes": 2884,
+        "imports": [
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../path/layout.js"
+          },
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/mods-report.ts": {
+        "bytes": 7126,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "./resources.js"
+          },
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/instances.ts": {
+        "bytes": 17616,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/mods.ts": {
+        "bytes": 13987,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods-report.ts",
+            "kind": "import-statement",
+            "original": "./mods-report.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "./resources.js"
+          },
+          {
+            "path": "src/shared/contracts/instances.ts",
+            "kind": "import-statement",
+            "original": "./instances.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/mod-jobs.ts": {
+        "bytes": 3196,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods.js"
+          },
+          {
+            "path": "src/shared/contracts/mods-report.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods-report.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/plan-identity.ts": {
+        "bytes": 2168,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/mod-plans.ts": {
+        "bytes": 3140,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods.js"
+          },
+          {
+            "path": "src/services/mods/plan-identity.ts",
+            "kind": "import-statement",
+            "original": "../mods/plan-identity.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/mod-transactions.ts": {
+        "bytes": 5095,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/mod-results.ts": {
+        "bytes": 3041,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/mods.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods.js"
+          },
+          {
+            "path": "src/shared/contracts/mods-report.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/mods-report.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/installation.ts": {
+        "bytes": 812,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/version/manifest.ts": {
+        "bytes": 2114,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "./validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/catalog-cache.ts": {
+        "bytes": 1138,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/version/manifest.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/manifest.js"
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/objects/provenance.ts": {
+        "bytes": 3918,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/download/types.ts": {
+        "bytes": 5154,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/objects/provenance.ts",
+            "kind": "import-statement",
+            "original": "../objects/provenance.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/version/arguments.ts": {
+        "bytes": 3567,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "./validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/version/resolve.ts": {
+        "bytes": 4447,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "./validation.js"
+          },
+          {
+            "path": "src/core/version/arguments.ts",
+            "kind": "import-statement",
+            "original": "./arguments.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/install/plan.ts": {
+        "bytes": 11228,
+        "imports": [
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../path/layout.js"
+          },
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "./assets.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/loaders/metadata.ts": {
+        "bytes": 8335,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/network/backoff.ts": {
+        "bytes": 351,
+        "imports": [
+          {
+            "path": "node:timers/promises",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/catalog/transport.ts": {
+        "bytes": 3530,
+        "imports": [
+          {
+            "path": "src/services/network/backoff.ts",
+            "kind": "import-statement",
+            "original": "../network/backoff.js"
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/version/manifest.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/manifest.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/metadata.ts": {
+        "bytes": 5014,
+        "imports": [
+          {
+            "path": "src/core/loaders/metadata.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/metadata.js"
+          },
+          {
+            "path": "src/services/catalog/transport.ts",
+            "kind": "import-statement",
+            "original": "../catalog/transport.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/compose.ts": {
+        "bytes": 3402,
+        "imports": [
+          {
+            "path": "src/core/install/plan.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/plan.js"
+          },
+          {
+            "path": "src/core/version/resolve.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/resolve.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/maven.ts": {
+        "bytes": 7878,
+        "imports": [
+          {
+            "path": "src/services/network/backoff.ts",
+            "kind": "import-statement",
+            "original": "../network/backoff.js"
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/download/types.ts",
+            "kind": "import-statement",
+            "original": "../download/types.js"
+          },
+          {
+            "path": "src/services/loaders/metadata.ts",
+            "kind": "import-statement",
+            "original": "./metadata.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/install-metadata.ts": {
+        "bytes": 4452,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/catalog/transport.ts",
+            "kind": "import-statement",
+            "original": "../catalog/transport.js"
+          },
+          {
+            "path": "src/core/loaders/metadata.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/metadata.js"
+          },
+          {
+            "path": "src/services/loaders/compose.ts",
+            "kind": "import-statement",
+            "original": "./compose.js"
+          },
+          {
+            "path": "src/services/loaders/maven.ts",
+            "kind": "import-statement",
+            "original": "./maven.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/loaders/installer-profile.ts": {
+        "bytes": 8328,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/loaders/processor-policy.ts": {
+        "bytes": 4355,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/loaders/processor-manifest.ts": {
+        "bytes": 2296,
+        "imports": [
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../version/validation.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/installer-compose.ts": {
+        "bytes": 5289,
+        "imports": [
+          {
+            "path": "src/core/loaders/processor-policy.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/processor-policy.js"
+          },
+          {
+            "path": "src/core/loaders/installer-profile.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/installer-profile.js"
+          },
+          {
+            "path": "src/core/install/plan.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/plan.js"
+          },
+          {
+            "path": "src/core/version/resolve.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/resolve.js"
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/loaders/installer-artifact.ts": {
+        "bytes": 2314,
+        "imports": [
+          {
+            "path": "src/services/loaders/metadata.ts",
+            "kind": "import-statement",
+            "original": "./metadata.js"
+          },
+          {
+            "path": "src/services/loaders/maven.ts",
+            "kind": "import-statement",
+            "original": "./maven.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/instance-records.ts": {
+        "bytes": 26708,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/version/validation.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/validation.js"
+          },
+          {
+            "path": "src/core/version/resolve.ts",
+            "kind": "import-statement",
+            "original": "../../core/version/resolve.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          },
+          {
+            "path": "src/core/install/plan.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/plan.js"
+          },
+          {
+            "path": "src/services/objects/provenance.ts",
+            "kind": "import-statement",
+            "original": "../objects/provenance.js"
+          },
+          {
+            "path": "src/services/download/types.ts",
+            "kind": "import-statement",
+            "original": "../download/types.js"
+          },
+          {
+            "path": "src/services/loaders/metadata.ts",
+            "kind": "import-statement",
+            "original": "../loaders/metadata.js"
+          },
+          {
+            "path": "src/services/loaders/install-metadata.ts",
+            "kind": "import-statement",
+            "original": "../loaders/install-metadata.js"
+          },
+          {
+            "path": "src/services/loaders/compose.ts",
+            "kind": "import-statement",
+            "original": "../loaders/compose.js"
+          },
+          {
+            "path": "src/core/loaders/installer-profile.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/installer-profile.js"
+          },
+          {
+            "path": "src/core/loaders/processor-policy.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/processor-policy.js"
+          },
+          {
+            "path": "src/core/loaders/processor-manifest.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/processor-manifest.js"
+          },
+          {
+            "path": "src/services/loaders/installer-compose.ts",
+            "kind": "import-statement",
+            "original": "../loaders/installer-compose.js"
+          },
+          {
+            "path": "src/services/loaders/installer-artifact.ts",
+            "kind": "import-statement",
+            "original": "../loaders/installer-artifact.js"
+          },
+          {
+            "path": "src/services/objects/provenance.ts",
+            "kind": "import-statement",
+            "original": "../objects/provenance.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/launch-profiles.ts": {
+        "bytes": 4805,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/path/layout.ts",
+            "kind": "import-statement",
+            "original": "../../core/path/layout.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/game-sessions.ts": {
+        "bytes": 3548,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/resources/modrinth.ts": {
+        "bytes": 8258,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/resources.ts": {
+        "bytes": 2631,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/shared/contracts/resources.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/resources.js"
+          },
+          {
+            "path": "src/services/objects/provenance.ts",
+            "kind": "import-statement",
+            "original": "../objects/provenance.js"
+          },
+          {
+            "path": "src/services/resources/modrinth.ts",
+            "kind": "import-statement",
+            "original": "../resources/modrinth.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/desktop.ts": {
+        "bytes": 8328,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/desktop.ts": {
+        "bytes": 641,
+        "imports": [
+          {
+            "path": "src/shared/contracts/desktop.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/desktop.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/shared/contracts/download-preferences.ts": {
+        "bytes": 975,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "./handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/settings.ts": {
+        "bytes": 1303,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          },
+          {
+            "path": "src/shared/contracts/download-preferences.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/download-preferences.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/protocol.ts": {
+        "bytes": 31811,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/storage/tasks.ts",
+            "kind": "import-statement",
+            "original": "../storage/tasks.js"
+          },
+          {
+            "path": "src/services/storage/mod-jobs.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-jobs.js"
+          },
+          {
+            "path": "src/services/storage/mod-plans.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-plans.js"
+          },
+          {
+            "path": "src/services/storage/mod-transactions.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-transactions.js"
+          },
+          {
+            "path": "src/services/storage/mod-results.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-results.js"
+          },
+          {
+            "path": "src/services/storage/installation.ts",
+            "kind": "import-statement",
+            "original": "../storage/installation.js"
+          },
+          {
+            "path": "src/services/storage/catalog-cache.ts",
+            "kind": "import-statement",
+            "original": "../storage/catalog-cache.js"
+          },
+          {
+            "path": "src/services/download/types.ts",
+            "kind": "import-statement",
+            "original": "../download/types.js"
+          },
+          {
+            "path": "src/services/storage/instance-records.ts",
+            "kind": "import-statement",
+            "original": "../storage/instance-records.js"
+          },
+          {
+            "path": "src/services/storage/launch-profiles.ts",
+            "kind": "import-statement",
+            "original": "../storage/launch-profiles.js"
+          },
+          {
+            "path": "src/services/storage/game-sessions.ts",
+            "kind": "import-statement",
+            "original": "../storage/game-sessions.js"
+          },
+          {
+            "path": "src/services/storage/resources.ts",
+            "kind": "import-statement",
+            "original": "../storage/resources.js"
+          },
+          {
+            "path": "src/services/storage/desktop.ts",
+            "kind": "import-statement",
+            "original": "../storage/desktop.js"
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/settings.ts",
+            "kind": "import-statement",
+            "original": "../storage/settings.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-targets.ts": {
+        "bytes": 4137,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/installation.ts",
+            "kind": "import-statement",
+            "original": "../storage/installation.js"
+          },
+          {
+            "path": "src/services/storage/instance-records.ts",
+            "kind": "import-statement",
+            "original": "../storage/instance-records.js"
+          },
+          {
+            "path": "src/services/storage/mod-jobs.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-jobs.js"
+          },
+          {
+            "path": "src/services/storage/mod-plans.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-plans.js"
+          },
+          {
+            "path": "src/services/mods/plan-identity.ts",
+            "kind": "import-statement",
+            "original": "../mods/plan-identity.js"
+          },
+          {
+            "path": "src/services/workers/protocol.ts",
+            "kind": "import-statement",
+            "original": "./protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/object-index.ts": {
+        "bytes": 2551,
+        "imports": [
+          {
+            "path": "node:sqlite",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/storage/transfer-db.ts": {
+        "bytes": 9326,
+        "imports": [
+          {
+            "path": "node:sqlite",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/download/types.ts",
+            "kind": "import-statement",
+            "original": "../download/types.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "./files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/hash-session.ts": {
+        "bytes": 3223,
+        "imports": [
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          },
+          {
+            "path": "src/services/workers/protocol.ts",
+            "kind": "import-statement",
+            "original": "./protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/install/native-archive.ts": {
+        "bytes": 18716,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:zlib",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/native-protocol.ts": {
+        "bytes": 2878,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/installer-archive-protocol.ts": {
+        "bytes": 2227,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/workers/native-protocol.ts",
+            "kind": "import-statement",
+            "original": "./native-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/processor-manifest-protocol.ts": {
+        "bytes": 1874,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/workers/native-protocol.ts",
+            "kind": "import-statement",
+            "original": "./native-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/archive-validation-protocol.ts": {
+        "bytes": 2029,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/services/workers/native-protocol.ts",
+            "kind": "import-statement",
+            "original": "./native-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/declarations.ts": {
+        "bytes": 3719,
+        "imports": [
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../install/assets.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/json-declarations.ts": {
+        "bytes": 4906,
+        "imports": [
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/manifest.ts": {
+        "bytes": 1059,
+        "imports": [
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/core/mods/toml-declarations.ts": {
+        "bytes": 4752,
+        "imports": [
+          {
+            "path": "smol-toml",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "./declarations.js"
+          },
+          {
+            "path": "src/core/mods/manifest.ts",
+            "kind": "import-statement",
+            "original": "./manifest.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/mods/archive.ts": {
+        "bytes": 4918,
+        "imports": [
+          {
+            "path": "node:crypto",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          },
+          {
+            "path": "src/services/install/native-archive.ts",
+            "kind": "import-statement",
+            "original": "../install/native-archive.js"
+          },
+          {
+            "path": "src/core/mods/json-declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/json-declarations.js"
+          },
+          {
+            "path": "src/core/mods/toml-declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/toml-declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-declarations-protocol.ts": {
+        "bytes": 2646,
+        "imports": [
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/mods/declarations.ts",
+            "kind": "import-statement",
+            "original": "../../core/mods/declarations.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/mod-archive-protocol.ts": {
+        "bytes": 4531,
+        "imports": [
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/shared/contracts/handshake.ts",
+            "kind": "import-statement",
+            "original": "../../shared/contracts/handshake.js"
+          },
+          {
+            "path": "src/core/install/assets.ts",
+            "kind": "import-statement",
+            "original": "../../core/install/assets.js"
+          },
+          {
+            "path": "src/services/mods/archive.ts",
+            "kind": "import-statement",
+            "original": "../mods/archive.js"
+          },
+          {
+            "path": "src/services/workers/mod-declarations-protocol.ts",
+            "kind": "import-statement",
+            "original": "./mod-declarations-protocol.js"
+          }
+        ],
+        "format": "esm"
+      },
+      "src/services/workers/entry.ts": {
+        "bytes": 20510,
+        "imports": [
+          {
+            "path": "node:worker_threads",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "import-statement",
+            "external": true
+          },
+          {
+            "path": "src/services/storage/records.ts",
+            "kind": "import-statement",
+            "original": "../storage/records.js"
+          },
+          {
+            "path": "src/services/storage/files.ts",
+            "kind": "import-statement",
+            "original": "../storage/files.js"
+          },
+          {
+            "path": "src/services/workers/protocol.ts",
+            "kind": "import-statement",
+            "original": "./protocol.js"
+          },
+          {
+            "path": "src/services/workers/mod-targets.ts",
+            "kind": "import-statement",
+            "original": "./mod-targets.js"
+          },
+          {
+            "path": "src/services/storage/object-index.ts",
+            "kind": "import-statement",
+            "original": "../storage/object-index.js"
+          },
+          {
+            "path": "src/services/storage/installation.ts",
+            "kind": "import-statement",
+            "original": "../storage/installation.js"
+          },
+          {
+            "path": "src/services/storage/catalog-cache.ts",
+            "kind": "import-statement",
+            "original": "../storage/catalog-cache.js"
+          },
+          {
+            "path": "src/services/storage/transfer-db.ts",
+            "kind": "import-statement",
+            "original": "../storage/transfer-db.js"
+          },
+          {
+            "path": "src/services/workers/hash-session.ts",
+            "kind": "import-statement",
+            "original": "./hash-session.js"
+          },
+          {
+            "path": "src/services/install/native-archive.ts",
+            "kind": "import-statement",
+            "original": "../install/native-archive.js"
+          },
+          {
+            "path": "src/services/workers/native-protocol.ts",
+            "kind": "import-statement",
+            "original": "./native-protocol.js"
+          },
+          {
+            "path": "src/services/workers/installer-archive-protocol.ts",
+            "kind": "import-statement",
+            "original": "./installer-archive-protocol.js"
+          },
+          {
+            "path": "src/services/workers/processor-manifest-protocol.ts",
+            "kind": "import-statement",
+            "original": "./processor-manifest-protocol.js"
+          },
+          {
+            "path": "src/core/loaders/processor-manifest.ts",
+            "kind": "import-statement",
+            "original": "../../core/loaders/processor-manifest.js"
+          },
+          {
+            "path": "src/services/workers/archive-validation-protocol.ts",
+            "kind": "import-statement",
+            "original": "./archive-validation-protocol.js"
+          },
+          {
+            "path": "src/services/storage/instance-records.ts",
+            "kind": "import-statement",
+            "original": "../storage/instance-records.js"
+          },
+          {
+            "path": "src/services/storage/launch-profiles.ts",
+            "kind": "import-statement",
+            "original": "../storage/launch-profiles.js"
+          },
+          {
+            "path": "src/services/storage/resources.ts",
+            "kind": "import-statement",
+            "original": "../storage/resources.js"
+          },
+          {
+            "path": "src/services/storage/desktop.ts",
+            "kind": "import-statement",
+            "original": "../storage/desktop.js"
+          },
+          {
+            "path": "src/services/storage/settings.ts",
+            "kind": "import-statement",
+            "original": "../storage/settings.js"
+          },
+          {
+            "path": "src/services/storage/game-sessions.ts",
+            "kind": "import-statement",
+            "original": "../storage/game-sessions.js"
+          },
+          {
+            "path": "src/services/mods/archive.ts",
+            "kind": "import-statement",
+            "original": "../mods/archive.js"
+          },
+          {
+            "path": "src/services/workers/mod-archive-protocol.ts",
+            "kind": "import-statement",
+            "original": "./mod-archive-protocol.js"
+          },
+          {
+            "path": "src/services/storage/mod-jobs.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-jobs.js"
+          },
+          {
+            "path": "src/services/storage/mod-plans.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-plans.js"
+          },
+          {
+            "path": "src/services/mods/plan-identity.ts",
+            "kind": "import-statement",
+            "original": "../mods/plan-identity.js"
+          },
+          {
+            "path": "src/services/storage/mod-results.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-results.js"
+          },
+          {
+            "path": "src/services/storage/mod-transactions.ts",
+            "kind": "import-statement",
+            "original": "../storage/mod-transactions.js"
+          }
+        ],
+        "format": "esm"
+      }
+    },
+    "outputs": {
+      "acceptance-results/c-platform-v15/worker.cjs": {
+        "imports": [
+          {
+            "path": "node:worker_threads",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:sqlite",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:sqlite",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:sqlite",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:sqlite",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:fs/promises",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:zlib",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:crypto",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "smol-toml",
+            "kind": "require-call",
+            "external": true
+          },
+          {
+            "path": "node:path",
+            "kind": "require-call",
+            "external": true
+          }
+        ],
+        "exports": [],
+        "entryPoint": "src/services/workers/entry.ts",
+        "inputs": {
+          "src/services/workers/entry.ts": {
+            "bytesInOutput": 18328
+          },
+          "src/services/storage/records.ts": {
+            "bytesInOutput": 14713
+          },
+          "src/services/storage/files.ts": {
+            "bytesInOutput": 2894
+          },
+          "src/shared/contracts/handshake.ts": {
+            "bytesInOutput": 312
+          },
+          "src/services/storage/tasks.ts": {
+            "bytesInOutput": 9615
+          },
+          "src/core/task/machine.ts": {
+            "bytesInOutput": 1839
+          },
+          "src/services/storage/owner-guard.ts": {
+            "bytesInOutput": 229
+          },
+          "src/shared/contracts/resources.ts": {
+            "bytesInOutput": 2984
+          },
+          "src/core/path/layout.ts": {
+            "bytesInOutput": 865
+          },
+          "src/core/version/validation.ts": {
+            "bytesInOutput": 6920
+          },
+          "src/core/install/assets.ts": {
+            "bytesInOutput": 2061
+          },
+          "src/shared/contracts/mods-report.ts": {
+            "bytesInOutput": 5213
+          },
+          "src/shared/contracts/mods.ts": {
+            "bytesInOutput": 4775
+          },
+          "src/services/storage/mod-jobs.ts": {
+            "bytesInOutput": 1962
+          },
+          "src/services/mods/plan-identity.ts": {
+            "bytesInOutput": 1836
+          },
+          "src/services/storage/mod-plans.ts": {
+            "bytesInOutput": 2117
+          },
+          "src/services/storage/mod-transactions.ts": {
+            "bytesInOutput": 3720
+          },
+          "src/services/storage/mod-results.ts": {
+            "bytesInOutput": 1954
+          },
+          "src/services/storage/installation.ts": {
+            "bytesInOutput": 418
+          },
+          "src/core/version/manifest.ts": {
+            "bytesInOutput": 1521
+          },
+          "src/services/storage/catalog-cache.ts": {
+            "bytesInOutput": 770
+          },
+          "src/services/objects/provenance.ts": {
+            "bytesInOutput": 2097
+          },
+          "src/services/download/types.ts": {
+            "bytesInOutput": 3496
+          },
+          "src/services/storage/instance-records.ts": {
+            "bytesInOutput": 21393
+          },
+          "src/core/version/arguments.ts": {
+            "bytesInOutput": 2262
+          },
+          "src/core/version/resolve.ts": {
+            "bytesInOutput": 3618
+          },
+          "src/core/install/plan.ts": {
+            "bytesInOutput": 7751
+          },
+          "src/core/loaders/metadata.ts": {
+            "bytesInOutput": 3944
+          },
+          "src/services/catalog/transport.ts": {
+            "bytesInOutput": 239
+          },
+          "src/services/loaders/metadata.ts": {
+            "bytesInOutput": 831
+          },
+          "src/services/loaders/install-metadata.ts": {
+            "bytesInOutput": 621
+          },
+          "src/services/loaders/compose.ts": {
+            "bytesInOutput": 2373
+          },
+          "src/services/loaders/maven.ts": {
+            "bytesInOutput": 318
+          },
+          "src/core/loaders/installer-profile.ts": {
+            "bytesInOutput": 7244
+          },
+          "src/core/loaders/processor-policy.ts": {
+            "bytesInOutput": 3738
+          },
+          "src/core/loaders/processor-manifest.ts": {
+            "bytesInOutput": 1885
+          },
+          "src/services/loaders/installer-compose.ts": {
+            "bytesInOutput": 3103
+          },
+          "src/services/loaders/installer-artifact.ts": {
+            "bytesInOutput": 635
+          },
+          "src/services/storage/launch-profiles.ts": {
+            "bytesInOutput": 3701
+          },
+          "src/services/storage/game-sessions.ts": {
+            "bytesInOutput": 2777
+          },
+          "src/services/resources/modrinth.ts": {
+            "bytesInOutput": 394
+          },
+          "src/services/storage/resources.ts": {
+            "bytesInOutput": 1729
+          },
+          "src/shared/contracts/desktop.ts": {
+            "bytesInOutput": 1909
+          },
+          "src/services/storage/desktop.ts": {
+            "bytesInOutput": 126
+          },
+          "src/services/workers/protocol.ts": {
+            "bytesInOutput": 8827
+          },
+          "src/shared/contracts/download-preferences.ts": {
+            "bytesInOutput": 684
+          },
+          "src/services/storage/settings.ts": {
+            "bytesInOutput": 673
+          },
+          "src/services/workers/mod-targets.ts": {
+            "bytesInOutput": 3150
+          },
+          "src/services/storage/object-index.ts": {
+            "bytesInOutput": 2297
+          },
+          "src/services/storage/transfer-db.ts": {
+            "bytesInOutput": 8262
+          },
+          "src/services/workers/hash-session.ts": {
+            "bytesInOutput": 2876
+          },
+          "src/services/install/native-archive.ts": {
+            "bytesInOutput": 17128
+          },
+          "src/services/workers/native-protocol.ts": {
+            "bytesInOutput": 1216
+          },
+          "src/services/workers/installer-archive-protocol.ts": {
+            "bytesInOutput": 785
+          },
+          "src/services/workers/processor-manifest-protocol.ts": {
+            "bytesInOutput": 610
+          },
+          "src/services/workers/archive-validation-protocol.ts": {
+            "bytesInOutput": 617
+          },
+          "src/services/mods/archive.ts": {
+            "bytesInOutput": 3525
+          },
+          "src/core/mods/declarations.ts": {
+            "bytesInOutput": 2349
+          },
+          "src/core/mods/json-declarations.ts": {
+            "bytesInOutput": 4688
+          },
+          "src/core/mods/toml-declarations.ts": {
+            "bytesInOutput": 4392
+          },
+          "src/core/mods/manifest.ts": {
+            "bytesInOutput": 850
+          },
+          "src/services/workers/mod-archive-protocol.ts": {
+            "bytesInOutput": 442
+          }
+        },
+        "bytes": 228499
+      }
+    }
+  }
+}

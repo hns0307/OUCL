@@ -20,8 +20,13 @@
 
 | [20261113-v13](20261113-v13/REPORT.md) | C真实超时过期恢复与15项有限边界通过 | 同次900501ms/组件恢复/新身份完成/exit0，C9项、E6项；原生失效回调仍待验 |
 
+| [20261113-v14](20261113-v14/REPORT.md) | E真实原生失效回调/新文档预览通过 | 实际reload后取消settle、旧请求拒绝/worker0、新请求worker exit0/DOM、79项审计 |
+| [20261113-v15](20261113-v15/REPORT.md) | C接纳回执丢失同身份重试通过 | 真3秒TIMEOUT、8秒迟到、同request/input/preview、9项核验/exit0/六JAR五任务保持 |
+
+| [20261113-v16](20261113-v16/REPORT.md) | C多声明/正式平台解析后端链3项通过 | 真实JAR worker/双扫描、精确平台版本与拒绝unknown、78输入不变；窗口展示待验 |
+
 版本规则：每次冻结有独立快照与SHA256清单；后续整改进入新快照，不修改已验证版本来追记通过。工作包报告属于来源证据；本目录报告只对所列冻结源码和实际命令负责。产品版本0.3.0、公共契约版本与验收快照v1/v2是不同维度。
 
 当前协调聊天负责最终合并清单和统一回归；两个审查聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
 
-当前接续位置为v13报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。
+当前接续位置为v16报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。

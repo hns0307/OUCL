@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "readOnly": true,
+  "checks": [
+    {
+      "id": "first-genuine-admission-held-only-once",
+      "status": "PASS",
+      "handled": {
+        "line": 4,
+        "time": "2026-11-13T11:01:24.268Z",
+        "monoMs": 106586.129,
+        "invocation": 257,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      },
+      "held": {
+        "line": 6,
+        "time": "2026-11-13T11:01:24.269Z",
+        "monoMs": 106587.385,
+        "invocation": 257,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      },
+      "previewId": "97775ea6-dfa3-4d8d-acf9-afea2d342707"
+    },
+    {
+      "id": "real-timeout-dom-allows-retry-not-status-query",
+      "status": "PASS",
+      "dom": {
+        "line": 8,
+        "time": "2026-11-13T11:01:27.503Z",
+        "monoMs": 109821.9882
+      }
+    },
+    {
+      "id": "gui-retry-same-request-input-preview-id",
+      "status": "PASS",
+      "retry": {
+        "line": 10,
+        "time": "2026-11-13T11:02:11.238Z",
+        "monoMs": 153556.2724,
+        "invocation": 369,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      },
+      "previewId": "97775ea6-dfa3-4d8d-acf9-afea2d342707"
+    },
+    {
+      "id": "retry-receipt-released-unchanged",
+      "status": "PASS",
+      "delivered": {
+        "line": 12,
+        "time": "2026-11-13T11:02:11.239Z",
+        "monoMs": 153557.6628,
+        "invocation": 369,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      }
+    },
+    {
+      "id": "only-one-public-observation-identity",
+      "status": "PASS",
+      "successfulAdmissionCalls": 2,
+      "uniquePreviewIds": 1,
+      "identityLog": {
+        "line": 11,
+        "time": "2026-11-13T11:02:11.239Z",
+        "monoMs": 153557.1504,
+        "invocation": 369,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      },
+      "meaning": "Original-handler identities plus production start prior-id branch; not direct check-call instrumentation."
+    },
+    {
+      "id": "same-observation-completed-consumed-by-component",
+      "status": "PASS",
+      "handled": {
+        "line": 13,
+        "time": "2026-11-13T11:02:11.250Z",
+        "monoMs": 153569.0661,
+        "invocation": 370,
+        "requestId": "60dc6743-97ad-4fe8-9d5c-8b71a8516c41"
+      },
+      "delivered": {
+        "line": 14,
+        "time": "2026-11-13T11:02:11.251Z",
+        "monoMs": 153569.6353,
+        "invocation": 370,
+        "requestId": "60dc6743-97ad-4fe8-9d5c-8b71a8516c41"
+      },
+      "dom": {
+        "line": 15,
+        "time": "2026-11-13T11:02:11.332Z",
+        "monoMs": 153650.421
+      },
+      "state": "blocked"
+    },
+    {
+      "id": "first-late-receipt-released-not-treated-as-ui-ack",
+      "status": "PASS",
+      "delivered": {
+        "line": 9,
+        "time": "2026-11-13T11:01:32.271Z",
+        "monoMs": 114589.6649,
+        "invocation": 257,
+        "requestId": "c45b5f51-f4fd-4f57-a0e2-cfc293dca9bd"
+      },
+      "elapsedMs": 8003.358099999998,
+      "targetDelayMs": 8000,
+      "meaning": "Allows10ms scheduling granularity; actual DOM TIMEOUT independently required. Delivery is not UI receipt."
+    },
+    {
+      "id": "normal-close-after-ui-completion",
+      "status": "PASS",
+      "close": {
+        "line": 16,
+        "time": "2026-11-13T11:02:39.915Z",
+        "monoMs": 182233.2202
+      },
+      "exit": {
+        "line": 18,
+        "time": "2026-11-13T11:02:39.953Z",
+        "monoMs": 182271.7754
+      }
+    },
+    {
+      "id": "no-harness-errors-or-incomplete-log",
+      "status": "PASS",
+      "errors": [],
+      "parseIssues": []
+    }
+  ],
+  "limits": [
+    "Public observation identity count is not measured inspection/check invocation count.",
+    "GUI gesture evidence remains coordinator-owned.",
+    "No files are written and no GUI/IPC or product code is executed by this verifier."
+  ]
+}

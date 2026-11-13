@@ -1,0 +1,30 @@
+{
+  "label": "after-late",
+  "time": "2026-11-13T10:51:21.464Z",
+  "metadataExists": true,
+  "json": [
+    {
+      "path": "installation.json",
+      "sha256": "ff8491405c22298479d0dff65edc805c26ff6b93d738cdd68921a688ecec2c28"
+    }
+  ],
+  "databaseExists": true,
+  "tables": {
+    "tasks": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "requests": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "operations": {
+      "count": 1,
+      "sha256": "12f12797ba86b6bfe28c70747406eb35fc6ad94f64f901b4de0c42200e9293c9"
+    }
+  },
+  "gameDirectoryExists": true,
+  "gameFiles": [],
+  "ownerPresent": true,
+  "scope": "Related metadata JSON/table rows/game file contents; not all Chromium cache bytes or a continuous no-write proof."
+}

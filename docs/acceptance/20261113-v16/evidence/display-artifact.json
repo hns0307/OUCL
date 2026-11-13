@@ -1,0 +1,256 @@
+{
+  "schema": "acceptance-artifact-only",
+  "syntheticPlatformResponse": true,
+  "backendOnly": true,
+  "windowVerified": false,
+  "displays": {
+    "nested-multi": {
+      "rootId": "00000000-0000-4000-8000-000000000001",
+      "instanceId": "00000000-0000-4000-8000-000000000002",
+      "instanceRevision": 4,
+      "fingerprint": "6cd9e1855797f47d96765a1bd187132a951197ce1833d63d4eff92ef730b318f",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "filename": "provider.jar",
+      "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+      "action": "disable",
+      "state": "blocked",
+      "providers": [
+        {
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        },
+        {
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        },
+        {
+          "id": "nested_mod",
+          "ownerId": "nested_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 1
+        }
+      ],
+      "directRequiredBy": [
+        "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+      ],
+      "transitiveRequiredBy": [],
+      "issues": [
+        {
+          "moment": "after",
+          "scope": "local",
+          "severity": "error",
+          "code": "MOD_DEPENDENCY_MISSING",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": "dependent_mod",
+          "dependencyModId": "parent_alias",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "requirement": "*",
+          "actual": [],
+          "embeddedDepth": 0
+        },
+        {
+          "moment": "after",
+          "scope": "local",
+          "severity": "error",
+          "code": "MOD_DEPENDENCY_MISSING",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": "dependent_mod",
+          "dependencyModId": "nested_mod",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "requirement": "*",
+          "actual": [],
+          "embeddedDepth": 0
+        },
+        {
+          "moment": "after",
+          "scope": "platform",
+          "severity": "error",
+          "code": "PLATFORM_DEPENDENCY_MISSING",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": null,
+          "dependencyModId": null,
+          "dependencyProjectId": "ProvPr01",
+          "dependencyVersionId": "ProvVr01",
+          "requirement": null,
+          "actual": [],
+          "embeddedDepth": 0
+        }
+      ],
+      "relations": [
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "optional": false,
+          "dependencyModId": "nested_mod",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "embeddedDepth": 0
+        },
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "optional": false,
+          "dependencyModId": "parent_alias",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "embeddedDepth": 0
+        },
+        {
+          "scope": "platform",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "optional": false,
+          "dependencyModId": null,
+          "dependencyProjectId": "ProvPr01",
+          "dependencyVersionId": "ProvVr01",
+          "embeddedDepth": 0
+        }
+      ],
+      "platformFailures": [],
+      "incomplete": false
+    },
+    "exact-platform-pin": {
+      "rootId": "00000000-0000-4000-8000-000000000001",
+      "instanceId": "00000000-0000-4000-8000-000000000002",
+      "instanceRevision": 4,
+      "fingerprint": "3d519aa4a3bf6223b267676a0d29131414d8f1a2eb5fb605d4349830f767d985",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "filename": "provider.jar",
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+      "action": "disable",
+      "state": "blocked",
+      "providers": [
+        {
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        },
+        {
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        }
+      ],
+      "directRequiredBy": [
+        "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+      ],
+      "transitiveRequiredBy": [],
+      "issues": [
+        {
+          "moment": "before",
+          "scope": "platform",
+          "severity": "error",
+          "code": "PLATFORM_PIN_MISMATCH",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": null,
+          "dependencyModId": null,
+          "dependencyProjectId": "ProvPr01",
+          "dependencyVersionId": "ProvVr02",
+          "requirement": null,
+          "actual": [],
+          "embeddedDepth": 0
+        },
+        {
+          "moment": "after",
+          "scope": "local",
+          "severity": "error",
+          "code": "MOD_DEPENDENCY_MISSING",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": "dependent_mod",
+          "dependencyModId": "parent_alias",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "requirement": "*",
+          "actual": [],
+          "embeddedDepth": 0
+        },
+        {
+          "moment": "after",
+          "scope": "platform",
+          "severity": "error",
+          "code": "PLATFORM_DEPENDENCY_MISSING",
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "modId": null,
+          "dependencyModId": null,
+          "dependencyProjectId": "ProvPr01",
+          "dependencyVersionId": "ProvVr02",
+          "requirement": null,
+          "actual": [],
+          "embeddedDepth": 0
+        }
+      ],
+      "relations": [
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "optional": false,
+          "dependencyModId": "parent_alias",
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "embeddedDepth": 0
+        }
+      ],
+      "platformFailures": [],
+      "incomplete": false
+    },
+    "platform-rejected": {
+      "rootId": "00000000-0000-4000-8000-000000000001",
+      "instanceId": "00000000-0000-4000-8000-000000000002",
+      "instanceRevision": 4,
+      "fingerprint": "2ef8d3c954a6a39b11893c20bb87ac5df3317ec40c8c94d9a4d2aa0c8fffaa45",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "filename": "provider.jar",
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+      "action": "disable",
+      "state": "unknown",
+      "providers": [
+        {
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        },
+        {
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "embeddedDepth": 0
+        }
+      ],
+      "directRequiredBy": [],
+      "transitiveRequiredBy": [],
+      "issues": [
+        {
+          "moment": "before",
+          "scope": "platform",
+          "severity": "unknown",
+          "code": "PLATFORM_SOURCE_UNKNOWN",
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "modId": null,
+          "dependencyModId": null,
+          "dependencyProjectId": null,
+          "dependencyVersionId": null,
+          "requirement": null,
+          "actual": [],
+          "embeddedDepth": 0
+        }
+      ],
+      "relations": [],
+      "platformFailures": [
+        "RETRY_LATER"
+      ],
+      "incomplete": false
+    }
+  }
+}

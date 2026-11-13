@@ -1,0 +1,564 @@
+{
+  "kind": "synthetic HTTP Response; real worker/inventory/inspection/client/preview/presentation",
+  "scans": 2,
+  "workerReads": 4,
+  "requests": 1,
+  "manifest": {
+    "provider.jar": {
+      "size": 388,
+      "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+      "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+    },
+    "dependent.jar": {
+      "size": 204,
+      "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+      "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859",
+      "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd"
+    }
+  },
+  "initial": {
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "revision": 4,
+    "fingerprint": "3d519aa4a3bf6223b267676a0d29131414d8f1a2eb5fb605d4349830f767d985",
+    "items": [
+      {
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "filename": "dependent.jar",
+        "enabled": true,
+        "size": 204,
+        "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+        "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859",
+        "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd",
+        "archives": [
+          {
+            "entries": [],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "dependent_mod",
+                    "version": "1.0.0",
+                    "name": "dependent_mod",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [
+                      {
+                        "id": "parent_alias",
+                        "range": "*",
+                        "kind": "required",
+                        "client": "yes",
+                        "issues": []
+                      }
+                    ],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          }
+        ],
+        "issues": []
+      },
+      {
+        "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "filename": "provider.jar",
+        "enabled": true,
+        "size": 388,
+        "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+        "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+        "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2",
+        "archives": [
+          {
+            "entries": [],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "parent_mod",
+                    "version": "1.0.0",
+                    "name": "parent_mod",
+                    "client": "yes",
+                    "provides": [
+                      {
+                        "id": "parent_alias",
+                        "version": "1.0.0"
+                      }
+                    ],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              },
+              {
+                "format": "quilt",
+                "mods": [
+                  {
+                    "id": "quilt_parent",
+                    "version": "1.0.0",
+                    "name": "quilt_parent",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          }
+        ],
+        "issues": []
+      }
+    ],
+    "local": {
+      "state": "satisfied",
+      "issues": [],
+      "providers": [
+        {
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "id": "dependent_mod",
+          "ownerId": "dependent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        }
+      ]
+    }
+  },
+  "preview": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "3d519aa4a3bf6223b267676a0d29131414d8f1a2eb5fb605d4349830f767d985",
+    "filename": "provider.jar",
+    "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+    "impact": {
+      "action": "disable",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "state": "blocked",
+      "before": {
+        "local": {
+          "state": "satisfied",
+          "issues": [],
+          "providers": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "id": "dependent_mod",
+              "ownerId": "dependent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_mod",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_alias",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            }
+          ]
+        },
+        "platform": {
+          "state": "unsatisfied",
+          "files": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "version": {
+                "projectId": "DepePr01",
+                "versionId": "DepeVr01",
+                "release": "release",
+                "publishedAt": "2026-11-13T00:00:00Z",
+                "name": "Synthetic fixture",
+                "versionNumber": "1.0.0",
+                "loaders": [
+                  "fabric"
+                ],
+                "gameVersions": [
+                  "1.20.1"
+                ],
+                "environment": "client_and_server",
+                "dependencies": [
+                  {
+                    "type": "required",
+                    "projectId": "ProvPr01",
+                    "versionId": "ProvVr02",
+                    "filename": null
+                  }
+                ],
+                "files": [
+                  {
+                    "filename": "dependent.jar",
+                    "url": "https://cdn.modrinth.com/data/DepePr01/versions/DepeVr01/dependent.jar",
+                    "size": 204,
+                    "primary": true,
+                    "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+                    "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd"
+                  }
+                ],
+                "evidence": {
+                  "url": "https://api.modrinth.com/v2/version_files",
+                  "sha256": "852c1f4b533d3d51009ddc82d2b3dc428de0ff5fa09325bcb1269cda4b2b4643"
+                }
+              },
+              "status": "matched"
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "version": {
+                "projectId": "ProvPr01",
+                "versionId": "ProvVr01",
+                "release": "release",
+                "publishedAt": "2026-11-13T00:00:00Z",
+                "name": "Synthetic fixture",
+                "versionNumber": "1.0.0",
+                "loaders": [
+                  "fabric"
+                ],
+                "gameVersions": [
+                  "1.20.1"
+                ],
+                "environment": "client_and_server",
+                "dependencies": [],
+                "files": [
+                  {
+                    "filename": "provider.jar",
+                    "url": "https://cdn.modrinth.com/data/ProvPr01/versions/ProvVr01/provider.jar",
+                    "size": 388,
+                    "primary": true,
+                    "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+                    "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+                  }
+                ],
+                "evidence": {
+                  "url": "https://api.modrinth.com/v2/version_files",
+                  "sha256": "852c1f4b533d3d51009ddc82d2b3dc428de0ff5fa09325bcb1269cda4b2b4643"
+                }
+              },
+              "status": "matched"
+            }
+          ],
+          "issues": [
+            {
+              "severity": "error",
+              "code": "PLATFORM_PIN_MISMATCH",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "projectId": "DepePr01",
+              "versionId": "DepeVr01",
+              "dependencyProjectId": "ProvPr01",
+              "dependencyVersionId": "ProvVr02"
+            }
+          ]
+        }
+      },
+      "after": {
+        "local": {
+          "state": "unsatisfied",
+          "issues": [
+            {
+              "severity": "error",
+              "code": "MOD_DEPENDENCY_MISSING",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "modId": "dependent_mod",
+              "dependencyId": "parent_alias",
+              "expected": "*",
+              "actual": [],
+              "via": []
+            }
+          ],
+          "providers": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "id": "dependent_mod",
+              "ownerId": "dependent_mod",
+              "version": "1.0.0",
+              "via": []
+            }
+          ]
+        },
+        "platform": {
+          "state": "unsatisfied",
+          "files": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "version": {
+                "projectId": "DepePr01",
+                "versionId": "DepeVr01",
+                "release": "release",
+                "publishedAt": "2026-11-13T00:00:00Z",
+                "name": "Synthetic fixture",
+                "versionNumber": "1.0.0",
+                "loaders": [
+                  "fabric"
+                ],
+                "gameVersions": [
+                  "1.20.1"
+                ],
+                "environment": "client_and_server",
+                "dependencies": [
+                  {
+                    "type": "required",
+                    "projectId": "ProvPr01",
+                    "versionId": "ProvVr02",
+                    "filename": null
+                  }
+                ],
+                "files": [
+                  {
+                    "filename": "dependent.jar",
+                    "url": "https://cdn.modrinth.com/data/DepePr01/versions/DepeVr01/dependent.jar",
+                    "size": 204,
+                    "primary": true,
+                    "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+                    "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd"
+                  }
+                ],
+                "evidence": {
+                  "url": "https://api.modrinth.com/v2/version_files",
+                  "sha256": "852c1f4b533d3d51009ddc82d2b3dc428de0ff5fa09325bcb1269cda4b2b4643"
+                }
+              },
+              "status": "matched"
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "version": {
+                "projectId": "ProvPr01",
+                "versionId": "ProvVr01",
+                "release": "release",
+                "publishedAt": "2026-11-13T00:00:00Z",
+                "name": "Synthetic fixture",
+                "versionNumber": "1.0.0",
+                "loaders": [
+                  "fabric"
+                ],
+                "gameVersions": [
+                  "1.20.1"
+                ],
+                "environment": "client_and_server",
+                "dependencies": [],
+                "files": [
+                  {
+                    "filename": "provider.jar",
+                    "url": "https://cdn.modrinth.com/data/ProvPr01/versions/ProvVr01/provider.jar",
+                    "size": 388,
+                    "primary": true,
+                    "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+                    "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+                  }
+                ],
+                "evidence": {
+                  "url": "https://api.modrinth.com/v2/version_files",
+                  "sha256": "852c1f4b533d3d51009ddc82d2b3dc428de0ff5fa09325bcb1269cda4b2b4643"
+                }
+              },
+              "status": "matched"
+            }
+          ],
+          "issues": [
+            {
+              "severity": "error",
+              "code": "PLATFORM_DEPENDENCY_MISSING",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "projectId": "DepePr01",
+              "versionId": "DepeVr01",
+              "dependencyProjectId": "ProvPr01",
+              "dependencyVersionId": "ProvVr02"
+            }
+          ]
+        }
+      },
+      "introducedIssues": [
+        {
+          "scope": "local",
+          "issue": {
+            "severity": "error",
+            "code": "MOD_DEPENDENCY_MISSING",
+            "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+            "modId": "dependent_mod",
+            "dependencyId": "parent_alias",
+            "expected": "*",
+            "actual": [],
+            "via": []
+          }
+        },
+        {
+          "scope": "platform",
+          "issue": {
+            "severity": "error",
+            "code": "PLATFORM_DEPENDENCY_MISSING",
+            "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+            "projectId": "DepePr01",
+            "versionId": "DepeVr01",
+            "dependencyProjectId": "ProvPr01",
+            "dependencyVersionId": "ProvVr02"
+          }
+        }
+      ],
+      "resolvedIssues": [
+        {
+          "scope": "platform",
+          "issue": {
+            "severity": "error",
+            "code": "PLATFORM_PIN_MISMATCH",
+            "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+            "projectId": "DepePr01",
+            "versionId": "DepeVr01",
+            "dependencyProjectId": "ProvPr01",
+            "dependencyVersionId": "ProvVr02"
+          }
+        }
+      ],
+      "affectedProviders": [
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        }
+      ],
+      "directRequiredBy": [
+        "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+      ],
+      "transitiveRequiredBy": [],
+      "relations": [
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "selector": "parent_alias",
+          "optional": false,
+          "via": []
+        }
+      ],
+      "truncated": false
+    },
+    "platformFailures": []
+  },
+  "display": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "3d519aa4a3bf6223b267676a0d29131414d8f1a2eb5fb605d4349830f767d985",
+    "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+    "filename": "provider.jar",
+    "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+    "action": "disable",
+    "state": "blocked",
+    "providers": [
+      {
+        "id": "parent_mod",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      },
+      {
+        "id": "parent_alias",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      }
+    ],
+    "directRequiredBy": [
+      "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+    ],
+    "transitiveRequiredBy": [],
+    "issues": [
+      {
+        "moment": "before",
+        "scope": "platform",
+        "severity": "error",
+        "code": "PLATFORM_PIN_MISMATCH",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": "ProvPr01",
+        "dependencyVersionId": "ProvVr02",
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "after",
+        "scope": "local",
+        "severity": "error",
+        "code": "MOD_DEPENDENCY_MISSING",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": "dependent_mod",
+        "dependencyModId": "parent_alias",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": "*",
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "after",
+        "scope": "platform",
+        "severity": "error",
+        "code": "PLATFORM_DEPENDENCY_MISSING",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": "ProvPr01",
+        "dependencyVersionId": "ProvVr02",
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      }
+    ],
+    "relations": [
+      {
+        "scope": "local",
+        "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "optional": false,
+        "dependencyModId": "parent_alias",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "embeddedDepth": 0
+      }
+    ],
+    "platformFailures": [],
+    "incomplete": false
+  }
+}

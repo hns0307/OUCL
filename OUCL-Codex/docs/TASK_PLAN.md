@@ -587,3 +587,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-13 v12候选EXE共存：v11已批准隔离hunk以最终EXE实际运行旧原版、Fabric/FerriteCore、新Quilt及正常重开后Quilt共4次菜单/自然exit0，两启动器正常exit0，48项正式会话/索引/路径/包内七产物审计通过；精确记录见根docs/acceptance/20261113-v12/REPORT.md。可进入选定增量本地整合；真实强制中断和全部异常矩阵仍未验收。C独立真实延迟回执已触发preload TIMEOUT，保持原窗口等待900500ms后人工查询，不预记过期组件恢复通过。无新增授权，不push/发布。
 
 2026-11-13 v13：选定A隔离候选及共存证据已在干净main本地ff-only接纳ecb40f9，最终v11 EXE已复制main release，462份选中文件及10份原始证据一致。C同次真实回执延迟900501ms后GUI过期恢复/新双身份completed/exit0通过，11项核验和六JAR/五任务保持；C预算/容量/TTL/tombstone9项、E生命周期正式类+真实Worker6项通过，冻结源码无漂移。剩余有限用例与层级见根docs/acceptance/20261113-v13/REPORT.md，不标完整方案全部通过。原生picker失效后真实settle仍待验，无新增业务授权、不push/发布。
+
+2026-11-13 v14/v15：E原生picker在原文档真实reload失效、main继续存活后实际取消settle，旧请求INVALID_SENDER/无worker，新文档再次固定样本预览、真实worker exit0/DOM确认/正常exit0，79项独立审计通过、597冻结文件无漂移，E有限三组生命周期已按层级闭合。C真实接纳回执延迟8秒触发原3秒TIMEOUT，GUI同文件重试同requestId/input/previewId完成，9项核验通过、六JAR五任务不变/正常exit0。详根docs/acceptance/20261113-v14/REPORT.md、20261113-v15/REPORT.md。C其余有限边界/A强制中断仍开放，不标历史整体完成；无产品改动、未扩权、不push/发布。
+
+2026-11-13 v16：C-R6后端真实JAR/双扫描/正式平台客户端受控合法响应解析/预览投影3项通过，78输入哈希不变；首轮非法夹具ID失败保留、仅修正合成ID后通过。只闭合后端层级，公共窗口展示及公网来源不预记通过。详根docs/acceptance/20261113-v16/REPORT.md。
