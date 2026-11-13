@@ -1,0 +1,20 @@
+{
+  "first": {
+    "requestId": "b2b606bb-9560-4457-8f94-58ed4f4d9425",
+    "input": {
+      "rootId": "40000000-0000-4000-8000-000000000001",
+      "instanceId": "40000000-0000-4000-8000-000000000002",
+      "expectedRevision": 1,
+      "expectedFingerprint": "69ec7251c5fddc948157683f22029b83036464aa12d9f6cf3846f16d84cc2f36",
+      "fileId": "5da4231cf237720955df0df9428eb534720d4b54df77edce98aca0f1c6b6014c",
+      "action": "disable"
+    },
+    "previewId": "0a50462c-53e5-409f-8adc-191c527ecfca",
+    "completedHandledAt": "2026-11-13T06:19:33.952Z",
+    "completedHandledMono": 127590.9957,
+    "statusRequestId": "f98acb10-8d57-4fa8-b734-0d859b6b3f14",
+    "filename": "alpha-provider.jar"
+  },
+  "elapsedMs": 900501.7557,
+  "dueAt": "2026-11-13T06:34:34.454Z"
+}

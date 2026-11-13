@@ -1,0 +1,54 @@
+[
+  {
+    "path": "acceptance-results/c-boundaries-v13/boundaries.test.cjs",
+    "sha256": "fee2c53cd3593af3a5b05fdc6f25d4095f401ea2811e8d29f07215d5cd7322a6"
+  },
+  {
+    "path": "acceptance-results/c-boundaries-v13/run.mjs",
+    "sha256": "aa56fc4bfd99b24fa8529f15357f32c31d7dbbfe7cf18560a1ef8add9e617855"
+  },
+  {
+    "path": "src/core/install/assets.ts",
+    "sha256": "6e47ae23f7d628e7e6257494f82a973b512dc01ad41ce42b4ad7f35df2a0d033"
+  },
+  {
+    "path": "src/core/path/layout.ts",
+    "sha256": "b2a801a4f7edac7ce486144432d4b00f75e77e87bf1d0a1ec0e735435a5ef622"
+  },
+  {
+    "path": "src/core/version/validation.ts",
+    "sha256": "7a754dc81094abdec401db3e07e7cdd19ea0310d11266453297fc64153adab60"
+  },
+  {
+    "path": "src/services/mods/maintenance-jobs.ts",
+    "sha256": "5db69978552922cbe48ebd4562e967d1d10cd6bbc937bf976eef08af38d4de45"
+  },
+  {
+    "path": "src/services/mods/maintenance-presentation.ts",
+    "sha256": "39c09cdd15a921b73d3e74a328b66b6c2d03f75ee4942579f213daeaff055945"
+  },
+  {
+    "path": "src/shared/contracts/handshake.ts",
+    "sha256": "70eebea6efea0c7ac714acd2cc63bf4ea1b6e91c795a17dc3c74b0b1e22a79a7"
+  },
+  {
+    "path": "src/shared/contracts/instances.ts",
+    "sha256": "3f4240b14be1a8e5845b103137284ce08556a1bf8867b7d8990d9bc861d98244"
+  },
+  {
+    "path": "src/shared/contracts/mod-maintenance-preview.ts",
+    "sha256": "34590008eb10d865ded26c4b143e8c6b84b1bca3438495c2f623bcd584f4e8cd"
+  },
+  {
+    "path": "src/shared/contracts/mods-report.ts",
+    "sha256": "2b87bed92d98d17a54ea46877027a288d2d1888a732e2ba2fa3bdb1fc904840e"
+  },
+  {
+    "path": "src/shared/contracts/mods.ts",
+    "sha256": "7ddae4dbfde1536b54c9d62aaea0f71332eb69447dadd7b8a2dd145a77f64621"
+  },
+  {
+    "path": "src/shared/contracts/resources.ts",
+    "sha256": "9d80e34cea3a1aa62fd587f730b3531c3ddf9de19cadfd16f9fd2a60f8dd3494"
+  }
+]

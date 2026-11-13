@@ -1,0 +1,7 @@
+{
+  "exitCode": 0,
+  "unchangedSources": true,
+  "run": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-boundaries-v13\\runs\\2026-11-13T06-34-17-179Z",
+  "node": "v24.21.0",
+  "scope": "New pure tests only; actual production registry/projection/schema, synthetic facts and constructor-injected clock. No Electron/GUI/IPC/disk player data."
+}

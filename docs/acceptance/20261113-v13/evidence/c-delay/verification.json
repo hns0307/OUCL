@@ -1,0 +1,168 @@
+{
+  "status": "PASS",
+  "readOnly": true,
+  "checks": [
+    {
+      "id": "genuine-first-admission-and-completed-handled",
+      "status": "PASS",
+      "admitted": {
+        "line": 4,
+        "time": "2026-11-13T06:19:32.945Z",
+        "monoMs": 126583.7101,
+        "requestId": "b2b606bb-9560-4457-8f94-58ed4f4d9425"
+      },
+      "handled": {
+        "line": 9,
+        "time": "2026-11-13T06:19:33.952Z",
+        "monoMs": 127591.0311,
+        "requestId": "f98acb10-8d57-4fa8-b734-0d859b6b3f14"
+      },
+      "held": {
+        "line": 10,
+        "time": "2026-11-13T06:19:33.953Z",
+        "monoMs": 127591.7946,
+        "requestId": "f98acb10-8d57-4fa8-b734-0d859b6b3f14"
+      }
+    },
+    {
+      "id": "real-component-timeout-keeps-old-active-state",
+      "status": "PASS",
+      "dom": {
+        "line": 11,
+        "time": "2026-11-13T06:19:37.066Z",
+        "monoMs": 130705.0652
+      },
+      "meaning": "TIMEOUT is inferred from actual localized DOM, not synthesized from handler completion."
+    },
+    {
+      "id": "real-retention-deadline-and-original-response-release",
+      "status": "PASS",
+      "deadline": {
+        "line": 12,
+        "time": "2026-11-13T06:34:34.454Z",
+        "monoMs": 1028093.3591
+      },
+      "released": {
+        "line": 13,
+        "time": "2026-11-13T06:34:34.455Z",
+        "monoMs": 1028093.9257,
+        "requestId": "f98acb10-8d57-4fa8-b734-0d859b6b3f14"
+      },
+      "targetDelayMs": 900500,
+      "elapsedMs": 900501.7557,
+      "wallElapsedMs": 900502,
+      "meaning": "At least the real 900000ms retention elapsed; timer target900500ms is a guard margin. delivered is invoke release, not UI receipt."
+    },
+    {
+      "id": "read-only-probe-sees-expired-id",
+      "status": "PASS",
+      "probe": {
+        "line": 16,
+        "time": "2026-11-13T06:34:34.458Z",
+        "monoMs": 1028096.9913
+      },
+      "probeRequestId": "efc8362e-5ba8-4237-aa06-c02d378a84e0",
+      "meaning": "Automatic probe alone is not component-consumed expiry."
+    },
+    {
+      "id": "separate-requery-of-same-id-returns-expired",
+      "status": "PASS",
+      "handled": {
+        "line": 17,
+        "time": "2026-11-13T06:35:43.658Z",
+        "monoMs": 1097297.2653,
+        "requestId": "8a185f6c-2bc8-4fb1-a89d-9e7ea3c49925"
+      },
+      "delivered": {
+        "line": 18,
+        "time": "2026-11-13T06:35:43.658Z",
+        "monoMs": 1097297.807,
+        "requestId": "8a185f6c-2bc8-4fb1-a89d-9e7ea3c49925"
+      },
+      "meaning": "Excludes the automatic probe requestId; user gesture itself remains coordinator GUI evidence."
+    },
+    {
+      "id": "component-consumed-expiry-clears-old-controls",
+      "status": "PASS",
+      "dom": {
+        "line": 19,
+        "time": "2026-11-13T06:35:43.663Z",
+        "monoMs": 1097302.228
+      },
+      "meaning": "Requires DOM expiry alert, enabled new preview, absent old working/query/cancel controls; handled/delivered alone insufficient."
+    },
+    {
+      "id": "new-request-and-preview-ids-distinct",
+      "status": "PASS",
+      "handled": {
+        "line": 20,
+        "time": "2026-11-13T06:36:06.730Z",
+        "monoMs": 1120369.6426,
+        "requestId": "dd662978-a4f6-4ec7-960c-91af1ccfb111"
+      },
+      "delivered": {
+        "line": 21,
+        "time": "2026-11-13T06:36:06.731Z",
+        "monoMs": 1120370.0187,
+        "requestId": "dd662978-a4f6-4ec7-960c-91af1ccfb111"
+      },
+      "oldRequestId": "b2b606bb-9560-4457-8f94-58ed4f4d9425",
+      "oldPreviewId": "0a50462c-53e5-409f-8adc-191c527ecfca",
+      "newRequestId": "dd662978-a4f6-4ec7-960c-91af1ccfb111",
+      "newPreviewId": "f41f797f-8c1e-4160-b9bb-76b5333757d2"
+    },
+    {
+      "id": "new-completed-response-and-component-display",
+      "status": "PASS",
+      "handled": {
+        "line": 25,
+        "time": "2026-11-13T06:36:07.744Z",
+        "monoMs": 1121383.0603,
+        "requestId": "2ba73284-41be-4c3f-a454-bbb07e3ab33a"
+      },
+      "delivered": {
+        "line": 26,
+        "time": "2026-11-13T06:36:07.744Z",
+        "monoMs": 1121383.3162,
+        "requestId": "2ba73284-41be-4c3f-a454-bbb07e3ab33a"
+      },
+      "dom": {
+        "line": 27,
+        "time": "2026-11-13T06:36:07.854Z",
+        "monoMs": 1121493.1575
+      },
+      "state": "blocked"
+    },
+    {
+      "id": "no-early-requery-or-remount-invalidating-scenario",
+      "status": "PASS",
+      "earlyRequery": null
+    },
+    {
+      "id": "normal-close-after-complete-ui-evidence",
+      "status": "PASS",
+      "closed": {
+        "line": 28,
+        "time": "2026-11-13T06:36:48.669Z",
+        "monoMs": 1162308.0989
+      },
+      "exit": {
+        "line": 30,
+        "time": "2026-11-13T06:36:48.748Z",
+        "monoMs": 1162387.1328
+      }
+    },
+    {
+      "id": "no-recorded-harness-errors",
+      "status": "PASS",
+      "failures": [],
+      "parseIssues": []
+    }
+  ],
+  "limitations": [
+    "No evidence is generated by this verifier; missing files/steps remain PENDING.",
+    "handled=domain result, delivered=invoke release, component-consumed requires matching DOM.",
+    "Non-probe IPC plus DOM supports the GUI path; coordinator screenshots/actions establish the user gesture.",
+    "No product/clock/GUI/IPC is executed and no output file is written."
+  ]
+}

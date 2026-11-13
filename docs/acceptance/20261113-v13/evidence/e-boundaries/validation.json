@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "r1-selected",
+      "passed": true,
+      "traceEvents": 10
+    },
+    {
+      "name": "r1-cancelled",
+      "passed": true,
+      "traceEvents": 10
+    },
+    {
+      "name": "r1-rejected",
+      "passed": true,
+      "traceEvents": 10
+    },
+    {
+      "name": "r2-abort-first",
+      "passed": true,
+      "traceEvents": 14
+    },
+    {
+      "name": "r2-deadline-first",
+      "passed": true,
+      "traceEvents": 15
+    },
+    {
+      "name": "r3-result-before-exit",
+      "passed": true,
+      "traceEvents": 14
+    }
+  ],
+  "frozenFiles": 597,
+  "sourceDrift": [],
+  "artifactSha256": {
+    "boundaries.test.mjs": "9574f27b3d0a60abc011ebce54519296210c68f3d9dc8343f62ccdcaa393a205",
+    "build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.mjs": "1e87e6ede653be7519e7454acacaeca88f4e9d0507bc8e51e464696f3998d38e",
+    "entry.mjs": "8d04845160744a1a875c75a39f3a11c6353d4ab7dfa0c87e2283b8aa7cc0147a",
+    "fixtures\\hang.input": "d2a2cdc3cfbd064417b8f9fb2faec31bf971f0d5a9fbc4617838e96c8115a1f6",
+    "fixtures\\lifecycle-worker.cjs": "2852b5d41bac708e7046d77eeadeb6bb94663e062e99165ee8c65673909cef0b",
+    "fixtures\\normal.input": "d2a2cdc3cfbd064417b8f9fb2faec31bf971f0d5a9fbc4617838e96c8115a1f6",
+    "fixtures\\reply-hold.input": "d2a2cdc3cfbd064417b8f9fb2faec31bf971f0d5a9fbc4617838e96c8115a1f6",
+    "production.mjs": "fe1fd4cf824169ebb5f3c5d8992e25e40d88b3a85821731cf45cc04e03fad3e6",
+    "r1-cancelled.json": "28dca1fbd04a81123b03be39d10f424f0235eecdf16884b063466c3aef0d23c4",
+    "r1-rejected.json": "2a8f19d63fd642c3c3a62acaa15622e0d81d9bbd49c251bdc547ba418f60dfb8",
+    "r1-selected.json": "7063d8962f232b9fe6c764f035bb0c8e5e7fc94a48b7e7ae86323d1c75bc988a",
+    "r2-abort-first.json": "8666e08b1e40e13bd691d05a2ffa7fe15da516f75038e6b5ab35be3079ea0200",
+    "r2-deadline-first.json": "741e1499ae2856054779259b40b26ca102fe8b97b2db75208f5db89eb4114f0a",
+    "r3-result-before-exit.json": "7337efe8f46a7fe2569471dc0545dd75dbd84224ca96a97e5e789e0d2f19e654",
+    "source-inputs.json": "9982d08a37f15817fca3df82d0bb957c71425fd5d5d3cf23d79a97396339a602",
+    "tests-r1.log": "96405c90c5624be530dec691a868c03c7d63e3dd389b89c4e1c3140bc3685d5e"
+  }
+}

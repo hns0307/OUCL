@@ -1,0 +1,2864 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-11-13T06:27:17.043Z",
+  "head": "ecb40f9a186214d0b7a8ea0bf5295e7d5f3f28cb",
+  "frozenTrackedFilesCompared": 462,
+  "excluded": [
+    {
+      "path": "OUCL-Codex/docs/DECISIONS.md",
+      "reason": "versioned-approval-document-append"
+    },
+    {
+      "path": "OUCL-Codex/docs/TASK_PLAN.md",
+      "reason": "versioned-approval-document-append"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v10/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v11/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v12/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v13/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v14/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v15/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v16/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v17/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v18/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v19/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v20/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v3/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v4/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v5/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v6/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v7/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v8/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/acceptance-fix-v9/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/build-candidate-full.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/build-candidate.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/deadline-test/bridge.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/forge-conflict.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/forge-conflict.ts",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/full-check.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/mod-planner-regression.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/mod-platform-retry.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/network-probe-bundle.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/network-probe-entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/network-probe.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/network-probe.ts",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/preload-deadline-check.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/app/dist/main/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/app/dist/preload/index.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/app/dist/renderer/index.html",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/app/dist/workers/entry.cjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/app/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/product-candidate/package.json",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/quilt-runtime-test.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/read-task.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/read-transfers.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/seed-cache-bundle.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/seed-cache.mjs",
+      "reason": "historical-tools-excluded-from-candidate"
+    },
+    {
+      "path": "docs/work-packages/P-A/tools/seed-cache.ts",
+      "reason": "historical-tools-excluded-from-candidate"
+    }
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/DESIGN_REVIEW.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/DEVELOPMENT.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/DOCUMENTATION_REVIEW.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/ORIGINAL_PROMPT.txt",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "OUCL-Codex/docs/PROPOSAL_PHASE0.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/REQUIREMENTS.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/STORAGE_LAYOUT.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "OUCL-Codex/docs/XMCL_ADAPTATION.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "README.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "agent.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "bootstrap/ColdStart.cs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "bootstrap/Launcher.cs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "bootstrap/Preview.cs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "bootstrap/Tests.cs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "bootstrap/package.ps1",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-A/MATRIX.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-A/PLAN.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-A/READ_ONLY_AUDIT.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-B/APPROVAL_T1.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-B/INPUTS.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/PLAN.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/acceptance-v3-targets.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/binding-candidate.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/candidate.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/contract-candidate.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/replay-probe.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-B/contracts/T1/tsconfig.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-C/IMPLEMENTATION-20261110.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/PLAN.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/PREVIEW-CONTRACT-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/REPORT-20261110.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/REPORT-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/acceptance-v2-component-probe.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/component-probe.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/evidence.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-C/file-primitives.test.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/permission-probe.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/preload-bridge-probe.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/preview-ui-electron.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/preview-ui-entry.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/preview-ui-fixture.html",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/preview-ui-fixture.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/run-focused.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/run-preview-ui.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/ui-render.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-C/verify-v2a.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-D/IMPLEMENTATION-20261111.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-D/PLAN.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-D/REVIEW-20261110.md",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-D/source-inputs.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-D/validation.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "docs/work-packages/P-E/E0-REPORT-20261110.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E1-IMPLEMENTATION-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E1-PREVIEW-SPEC.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E2-IMPLEMENTATION-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E2-INTEGRATION-PROPOSAL-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E2-PREPARATION-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/E2-REOPEN-20261111.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/PLAN.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/check-existing-limits.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/inspect-validation-state.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/launch-validation.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/preview-research.py",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/run-fixed-tests.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/sample/NOTICE.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/sample/OUCL-PE-Forge-Smoke-1.0.0.mrpack",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "docs/work-packages/P-E/sample/modrinth.index.json",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "package.json",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/audit-dependencies.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/bootstrap-package.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/bootstrap-smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/bootstrap-test.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-downloads-smoke.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-interaction-smoke.cjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/electron-loader-local-smoke.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-mod-plan-ui.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-mods-smoke.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-network-fixture.cjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/electron-resource-ui.cjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/electron-smoke.cjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/install-window.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/interaction-smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/loader-local-smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/mod-confirmation-runtime.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/mod-plan-ui-smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/mod-transaction-runtime.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/official-loader-runtime.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/package-smoke.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/package.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/portable-smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/prepare-loader-download-test.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/smoke.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/start.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/test.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-catalog.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-download-game.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-download-launch.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/verify-download-network.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-download-production-launch.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-download-ui.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-download.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-game-install.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-game-launch.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/verify-install-plan.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-java-runtime.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-java.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-loader-network.mjs",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "scripts/verify-native-archives.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-recovery-heap.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-resource-ui.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-resources.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/verify-version-samples.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "scripts/worker-runtime.mjs",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/README.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/distribution/manifest.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/download/integrity.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/download/sources.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/install/assets.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/install/plan.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/launch/plan.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/installer-profile.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/languages.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/metadata.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/processor-manifest.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/processor-policy.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/loaders/types.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/check.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/declarations.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/dependency-graph.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/core/mods/json-declarations.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/maintenance-impact.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/manifest.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/platform.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/ranges.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/mods/toml-declarations.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/packs/fixed-preview.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/path/layout.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/task/machine.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/task/scheduling.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/version/arguments.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/version/manifest.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/version/resolve.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/version/types.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/core/version/validation.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/catalog.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/desktop.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/game-adapter.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/game.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/handshake.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/installer-adapter.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/instances-v2.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/instances.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/loaders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/maintenance-preview.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/mods.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/packs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-desktop.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-game.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-instance-folders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-instances-v2.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-instances.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-loaders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-maintenance-preview.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-mods.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-packs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-profiles.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ipc/preload-resources.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload-task-targets.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/preload.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ipc/profiles-adapter.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/profiles.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/resources.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/roots.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ipc/task-targets.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/main/desktop-images.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/main/index.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/main/network.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/README.md",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/catalog/install-metadata.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/catalog/service.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/catalog/transport.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/desktop/service.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/artifact-transfer.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/coordinator.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/http.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/parallel-http.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/request-budget.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/source-transfer.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/download/types.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/downloads.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/file-views.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/installer.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/instance-files.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/instance-folders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/launch-inputs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/launch-snapshot.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/metadata-object.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/install/native-archive.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/java/probe.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/java/runtime.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/java/selection.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/launch/process.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/launch/profiles.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/launch/service.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/launch/settings.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/compose.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/install-metadata.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/installer-artifact.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/installer-compose.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/installer-install-metadata.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/installer-preparation.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/installer-processing.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/maven.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/metadata.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/processor-executor.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/processor-outputs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/processor-plan.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/processor-workspace.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/loaders/service.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/archive.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/candidates.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/mods/context.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/facts.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/inspection.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/install-tasks.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/inventory.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/java-facts.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/languages.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/library.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/maintenance-jobs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/maintenance-presentation.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/maintenance-preview.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/modrinth.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/plan-identity.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/planner.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/plans.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/preparation.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/report.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/resolver.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/tasks.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/mods/transaction.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/network/backoff.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/objects/provenance.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/objects/store.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/packs/coordinator.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/packs/fixed-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/packs/fixed-reader.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/packs/fixed-worker.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/resources/modrinth.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/resources/service.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/roots/service.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/catalog-cache.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/desktop.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/files.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/game-sessions.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/installation.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/instance-records.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/launch-profiles.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/mod-jobs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/mod-plans.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/mod-results.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/mod-transactions.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/object-index.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/owner-guard.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/records.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/resources.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/storage/settings.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/tasks.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/storage/transfer-db.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/archive-validation-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/archive-validator.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/entry.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/workers/hash-pool.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/hash-session.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/installer-archive-extractor.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/installer-archive-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/mod-archive-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/mod-archive-reader.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/mod-declarations-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/mod-targets.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/native-extractor.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/native-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/processor-manifest-protocol.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/processor-manifest-reader.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/services/workers/protocol.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/services/workers/storage-client.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/contracts/catalog.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/desktop.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/download-preferences.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/game.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/handshake.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/contracts/instance-folders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/instances-v2.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/instances.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/contracts/loader-targets.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/loaders.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/mod-maintenance-preview.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/mods-report.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/mods.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/packs.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/profiles.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/contracts/resources.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/contracts/roots.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/shared/contracts/task-targets.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/shared/locales/messages.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/AccountsPanel.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/App.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/AppearanceSettings.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/Avatar.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/DownloadSettings.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/FixedPackPreview.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/ForumPage.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/InstallPanel.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/LaunchControls.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/MaintenancePreviewPanel.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/MemoryControl.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/ModInstallConfirmation.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/ModPanel.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/ResourceBrowser.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/ResourceIcon.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/RootSettings.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/SettingsPage.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/TaskCenter.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/VersionCatalog.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/desktop-state.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/desktop.css",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/forum-source.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/global.d.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/index.html",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/interaction.css",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/launcher-state.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/main.tsx",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/state.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "src/ui/task-observer.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "src/ui/task-query.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/acceptance-task-targets.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/archive-validation-protocol.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/catalog.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/desktop-network.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/desktop.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/distribution.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/download-artifact.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/download-coordinator.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/download-http.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/download-journal.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/download-parallel.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/download-preferences.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/file-views.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixed-pack-ipc.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixed-pack-preview.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/distribution-source.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/mod-ready-instance.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/mod-worker.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/mod-zip.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/owner-guard-child.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/worker-crash-child.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/fixtures/worker.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/game-contract.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/game-process.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/handshake.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/hash-session.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/install-downloads.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/install-metadata.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/install-plan.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installed-languages.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-adapter.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-archive.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-artifact.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-compose.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-install-metadata.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-preparation.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-processor-executor.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-processor-plan.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-processor-policy.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer-profile.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/installer.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/instance-folders.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/instance-records.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/instances-contract.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/java-probe.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/java-runtime.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/launch-plan.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/launch-profiles.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/launcher-state.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/layout.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/lint-boundaries.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-compose.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-install-metadata.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-languages.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-maven.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/loader-metadata.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-receipts.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-selection.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-service.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/loader-source.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/loaders-contract.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-archive.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-candidates.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/mod-check.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-declarations.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-dependency-graph.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/mod-double-check.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-inspection.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-inventory.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-ipc.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-java-facts.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/mod-jobs-storage.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-library.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-maintenance-impact.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-maintenance-jobs.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-maintenance-presentation.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-maintenance-preview.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-planner.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-plans.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-platform.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-preparation.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-ranges.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-report.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-resolver.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-tasks.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/mod-transaction.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/native-archive.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/native-extractor.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/network-retry.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/objects.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/owner-guard.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/processor-manifest.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/processor-outputs.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/profiles-contract.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/resources.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/roots.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/install-window.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/mod-plan-ui.html",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/mod-plan-ui.tsx",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/official-loader-install.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/official-loader-launch.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/official-loader-test-mod.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/official-mod-inventory.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/official-mod-library.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/runtime/workers.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/settings.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/storage-scale.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/storage.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-observer.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/task-query.test.ts",
+      "match": true,
+      "mode": "git-line-ending-normalization"
+    },
+    {
+      "path": "tests/task-target-adapter.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-target-barrier.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-target-contract.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-target-dual-capacity.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-target-inventory.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task-target-worker.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/task.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/version.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tests/workers.test.ts",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "tsconfig.json",
+      "match": true,
+      "mode": "bytes"
+    },
+    {
+      "path": "vite.config.ts",
+      "match": true,
+      "mode": "bytes"
+    }
+  ],
+  "archiveChecks": 10,
+  "exeHash": "3d9a0ebaf289a9552933c97033ffbd6a069e0a0258e3ea8322cc2a5ceb6efce6",
+  "destination": "D:\\MC_start\\OUCL-download-main\\release\\OUCL-0.3.0-acceptance-20261113-v11.exe",
+  "mainClean": true
+}

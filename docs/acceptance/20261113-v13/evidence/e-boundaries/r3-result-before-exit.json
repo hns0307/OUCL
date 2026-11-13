@@ -1,0 +1,79 @@
+{
+  "name": "r3-result-before-exit",
+  "passed": true,
+  "trace": [
+    {
+      "sequence": 0,
+      "kind": "reader-admitted",
+      "aborted": false
+    },
+    {
+      "sequence": 1,
+      "kind": "worker-online",
+      "workerId": 1
+    },
+    {
+      "sequence": 2,
+      "kind": "message-after-reader-listeners",
+      "workerId": 1,
+      "kindReceived": "fixed-pack-result"
+    },
+    {
+      "sequence": 3,
+      "kind": "valid-message-seen-before-invalidation"
+    },
+    {
+      "sequence": 4,
+      "kind": "sender-invalidated"
+    },
+    {
+      "sequence": 5,
+      "kind": "reader-terminate-called",
+      "workerId": 1
+    },
+    {
+      "sequence": 6,
+      "kind": "worker-exit",
+      "workerId": 1,
+      "exitCode": 1
+    },
+    {
+      "sequence": 7,
+      "kind": "old-request-rejected",
+      "code": "CANCELLED"
+    },
+    {
+      "sequence": 8,
+      "kind": "next-request-issued"
+    },
+    {
+      "sequence": 9,
+      "kind": "reader-admitted",
+      "aborted": false
+    },
+    {
+      "sequence": 10,
+      "kind": "worker-online",
+      "workerId": 2
+    },
+    {
+      "sequence": 11,
+      "kind": "message-after-reader-listeners",
+      "workerId": 2,
+      "kindReceived": "fixed-pack-result"
+    },
+    {
+      "sequence": 12,
+      "kind": "worker-exit",
+      "workerId": 2,
+      "exitCode": 0
+    },
+    {
+      "sequence": 13,
+      "kind": "next-request-succeeded"
+    }
+  ],
+  "liveWorkersAfterCleanup": [],
+  "unhandled": [],
+  "workerFixtureScope": "Real Node Workers with controlled protocol-valid messages; not fixed mrpack content validation or Electron/native GUI."
+}

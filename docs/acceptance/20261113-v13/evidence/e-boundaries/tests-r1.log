@@ -1,0 +1,14 @@
+✔ R1 chooser settles after invalidation: selected (32.5133ms)
+✔ R1 chooser settles after invalidation: cancelled (26.7779ms)
+✔ R1 chooser settles after invalidation: rejected (26.0377ms)
+✔ R2 active worker, first terminal is abort (48.4509ms)
+✔ R2 active worker, first terminal is deadline (1031.7267ms)
+✔ R3 valid result parsed but Worker not exited when sender invalidates (51.3429ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1299.9947
