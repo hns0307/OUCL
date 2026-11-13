@@ -11,8 +11,17 @@ import { FileViewError } from './file-views.js';
 import type { NativeExtractor } from '../workers/native-extractor.js';
 import type { NativeArchiveInput } from './native-archive.js';
 import type { HashPool } from '../workers/hash-pool.js';
+import { assetIndexAlias } from '../../core/install/plan.js';
 
 export interface InstanceDirectories { layout: GameLayout; assets: string; libraries: string }
+function dependencyId(metadata: PreparedInstallMetadata): string {
+  const client = metadata.version.client.sha1.toLowerCase();
+  const index = `indexes/${assetIndexAlias(metadata.version)}.json`;
+  if (!metadata.plan.views.some(view => view.area === 'assets' && view.path === index)) return `dep-${client}`;
+  const proof = metadata.metadataSha1ByVersion[metadata.version.jarVersionId];
+  if (!proof || !/^[a-f0-9]{40}$/i.test(proof)) throw new FileViewError('NEEDS_RECOVERY');
+  return `dep-${client}-${proof.toLowerCase()}`;
+}
 async function removeTemporaryFile(file: string): Promise<void> {
   try { await unlink(file); } catch (error) { if (!hasCode(error, 'ENOENT')) throw error; }
 }
@@ -50,7 +59,7 @@ async function projection(gameRoot: string, name: 'assets' | 'libraries', view: 
 /** Computes the same controlled layout for installation and subsequent launch checks. */
 export function instanceGameLayout(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): GameLayout {
   const inherited = metadata.version.jarVersionId !== metadata.version.id;
-  const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
+  const jarId = inherited ? dependencyId(metadata) : summary.instanceId;
   return planGameLayout({ dataDirectory, rootId: summary.rootId, instanceId: summary.instanceId,
     mcVersionId: summary.mcVersionId, directoryId: summary.instanceId, versionRecordId: summary.instanceId,
     jar: { directoryId: jarId, versionRecordId: jarId },
@@ -60,7 +69,7 @@ export function instanceGameLayout(dataDirectory: string, summary: InstanceSumma
 export async function prepareInstanceDirectories(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): Promise<InstanceDirectories> {
   const layout = instanceGameLayout(dataDirectory, summary, metadata);
   const inherited = metadata.version.jarVersionId !== metadata.version.id;
-  const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
+  const jarId = inherited ? dependencyId(metadata) : summary.instanceId;
   const store = await ensureChildDirectory(dataDirectory, 'store');
   const views = await ensureChildDirectory(store, 'views', summary.rootId);
   const roots = await ensureChildDirectory(dataDirectory, 'roots', summary.rootId, '.minecraft');

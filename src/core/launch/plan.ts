@@ -2,6 +2,7 @@ import { childPath, planClasspath } from '../path/layout.js';
 import type { GameLayout } from '../path/layout.js';
 import { substituteArguments } from '../version/arguments.js';
 import type { ResolvedClientVersion } from '../version/types.js';
+import { assetIndexAlias } from '../install/plan.js';
 
 export type LaunchPlanCode = 'JAVA_INCOMPATIBLE' | 'MEMORY_OUT_OF_RANGE' | 'INVALID_ACCOUNT' | 'ARGUMENT_CONFLICT' | 'ARGUMENT_LIMIT';
 /** Fixed, path-free planning errors; the service maps these to localized messages. */
@@ -13,7 +14,7 @@ export interface LaunchInput {
   version: ResolvedClientVersion; layout: GameLayout; classpath: readonly string[];
   java: { javaId: string; major: 8 | 17 | 21; architecture: 'x64' };
   account: { gameName: string; uuid: string };
-  assets: { virtual: boolean }; memoryMiB: number; launcherVersion: string;
+  assets: { virtual: boolean; indexId?: string }; memoryMiB: number; launcherVersion: string;
 }
 export interface LaunchPlan { executableRef: string; args: string[]; cwd: string; redactedPreview: string[] }
 
@@ -28,7 +29,10 @@ export function planOfflineLaunch(input: LaunchInput): LaunchPlan {
   if (!account.gameName || account.gameName.length > 80 || /[\p{C}]/u.test(account.gameName)
     || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(account.uuid)) throw new LaunchPlanError('INVALID_ACCOUNT');
   if (!/^[A-Za-z0-9][A-Za-z0-9.+-]{0,79}$/.test(input.launcherVersion)) throw new LaunchPlanError('ARGUMENT_CONFLICT');
-  const assetId = version.assetIndex?.id ?? version.assets;
+  const legacyAssetId = version.assetIndex?.id ?? version.assets;
+  const assetId = input.assets.indexId ?? legacyAssetId;
+  if (input.assets.indexId && input.assets.indexId !== legacyAssetId
+    && (!version.assetIndex || input.assets.indexId !== assetIndexAlias(version))) throw new LaunchPlanError('ARGUMENT_CONFLICT');
   if (!assetId || version.jvmArguments.some(value => /^-Xm[sx]|^-jar$|^@|^-javaagent:|^-agent(?:lib|path):/i.test(value))) throw new LaunchPlanError('ARGUMENT_CONFLICT');
   const uuid = account.uuid.replaceAll('-', '').toLowerCase();
   const bindings: Record<string, string> = {

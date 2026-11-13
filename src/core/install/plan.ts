@@ -25,6 +25,27 @@ function component(value: string): string {
   try { return validateComponent(value); } catch { throw new InstallPlanError('INVALID_INSTALL_PATH'); }
 }
 
+/** Deterministic index namespace binds the upstream ID to its trusted content digest. */
+export function assetIndexAlias(version: ResolvedClientVersion): string {
+  const index = version.assetIndex;
+  if (!index || !/^[a-f0-9]{40}$/i.test(index.sha1)) throw new InstallPlanError('ASSET_INDEX_REQUIRED');
+  return component(`${component(index.id)}-${index.sha1.toLowerCase()}`);
+}
+
+/** Produces new index and virtual-resource paths without changing artifacts or trust proofs. */
+export function aliasAssetViews(plan: VanillaInstallPlan, version: ResolvedClientVersion): VanillaInstallPlan {
+  const index = version.assetIndex; if (!index) throw new InstallPlanError('ASSET_INDEX_REQUIRED');
+  const oldId = component(index.id); const alias = assetIndexAlias(version);
+  const oldPath = `indexes/${oldId}.json`; const oldPrefix = `virtual/${oldId}/`;
+  const matches = plan.views.filter(view => view.area === 'assets' && view.path === oldPath);
+  if (matches.length !== 1 || matches[0]?.artifactId !== `sha1-${index.sha1.toLowerCase()}`) throw new InstallPlanError('VIEW_CONFLICT');
+  const views = plan.views.map(view => view.area !== 'assets' ? view : view.path === oldPath
+    ? { ...view, path: `indexes/${alias}.json` }
+    : view.path.startsWith(oldPrefix) ? { ...view, path: `virtual/${alias}/${view.path.slice(oldPrefix.length)}` } : view);
+  const names = new Set<string>();
+  for (const view of views) { const key = `${view.area}:${installRelativePath(view.path).toLowerCase()}`; if (names.has(key)) throw new InstallPlanError('VIEW_CONFLICT'); names.add(key); }
+  return { ...plan, views };
+}
 function coordinate(name: string, overrideClassifier?: string): { path: string; classifier: string } {
   if (!/^[\w.-]+:[\w.-]+:[\w.+-]+(?::[\w.+-]+)?(?:@[\w.-]+)?$/.test(name) || name.length > 256) throw new InstallPlanError('INVALID_LIBRARY');
   const [body = '', extension = 'jar'] = name.split('@');

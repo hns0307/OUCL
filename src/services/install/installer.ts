@@ -7,7 +7,7 @@ import path from 'node:path';
 import { release } from 'node:os';
 import { resolveClientVersion } from '../../core/version/resolve.js';
 import { parseAssetIndex } from '../../core/install/assets.js';
-import { planVanillaInstall } from '../../core/install/plan.js';
+import { aliasAssetViews, assetIndexAlias, planVanillaInstall } from '../../core/install/plan.js';
 import { applyWorkerEvent, controlTask } from '../../core/task/machine.js';
 import type { Execution, WorkerEvent } from '../../core/task/machine.js';
 import type { StoredTask } from '../storage/tasks.js';
@@ -84,7 +84,15 @@ export function restoreInstallMetadata(record: InstanceRecord): PreparedInstallM
   const documents = Object.fromEntries(Object.entries(stored.versionDocuments).map(([id, body]) => [id, JSON.parse(body) as unknown]));
   const version = resolveClientVersion(record.summary.mcVersionId, documents, stored.environment ?? { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
   const assets = parseAssetIndex(JSON.parse(stored.assetIndexBody) as unknown);
-  if (!stored.loader) return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
+  const projection = (result: PreparedInstallMetadata): PreparedInstallMetadata => {
+    const index = result.version.assetIndex; if (!index) throw new InstallerError('NEEDS_RECOVERY');
+    const artifactId = `sha1-${index.sha1.toLowerCase()}`;
+    const legacy = `indexes/${index.id}.json`; const aliased = `indexes/${assetIndexAlias(result.version)}.json`;
+    const candidates = (record.receipts ?? []).filter(item => item.area === 'assets' && item.artifactId === artifactId && (item.path === legacy || item.path === aliased));
+    if (candidates.length > 1 || record.phase === 'ready' && candidates.length !== 1) throw new InstallerError('NEEDS_RECOVERY');
+    return candidates[0]?.path === aliased ? { ...result, plan: aliasAssetViews(result.plan, result.version) } : result;
+  };
+  if (!stored.loader) return projection({ version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored });
   const environment = stored.environment; if (!environment) throw new InstallerError('NEEDS_RECOVERY');
   try {
     if (stored.loader.kind === 'forge' || stored.loader.kind === 'neoforge') {
@@ -92,13 +100,13 @@ export function restoreInstallMetadata(record: InstanceRecord): PreparedInstallM
         stored.loader.profileBody, stored.loader.profileSha256, stored.loader.versionBody, stored.loader.versionSha256);
       const composed = composeInstallerInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
         assets, profile, profileSha256: stored.loader.profileSha256, environment });
-      return { version: composed.version, assets, plan: composed.plan, ...stored };
+      return projection({ version: composed.version, assets, plan: composed.plan, ...stored });
     }
     const profile = parseStoredLoaderProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version, stored.loader.profileBody, stored.loader.profileSha256);
     const libraries = { libraries: stored.loader.libraries, totalBytes: stored.loader.libraries.reduce((sum, item) => sum + item.spec.expected.size, 0) };
     const composed = composeLoaderInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
       assets, profile, profileSha256: stored.loader.profileSha256, libraries, environment });
-    return { version: composed.version, assets, plan: composed.plan, ...stored };
+    return projection({ version: composed.version, assets, plan: composed.plan, ...stored });
   } catch { throw new InstallerError('NEEDS_RECOVERY'); }
 }
 
@@ -362,6 +370,7 @@ export class InstallerService {
         if ((record.loader.kind !== 'fabric' && record.loader.kind !== 'quilt') || !this.loaderMetadata) throw new InstallerError('INSTALL_FAILED');
         prepared = await this.loaderMetadata.prepare(record.loader.kind, record.summary.mcVersionId, record.loader.version, environment, live.controller.signal);
       }
+      prepared = { ...prepared, plan: aliasAssetViews(prepared.plan, prepared.version) };
       check();
       const loader: { loader?: PersistedLoaderMetadata } = isInstallerMetadata(prepared) ? { loader: prepared.loader }
         : 'loader' in prepared ? { loader: { kind: prepared.loader.kind, version: prepared.loader.version,

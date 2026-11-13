@@ -1,0 +1,313 @@
+--- v3/src/core/install/plan.ts
++++ v11/src/core/install/plan.ts
+@@ -25,6 +25,27 @@
+   try { return validateComponent(value); } catch { throw new InstallPlanError('INVALID_INSTALL_PATH'); }
+ }
+ 
++/** Deterministic index namespace binds the upstream ID to its trusted content digest. */
++export function assetIndexAlias(version: ResolvedClientVersion): string {
++  const index = version.assetIndex;
++  if (!index || !/^[a-f0-9]{40}$/i.test(index.sha1)) throw new InstallPlanError('ASSET_INDEX_REQUIRED');
++  return component(`${component(index.id)}-${index.sha1.toLowerCase()}`);
++}
++
++/** Produces new index and virtual-resource paths without changing artifacts or trust proofs. */
++export function aliasAssetViews(plan: VanillaInstallPlan, version: ResolvedClientVersion): VanillaInstallPlan {
++  const index = version.assetIndex; if (!index) throw new InstallPlanError('ASSET_INDEX_REQUIRED');
++  const oldId = component(index.id); const alias = assetIndexAlias(version);
++  const oldPath = `indexes/${oldId}.json`; const oldPrefix = `virtual/${oldId}/`;
++  const matches = plan.views.filter(view => view.area === 'assets' && view.path === oldPath);
++  if (matches.length !== 1 || matches[0]?.artifactId !== `sha1-${index.sha1.toLowerCase()}`) throw new InstallPlanError('VIEW_CONFLICT');
++  const views = plan.views.map(view => view.area !== 'assets' ? view : view.path === oldPath
++    ? { ...view, path: `indexes/${alias}.json` }
++    : view.path.startsWith(oldPrefix) ? { ...view, path: `virtual/${alias}/${view.path.slice(oldPrefix.length)}` } : view);
++  const names = new Set<string>();
++  for (const view of views) { const key = `${view.area}:${installRelativePath(view.path).toLowerCase()}`; if (names.has(key)) throw new InstallPlanError('VIEW_CONFLICT'); names.add(key); }
++  return { ...plan, views };
++}
+ function coordinate(name: string, overrideClassifier?: string): { path: string; classifier: string } {
+   if (!/^[\w.-]+:[\w.-]+:[\w.+-]+(?::[\w.+-]+)?(?:@[\w.-]+)?$/.test(name) || name.length > 256) throw new InstallPlanError('INVALID_LIBRARY');
+   const [body = '', extension = 'jar'] = name.split('@');
+--- v3/src/core/launch/plan.ts
++++ v11/src/core/launch/plan.ts
+@@ -2,6 +2,7 @@
+ import type { GameLayout } from '../path/layout.js';
+ import { substituteArguments } from '../version/arguments.js';
+ import type { ResolvedClientVersion } from '../version/types.js';
++import { assetIndexAlias } from '../install/plan.js';
+ 
+ export type LaunchPlanCode = 'JAVA_INCOMPATIBLE' | 'MEMORY_OUT_OF_RANGE' | 'INVALID_ACCOUNT' | 'ARGUMENT_CONFLICT' | 'ARGUMENT_LIMIT';
+ /** Fixed, path-free planning errors; the service maps these to localized messages. */
+@@ -13,7 +14,7 @@
+   version: ResolvedClientVersion; layout: GameLayout; classpath: readonly string[];
+   java: { javaId: string; major: 8 | 17 | 21; architecture: 'x64' };
+   account: { gameName: string; uuid: string };
+-  assets: { virtual: boolean }; memoryMiB: number; launcherVersion: string;
++  assets: { virtual: boolean; indexId?: string }; memoryMiB: number; launcherVersion: string;
+ }
+ export interface LaunchPlan { executableRef: string; args: string[]; cwd: string; redactedPreview: string[] }
+ 
+@@ -28,7 +29,10 @@
+   if (!account.gameName || account.gameName.length > 80 || /[\p{C}]/u.test(account.gameName)
+     || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(account.uuid)) throw new LaunchPlanError('INVALID_ACCOUNT');
+   if (!/^[A-Za-z0-9][A-Za-z0-9.+-]{0,79}$/.test(input.launcherVersion)) throw new LaunchPlanError('ARGUMENT_CONFLICT');
+-  const assetId = version.assetIndex?.id ?? version.assets;
++  const legacyAssetId = version.assetIndex?.id ?? version.assets;
++  const assetId = input.assets.indexId ?? legacyAssetId;
++  if (input.assets.indexId && input.assets.indexId !== legacyAssetId
++    && (!version.assetIndex || input.assets.indexId !== assetIndexAlias(version))) throw new LaunchPlanError('ARGUMENT_CONFLICT');
+   if (!assetId || version.jvmArguments.some(value => /^-Xm[sx]|^-jar$|^@|^-javaagent:|^-agent(?:lib|path):/i.test(value))) throw new LaunchPlanError('ARGUMENT_CONFLICT');
+   const uuid = account.uuid.replaceAll('-', '').toLowerCase();
+   const bindings: Record<string, string> = {
+--- v3/src/services/install/installer.ts
++++ v11/src/services/install/installer.ts
+@@ -7,7 +7,7 @@
+ import { release } from 'node:os';
+ import { resolveClientVersion } from '../../core/version/resolve.js';
+ import { parseAssetIndex } from '../../core/install/assets.js';
+-import { planVanillaInstall } from '../../core/install/plan.js';
++import { aliasAssetViews, assetIndexAlias, planVanillaInstall } from '../../core/install/plan.js';
+ import { applyWorkerEvent, controlTask } from '../../core/task/machine.js';
+ import type { Execution, WorkerEvent } from '../../core/task/machine.js';
+ import type { StoredTask } from '../storage/tasks.js';
+@@ -84,7 +84,15 @@
+   const documents = Object.fromEntries(Object.entries(stored.versionDocuments).map(([id, body]) => [id, JSON.parse(body) as unknown]));
+   const version = resolveClientVersion(record.summary.mcVersionId, documents, stored.environment ?? { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
+   const assets = parseAssetIndex(JSON.parse(stored.assetIndexBody) as unknown);
+-  if (!stored.loader) return { version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored };
++  const projection = (result: PreparedInstallMetadata): PreparedInstallMetadata => {
++    const index = result.version.assetIndex; if (!index) throw new InstallerError('NEEDS_RECOVERY');
++    const artifactId = `sha1-${index.sha1.toLowerCase()}`;
++    const legacy = `indexes/${index.id}.json`; const aliased = `indexes/${assetIndexAlias(result.version)}.json`;
++    const candidates = (record.receipts ?? []).filter(item => item.area === 'assets' && item.artifactId === artifactId && (item.path === legacy || item.path === aliased));
++    if (candidates.length > 1 || record.phase === 'ready' && candidates.length !== 1) throw new InstallerError('NEEDS_RECOVERY');
++    return candidates[0]?.path === aliased ? { ...result, plan: aliasAssetViews(result.plan, result.version) } : result;
++  };
++  if (!stored.loader) return projection({ version, assets, plan: planVanillaInstall(version, stored.metadataSha1ByVersion, assets), ...stored });
+   const environment = stored.environment; if (!environment) throw new InstallerError('NEEDS_RECOVERY');
+   try {
+     if (stored.loader.kind === 'forge' || stored.loader.kind === 'neoforge') {
+@@ -92,13 +100,13 @@
+         stored.loader.profileBody, stored.loader.profileSha256, stored.loader.versionBody, stored.loader.versionSha256);
+       const composed = composeInstallerInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
+         assets, profile, profileSha256: stored.loader.profileSha256, environment });
+-      return { version: composed.version, assets, plan: composed.plan, ...stored };
++      return projection({ version: composed.version, assets, plan: composed.plan, ...stored });
+     }
+     const profile = parseStoredLoaderProfile(stored.loader.kind, record.summary.mcVersionId, stored.loader.version, stored.loader.profileBody, stored.loader.profileSha256);
+     const libraries = { libraries: stored.loader.libraries, totalBytes: stored.loader.libraries.reduce((sum, item) => sum + item.spec.expected.size, 0) };
+     const composed = composeLoaderInstall({ baseVersionDocuments: stored.versionDocuments, baseMetadataSha1ByVersion: stored.metadataSha1ByVersion,
+       assets, profile, profileSha256: stored.loader.profileSha256, libraries, environment });
+-    return { version: composed.version, assets, plan: composed.plan, ...stored };
++    return projection({ version: composed.version, assets, plan: composed.plan, ...stored });
+   } catch { throw new InstallerError('NEEDS_RECOVERY'); }
+ }
+ 
+@@ -362,6 +370,7 @@
+         if ((record.loader.kind !== 'fabric' && record.loader.kind !== 'quilt') || !this.loaderMetadata) throw new InstallerError('INSTALL_FAILED');
+         prepared = await this.loaderMetadata.prepare(record.loader.kind, record.summary.mcVersionId, record.loader.version, environment, live.controller.signal);
+       }
++      prepared = { ...prepared, plan: aliasAssetViews(prepared.plan, prepared.version) };
+       check();
+       const loader: { loader?: PersistedLoaderMetadata } = isInstallerMetadata(prepared) ? { loader: prepared.loader }
+         : 'loader' in prepared ? { loader: { kind: prepared.loader.kind, version: prepared.loader.version,
+--- v3/src/services/install/instance-files.ts
++++ v11/src/services/install/instance-files.ts
+@@ -11,8 +11,17 @@
+ import type { NativeExtractor } from '../workers/native-extractor.js';
+ import type { NativeArchiveInput } from './native-archive.js';
+ import type { HashPool } from '../workers/hash-pool.js';
++import { assetIndexAlias } from '../../core/install/plan.js';
+ 
+ export interface InstanceDirectories { layout: GameLayout; assets: string; libraries: string }
++function dependencyId(metadata: PreparedInstallMetadata): string {
++  const client = metadata.version.client.sha1.toLowerCase();
++  const index = `indexes/${assetIndexAlias(metadata.version)}.json`;
++  if (!metadata.plan.views.some(view => view.area === 'assets' && view.path === index)) return `dep-${client}`;
++  const proof = metadata.metadataSha1ByVersion[metadata.version.jarVersionId];
++  if (!proof || !/^[a-f0-9]{40}$/i.test(proof)) throw new FileViewError('NEEDS_RECOVERY');
++  return `dep-${client}-${proof.toLowerCase()}`;
++}
+ async function removeTemporaryFile(file: string): Promise<void> {
+   try { await unlink(file); } catch (error) { if (!hasCode(error, 'ENOENT')) throw error; }
+ }
+@@ -50,7 +59,7 @@
+ /** Computes the same controlled layout for installation and subsequent launch checks. */
+ export function instanceGameLayout(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): GameLayout {
+   const inherited = metadata.version.jarVersionId !== metadata.version.id;
+-  const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
++  const jarId = inherited ? dependencyId(metadata) : summary.instanceId;
+   return planGameLayout({ dataDirectory, rootId: summary.rootId, instanceId: summary.instanceId,
+     mcVersionId: summary.mcVersionId, directoryId: summary.instanceId, versionRecordId: summary.instanceId,
+     jar: { directoryId: jarId, versionRecordId: jarId },
+@@ -60,7 +69,7 @@
+ export async function prepareInstanceDirectories(dataDirectory: string, summary: InstanceSummary, metadata: PreparedInstallMetadata): Promise<InstanceDirectories> {
+   const layout = instanceGameLayout(dataDirectory, summary, metadata);
+   const inherited = metadata.version.jarVersionId !== metadata.version.id;
+-  const jarId = inherited ? `dep-${metadata.version.client.sha1}` : summary.instanceId;
++  const jarId = inherited ? dependencyId(metadata) : summary.instanceId;
+   const store = await ensureChildDirectory(dataDirectory, 'store');
+   const views = await ensureChildDirectory(store, 'views', summary.rootId);
+   const roots = await ensureChildDirectory(dataDirectory, 'roots', summary.rootId, '.minecraft');
+--- v3/src/services/launch/service.ts
++++ v11/src/services/launch/service.ts
+@@ -107,8 +107,12 @@
+           if (inventory.local.state !== 'satisfied') throw new LaunchServiceError('DEPENDENCY_MISSING');
+           await fresh(); this.check(job);
+         };
++        const index = verified.prepared.version.assetIndex;
++        const indexViews = verified.prepared.plan.views.filter(view => view.area === 'assets' && view.artifactId === `sha1-${index?.sha1.toLowerCase()}` && /^indexes\/[^/]+\.json$/.test(view.path));
++        if (!index || indexViews.length !== 1) throw new GameProcessError('NEEDS_RECOVERY');
++        const indexId = indexViews[0]!.path.slice('indexes/'.length, -'.json'.length);
+         const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
+-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: verified.prepared.assets, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.3.0' });
++          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.3.0' });
+         await this.event(job, 'transferred'); this.check(job);
+         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
+           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,
+--- v3/tests/install-plan.test.ts
++++ v11/tests/install-plan.test.ts
+@@ -1,7 +1,7 @@
+ import { test } from 'node:test';
+ import assert from 'node:assert/strict';
+ import { InstallPlanError, installRelativePath, parseAssetIndex } from '../src/core/install/assets.js';
+-import { planVanillaInstall } from '../src/core/install/plan.js';
++import { aliasAssetViews, assetIndexAlias, planVanillaInstall } from '../src/core/install/plan.js';
+ import type { AssetIndexContent } from '../src/core/install/assets.js';
+ import type { DownloadArtifact, ResolvedClientVersion, ResolvedLibrary } from '../src/core/version/types.js';
+ 
+@@ -18,6 +18,19 @@
+ }
+ const emptyAssets = (): AssetIndexContent => ({ objects: [], virtual: false, mapToResources: false });
+ 
++test('asset index projections distinguish the same upstream ID with different trusted hashes', () => {
++  const first = version(); const second = version(); second.assetIndex = { ...second.assetIndex!, sha1: hashes.extra };
++  const assets = parseAssetIndex({ objects: { 'a/b': { hash: hashes.asset, size: 6 } }, virtual: true });
++  const original = planVanillaInstall(first, proof, assets); const before = JSON.stringify(original);
++  const one = aliasAssetViews(original, first); const two = aliasAssetViews(planVanillaInstall(second, proof, assets), second);
++  assert.notEqual(assetIndexAlias(first), assetIndexAlias(second));
++  assert.equal(JSON.stringify(original), before);
++  assert.ok(one.views.some(view => view.path === `indexes/${assetIndexAlias(first)}.json`));
++  assert.ok(one.views.some(view => view.path === `virtual/${assetIndexAlias(first)}/a/b`));
++  assert.ok(two.views.some(view => view.path === `indexes/${assetIndexAlias(second)}.json`));
++  assert.deepEqual(one.artifacts, original.artifacts);
++  assert.throws(() => aliasAssetViews({ ...original, views: [] }, first), { code: 'VIEW_CONFLICT' });
++});
+ function library(changes: Partial<ResolvedLibrary> = {}): ResolvedLibrary {
+   return { name: 'org.example:library:1.0', sourceVersionId: 'base', artifact: artifact(hashes.library, 3), nativeExcludes: [], ...changes };
+ }
+--- v3/tests/installer.test.ts
++++ v11/tests/installer.test.ts
+@@ -130,7 +130,10 @@
+     const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.equal(completed.instance?.state, 'ready');
+     const instanceId = completed.instance!.instanceId; const record = await f.storage.readInstance(instanceId); assert.ok(record);
+     assert.equal(record.data.phase, 'ready'); assert.equal(record.data.receipts?.length, restoreInstallMetadata(record.data).plan.views.length);
+-    assert.ok(record.data.receipts?.some(receipt => receipt.area === 'assets' && receipt.path === 'indexes/fixture.json'));
++    const aliasPath = `indexes/fixture-${f.indexHash}.json`;
++    assert.ok(record.data.receipts?.some(receipt => receipt.area === 'assets' && receipt.path === aliasPath));
++    const legacy = { ...record.data, receipts: record.data.receipts!.map(receipt => receipt.area === 'assets' && receipt.path === aliasPath ? { ...receipt, path: 'indexes/fixture.json' } : receipt) };
++    assert.ok(restoreInstallMetadata(legacy).plan.views.some(view => view.area === 'assets' && view.path === 'indexes/fixture.json'));
+     assert.deepEqual((await f.service.listV2(rootId))[0]?.loader, { kind: 'vanilla' });
+     const directory = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'versions', instanceId);
+     const manifest = JSON.parse(await readFile(path.join(directory, 'oucl.instance.json'), 'utf8')) as { data: unknown };
+@@ -239,20 +242,19 @@
+   } finally { await f.close(); }
+ });
+ 
+-test('same index ID with different bytes is preserved and stops safely rather than becoming ready', async () => {
++test('unknown existing shared entries are preserved and leave a recovery state rather than ready', async () => {
+   const f = await fixture();
+   try {
+     const indexes = path.join(f.dataDirectory, 'store', 'views', rootId, 'assets', 'indexes'); await mkdir(indexes, { recursive: true });
+-    const foreign = path.join(indexes, 'fixture.json');
++    const foreign = path.join(indexes, `fixture-${f.indexHash}.json`);
+     // Exercise the active ordinary-directory fallback too when Windows cannot create a junction.
+     const activeIndexes = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'assets', 'indexes');
+     await mkdir(activeIndexes, { recursive: true });
+-    const activeForeign = path.join(activeIndexes, 'fixture.json');
+-    const existingIndex = JSON.stringify({ objects: {} }); assert.notEqual(sha1(existingIndex), f.indexHash);
+-    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, existingIndex); await writeFile(activeForeign, existingIndex);
++    const activeForeign = path.join(activeIndexes, `fixture-${f.indexHash}.json`);
++    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, 'foreign contents'); await writeFile(activeForeign, 'foreign contents');
+     const accepted = await f.service.create(request(40), input); const result = await finished(f.service, accepted.taskId);
+     assert.equal(result.task.execution.state, 'needsRecovery'); assert.equal(result.instance?.state, 'needsRecovery');
+-    assert.equal(await readFile(foreign, 'utf8'), existingIndex); assert.equal(await readFile(activeForeign, 'utf8'), existingIndex);
++    assert.equal(await readFile(foreign, 'utf8'), 'foreign contents'); assert.equal(await readFile(activeForeign, 'utf8'), 'foreign contents');
+   } finally { await f.close(); }
+ });
+ 
+--- v3/tests/instance-folders.test.ts
++++ v11/tests/instance-folders.test.ts
+@@ -5,10 +5,29 @@
+ import path from 'node:path';
+ import test from 'node:test';
+ import { InstanceFolderService } from '../src/services/install/instance-folders.js';
++import { instanceGameLayout } from '../src/services/install/instance-files.js';
++import { restoreInstallMetadata } from '../src/services/install/installer.js';
++import { aliasAssetViews } from '../src/core/install/plan.js';
++import { modReadyInstance } from './fixtures/mod-ready-instance.js';
+ import type { InstanceRecord } from '../src/services/storage/instance-records.js';
+ import { instanceFolderFailure, isInstanceFolderRequest, isInstanceFolderResult } from '../src/shared/contracts/instance-folders.js';
+ 
+ const rootId = '00000000-0000-4000-8000-000000000001'; const instanceId = '00000000-0000-4000-8000-000000000002';
++test('new inherited layouts distinguish metadata for the same client while old receipts retain the original location', () => {
++  const value = modReadyInstance(rootId, instanceId);
++  value.receipts!.push({ area: 'assets', path: 'indexes/5.json',
++    artifactId: `sha1-${createHash('sha1').update(value.metadata!.assetIndexBody).digest('hex')}`, mode: 'copy' });
++  const old = restoreInstallMetadata(value);
++  const original = instanceGameLayout('D:\\fixture', value.summary, old).jar;
++  const next = { ...old, plan: aliasAssetViews(old.plan, old.version) };
++  const first = instanceGameLayout('D:\\fixture', value.summary, next).jar;
++  const changed = { ...next, metadataSha1ByVersion: { ...next.metadataSha1ByVersion, [next.version.jarVersionId]: 'f'.repeat(40) } };
++  const second = instanceGameLayout('D:\\fixture', value.summary, changed).jar;
++  assert.notEqual(first, original); assert.notEqual(first, second);
++  assert.ok(original.includes(`dep-${old.version.client.sha1}\\`));
++  assert.ok(first.includes(`dep-${old.version.client.sha1}-${old.metadataSha1ByVersion[old.version.jarVersionId]}\\`));
++  assert.throws(() => instanceGameLayout('D:\\fixture', value.summary, { ...next, metadataSha1ByVersion: {} }), { code: 'NEEDS_RECOVERY' });
++});
+ function record(isolation: 'on' | 'off'): InstanceRecord {
+   const assetIndexBody = '{"objects":{}}\n';
+   const body = JSON.stringify({ id: '1.20.1', mainClass: 'net.minecraft.client.main.Main', libraries: [],
+--- v3/tests/launch-plan.test.ts
++++ v11/tests/launch-plan.test.ts
+@@ -89,6 +89,13 @@
+   assert.deepEqual(plan.args.slice(-12), ['1.20.1', 'release', '7', input.layout.assetsDirectory, 'legacy', '0', '0', '854', '480', '0.0.0', input.layout.librariesDirectory, ';']);
+ });
+ 
++test('launch uses only the trusted index alias and matches the virtual resource directory', () => {
++  const input = sample(); input.version.assetIndex = { id: '5', url: 'https://piston-meta.mojang.com/index', size: 1, sha1: 'a'.repeat(40) };
++  input.version.gameArguments = ['${assets_index_name}', '${game_assets}']; input.assets = { virtual: true, indexId: `5-${'a'.repeat(40)}` };
++  assert.deepEqual(planOfflineLaunch(input).args.slice(-2), [input.assets.indexId, `${input.layout.assetsDirectory}\\virtual\\${input.assets.indexId}`]);
++  input.assets.indexId = '5-foreign'; assert.throws(() => planOfflineLaunch(input), { code: 'ARGUMENT_CONFLICT' });
++});
++
+ test('native runtime caches stay private and outside the verified immutable natives', () => {
+   const input = sample(); input.version.jvmArguments.push('-Djna.tmpdir=${natives_directory}',
+     '-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}', '-Dio.netty.native.workdir=${natives_directory}');
+--- v3/tests/mod-java-facts.test.ts
++++ v11/tests/mod-java-facts.test.ts
+@@ -65,3 +65,24 @@
+     .map(view => view.path), ['indexes/5.json']);
+   assert.deepEqual(record, before);
+ });
++
++test('ready restoration accepts only one trusted legacy or alias index receipt and never rewrites evidence', () => {
++  const record = modReadyInstance(randomUUID(), randomUUID());
++  const digest = createHash('sha1').update(record.metadata!.assetIndexBody).digest('hex');
++  const legacy = { area: 'assets' as const, path: 'indexes/5.json', artifactId: `sha1-${digest}`, mode: 'copy' as const };
++  const alias = { ...legacy, path: `indexes/5-${digest}.json` };
++  const before = structuredClone(record);
++  for (const receipt of [legacy, alias]) {
++    const value = { ...record, receipts: [...record.receipts!, receipt] };
++    const snapshot = structuredClone(value);
++    const plan = restoreInstallMetadata(value).plan;
++    assert.deepEqual(plan.views.filter(view => view.area === 'assets' && view.path.startsWith('indexes/')).map(view => view.path), [receipt.path]);
++    assert.deepEqual(value, snapshot);
++  }
++  for (const receipts of [record.receipts!, [...record.receipts!, legacy, alias], [...record.receipts!, legacy, legacy],
++    [...record.receipts!, { ...legacy, artifactId: `sha1-${'f'.repeat(40)}` }],
++    [...record.receipts!, { ...alias, path: `indexes/5-${'f'.repeat(40)}.json` }]]) {
++    assert.throws(() => restoreInstallMetadata({ ...record, receipts }), { code: 'NEEDS_RECOVERY' });
++  }
++  assert.deepEqual(record, before);
++});

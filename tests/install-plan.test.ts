@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { InstallPlanError, installRelativePath, parseAssetIndex } from '../src/core/install/assets.js';
-import { planVanillaInstall } from '../src/core/install/plan.js';
+import { aliasAssetViews, assetIndexAlias, planVanillaInstall } from '../src/core/install/plan.js';
 import type { AssetIndexContent } from '../src/core/install/assets.js';
 import type { DownloadArtifact, ResolvedClientVersion, ResolvedLibrary } from '../src/core/version/types.js';
 
@@ -18,6 +18,19 @@ function version(libraries: ResolvedLibrary[] = []): ResolvedClientVersion {
 }
 const emptyAssets = (): AssetIndexContent => ({ objects: [], virtual: false, mapToResources: false });
 
+test('asset index projections distinguish the same upstream ID with different trusted hashes', () => {
+  const first = version(); const second = version(); second.assetIndex = { ...second.assetIndex!, sha1: hashes.extra };
+  const assets = parseAssetIndex({ objects: { 'a/b': { hash: hashes.asset, size: 6 } }, virtual: true });
+  const original = planVanillaInstall(first, proof, assets); const before = JSON.stringify(original);
+  const one = aliasAssetViews(original, first); const two = aliasAssetViews(planVanillaInstall(second, proof, assets), second);
+  assert.notEqual(assetIndexAlias(first), assetIndexAlias(second));
+  assert.equal(JSON.stringify(original), before);
+  assert.ok(one.views.some(view => view.path === `indexes/${assetIndexAlias(first)}.json`));
+  assert.ok(one.views.some(view => view.path === `virtual/${assetIndexAlias(first)}/a/b`));
+  assert.ok(two.views.some(view => view.path === `indexes/${assetIndexAlias(second)}.json`));
+  assert.deepEqual(one.artifacts, original.artifacts);
+  assert.throws(() => aliasAssetViews({ ...original, views: [] }, first), { code: 'VIEW_CONFLICT' });
+});
 function library(changes: Partial<ResolvedLibrary> = {}): ResolvedLibrary {
   return { name: 'org.example:library:1.0', sourceVersionId: 'base', artifact: artifact(hashes.library, 3), nativeExcludes: [], ...changes };
 }

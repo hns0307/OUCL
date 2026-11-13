@@ -65,3 +65,24 @@ test('metadata reconstruction preserves the original official index path and inp
     .map(view => view.path), ['indexes/5.json']);
   assert.deepEqual(record, before);
 });
+
+test('ready restoration accepts only one trusted legacy or alias index receipt and never rewrites evidence', () => {
+  const record = modReadyInstance(randomUUID(), randomUUID());
+  const digest = createHash('sha1').update(record.metadata!.assetIndexBody).digest('hex');
+  const legacy = { area: 'assets' as const, path: 'indexes/5.json', artifactId: `sha1-${digest}`, mode: 'copy' as const };
+  const alias = { ...legacy, path: `indexes/5-${digest}.json` };
+  const before = structuredClone(record);
+  for (const receipt of [legacy, alias]) {
+    const value = { ...record, receipts: [...record.receipts!, receipt] };
+    const snapshot = structuredClone(value);
+    const plan = restoreInstallMetadata(value).plan;
+    assert.deepEqual(plan.views.filter(view => view.area === 'assets' && view.path.startsWith('indexes/')).map(view => view.path), [receipt.path]);
+    assert.deepEqual(value, snapshot);
+  }
+  for (const receipts of [record.receipts!, [...record.receipts!, legacy, alias], [...record.receipts!, legacy, legacy],
+    [...record.receipts!, { ...legacy, artifactId: `sha1-${'f'.repeat(40)}` }],
+    [...record.receipts!, { ...alias, path: `indexes/5-${'f'.repeat(40)}.json` }]]) {
+    assert.throws(() => restoreInstallMetadata({ ...record, receipts }), { code: 'NEEDS_RECOVERY' });
+  }
+  assert.deepEqual(record, before);
+});

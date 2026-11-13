@@ -1,0 +1,21 @@
+{
+  "status": "PASS_PUBLIC_RETENTION_AND_NEW_GUI_PREVIEW",
+  "elapsedMs": 900517.3240999999,
+  "oldStatus": "PREVIEW_EXPIRED",
+  "oldAdmission": "PREVIEW_EXPIRED",
+  "first": {
+    "requestId": "c8259418-9770-4c95-8432-89624ced6bf2",
+    "previewId": "dc32e96a-34b0-4120-a340-af21342888c3"
+  },
+  "second": {
+    "requestId": "5947eb20-bcc7-4e95-89d1-584b6ebab951",
+    "previewId": "0d1e5690-282b-4c9e-b3de-a985462c731c",
+    "completedAt": "2026-11-13T05:22:52.423Z"
+  },
+  "normalExit": true,
+  "ownerReleased": true,
+  "jars": 6,
+  "tasks": 5,
+  "protectedUnchanged": true,
+  "componentExpiredErrorRecovery": "NOT_EXERCISED"
+}

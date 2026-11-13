@@ -5,10 +5,29 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { InstanceFolderService } from '../src/services/install/instance-folders.js';
+import { instanceGameLayout } from '../src/services/install/instance-files.js';
+import { restoreInstallMetadata } from '../src/services/install/installer.js';
+import { aliasAssetViews } from '../src/core/install/plan.js';
+import { modReadyInstance } from './fixtures/mod-ready-instance.js';
 import type { InstanceRecord } from '../src/services/storage/instance-records.js';
 import { instanceFolderFailure, isInstanceFolderRequest, isInstanceFolderResult } from '../src/shared/contracts/instance-folders.js';
 
 const rootId = '00000000-0000-4000-8000-000000000001'; const instanceId = '00000000-0000-4000-8000-000000000002';
+test('new inherited layouts distinguish metadata for the same client while old receipts retain the original location', () => {
+  const value = modReadyInstance(rootId, instanceId);
+  value.receipts!.push({ area: 'assets', path: 'indexes/5.json',
+    artifactId: `sha1-${createHash('sha1').update(value.metadata!.assetIndexBody).digest('hex')}`, mode: 'copy' });
+  const old = restoreInstallMetadata(value);
+  const original = instanceGameLayout('D:\\fixture', value.summary, old).jar;
+  const next = { ...old, plan: aliasAssetViews(old.plan, old.version) };
+  const first = instanceGameLayout('D:\\fixture', value.summary, next).jar;
+  const changed = { ...next, metadataSha1ByVersion: { ...next.metadataSha1ByVersion, [next.version.jarVersionId]: 'f'.repeat(40) } };
+  const second = instanceGameLayout('D:\\fixture', value.summary, changed).jar;
+  assert.notEqual(first, original); assert.notEqual(first, second);
+  assert.ok(original.includes(`dep-${old.version.client.sha1}\\`));
+  assert.ok(first.includes(`dep-${old.version.client.sha1}-${old.metadataSha1ByVersion[old.version.jarVersionId]}\\`));
+  assert.throws(() => instanceGameLayout('D:\\fixture', value.summary, { ...next, metadataSha1ByVersion: {} }), { code: 'NEEDS_RECOVERY' });
+});
 function record(isolation: 'on' | 'off'): InstanceRecord {
   const assetIndexBody = '{"objects":{}}\n';
   const body = JSON.stringify({ id: '1.20.1', mainClass: 'net.minecraft.client.main.Main', libraries: [],

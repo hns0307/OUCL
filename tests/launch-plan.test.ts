@@ -89,6 +89,13 @@ test('assetIndex id overrides legacy name and additional official argument bindi
   assert.deepEqual(plan.args.slice(-12), ['1.20.1', 'release', '7', input.layout.assetsDirectory, 'legacy', '0', '0', '854', '480', '0.0.0', input.layout.librariesDirectory, ';']);
 });
 
+test('launch uses only the trusted index alias and matches the virtual resource directory', () => {
+  const input = sample(); input.version.assetIndex = { id: '5', url: 'https://piston-meta.mojang.com/index', size: 1, sha1: 'a'.repeat(40) };
+  input.version.gameArguments = ['${assets_index_name}', '${game_assets}']; input.assets = { virtual: true, indexId: `5-${'a'.repeat(40)}` };
+  assert.deepEqual(planOfflineLaunch(input).args.slice(-2), [input.assets.indexId, `${input.layout.assetsDirectory}\\virtual\\${input.assets.indexId}`]);
+  input.assets.indexId = '5-foreign'; assert.throws(() => planOfflineLaunch(input), { code: 'ARGUMENT_CONFLICT' });
+});
+
 test('native runtime caches stay private and outside the verified immutable natives', () => {
   const input = sample(); input.version.jvmArguments.push('-Djna.tmpdir=${natives_directory}',
     '-Dorg.lwjgl.system.SharedLibraryExtractPath=${natives_directory}', '-Dio.netty.native.workdir=${natives_directory}');

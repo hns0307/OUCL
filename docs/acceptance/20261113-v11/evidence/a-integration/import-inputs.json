@@ -1,0 +1,42 @@
+[
+  {
+    "path": "src/core/install/plan.ts",
+    "baseSha256": "7cae2fe175e425ac6e4a04e88d3c3f68360ef5705f0adefe7cceb6f1b34b698a",
+    "readOnlySourceSha256": "6c3de9be7933ce270abf49a085d0ad984a9aa39be29ac6dbc2afc56b2dd3498f"
+  },
+  {
+    "path": "src/core/launch/plan.ts",
+    "baseSha256": "92dd235300744b034138a86993745565d13e11a0035d07672a56fbaac3ec6e06",
+    "readOnlySourceSha256": "bf5aee6d782d262f6ea51ffbc4666de1bb6c7b874726e0547ba93b6d9ca328bd"
+  },
+  {
+    "path": "src/services/install/instance-files.ts",
+    "baseSha256": "cc7937be097746b3cc3a308a5683b853bf439bb6c3d9bc814e689dd3e32bb42c",
+    "readOnlySourceSha256": "dad4146247011dbeaced34311388a30a23f7b5697e60f69a2ed88a2758c66b36"
+  },
+  {
+    "path": "src/services/install/installer.ts",
+    "baseSha256": "602d96eaafa06f3791730b7a2793ffe2d6001bd60f80e8d8ec2a9c2ed87e8ffb",
+    "readOnlySourceSha256": "61cc82b9efd6ccf284fce40e6f90afeb44243762472eeb191721275f668578fe"
+  },
+  {
+    "path": "src/services/launch/service.ts",
+    "baseSha256": "3cba657fd5ffa5285707d6e5f2390c9fb90a3af5125e2afa42599b72ffb56f23",
+    "readOnlySourceSha256": "1646843329cf4a1b555e0e5d1524074185a994d8a7542eebc05920083c15024a"
+  },
+  {
+    "path": "tests/install-plan.test.ts",
+    "baseSha256": "e93f23ae317bcd18148f9f784670bb59746a90bf7c91f2ad25d02cc7db57ad21",
+    "readOnlySourceSha256": "bc6d3efa7c3996df77a766f653600106cc567c0373f21e35c1f76d3e52a20037"
+  },
+  {
+    "path": "tests/launch-plan.test.ts",
+    "baseSha256": "803d9c95a3a86aba601c6a0f85109f9ef8cf9a695f8c20c064ea7b0abae10556",
+    "readOnlySourceSha256": "4797c669a90ffafcdc1ca8efde0b0092f9f4078d75653c02740ce18d239f652c"
+  },
+  {
+    "path": "tests/installer.test.ts",
+    "baseSha256": "f92e5865f6371c29f6adb60ceea3e324a6748eff5ffa6a4acd0b707a22ae8a9f",
+    "readOnlySourceSha256": "3791a39f6fb00086ce36f435430a4abbf1111f052b3893f67bd9de0157cdac18"
+  }
+]

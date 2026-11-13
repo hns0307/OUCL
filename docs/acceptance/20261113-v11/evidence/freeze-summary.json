@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "files": 597,
+  "changedPaths": [
+    "OUCL-Codex/docs/DECISIONS.md",
+    "OUCL-Codex/docs/TASK_PLAN.md",
+    "src/core/install/plan.ts",
+    "src/core/launch/plan.ts",
+    "src/services/install/installer.ts",
+    "src/services/install/instance-files.ts",
+    "src/services/launch/service.ts",
+    "tests/install-plan.test.ts",
+    "tests/installer.test.ts",
+    "tests/instance-folders.test.ts",
+    "tests/launch-plan.test.ts",
+    "tests/mod-java-facts.test.ts"
+  ],
+  "integrationEvidence": "acceptance-results/a-integration/changes.json"
+}

@@ -130,7 +130,10 @@ test('actual installer commits a complete private instance and reuses shared fil
     const completed = await finished(f.service, accepted.taskId); assert.equal(completed.task.execution.state, 'completed'); assert.equal(completed.instance?.state, 'ready');
     const instanceId = completed.instance!.instanceId; const record = await f.storage.readInstance(instanceId); assert.ok(record);
     assert.equal(record.data.phase, 'ready'); assert.equal(record.data.receipts?.length, restoreInstallMetadata(record.data).plan.views.length);
-    assert.ok(record.data.receipts?.some(receipt => receipt.area === 'assets' && receipt.path === 'indexes/fixture.json'));
+    const aliasPath = `indexes/fixture-${f.indexHash}.json`;
+    assert.ok(record.data.receipts?.some(receipt => receipt.area === 'assets' && receipt.path === aliasPath));
+    const legacy = { ...record.data, receipts: record.data.receipts!.map(receipt => receipt.area === 'assets' && receipt.path === aliasPath ? { ...receipt, path: 'indexes/fixture.json' } : receipt) };
+    assert.ok(restoreInstallMetadata(legacy).plan.views.some(view => view.area === 'assets' && view.path === 'indexes/fixture.json'));
     assert.deepEqual((await f.service.listV2(rootId))[0]?.loader, { kind: 'vanilla' });
     const directory = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'versions', instanceId);
     const manifest = JSON.parse(await readFile(path.join(directory, 'oucl.instance.json'), 'utf8')) as { data: unknown };
@@ -239,20 +242,19 @@ test('cancelled install stays unready, joins transfers and a new retry can reuse
   } finally { await f.close(); }
 });
 
-test('same index ID with different bytes is preserved and stops safely rather than becoming ready', async () => {
+test('unknown existing shared entries are preserved and leave a recovery state rather than ready', async () => {
   const f = await fixture();
   try {
     const indexes = path.join(f.dataDirectory, 'store', 'views', rootId, 'assets', 'indexes'); await mkdir(indexes, { recursive: true });
-    const foreign = path.join(indexes, 'fixture.json');
+    const foreign = path.join(indexes, `fixture-${f.indexHash}.json`);
     // Exercise the active ordinary-directory fallback too when Windows cannot create a junction.
     const activeIndexes = path.join(f.dataDirectory, 'roots', rootId, '.minecraft', 'assets', 'indexes');
     await mkdir(activeIndexes, { recursive: true });
-    const activeForeign = path.join(activeIndexes, 'fixture.json');
-    const existingIndex = JSON.stringify({ objects: {} }); assert.notEqual(sha1(existingIndex), f.indexHash);
-    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, existingIndex); await writeFile(activeForeign, existingIndex);
+    const activeForeign = path.join(activeIndexes, `fixture-${f.indexHash}.json`);
+    const { writeFile } = await import('node:fs/promises'); await writeFile(foreign, 'foreign contents'); await writeFile(activeForeign, 'foreign contents');
     const accepted = await f.service.create(request(40), input); const result = await finished(f.service, accepted.taskId);
     assert.equal(result.task.execution.state, 'needsRecovery'); assert.equal(result.instance?.state, 'needsRecovery');
-    assert.equal(await readFile(foreign, 'utf8'), existingIndex); assert.equal(await readFile(activeForeign, 'utf8'), existingIndex);
+    assert.equal(await readFile(foreign, 'utf8'), 'foreign contents'); assert.equal(await readFile(activeForeign, 'utf8'), 'foreign contents');
   } finally { await f.close(); }
 });
 

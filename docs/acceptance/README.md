@@ -12,9 +12,12 @@
 | [20261112-v6](20261112-v6/REPORT.md) | 全局任务中心首次/重开通过；打包待验 | 正式安装夹具4任务的产品DOM确认、持久身份及两次正常退出 |
 | [20261112-v7](20261112-v7/REPORT.md) | 最终候选EXE冷/热及固定入口通过 | 官方运行时真实下载、清单一致、样本预览/取消/不匹配、exit0及只读保持 |
 | [20261112-v8](20261112-v8/REPORT.md) | 选定集合已本地合入main；完整方案仍开放 | 精确文档提交/快进整合、最终EXE交付；A强制中断被驱动拒绝并正常关闭 |
+| [20261112-v9](20261112-v9/REPORT.md) | C保留期尝试被审批超时阻断；需关闭自有窗口 | 未取得成功预览或计时；前后字节/任务一致，PID13064仍开、owner锁保留 |
+| [20261113-v10](20261113-v10/REPORT.md) | A新增共存证据已核对；后继候选待独立冻结 | 原A的Quilt/旧原版/Fabric菜单与退出报告，三份v21 EXE同摘要；不并入现有v3 |
+| [20261113-v11](20261113-v11/REPORT.md) | A统一技术检查通过；C自然保留期通过 | 655项651通过0失败4跳过；真实15分钟过期及新GUI预览；A游戏资料准备完成、同产物菜单待验 |
 
 版本规则：每次冻结有独立快照与SHA256清单；后续整改进入新快照，不修改已验证版本来追记通过。工作包报告属于来源证据；本目录报告只对所列冻结源码和实际命令负责。产品版本0.3.0、公共契约版本与验收快照v1/v2是不同维度。
 
 当前协调聊天负责最终合并清单和统一回归；两个审查聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
 
-当前接续位置为v8报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。
+当前接续位置为v11报告；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。

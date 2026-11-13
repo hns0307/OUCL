@@ -566,6 +566,10 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 
 2026-11-12 P-A续验：资源索引双路径物化成功、旧 Fabric 游戏主菜单及正常退出通过；Quilt 后续暴露同 JAR 不同官方元数据的隐藏依赖冲突。用户明确批准新安装按 JAR 与元数据双摘要隔离、旧实例沿用原路径，实施与验收进行中；旧失败现场保留。
 
+2026-11-12 P-A双摘要复验：v21 Quilt 1.20.1 / 0.29.2 热缓存安装完成，ready 及3654条收据已核对；完整隔离测试643项639通过、4跳过、0失败，类型/lint/build通过。cua-driver 后续选择实例操作因自动审批额度限制未执行，Quilt 实际启动、主菜单及重开仍待验收，详见 docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md。
+
+2026-11-12 P-A继续复验：原测试根旧格式对象锁导致 STORE_BUSY，未删除或接管；独立构造副本并通过 cua-driver 实际两次启动 Quilt 0.29.2，均进入主菜单并正常退出0，中间正常重开启动器。副本登记及恢复日志有针对复制路径的测试夹具调整，Java从原测试根只读复用；该证据不代表原锁中断恢复或全冷下载。详细记录见原 P-A 索引冲突报告，完整历史方案其余缺项不记通过。
+
 2026-11-12 P-C只读预览接入进展：主进程、preload与实例面板已接线；专项27项、静态界面及内存IPC/组件夹具通过，类型/lint/隔离构建通过。最新完整回归为2026-11-11的638项608通过/26失败/4跳过；Electron窗口启动因运行目录AppContainer读取权限失败。保持进行中，不将替代夹具视为产品窗口验收，详见 docs/work-packages/P-C/REPORT-20261112.md。
 
 ## 2026-11-12 跨工作包固定候选技术验收
@@ -575,3 +579,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 版本入口根docs/acceptance/README.md，最终候选及剩余证据见20261112-v7/MERGE-CHECKLIST.md。代码候选bc01f07487ca7e8d76f17115ea148efcafd748c2，后继文档独立提交；EXE SHA256 c231342a5e6027b63675d743ce7b7d88e9071c49cd7c07b060980ac52991a009。A真实强制中断恢复、C/E全部回执竞态等仍未全验，完整历史方案不标全部通过；已另获批准的Quilt索引/隐藏依赖别名继续由原A包验收并排除本候选。没有新增业务授权、依赖或持久格式。不整体暂存/提交共享树，不push/发布；本地分支整合实际结果由v7后继记录。
 
 2026-11-12本地整合实录：在干净D:/MC_start/OUCL-download-main的main上，将已选择代码bc01f07及独立文档1b06f6b从b87be9d成功ff-only；活跃mod_loaders未切换、未整体暂存/提交。最终EXE已复制到该main的release/OUCL-0.3.0-acceptance-20261112-v3.exe，摘要同v7。新空测试根的A强制中断补证因CUA只允许终止其运行时直接确认进程而被拒，没有绕过，随后正常关闭、锁释放；不记kill或恢复通过。实际记录及后继报告提交见根docs/acceptance/20261112-v8/REPORT.md。没有push/发布，完整历史方案仍有清单所列待补证。
+
+2026-11-13 P-A续验：在与Quilt相同的v21构造副本中，旧原版和旧Fabric均实机进入主菜单并正常退出0，Fabric日志确认FerriteCore 6.0.1；三个实例分别保留原版/别名资源索引收据，两索引SHA1不变。旧对象锁仍保留，强制中断恢复及其他工作包未覆盖时序不记通过，详见 docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md。
+
+2026-11-13 v11独立整合续验：在v3基线的597文件副本仅引入已批准A的5生产+5测试hunk，完整655项651PASS/0FAIL/4既有SKIP，类型/全lint/build通过；七产物仅main变化。C真实产品completed后900517ms，旧previewId及旧requestId均PREVIEW_EXPIRED，GUI新身份再次完成，正常exit0且六JAR/五任务保持。v11三实例独立普通文件资料及目标Java/正式服务预检已就绪，实际同产物游戏共存尚未运行；新候选不合main。候选EXE SHA256 3d9a0ebaf289a9552933c97033ffbd6a069e0a0258e3ea8322cc2a5ceb6efce6。五小时剩11%保存等待，精确接续及限制见根docs/acceptance/20261113-v11/REPORT.md；不将C自然bridge过期写成组件过期提示/全部回执竞态通过。
