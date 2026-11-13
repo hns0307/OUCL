@@ -591,3 +591,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-13 v14/v15：E原生picker在原文档真实reload失效、main继续存活后实际取消settle，旧请求INVALID_SENDER/无worker，新文档再次固定样本预览、真实worker exit0/DOM确认/正常exit0，79项独立审计通过、597冻结文件无漂移，E有限三组生命周期已按层级闭合。C真实接纳回执延迟8秒触发原3秒TIMEOUT，GUI同文件重试同requestId/input/previewId完成，9项核验通过、六JAR五任务不变/正常exit0。详根docs/acceptance/20261113-v14/REPORT.md、20261113-v15/REPORT.md。C其余有限边界/A强制中断仍开放，不标历史整体完成；无产品改动、未扩权、不push/发布。
 
 2026-11-13 v16：C-R6后端真实JAR/双扫描/正式平台客户端受控合法响应解析/预览投影3项通过，78输入哈希不变；首轮非法夹具ID失败保留、仅修正合成ID后通过。只闭合后端层级，公共窗口展示及公网来源不预记通过。详根docs/acceptance/20261113-v16/REPORT.md。
+
+2026-11-13 v17/v18：C运行取消观测前提未形成，首网络对象早close/原因UNKNOWN，未发送cancel或记录abort，实际唯一预览completed/正常exit0/六JAR五任务保持，不计取消通过。C真实Electron安全子集取得六非法输入拒绝、三不受信文档拒绝及原preload坏requestId拒绝，七产物一致、正常exit0，非主frame等仍PENDING。首轮壳误识别与新壳修正均保留；无产品改动。见根docs/acceptance/20261113-v17/REPORT.md和20261113-v18/REPORT.md。

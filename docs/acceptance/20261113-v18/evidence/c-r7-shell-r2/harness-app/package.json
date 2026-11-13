@@ -1,0 +1,5 @@
+{
+  "name": "oucl-c-r7-boundary-harness",
+  "version": "0.3.0",
+  "main": "../harness.cjs"
+}

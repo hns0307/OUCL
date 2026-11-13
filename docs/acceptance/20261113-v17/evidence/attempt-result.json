@@ -1,0 +1,50 @@
+{
+  "outcome": "NOT_EXERCISED",
+  "scope": "Read-only audit of the preserved first attempt; no rerun, GUI, product or script changes",
+  "admission": {
+    "requestId": "c7a06c3a-8c8d-4790-82ac-004f416535f4",
+    "previewId": "726f77cc-5385-44d6-bef1-9edf098a627e",
+    "receivedLine": 7,
+    "acceptedLine": 8,
+    "runningLine": 10,
+    "completedLine": 21,
+    "finalImpact": "blocked",
+    "platformFailures": ["NETWORK_FAILED"]
+  },
+  "counts": {
+    "totalLogRows": 25,
+    "successfulAdmissions": 1,
+    "targetRequestsCreated": 2,
+    "targetEndpointNetworkBlock": 2,
+    "otherEndpointNetworkBlock": 3,
+    "networkPending": 0,
+    "cancelReceivedIPC": 0,
+    "requestAbortCalls": 0,
+    "requestAbortEvents": 0
+  },
+  "timeline": [
+    {"line": 12, "kind": "real-request-created", "request": 1, "monoMs": 348012.19},
+    {"line": 13, "kind": "real-request-close", "request": 1, "monoMs": 348013.3437},
+    {"line": 14, "kind": "network-block", "targetEndpoint": true, "monoMs": 348013.7831},
+    {"line": 15, "kind": "real-request-error", "request": 1, "monoMs": 348014.1218},
+    {"line": 16, "kind": "real-request-created", "request": 2, "monoMs": 348267.1612},
+    {"line": 17, "kind": "real-request-close", "request": 2, "monoMs": 348268.0765},
+    {"line": 18, "kind": "network-block", "targetEndpoint": true, "monoMs": 348268.6063},
+    {"line": 19, "kind": "real-request-error", "request": 2, "monoMs": 348268.9319}
+  ],
+  "diagnosis": {
+    "onBeforeRequestReachedTarget": true,
+    "urlMatchFailure": false,
+    "holdBranch": "NOT_ENTERED",
+    "proximateCause": "At the first target callback, heldRequest references request1 with closed=true. The hold guard rejects it. The pointer is never reset, so request2 also cannot enter hold.",
+    "bothTargetCallbacks": "Existing else branch logged targetEndpoint=true then called callback({cancel:true})",
+    "whyRequest1ClosedBeforeTargetCallback": "UNKNOWN",
+    "firstEarlyCloseAttribution": "Not established. The later callback cancellation cannot by log order alone explain the earlier close event.",
+    "networkErrorDetail": "Only errorName=Error retained; no error code/message or request/interception identity correlation",
+    "sessionObservation": "Target events reached defaultSession interceptor. Production net.request options omit explicit session/partition; no evidence of URL mismatch or complete session miss."
+  },
+  "lifecycle": {"windowClosedLine": 23, "willQuitLine": 24, "exitLine": 25, "exitCode": 0, "exitUTC": "2026-11-13T11:15:40.557Z", "ownerReleased": "Coordinator reported; no new process/lock inspection performed by this audit"},
+  "protectedState": {"beforeJars": 6, "afterJars": 6, "beforeTasks": 5, "afterTasks": 5, "wholeSnapshotSHAEqual": true, "sha256": "54022A3779ED8CC3EBFCFCAED6BEC28C0F4D519AD6ADD6D6BCA2CC4FEA01653D"},
+  "sourceSHA256": {"window.jsonl": "84A7F1EAB20F75BFA7562BA0229C740B14130423CC223DA41ED11CFDBF35B659", "window.cjs": "9E636A8EF35FC1BD909FB59838FAD6D7306AD1D9C804D08265C78F18BAD4AB3A"},
+  "notProven": ["GUI running cancellation", "AbortSignal-driven request cancellation", "12-second timeout", "network-pending shutdown", "new preview after cancellation"]
+}
