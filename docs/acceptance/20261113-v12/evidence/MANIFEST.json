@@ -1,0 +1,52 @@
+[
+  {
+    "bytes": 15832,
+    "path": "game/v12-result.json",
+    "sha256": "c9515feb5770836c0df7f9a0bbc858ba9a458d01a8c3794138d5b7a81899f213"
+  },
+  {
+    "bytes": 12914,
+    "path": "game/verify-product-coexistence.mjs",
+    "sha256": "0c2a8d0a961d9b397232047dfb0bd93d9f76ac46d2ac938570b807ad94c08a66"
+  },
+  {
+    "bytes": 89,
+    "path": "game/launcher-first-exit.json",
+    "sha256": "799cb06f3c429c57c37cb5e811fb04f1f1052e3de99144497302e7d2b2c9bf4f"
+  },
+  {
+    "bytes": 89,
+    "path": "game/launcher-second-exit.json",
+    "sha256": "9dd08d7935777acb167e77f14ac1767bfadbd6a15cac230e1037409ca38339ba"
+  },
+  {
+    "bytes": 472633,
+    "path": "game/vanilla-menu.png",
+    "sha256": "b59ca2764d647b4d01bf9b598cd17d944f0accc5b9828cc1d85a75e1501abd29"
+  },
+  {
+    "bytes": 445139,
+    "path": "game/fabric-menu.png",
+    "sha256": "f7eae2dd8a54c6c1b9b31715ebfad5225b3f2a457a8b64b32485b04f1cda18fc"
+  },
+  {
+    "bytes": 450236,
+    "path": "game/quilt-menu.png",
+    "sha256": "c426e9527f9953e890b4db191208c4bedafb054b2b85dba18e8621238844d3b9"
+  },
+  {
+    "bytes": 444539,
+    "path": "game/quilt-reopened-menu.png",
+    "sha256": "39d049c16837a8383b5a2fb8a0c02e6ed78ef86c1e697477bb7868f53276471f"
+  },
+  {
+    "bytes": 324078,
+    "path": "game/launcher-reopened.png",
+    "sha256": "0caed06d55b4cb4fd35d22e56e13255114f71c2ccfaaba1e757f032e172551b3"
+  },
+  {
+    "bytes": 3757,
+    "path": "game/prepared.json",
+    "sha256": "0639c5c3d1d0c248c7b3e3637d914ac48bd8544f648e9a7709a722c9964d2c72"
+  }
+]

@@ -583,3 +583,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-13 P-A续验：在与Quilt相同的v21构造副本中，旧原版和旧Fabric均实机进入主菜单并正常退出0，Fabric日志确认FerriteCore 6.0.1；三个实例分别保留原版/别名资源索引收据，两索引SHA1不变。旧对象锁仍保留，强制中断恢复及其他工作包未覆盖时序不记通过，详见 docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md。
 
 2026-11-13 v11独立整合续验：在v3基线的597文件副本仅引入已批准A的5生产+5测试hunk，完整655项651PASS/0FAIL/4既有SKIP，类型/全lint/build通过；七产物仅main变化。C真实产品completed后900517ms，旧previewId及旧requestId均PREVIEW_EXPIRED，GUI新身份再次完成，正常exit0且六JAR/五任务保持。v11三实例独立普通文件资料及目标Java/正式服务预检已就绪，实际同产物游戏共存尚未运行；新候选不合main。候选EXE SHA256 3d9a0ebaf289a9552933c97033ffbd6a069e0a0258e3ea8322cc2a5ceb6efce6。五小时剩11%保存等待，精确接续及限制见根docs/acceptance/20261113-v11/REPORT.md；不将C自然bridge过期写成组件过期提示/全部回执竞态通过。
+
+2026-11-13 v12候选EXE共存：v11已批准隔离hunk以最终EXE实际运行旧原版、Fabric/FerriteCore、新Quilt及正常重开后Quilt共4次菜单/自然exit0，两启动器正常exit0，48项正式会话/索引/路径/包内七产物审计通过；精确记录见根docs/acceptance/20261113-v12/REPORT.md。可进入选定增量本地整合；真实强制中断和全部异常矩阵仍未验收。C独立真实延迟回执已触发preload TIMEOUT，保持原窗口等待900500ms后人工查询，不预记过期组件恢复通过。无新增授权，不push/发布。
