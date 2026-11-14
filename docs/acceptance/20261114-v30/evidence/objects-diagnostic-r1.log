@@ -1,0 +1,95 @@
+✖ real object commits deduplicate bytes but preserve independent source evidence (15.1179ms)
+✖ same-sized wrong bytes never enter objects and malformed artifact facts reject early (7.8245ms)
+✖ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (8.6551ms)
+✖ interrupted append-only commits preserve orphan bytes and recover only proven sources (8.5951ms)
+✖ corrupt existing object is never overwritten by a new commit or reused through an index (11.8404ms)
+✖ broken provenance cannot acquire trust from a valid object or index hint (19.9429ms)
+✖ unknown cache schema blocks object search while durable tasks stay readable (8.8782ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 0
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 223.0394
+
+✖ failing tests:
+
+test at .test-build\tests\objects.test.js:42:1
+✖ real object commits deduplicate bytes but preserve independent source evidence (15.1179ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:57:1
+✖ same-sized wrong bytes never enter objects and malformed artifact facts reject early (7.8245ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:66:1
+✖ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (8.6551ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:82:1
+✖ interrupted append-only commits preserve orphan bytes and recover only proven sources (8.5951ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:83:64)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:94:1
+✖ corrupt existing object is never overwritten by a new commit or reused through an index (11.8404ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:105:1
+✖ broken provenance cannot acquire trust from a valid object or index hint (19.9429ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }
+
+test at .test-build\tests\objects.test.js:113:1
+✖ unknown cache schema blocks object search while durable tasks stay readable (8.8782ms)
+  Error [WorkerError]: UNSAFE_PATH
+      at StorageClient.open (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/src/services/workers/storage-client.js:40:13)
+      at async fixture (file:///D:/MC_start/OUCL-remediation-20261114-r1/.test-build/tests/objects.test.js:24:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'UNSAFE_PATH',
+    category: 'system'
+  }

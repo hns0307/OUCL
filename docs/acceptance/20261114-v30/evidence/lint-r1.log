@@ -1,0 +1,40 @@
+
+D:\MC_start\OUCL-remediation-20261114-r1\tests\components\launch-recovery\probe.mjs
+  20:23   error  'setImmediate' is not defined                                      no-undef
+  20:40   error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+  20:75   error  'setImmediate' is not defined                                      no-undef
+  20:113  error  'setImmediate' is not defined                                      no-undef
+  20:359  error  'setImmediate' is not defined                                      no-undef
+
+D:\MC_start\OUCL-remediation-20261114-r1\tests\components\maintenance-preview\component-harness.cjs
+  28:3    error  'global' is not defined                                            no-undef
+  41:3    error  'global' is not defined                                            no-undef
+  42:3    error  'global' is not defined                                            no-undef
+  43:132  error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+  50:3    error  'global' is not defined                                            no-undef
+  51:3    error  'global' is not defined                                            no-undef
+  52:132  error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+  64:3    error  'global' is not defined                                            no-undef
+  65:3    error  'global' is not defined                                            no-undef
+  66:132  error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+  74:3    error  'global' is not defined                                            no-undef
+  75:3    error  'global' is not defined                                            no-undef
+  76:132  error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+  83:3    error  'global' is not defined                                            no-undef
+  85:82   error  The value assigned to 'tree' is not used in subsequent statements  no-useless-assignment
+
+D:\MC_start\OUCL-remediation-20261114-r1\tests\components\maintenance-preview\jsx-stub.cjs
+  1:1   error  'exports' is not defined  no-undef
+  1:15  error  'exports' is not defined  no-undef
+  2:1   error  'exports' is not defined  no-undef
+
+D:\MC_start\OUCL-remediation-20261114-r1\tests\components\maintenance-preview\react-stub.cjs
+  1:1   error  'exports' is not defined  no-undef
+  1:33  error  'global' is not defined   no-undef
+  2:1   error  'exports' is not defined  no-undef
+  2:31  error  'global' is not defined   no-undef
+  3:1   error  'exports' is not defined  no-undef
+  3:34  error  'global' is not defined   no-undef
+
+✖ 29 problems (29 errors, 0 warnings)
+
