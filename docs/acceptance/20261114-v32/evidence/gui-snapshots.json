@@ -1,0 +1,57 @@
+{
+  "firstAccount": {
+    "app_name": "electron.exe",
+    "capture_id": "capture_a89e800d9f2c4369a29ca98c00c0623b_0000000000000006",
+    "element_count": 34,
+    "elements_complete": true,
+    "invalidated_snapshot_ids": [
+      "s00000021"
+    ],
+    "pid": 17828,
+    "returned_element_count": 5,
+    "screenshot_file_path": "\\\\?\\D:\\MC_start\\OUCL-acceptance-exe-v32-20261114\\account-created.png",
+    "screenshot_height": 1568,
+    "screenshot_mime_type": "image/png",
+    "screenshot_width": 980,
+    "snapshot_id": "s00000022",
+    "timeout_ms": 1000,
+    "total_element_count": 34,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-exe-v32-20261114/OUCL.runtime/app-272cc737f3bade0a6b197f7907b21b2dce2acce854f1d4cc8347155fb3f62291/dist/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - [24] Button \"◇ 论坛 当前为本地草稿，论坛服务尚未连接。 ↗\" [actions=[invoke]]\n                        - [27] Text \"OUCL_V32\" [actions=[text]]\n                        - [29] ComboBox \"选择离线账户\" [value=\"v32验收 · OUCL_V32\" actions=[expand,set_value]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 3072,
+      "width": 1920,
+      "x": -1920,
+      "y": 0
+    },
+    "window_id": 7997004,
+    "window_title": "OUCL"
+  },
+  "reopenedAccount": {
+    "app_name": "electron.exe",
+    "capture_id": "capture_a89e800d9f2c4369a29ca98c00c0623b_0000000000000007",
+    "element_count": 34,
+    "elements_complete": false,
+    "pid": 2424,
+    "returned_element_count": 5,
+    "screenshot_file_path": "\\\\?\\D:\\MC_start\\OUCL-acceptance-exe-v32-20261114\\reopened-account.png",
+    "screenshot_height": 1092,
+    "screenshot_mime_type": "image/png",
+    "screenshot_width": 1568,
+    "snapshot_id": "s00000024",
+    "timeout_ms": 1000,
+    "total_element_count": 34,
+    "tree_format": "markdown",
+    "tree_markdown": "- Window \"OUCL\"\n  - Pane \"OUCL\"\n                - [0] Document \"OUCL\" [value=\"file:///D:/MC_start/OUCL-acceptance-exe-v32-20261114/OUCL.runtime/app-272cc737f3bade0a6b197f7907b21b2dce2acce854f1d4cc8347155fb3f62291/dist/renderer/index.html\" id=RootWebArea actions=[set_value,text,scroll]]\n                  - [1] Group [id=root actions=[invoke]]\n                      - [24] Button \"◇ 论坛 当前为本地草稿，论坛服务尚未连接。 ↗\" [actions=[invoke]]\n                        - [27] Text \"OUCL_V32\" [actions=[text]]\n                        - [29] ComboBox \"选择离线账户\" [value=\"v32验收 · OUCL_V32\" actions=[expand,set_value]]\n",
+    "truncated": false,
+    "window_bounds": {
+      "height": 1221,
+      "width": 1752,
+      "x": 980,
+      "y": 1486
+    },
+    "window_id": 4653344,
+    "window_title": "OUCL"
+  }
+}
