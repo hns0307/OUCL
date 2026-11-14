@@ -595,3 +595,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-13 v17/v18：C运行取消观测前提未形成，首网络对象早close/原因UNKNOWN，未发送cancel或记录abort，实际唯一预览completed/正常exit0/六JAR五任务保持，不计取消通过。C真实Electron安全子集取得六非法输入拒绝、三不受信文档拒绝及原preload坏requestId拒绝，七产物一致、正常exit0，非主frame等仍PENDING。首轮壳误识别与新壳修正均保留；无产品改动。见根docs/acceptance/20261113-v17/REPORT.md和20261113-v18/REPORT.md。
 
 2026-11-14 v19–v23跨包验收追加（非新增批准）：完成先赢/取消回执超时、接纳/状态/取消三类跨实例迟到和真实JAR worker受控取消等待退出取得有限证据；网络取消仍NOT_EXERCISED，首早close根因UNKNOWN，首状态切换未满足前提保留。全为独立v3冻结产物，无生产改动，六JAR五任务保持、窗口exit0；细节与未完成清单见根docs/acceptance/20261114-v19至v23及v23/HANDOFF.md。C在途关闭重开/复杂窗口/其余安全格与A强制中断恢复仍未完成，不标整体通过。
+
+2026-11-14 v24–v26补证（非新增批准）：真实JAR worker生命周期注入在途正常关窗/等待退出/重开旧ID过期与新预览，14项审计通过；真实Electron同ID不同输入冲突及坏previewId/额外URL-path原preload拒绝取得有限证据；复杂声明与平台固定版本不符已在实际GUI展示。原快捷键错误超时和测试日志标签误计保留，不冒充产品通过。网络取消仍未触发、非主frame不可达、A最终EXE强制中断恢复DEFERRED，完整历史方案仍IN_PROGRESS。当前可接纳/待补证/排除表见根docs/acceptance/20261114-v26/CURRENT-CHECKLIST.md。无生产改动或push发布。

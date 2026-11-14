@@ -1,0 +1,127 @@
+[
+  {
+    "path": "evidence/c-r6-window-v26/a-completed.png",
+    "bytes": 409363,
+    "sha256": "3791dc4e3060c6b488a64ccabac4de3de8089f04e10d10b715817fe516642e9b"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/a-relations.png",
+    "bytes": 391613,
+    "sha256": "008c122ba2ea83c41e5f9e8d282eea456a6ac4e6427748cfed99ad3c74ffe1aa"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/audit.cjs",
+    "bytes": 7289,
+    "sha256": "1d05b2d44eacf883af6fad4ae46c097bf66e79d62d721acd9d603fc069796df5"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/audit.json",
+    "bytes": 4155,
+    "sha256": "ea53e00f55bcf163d20e51f19a1994c70619b7a80ca1cdca8220fe7313e44be5"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/AUDIT.md",
+    "bytes": 1594,
+    "sha256": "dc5013fa5177f975637b73858fdbcbe4ebdc7cb086ddf705d70e2fa441b2fcc5"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/b-completed.png",
+    "bytes": 399024,
+    "sha256": "af0f7fd4b3b6c38ffc998554367934bb66eb82f2ec51c6e7240761f00aaa47c2"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/b-relations.png",
+    "bytes": 396138,
+    "sha256": "f5749fca9dc73e437f0e4b65e7e95a0db646564096d17001b3f6cf274eb30433"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/fixtures.cjs",
+    "bytes": 2409,
+    "sha256": "5f0ea41eef8585709b70a12f569d62360dbfe651b7b4df3990c6ba270a2d0b43"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/inspect-state.mjs",
+    "bytes": 1391,
+    "sha256": "04a9144e0a577cf48fdf6ba2e2eb78fe688893c3a3265894143ac9a0d3ea702e"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/local-check.cjs",
+    "bytes": 1732,
+    "sha256": "8036a22ce5ec33377a87edb09596002d28fb9a5ef678beb65797430643ea32de"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/local-check.json",
+    "bytes": 251,
+    "sha256": "b08a7c8eb146342cf47ff90f0872d9f0d2a9318c34aac49f17b23a114544c350"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/local-check.log",
+    "bytes": 232,
+    "sha256": "662d4bc5edef292ab76d8c459f2a6231016c4ddf3b99fdbbc0791fd1b0334180"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/preparation.log",
+    "bytes": 1236,
+    "sha256": "2b56110b5c9a90cf0f40eaafde65b50cdd22f6cbb446388c1b18e82cc5de6de1"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/prepare-generated.mjs",
+    "bytes": 11818,
+    "sha256": "3214e8ae8006dacdb107efa82f8e713df889fc1202ac76ac491fd9a5685e8801"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/prepare.mjs",
+    "bytes": 3840,
+    "sha256": "aedcccbd5dd476e392eb292631a9d3cf85246d41dcad8fa5e3ad23756abec6c5"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/product-manifest.json",
+    "bytes": 900,
+    "sha256": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/README.md",
+    "bytes": 4503,
+    "sha256": "a1dd6e8163f4f04b1972be1d91d957d95cb55afab954d1e0495ebb11ab52b96b"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/seed.json",
+    "bytes": 10539,
+    "sha256": "02a97a2425e1f6e37b693ea1fb9546c2991e37a724ce37b5750698dbdbba6ce3"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/state-after.json",
+    "bytes": 2732,
+    "sha256": "0651a25a14ad385206bda0838e6dae00b38182fada07fcc34afb8b40b613fccd"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/state-before.json",
+    "bytes": 2732,
+    "sha256": "0651a25a14ad385206bda0838e6dae00b38182fada07fcc34afb8b40b613fccd"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/transport.cjs",
+    "bytes": 1235,
+    "sha256": "0e6deed953c113b2b5fdb7e886c1f53503d95053fd9d95bffb449287d2d96fe7"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/verified-product.json",
+    "bytes": 900,
+    "sha256": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/whitelist.json",
+    "bytes": 4776,
+    "sha256": "3ce2733795c20f87604e7a92dd98818a8959cb5ecfe3a80608164c6e597ed68e"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/window.cjs",
+    "bytes": 3107,
+    "sha256": "c976e70ada99f6b5bb83d49d64cbe463957c8a4149b87494adfccc3643f1c44d"
+  },
+  {
+    "path": "evidence/c-r6-window-v26/window.jsonl",
+    "bytes": 19681,
+    "sha256": "b36d1bcf3472b25c28d82c82c5859af8dccf6c3e091be0cc95c38a138db2de89"
+  }
+]
