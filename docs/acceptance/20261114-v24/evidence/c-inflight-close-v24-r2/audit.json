@@ -1,0 +1,161 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "real-child-original-message",
+      "status": "PASS",
+      "detail": {
+        "child": [
+          {
+            "kind": "keepalive-loaded",
+            "threadId": 2,
+            "time": "2026-11-14T03:15:40.553Z",
+            "monoMs": 24323.6359
+          }
+        ],
+        "selectedLine": 8,
+        "messageLine": 10
+      }
+    },
+    {
+      "id": "close-before-original-terminate-and-exit",
+      "status": "PASS",
+      "detail": {
+        "closed": {
+          "time": "2026-11-14T03:15:42.653Z",
+          "monoMs": 26422.4443,
+          "kind": "window-closed",
+          "line": 16
+        },
+        "quit": {
+          "time": "2026-11-14T03:15:42.654Z",
+          "monoMs": 26423.0393,
+          "kind": "before-quit-observed",
+          "mode": "close",
+          "meaning": "No harness cancellation; original main shutdown owns abort/terminate.",
+          "line": 17
+        },
+        "term": {
+          "time": "2026-11-14T03:15:42.655Z",
+          "monoMs": 26424.2436,
+          "kind": "original-reader-terminate-called",
+          "threadId": 2,
+          "meaning": "Delegates actual terminate unchanged; harness never initiates termination.",
+          "line": 18
+        },
+        "workerExit": {
+          "time": "2026-11-14T03:15:42.675Z",
+          "monoMs": 26444.8723,
+          "kind": "worker-exit",
+          "threadId": 2,
+          "code": 1,
+          "line": 19
+        }
+      }
+    },
+    {
+      "id": "shutdown-before-reader-timeout",
+      "status": "PASS",
+      "detail": {
+        "elapsedMs": 2141.484700000001
+      }
+    },
+    {
+      "id": "no-GUI-cancel-IPC",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "id": "close-normal-app-exit",
+      "status": "PASS",
+      "detail": {
+        "exit": {
+          "time": "2026-11-14T03:15:42.704Z",
+          "monoMs": 26473.4789,
+          "kind": "exit",
+          "code": 0,
+          "line": 22
+        }
+      }
+    },
+    {
+      "id": "reopen-normal-app-exit",
+      "status": "PASS",
+      "detail": {
+        "exit": {
+          "time": "2026-11-14T03:17:14.523Z",
+          "monoMs": 73626.4107,
+          "kind": "exit",
+          "code": 0,
+          "line": 19
+        }
+      }
+    },
+    {
+      "id": "reopen-no-injected-worker",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "id": "old-ID-expired-through-public-bridge",
+      "status": "PASS",
+      "detail": {
+        "old": {
+          "requestId": "833fb11e-7ada-4abb-b457-dfda6fec94b5",
+          "input": {
+            "rootId": "40000000-0000-4000-8000-000000000001",
+            "instanceId": "40000000-0000-4000-8000-000000000002",
+            "expectedRevision": 1,
+            "expectedFingerprint": "69ec7251c5fddc948157683f22029b83036464aa12d9f6cf3846f16d84cc2f36",
+            "fileId": "5da4231cf237720955df0df9428eb534720d4b54df77edce98aca0f1c6b6014c",
+            "action": "disable"
+          },
+          "previewId": "25f11f77-0452-4600-9b60-4eb0bdba8cac"
+        },
+        "result": {
+          "contractVersion": 1,
+          "requestId": "674b5c8f-444e-495e-89d1-0a5a41f536a7",
+          "ok": false,
+          "error": {
+            "code": "PREVIEW_EXPIRED",
+            "category": "biz",
+            "messageKey": "modsTaskMissing",
+            "retryable": false,
+            "traceId": "4eaade74-df8c-4eed-b566-399a48644fb0"
+          }
+        }
+      }
+    },
+    {
+      "id": "new-distinct-identity-completed",
+      "status": "PASS",
+      "detail": {
+        "requestId": "665d3253-346a-4cbf-b5f4-ba99bb4f7f68",
+        "previewId": "75c5a185-9e32-40f1-8b3e-a82700c513aa",
+        "completedLine": 13
+      }
+    },
+    {
+      "id": "new-completed-DOM",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "id": "close-seven-product-hashes",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "id": "reopen-seven-product-hashes",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "id": "six-JAR-five-task-snapshots-unchanged",
+      "status": "PASS",
+      "detail": null
+    }
+  ],
+  "scope": "Real worker lifecycle keepalive injection; exit1 is original termination, not natural success. Not network cancellation.",
+  "owner": "Released per coordinator; auditor did not control processes"
+}

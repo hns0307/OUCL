@@ -1,0 +1,1 @@
+const {ipcRenderer}=require('electron');addEventListener('DOMContentLoaded',()=>ipcRenderer.send('c-r7:test-report',{role:'primary',results:[]}),{once:true});

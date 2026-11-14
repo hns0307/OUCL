@@ -1,0 +1,44 @@
+{
+  "status": "FINITE_FOUR_CHECKS_PASS",
+  "conflict": {
+    "requestId": "a9b58e14-54f8-48ee-b80d-18855edf54e7",
+    "previewId": "b2a57c6d-368c-45d0-9818-9c60a529f90e",
+    "result": "INVALID_ARGUMENT",
+    "inputEvidence": "recorded first input plus pinned harness expression changes only action; original-handler log lacks complete payload"
+  },
+  "checks": [
+    {
+      "mode": "bad-previewId",
+      "requestId": "2bab60dd-f3a6-4257-82a8-17c728714a04",
+      "originalSequence": 7,
+      "injectionSequence": 8,
+      "bridgeSequence": 9
+    },
+    {
+      "mode": "url-field",
+      "requestId": "38923a23-5513-4740-b6eb-ccab9e7cfe80",
+      "originalSequence": 11,
+      "injectionSequence": 12,
+      "bridgeSequence": 13
+    },
+    {
+      "mode": "path-field",
+      "requestId": "9e963390-772f-4491-b578-20ab19987abf",
+      "originalSequence": 14,
+      "injectionSequence": 15,
+      "bridgeSequence": 16
+    }
+  ],
+  "products": 7,
+  "archiveWorkers": 0,
+  "willQuit": true,
+  "ownerMarkerAbsentAtAudit": true,
+  "exitCode": null,
+  "exitEvidence": "Coordinator reports normal AltF4 close; no process exit0 log, not asserted",
+  "originalVerifyFailure": "0 !== 3 is label-count mismatch: log fields.kind overwrote the outer kind with each mode; original script/log preserved",
+  "limits": [
+    "Synthetic malformed queued response envelopes only, not original domain success",
+    "Non-primary frame unreachable under unchanged configuration",
+    "Zero worker is not a direct inventory.scan invocation counter"
+  ]
+}
