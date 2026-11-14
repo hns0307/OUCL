@@ -15,6 +15,9 @@ interface Entry {
 const terminal = (task: TaskSnapshot): boolean => ['completed', 'failed', 'cancelled', 'needsRecovery'].includes(task.state);
 const FINAL_ERRORS: readonly InstanceCode[] = ['TASK_NOT_FOUND', 'TASK_NOT_OWNED', 'ROOT_UNAVAILABLE', 'OUT_OF_SCOPE', 'INVALID_SENDER'];
 const BACKOFF = [2000, 5000, 15000, 30000] as const;
+// A void disposal cannot prove the remote subscription was removed. Retain every issued slot
+// for the bridge lifetime, including calls whose late acknowledgement is still in flight.
+const issuedSubscriptions = new WeakMap<object, number>();
 
 /** Shares bounded, read-only task observation within one renderer root generation. Never controls a task. */
 export class TaskObserverPool {
@@ -23,7 +26,14 @@ export class TaskObserverPool {
   private visible = true;
   private closed = false;
   private inFlight = 0;
-  constructor(private readonly bridge: Pick<InstanceBridge, 'getTask' | 'subscribeTask'>) {}
+  private rotating: Entry | undefined;
+  constructor(private readonly bridge: Pick<InstanceBridge, 'getTask' | 'subscribeTask'>, private readonly ownerKey: object = bridge) {}
+
+  private reserveSubscription(): boolean {
+    const issued = issuedSubscriptions.get(this.ownerKey) ?? 0;
+    if (issued >= 8) return false;
+    issuedSubscriptions.set(this.ownerKey, issued + 1); return true;
+  }
 
   /** Multiple cards for one task share subscription, health reads and the latest non-regressing snapshot. */
   observe(initial: TaskSnapshot, listener: (value: TaskObservation) => void): { dispose(): void; reconnect(): void } {
@@ -40,6 +50,7 @@ export class TaskObserverPool {
         selected.listeners.delete(listener);
         if (!selected.listeners.size && this.entries.get(selected.taskId) === selected) {
           selected.generation++; selected.dispose?.(); this.entries.delete(selected.taskId);
+          if (this.rotating === selected) this.rotating = undefined;
           if (!this.entries.size) { clearTimeout(this.timer); this.timer = undefined; }
         }
       },
@@ -74,7 +85,7 @@ export class TaskObserverPool {
   close(): void {
     this.closed = true; clearTimeout(this.timer); this.timer = undefined;
     for (const entry of this.entries.values()) { entry.generation++; entry.dispose?.(); entry.listeners.clear(); }
-    this.entries.clear();
+    this.entries.clear(); this.rotating = undefined;
   }
   private publish(entry: Entry, value: TaskObservation): void {
     entry.value = value;
@@ -104,7 +115,15 @@ export class TaskObserverPool {
   }
   private tick(): void {
     // Admit at most eight details, two concurrent calls, and one call per 500ms (including subscriptions).
-    const details = [...this.entries.values()].filter(entry => !entry.stopped && (!terminal(entry.value.snapshot) || entry.due !== Infinity)).slice(0, 8);
+    const eligible = [...this.entries.values()].filter(entry => !entry.stopped && (!terminal(entry.value.snapshot) || entry.due !== Infinity));
+    let details: Entry[];
+    if (eligible.length <= 8) { this.rotating = undefined; details = eligible; }
+    else {
+      const stable = eligible.slice(0, 7); const waiting = eligible.slice(7);
+      const earliest = [...waiting].sort((a, b) => a.due - b.due)[0]!;
+      if (!this.rotating || !waiting.includes(this.rotating) || !this.rotating.busy && earliest.due <= Date.now()) this.rotating = earliest;
+      details = [...stable, this.rotating];
+    }
     const admitted = details.filter(entry => !terminal(entry.value.snapshot));
     const finalReads = details.filter(entry => terminal(entry.value.snapshot));
     const allowed = new Set([...admitted, ...finalReads]);
@@ -119,17 +138,19 @@ export class TaskObserverPool {
     const next = [...admitted, ...finalReads].filter(entry => !entry.busy && entry.due <= Date.now()).sort((a, b) => a.due - b.due)[0];
     if (next && this.inFlight < 2) {
       next.busy = true; this.inFlight++;
-      void this.read(next).finally(() => { next.busy = false; this.inFlight--; });
+      const transient = eligible.length > 8 && next === this.rotating;
+      void this.read(next, transient).finally(() => { next.busy = false; this.inFlight--; });
     }
     // No timer is needed when every remaining task is terminal/blocked and no initial read is pending.
     if (admitted.length || finalReads.some(entry => !entry.stopped)) this.schedule();
   }
-  private async read(entry: Entry): Promise<void> {
+  private async read(entry: Entry, transient = false): Promise<void> {
     const generation = entry.generation;
-    this.publish(entry, { ...entry.value, connection: entry.subscribe ? 'connecting' : 'rechecking' });
+    const subscribe = entry.subscribe && !transient && this.reserveSubscription();
+    if (!transient) entry.subscribe = false;
+    this.publish(entry, { ...entry.value, connection: subscribe ? 'connecting' : 'rechecking' });
     try {
-      if (entry.subscribe) {
-        entry.subscribe = false;
+      if (subscribe) {
         const subscription = await this.bridge.subscribeTask(entry.taskId, snapshot => {
           if (this.live(entry, generation)) this.confirmed(entry, snapshot);
         });

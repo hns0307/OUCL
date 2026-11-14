@@ -4,6 +4,8 @@ export const MESSAGES = {
   modsPreviewReady: '本次已知声明未发现阻止因素', modsPreviewBlocked: '存在阻止因素', modsPreviewUnknown: '无法确定影响',
   modsPreviewDisclaimer: '这是只读预览，不会修改文件，也不保证游戏实际运行。', modsPreviewExpired: '预览已过期，可重新预览；文件有变化时请先重新检查模组列表。',
   modsPreviewEmbeddedDepth: '内嵌深度',
+  modsPreviewIssueMod: '声明模组', modsPreviewIssueDependency: '依赖模组',
+  modsPreviewIssueProject: '平台项目', modsPreviewIssueVersion: '固定版本',
   modsPreviewBefore: '变更前', modsPreviewAfter: '变更后', modsPreviewProviders: '此文件包含的声明',
   modsPreviewDirect: '直接依赖此文件', modsPreviewTransitive: '间接依赖此文件', modsPreviewRelations: '依赖关系',
   modsPreviewOptional: '可选', modsPreviewRequired: '必需', modsPreviewIncomplete: '部分证据无法展示或超过上限，请重新检查。',

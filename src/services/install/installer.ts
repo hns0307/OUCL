@@ -168,17 +168,31 @@ export class InstallerService {
   }
 
   private async resources(): Promise<Runtime> {
-    this.runtime ??= (async () => {
-      const registration = await this.storage.readInstallation(); if (!registration) throw new InstallerError('ROOT_UNAVAILABLE');
-      const { rootId, dataDirectory } = registration.data; const store = await ensureChildDirectory(dataDirectory, 'store');
-      const hashes = new HashPool(this.entry); const extractor = new NativeExtractor(this.entry); const installerExtractor = new InstallerArchiveExtractor(this.entry);
-      try {
-        const objects = await ObjectStore.open(store, this.storage, hashes);
-        const concurrency = (): number => this.downloadPreferences().fileConcurrency;
-        const coordinator = new DownloadCoordinator(new ArtifactTransfer(new SourceTransfer(this.downloadPreferences, this.request, this.requestBudget), this.storage, objects), objects, concurrency);
-        return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects, concurrency), views: new FileViewService(store, objects, hashes) };
-      } catch (error) { await hashes.close(); await extractor.close(); await installerExtractor.close(); throw error; }
-    })();
+    if (this.closed) throw new InstallerError('INSTALL_FAILED');
+    if (!this.runtime) {
+      let retrySafe = true;
+      const pending = (async () => {
+        const registration = await this.storage.readInstallation(); if (!registration) throw new InstallerError('ROOT_UNAVAILABLE');
+        const { rootId, dataDirectory } = registration.data; const store = await ensureChildDirectory(dataDirectory, 'store');
+        const hashes = new HashPool(this.entry); const extractor = new NativeExtractor(this.entry); const installerExtractor = new InstallerArchiveExtractor(this.entry);
+        let objects: ObjectStore | undefined; let coordinator: DownloadCoordinator | undefined;
+        try {
+          objects = await ObjectStore.open(store, this.storage, hashes);
+          const concurrency = (): number => this.downloadPreferences().fileConcurrency;
+          coordinator = new DownloadCoordinator(new ArtifactTransfer(new SourceTransfer(this.downloadPreferences, this.request, this.requestBudget), this.storage, objects), objects, concurrency);
+          return { rootId, dataDirectory, hashes, extractor, installerExtractor, objects, coordinator, downloads: new InstallDownloadService(coordinator, objects, concurrency), views: new FileViewService(store, objects, hashes) };
+        } catch (error) {
+          const results = await Promise.allSettled([...(coordinator ? [coordinator.close()] : []), extractor.close(), installerExtractor.close()]);
+          if (objects) results.push(...await Promise.allSettled([objects.close()]));
+          results.push(...await Promise.allSettled([hashes.close()]));
+          if (results.some(result => result.status === 'rejected')) { retrySafe = false; throw new InstallerError('NEEDS_RECOVERY'); }
+          throw error;
+        }
+      })();
+      this.runtime = pending;
+      // Only this fully-cleaned failure may release its own cache; concurrent callers share pending.
+      void pending.catch(() => { if (retrySafe && this.runtime === pending) delete this.runtime; });
+    }
     return this.runtime;
   }
   private index(summary: InstanceSummary): Promise<void> {

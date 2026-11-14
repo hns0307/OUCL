@@ -101,7 +101,7 @@ test('multiple cards share one observer; last disposal blocks late reads and rem
 });
 test('100 cards admit at most eight details with no more than two starts per second', async t => {
   const f = fixture(t); for (let n = 2; n <= 100; n++) f.pool.observe(initial(n), () => {});
-  await advance(t, 10000); assert.equal(f.state.subscriptions, 8);
+  await advance(t, 10000); assert.equal(f.state.subscriptions, 7); assert.ok(f.state.reads > 0);
   for (const start of f.state.calls) assert.ok(f.state.calls.filter(time => time >= start && time < start + 1000).length <= 2);
 });
 test('hidden page admits no work; old-root closure blocks late subscription and disposes it', async t => {
@@ -122,13 +122,15 @@ test('closing during subscribe disposes its late receipt without callback delive
   release(); await flush(); assert.equal(disposed, 1); assert.equal(deliveries, count);
 });
 
-test('explicit query promotes a waiting detail and releases the evicted observer', async t => {
+test('explicit query promotes a waiting detail without exceeding the subscription budget', async t => {
   const f = fixture(t);
   for (let n = 2; n <= 8; n++) f.pool.observe(initial(n), () => {});
   const updates: TaskObservation[] = []; const waiting = f.pool.observe(initial(9), value => { updates.push(value); });
-  await advance(t, 5000); assert.equal(f.state.subscriptions, 8); assert.equal(updates.at(-1)?.connection, 'unconfirmed');
+  await advance(t, 5000); assert.equal(f.state.subscriptions, 7);
+  const subscriptions = f.state.subscriptions;
   waiting.reconnect(); await advance(t, 500);
-  assert.equal(updates.at(-1)?.connection, 'confirmed'); assert.equal(f.state.subscriptions, 9); assert.equal(f.state.disposals, 1);
+  assert.equal(updates.at(-1)?.connection, 'confirmed'); assert.equal(f.state.subscriptions, subscriptions + 1);
+  assert.ok(f.state.subscriptions - f.state.disposals <= 8);
 });
 test('slow subscriptions never exceed two concurrent bridge calls', async t => {
   t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 100000 });
@@ -161,7 +163,105 @@ test('confirmed terminal task stays confirmed across hiding and can still be exp
 test('explicit terminal query is not starved by eight active details', async t => {
   const f = fixture(t); for (let n = 2; n <= 8; n++) f.pool.observe(initial(n), () => {});
   const updates: TaskObservation[] = []; const final = { ...initial(9), state: 'completed', stage: 'completed' } as const;
+  f.state.read = Promise.resolve({ contractVersion: 1, requestId: id(99), ok: true, data: { snapshot: final } });
   const handle = f.pool.observe(final, value => { updates.push(value); }); await advance(t, 5000);
-  assert.equal(f.state.reads, 0); f.state.snapshot = final; handle.reconnect(); await advance(t, 500);
-  assert.equal(f.state.reads, 1); assert.equal(updates.at(-1)?.connection, 'confirmed');
+  assert.ok(f.state.reads >= 1); assert.equal(updates.at(-1)?.connection, 'confirmed');
+  const reads = f.state.reads; handle.reconnect(); await advance(t, 500);
+  assert.equal(f.state.reads, reads + 1); assert.equal(updates.at(-1)?.connection, 'confirmed');
 });
+
+test('nine persistent active tasks each receive automatic bounded confirmation', async t => {
+  const f = fixture(t); const updates: TaskObservation[] = [];
+  for (let n = 2; n <= 8; n++) f.pool.observe(initial(n), () => {});
+  f.pool.observe(initial(9), value => { updates.push(value); });
+  await advance(t, 4500);
+  assert.equal(updates.at(-1)?.connection, 'confirmed');
+  assert.ok(f.state.subscriptions <= 8);
+  for (const start of f.state.calls) assert.ok(f.state.calls.filter(time => time >= start && time < start + 1000).length <= 2);
+});
+
+test('nine active tasks keep receiving health confirmations without subscription churn', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 100000 });
+  const calls: number[] = []; const confirmed = new Map<string, number[]>(); let live = 0, peak = 0, subscriptions = 0, disposals = 0;
+  const pool = new TaskObserverPool({
+    getTask: async taskId => { calls.push(Date.now()); return { contractVersion: 1, requestId: id(99), ok: true, data: { snapshot: { ...initial(), taskId } } }; },
+    subscribeTask: async (taskId, listener) => {
+      calls.push(Date.now()); subscriptions++; live++; peak = Math.max(peak, live); let disposed = false;
+      const snapshot = { ...initial(), taskId }; listener(snapshot);
+      return { result: { contractVersion: 1, requestId: id(99), ok: true, data: { subscriptionId: id(100 + subscriptions), snapshot, seq: 0 } },
+        dispose: () => { if (!disposed) { disposed = true; live--; disposals++; } } };
+    },
+  });
+  t.after(() => { pool.close(); });
+  const handles: Array<{ dispose(): void; reconnect(): void }> = [];
+  for (let n = 1; n <= 9; n++) handles.push(pool.observe(initial(n), value => {
+    if (value.connection === 'confirmed') confirmed.set(value.snapshot.taskId, [...(confirmed.get(value.snapshot.taskId) ?? []), Date.now()]);
+  }));
+  const state = pool as unknown as { entries: Map<string, { admitted: boolean }> };
+  for (let elapsed = 0; elapsed < 65000; elapsed += 500) {
+    await advance(t, 500); assert.ok([...state.entries.values()].filter(entry => entry.admitted).length <= 8);
+  }
+  for (let n = 1; n <= 9; n++) {
+    const times = confirmed.get(id(n)) ?? []; assert.ok(times.length >= 3, `task ${n} confirmations`);
+    for (let index = 1; index < times.length; index++) assert.ok(times[index]! - times[index - 1]! <= 16500, `task ${n} heartbeat interval`);
+  }
+  assert.equal(subscriptions, 7); assert.equal(disposals, 0); assert.ok(peak <= 8);
+  handles[8]!.reconnect(); await advance(t, 500);
+  assert.equal(subscriptions, 8); assert.ok(live <= 8); assert.ok(peak <= 8);
+  await advance(t, 20000); assert.ok(disposals >= 1); assert.ok(live <= 8); assert.ok(peak <= 8);
+  for (const start of calls) assert.ok(calls.filter(time => time >= start && time < start + 1000).length <= 2);
+});
+
+test('one hundred continuously active tasks all get a first confirmation under the shared budget', async t => {
+  const f = fixture(t); const confirmed = new Set<string>();
+  for (let n = 2; n <= 100; n++) f.pool.observe(initial(n), value => { if (value.connection === 'confirmed') confirmed.add(value.snapshot.taskId); });
+  await advance(t, 90000);
+  for (let n = 2; n <= 100; n++) assert.ok(confirmed.has(id(n)), `task ${n} must receive a read`);
+  assert.equal(f.state.subscriptions, 7); assert.ok(f.state.reads > 0);
+  for (const start of f.state.calls) assert.ok(f.state.calls.filter(time => time >= start && time < start + 1000).length <= 2);
+});
+
+test('adding a ninth task releases one subscription and confirms it without subscription churn', async t => {
+  const f = fixture(t); const updates: TaskObservation[] = [];
+  for (let n = 2; n <= 8; n++) f.pool.observe(initial(n), () => {});
+  await advance(t, 4000); assert.equal(f.state.subscriptions, 8); assert.equal(f.state.disposals, 0);
+  f.pool.observe(initial(9), value => { updates.push(value); }); await advance(t, 500);
+  assert.equal(updates.at(-1)?.connection, 'confirmed'); assert.equal(f.state.subscriptions, 8); assert.equal(f.state.disposals, 1);
+  await advance(t, 60000); assert.equal(f.state.subscriptions, 8); assert.equal(f.state.disposals, 1);
+});
+
+test('delayed disposal plus explicit reconnect does not exceed eight remote subscriptions', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 100000 }); let live = 0, peak = 0;
+  const pool = new TaskObserverPool({
+    getTask: async taskId => ({ contractVersion: 1, requestId: id(99), ok: true, data: { snapshot: { ...initial(), taskId } } }),
+    subscribeTask: async (taskId, listener) => {
+      live++; peak = Math.max(peak, live); const snapshot = { ...initial(), taskId }; listener(snapshot); let disposed = false;
+      return { result: { contractVersion: 1, requestId: id(99), ok: true, data: { subscriptionId: taskId, snapshot, seq: 0 } },
+        dispose: () => { if (!disposed) { disposed = true; setTimeout(() => { live--; }, 3000); } } };
+    },
+  });
+  t.after(() => { pool.close(); });
+  for (let n = 1; n <= 8; n++) pool.observe(initial(n), () => {});
+  await advance(t, 4000); assert.equal(live, 8);
+  const ninth = pool.observe(initial(9), () => {}); await advance(t, 500); ninth.reconnect(); await advance(t, 500);
+  assert.ok(peak <= 8, `remote subscription peak ${peak}`);
+});
+
+test('late rotating read cannot cross a hide and later foreground generation', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 100000 });
+  let release!: (result: InstanceResult<'tasks:get'>) => void; let began!: () => void;
+  const started = new Promise<void>(resolve => { began = resolve; }); const delayed = new Promise<InstanceResult<'tasks:get'>>(resolve => { release = resolve; }); let first = true;
+  const pool = new TaskObserverPool({
+    getTask: async taskId => { if (taskId === id(8) && first) { first = false; began(); return delayed; } return { contractVersion: 1, requestId: id(99), ok: true, data: { snapshot: { ...initial(), taskId } } }; },
+    subscribeTask: async (taskId, listener) => { const snapshot = { ...initial(), taskId }; listener(snapshot);
+      return { result: { contractVersion: 1, requestId: id(99), ok: true, data: { subscriptionId: randomUUIDForTest(taskId), snapshot, seq: 0 } }, dispose: () => {} }; },
+  });
+  t.after(() => { pool.close(); }); const updates: TaskObservation[] = [];
+  for (let n = 1; n <= 9; n++) pool.observe(initial(n), value => { if (n === 8) updates.push(value); });
+  await advance(t, 4000); await started; pool.setVisible(false); const count = updates.length;
+  release({ contractVersion: 1, requestId: id(99), ok: true, data: { snapshot: { ...initial(8), revision: 3 } } }); await flush();
+  assert.equal(updates.length, count); await advance(t, 20000); assert.equal(updates.length, count);
+  pool.setVisible(true); await advance(t, 5000); assert.ok(!updates.some(value => value.snapshot.revision === 3));
+});
+
+function randomUUIDForTest(taskId: string): string { return taskId; }

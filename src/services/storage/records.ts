@@ -175,11 +175,15 @@ export class RecordStore {
   }
 
   /** Reads the bounded, bidirectionally checked inventory for the selected Mod domains. */
-  readModTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[]) {
+  readModTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[], checkBudget?: () => void) {
+    let budgetFailed = false; let budgetError: unknown;
+    const check = checkBudget && (() => {
+      try { checkBudget(); } catch (error) { budgetFailed = true; budgetError = error; throw error; }
+    });
     return this.serial(async () => {
       if (!this.available) throw new StorageError('NEEDS_RECOVERY');
-      return new TaskTable(this.db).modTargetAdmissions(ownerId, kinds);
-    });
+      return new TaskTable(this.db).modTargetAdmissions(ownerId, kinds, check);
+    }).catch((error: unknown) => { if (budgetFailed) throw budgetError; throw error; });
   }
 
   /** Reads an exact accepted request without changing the task or request journal. */

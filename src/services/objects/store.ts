@@ -4,7 +4,8 @@ import path from 'node:path';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { verifyArtifact } from '../../core/download/integrity.js';
 import type { ExpectedArtifact } from '../../core/download/integrity.js';
-import { guardDirectory, hasCode, ownsLease, readRegular } from '../storage/files.js';
+import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
+import { ObjectOwnerLease } from './owner-lease.js';
 import type { IndexedObject } from '../storage/object-index.js';
 import type { HashOptions } from '../workers/hash-pool.js';
 import type { HashResult } from '../workers/protocol.js';
@@ -38,31 +39,32 @@ async function exists(file: string): Promise<boolean> {
 export class ObjectStore {
   private tail: Promise<void> = Promise.resolve();
   private closed = false;
-  private constructor(private readonly root: string, private readonly token: string, private readonly index: Index, private readonly hasher: Hasher) {}
+  private closing?: Promise<void>;
+  private constructor(private readonly root: string, private readonly lease: ObjectOwnerLease, private readonly index: Index, private readonly hasher: Hasher) {}
 
   /** Claims a dedicated registered store directory; stale/foreign owners remain fail-closed. */
   static async open(root: string, index: Index, hasher: Hasher): Promise<ObjectStore> {
     let canonical: string;
     try { canonical = await guardDirectory(root); } catch { throw new ObjectError('OBJECT_IO'); }
-    const token = randomUUID();
-    let handle;
-    try { handle = await open(path.join(canonical, 'objects.owner.lock'), 'wx'); }
-    catch (error) { throw new ObjectError(hasCode(error, 'EEXIST') ? 'STORE_BUSY' : 'OBJECT_IO'); }
+    const lease = await ObjectOwnerLease.acquire(canonical);
     try {
-      await handle.writeFile(token); await handle.sync(); await handle.close();
+      await lease.verify();
       await directory(canonical, 'staging');
+      await lease.verify();
       await directory(await directory(canonical, 'objects'), 'sha256');
-      return new ObjectStore(canonical, token, index, hasher);
+      await lease.verify();
+      return new ObjectStore(canonical, lease, index, hasher);
     } catch (error) {
-      await handle.close().catch(() => {});
-      if (await ownsLease(path.join(canonical, 'objects.owner.lock'), token)) await unlink(path.join(canonical, 'objects.owner.lock'));
+      try { await lease.close(); }
+      catch (cleanup) { throw Object.assign(new ObjectError('NEEDS_RECOVERY'), { cause: new AggregateError([error, cleanup], 'OBJECT_OPEN_CLEANUP_FAILED') }); }
       throw error instanceof ObjectError ? error : new ObjectError('OBJECT_IO');
     }
   }
   private serial<T>(work: () => Promise<T>): Promise<T> {
+    if (this.closed || this.closing) return Promise.reject(new ObjectError('OBJECT_IO'));
     const pending = this.tail.then(async () => {
       if (this.closed) throw new ObjectError('OBJECT_IO');
-      try { await guardDirectory(this.root); return await work(); }
+      try { await this.lease.verify(); const result = await work(); await this.lease.verify(); return result; }
       catch (error) { throw error instanceof ObjectError ? error : new ObjectError(hasCode(error, 'NEEDS_RECOVERY') || hasCode(error, 'UNSAFE_PATH') ? 'NEEDS_RECOVERY' : 'OBJECT_IO'); }
     });
     this.tail = pending.then(() => {}, () => {}); return pending;
@@ -79,6 +81,7 @@ export class ObjectStore {
   createStaging(): Promise<{ id: string; file: string }> {
     return this.serial(async () => {
       await guardDirectory(path.join(this.root, 'staging'));
+      await this.lease.verify();
       const id = randomUUID(); const file = this.staging(id); const handle = await open(file, 'wx'); await handle.close();
       return { id, file };
     });
@@ -93,6 +96,7 @@ export class ObjectStore {
   }
   private async verify(file: string, expected: ExpectedArtifact, digest?: string): Promise<HashResult> {
     const bytes = await this.hasher.hash(file, { maximumBytes: 64 * 1024 ** 3 });
+    await this.lease.verify();
     const result = verifyArtifact(expected, bytes);
     if (!result.ok) throw new ObjectError('HASH_MISMATCH');
     if (digest !== undefined && bytes.sha256 !== digest) throw new ObjectError('NEEDS_RECOVERY');
@@ -123,12 +127,14 @@ export class ObjectStore {
   private async saveProof(digest: string, facts: ReturnType<typeof definition>): Promise<string> {
     const key = sourceKey(facts.expected, facts.anchor); const target = this.objectFile(digest);
     const proof: Provenance = { schemaVersion: 1, objectDigest: digest, ...facts };
+    await this.lease.verify();
     const sources = await directory(path.dirname(target), path.basename(target) + '.sources');
     const old = await this.proof(digest, key);
     if (!old) {
+      await this.lease.verify();
       const temporary = path.join(sources, `${randomUUID()}.tmp`); const handle = await open(temporary, 'wx');
       try { await handle.writeFile(JSON.stringify(proof) + '\n'); await handle.sync(); } finally { await handle.close(); }
-      await rename(temporary, path.join(sources, `${key}.json`));
+      await this.lease.verify(); await rename(temporary, path.join(sources, `${key}.json`));
     }
     return key;
   }
@@ -137,6 +143,7 @@ export class ObjectStore {
     return this.serial(async () => {
       const facts = definition(expected, anchor); const bytes = await this.verify(this.objectFile(digest), facts.expected, digest);
       const key = await this.saveProof(digest, facts); const object = { digest, size: bytes.size };
+      await this.lease.verify();
       await this.index.remember(key, object); return { ...object, sourceKey: key };
     });
   }
@@ -149,18 +156,24 @@ export class ObjectStore {
       if (!await exists(staging)) throw new ObjectError('INVALID_ARTIFACT');
       const observed = await this.verify(staging, facts.expected);
       const target = this.objectFile(observed.sha256);
+      await this.lease.verify();
       await directory(path.dirname(path.dirname(target)), observed.sha256.slice(0, 2));
       if (await exists(target)) {
         await this.verify(target, facts.expected, observed.sha256);
+        await this.lease.verify();
         await unlink(staging);
       } else {
         const handle = await open(staging, 'r+'); try { await handle.sync(); } finally { await handle.close(); }
+        await this.lease.verify();
         await rename(staging, target);
       }
+      await this.lease.verify();
       await chmod(target, 0o444);
       await checkpoint('object-committed');
+      await this.lease.verify();
       await this.saveProof(observed.sha256, facts);
       await checkpoint('proof-committed');
+      await this.lease.verify();
       const object = { digest: observed.sha256, size: observed.size };
       await this.index.remember(key, object);
       return { ...object, sourceKey: key };
@@ -169,7 +182,7 @@ export class ObjectStore {
   /** Rebuilds search hints from sidecars plus actual bytes. Orphan bytes are retained without acquiring trust. */
   rebuildIndex(): Promise<number> {
     return this.serial(async () => {
-      await this.index.clear(); let count = 0;
+      await this.index.clear(); await this.lease.verify(); let count = 0;
       const objects = path.join(this.root, 'objects', 'sha256'); await guardDirectory(objects);
       for (const prefix of await readdir(objects)) {
         if (!/^[a-f0-9]{2}$/.test(prefix)) throw new ObjectError('NEEDS_RECOVERY');
@@ -185,7 +198,7 @@ export class ObjectStore {
             const key = entry.slice(0, 64); const proof = await this.proof(digest, key);
             if (!proof) throw new ObjectError('NEEDS_RECOVERY');
             await this.verify(this.objectFile(digest), proof.expected, digest);
-            await this.index.remember(key, { digest, size: proof.expected.size }); count++;
+            await this.lease.verify(); await this.index.remember(key, { digest, size: proof.expected.size }); count++;
           }
         }
       }
@@ -194,14 +207,11 @@ export class ObjectStore {
   }
   /** Deletes one known staging entry, never an object or a linked target. */
   discardStaging(id: string): Promise<void> {
-    return this.serial(async () => { const file = this.staging(id); await guardDirectory(path.dirname(file)); if (await exists(file)) await unlink(file); });
+    return this.serial(async () => { const file = this.staging(id); await guardDirectory(path.dirname(file)); if (await exists(file)) { await this.lease.verify(); await unlink(file); } });
   }
   /** Releases this owner after all admitted commits finish. Does not close externally owned index/hasher. */
   close(): Promise<void> {
-    return this.serial(async () => {
-      const lease = path.join(this.root, 'objects.owner.lock');
-      if (!await ownsLease(lease, this.token)) throw new ObjectError('NEEDS_RECOVERY');
-      await unlink(lease); this.closed = true;
-    });
+    this.closing ??= this.tail.then(async () => { this.closed = true; await this.lease.close(); });
+    return this.closing;
   }
 }

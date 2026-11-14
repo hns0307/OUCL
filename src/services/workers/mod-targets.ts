@@ -22,7 +22,7 @@ export async function readModTargets(store: RecordStore, input: ModTargetsInput)
   const instance = await store.read(instanceRecordId(instanceId), parseInstanceRecord); checkBudget();
   if (!instance || instance.data.summary.instanceId !== instanceId || instance.data.summary.rootId.toLowerCase() !== rootId
     || instance.data.summary.revision !== instance.revision) throw new WorkerError('TARGET_OUT_OF_SCOPE');
-  const admissions = await store.readModTargetAdmissions(root.data.rootId, input.kinds); checkBudget();
+  const admissions = await store.readModTargetAdmissions(root.data.rootId, input.kinds, checkBudget); checkBudget();
   const items: ModTargets['items'] = [];
   if (input.kinds.includes('mod-check')) {
     const index = await store.read('mod-jobs', parseModJobs); checkBudget();

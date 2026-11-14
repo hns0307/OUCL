@@ -63,7 +63,10 @@ export function MaintenancePreviewPanel({ rootId, report, file, disabled }: { ro
       if (!result.ok) { observationError(result.error.code, result.error.messageKey); return; }
       // Query the terminal result, because completion can win the cancellation race.
       const latest = await window.oucl.maintenancePreviewStatus(snapshot.previewId);
-      if (latest.ok && (!latest.data.result || matches(latest.data.result))) setSnapshot(latest.data);
+      if (latest.ok && (!latest.data.result || matches(latest.data.result))) {
+        setSnapshot(latest.data);
+        if (latest.data.status !== 'queued' && latest.data.status !== 'running') setError(undefined);
+      }
       else if (!latest.ok) observationError(latest.error.code, latest.error.messageKey);
       else setError('unavailable');
     } catch { setError('unavailable'); } finally { setAccepting(false); }
@@ -96,7 +99,11 @@ export function MaintenancePreviewPanel({ rootId, report, file, disabled }: { ro
         {' · '}{issue.scope === 'local' ? MESSAGES.modsDeclaration : 'Modrinth'}
         {' · '}{issue.fileId ? names([issue.fileId]) : MESSAGES.modsEnvironment}
         {' · '}{MOD_ISSUE_MESSAGES[issue.code] ?? MESSAGES.modsUnknownReason}
-        {' '}<code>{issue.modId ?? issue.dependencyModId ?? issue.dependencyProjectId ?? issue.dependencyVersionId ?? issue.code}</code>
+        {issue.modId && <> · {MESSAGES.modsPreviewIssueMod} <code>{issue.modId}</code></>}
+        {issue.dependencyModId && <> · {MESSAGES.modsPreviewIssueDependency} <code>{issue.dependencyModId}</code></>}
+        {issue.dependencyProjectId && <> · {MESSAGES.modsPreviewIssueProject} <code>{issue.dependencyProjectId}</code></>}
+        {issue.dependencyVersionId && <> · {MESSAGES.modsPreviewIssueVersion} <code>{issue.dependencyVersionId}</code></>}
+        {!issue.modId && !issue.dependencyModId && !issue.dependencyProjectId && !issue.dependencyVersionId && <> · <code>{issue.code}</code></>}
         {issue.requirement && <> · {MESSAGES.modsRequirement} {issue.requirement}</>}
         {!!issue.actual.length && <> · {MESSAGES.modsActual} {issue.actual.join(', ')}</>}
         {issue.embeddedDepth > 0 && <> · {MESSAGES.modsPreviewEmbeddedDepth} {issue.embeddedDepth}</>}</li>)}</ul>}

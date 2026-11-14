@@ -22,7 +22,7 @@ function view(value: GameTaskView): InstanceData['tasks:get'] {
     revision: task.execution.revision, bytesDone: 0 };
   if (['failed', 'failing', 'needsRecovery'].includes(state)) {
     const reason = session.errors?.find(item => item.taskId === task.taskId)?.code;
-    const code: InstanceCode = reason === 'CANCELLED' ? 'LAUNCH_FAILED' : reason ?? (state === 'needsRecovery' ? 'NEEDS_RECOVERY' : 'LAUNCH_FAILED');
+    const code: InstanceCode = state === 'needsRecovery' ? 'NEEDS_RECOVERY' : reason === 'CANCELLED' ? 'LAUNCH_FAILED' : reason ?? 'LAUNCH_FAILED';
     const error = instanceFailure(randomUUID(), code, randomUUID()); if (!error.ok) snapshot.error = error.error;
   }
   return { snapshot, ...(state === 'completed' ? { result: task.kind === 'launch' ? { sessionId: session.taskId }

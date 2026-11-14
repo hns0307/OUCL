@@ -20,6 +20,7 @@ export function useGameSessions(enabled: boolean, rootId: string | undefined): S
 /** Uses existing task subscriptions for preparation, then real session facts for running/exit and explicit stop confirmation. */
 export function LaunchControls({ instance, accountId, current }: { instance: InstanceSummary; accountId: string | undefined; current: SessionSnapshot | undefined }) {
   const [pending, setPending] = useState(false); const [taskId, setTaskId] = useState<string>(); const [error, setError] = useState<MessageKey>();
+  const [recoveryBlocked, setRecoveryBlocked] = useState(false);
   const [local, setLocal] = useState<SessionSnapshot>(); const [confirmed, setConfirmed] = useState(false);
   const launchId = useRef<string | undefined>(undefined); const stopId = useRef<string | undefined>(undefined);
   const session = local && (!current || local.startedAt > current.startedAt || local.sessionId === current.sessionId && local.revision > current.revision) ? local : current;
@@ -31,11 +32,12 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
     const receive = (snapshot: TaskSnapshot): void => {
       if (!active || done || !['completed', 'failed', 'cancelled', 'needsRecovery'].includes(snapshot.state)) return;
       done = true; dispose?.(); clearInterval(timer);
+      if (snapshot.state === 'needsRecovery') { setRecoveryBlocked(true); setError('stageRecovery'); }
       void (async () => {
         const result = await bridge.getTask(taskId);
         if (result.ok && result.data.result && 'sessionId' in result.data.result) { const state = await bridge.getSession(result.data.result.sessionId); if (active && state.ok) setLocal(state.data); }
-        if (active) { setError(snapshot.error?.messageKey ?? (snapshot.state === 'cancelled' ? 'stageCancelled' : snapshot.state === 'needsRecovery' ? 'stageRecovery' : snapshot.state === 'failed' ? 'stageFailed' : undefined)); setPending(false); launchId.current = undefined; stopId.current = undefined; }
-      })().catch(() => { if (active) { setPending(false); setError('unavailable'); } });
+        if (active) { setError(snapshot.state === 'needsRecovery' ? 'stageRecovery' : snapshot.error?.messageKey ?? (snapshot.state === 'cancelled' ? 'stageCancelled' : snapshot.state === 'failed' ? 'stageFailed' : undefined)); setPending(false); launchId.current = undefined; stopId.current = undefined; }
+      })().catch(() => { if (active) { setPending(false); setError(snapshot.state === 'needsRecovery' ? 'stageRecovery' : 'unavailable'); } });
     };
     void bridge.subscribeTask(taskId, receive).then(subscription => {
       if (!active || done) { subscription.dispose(); return; } dispose = subscription.dispose;
@@ -45,7 +47,7 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
     return () => { active = false; dispose?.(); clearInterval(timer); };
   }, [taskId]);
   async function launch(): Promise<void> {
-    if (!window.oucl || !accountId || pending || busy) return; setPending(true); setError(undefined); launchId.current ??= crypto.randomUUID();
+    if (!window.oucl || !accountId || pending || busy || recoveryBlocked) return; setPending(true); setError(undefined); launchId.current ??= crypto.randomUUID();
     try { const result = await window.oucl.launchGame(launchId.current, { instanceId: instance.instanceId, accountId, expectedRevision: instance.revision });
       if (result.ok) setTaskId(result.data.taskId); else { setPending(false); setError(result.error.messageKey); if (result.error.code !== 'TIMEOUT') launchId.current = undefined; }
     } catch { setPending(false); setError('unavailable'); }
@@ -57,7 +59,7 @@ export function LaunchControls({ instance, accountId, current }: { instance: Ins
     } catch { setPending(false); setError('unavailable'); }
   }
   return <div className="launch-controls" data-game-state={session?.state ?? 'idle'}>
-    <button className="primary" disabled={pending || busy || !accountId} onClick={() => { void launch(); }}>{pending ? MESSAGES.launchPreparing : session?.state === 'running' ? MESSAGES.gameRunning : MESSAGES.launchGame}</button>
+    <button className="primary" disabled={pending || busy || recoveryBlocked || !accountId} onClick={() => { void launch(); }}>{pending ? MESSAGES.launchPreparing : session?.state === 'running' ? MESSAGES.gameRunning : MESSAGES.launchGame}</button>
     {!accountId && <span className="storage-note">{MESSAGES.chooseAccountFirst}</span>}
     {pending && (!session || session.state === 'exited') && <p className="storage-note" role="status">{MESSAGES.javaAutoPreparing}</p>}
     {session && !(session.state === 'exited' && (pending || error)) && <p role="status">{session.state === 'running' ? MESSAGES.gameRunning : session.state === 'stopping' ? MESSAGES.gameStopping : session.state === 'unknown' ? MESSAGES.gameUnknown : `${MESSAGES.gameExited}${session.exitCode === undefined ? '' : ` · ${MESSAGES.exitCode} ${session.exitCode}`}`}</p>}

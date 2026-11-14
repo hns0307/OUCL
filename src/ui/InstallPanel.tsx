@@ -43,7 +43,7 @@ function taskPool(bridge: InstanceBridge, rootId: string | undefined): TaskObser
       ?? instanceFailure<'tasks:get'>(crypto.randomUUID(), 'UNAVAILABLE', crypto.randomUUID()),
     subscribeTask: async (taskId, listener) => await rendererTaskReads.run(() => bridge.subscribeTask(taskId, listener), valid)
       ?? { result: instanceFailure<'tasks:subscribe'>(crypto.randomUUID(), 'UNAVAILABLE', crypto.randomUUID()), dispose: () => {} },
-  }); const visibility = (): void => { pool.setVisible(!document.hidden); };
+  }, bridge); const visibility = (): void => { pool.setVisible(!document.hidden); };
   visibility(); document.addEventListener('visibilitychange', visibility);
   observationContext = { bridge, rootId, pool, visibility }; return pool;
 }
