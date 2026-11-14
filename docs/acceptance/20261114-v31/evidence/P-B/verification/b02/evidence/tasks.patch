@@ -1,0 +1,33 @@
+diff --git "a/D:\\MC_start\\OUCL-download-main\\src\\services\\storage\\tasks.ts" "b/src\\services\\storage\\tasks.ts"
+index 5e96052..6d8a31b 100644
+--- "a/D:\\MC_start\\OUCL-download-main\\src\\services\\storage\\tasks.ts"
++++ "b/src\\services\\storage\\tasks.ts"
+@@ -35,22 +35,27 @@ export class TaskTable {
+   constructor(private readonly db: DatabaseSync) {}
+ 
+   /** Reads both sides of each requested domain's acceptance inventory without changing storage. */
+-  modTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[]): ModTargetAdmission[] {
++  modTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[], checkBudget?: () => void): ModTargetAdmission[] {
+     identity(ownerId);
+     if (kinds.length < 1 || kinds.length > 2 || new Set(kinds).size !== kinds.length
+       || kinds.some(kind => kind !== 'mod-check' && kind !== 'mod-install')) throw new StorageError('INVALID_RECORD');
+     const result: ModTargetAdmission[] = [];
+     const requestIds = new Set<string>();
+     for (const kind of kinds) {
++      checkBudget?.();
+       const requests = this.db.prepare('SELECT request_id, payload_digest, task_id FROM requests WHERE owner_id=? AND kind=? LIMIT 1001').all(ownerId, kind);
++      checkBudget?.();
+       const tasks = this.db.prepare('SELECT id FROM tasks WHERE owner_id=? AND kind=? LIMIT 1001').all(ownerId, kind);
++      checkBudget?.();
+       if (requests.length > 1000 || tasks.length > 1000 || requests.length !== tasks.length) throw new StorageError('NEEDS_RECOVERY');
+       const remaining = new Set<string>();
+       for (const row of tasks) {
++        checkBudget?.();
+         if (typeof row.id !== 'string' || !UUID_PATTERN.test(row.id) || remaining.has(row.id.toLowerCase())) throw new StorageError('NEEDS_RECOVERY');
+         remaining.add(row.id.toLowerCase());
+       }
+       for (const row of requests) {
++        checkBudget?.();
+         if (typeof row.request_id !== 'string' || !UUID_PATTERN.test(row.request_id)
+           || typeof row.payload_digest !== 'string' || !/^[a-f0-9]{64}$/.test(row.payload_digest)
+           || typeof row.task_id !== 'string' || !UUID_PATTERN.test(row.task_id)

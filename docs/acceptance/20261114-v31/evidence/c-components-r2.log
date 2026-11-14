@@ -1,0 +1,17 @@
+✔ first missing dependency (3.0508ms)
+✔ second missing dependency (0.312ms)
+✔ platform project and fixed version (0.2851ms)
+✔ successful cancel terminal query clears an earlier status timeout (0.5845ms)
+✔ cancel failure remains an alert (0.6419ms)
+✔ status failure remains an alert (0.4289ms)
+✔ mismatched completion remains an alert (0.1984ms)
+✔ completion wins cancel and clears old timeout (0.3762ms)
+✔ admission timeout retries the same identity (1.1685ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 423.0872

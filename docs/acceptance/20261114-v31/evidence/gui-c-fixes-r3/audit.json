@@ -1,0 +1,20 @@
+{
+  "checks": {
+    "unchanged_file_inventory": true,
+    "unchanged_durable_tasks": true,
+    "normal_exit_zero": true,
+    "actual_timeout_text": true,
+    "completed_labels_clear_old_timeout": true,
+    "platform_fixed_version_dom": true,
+    "seven_product_hashes_match": true
+  },
+  "file_count": 6,
+  "task_count": 4,
+  "limitations": [
+    "strict synthetic transport; not HTTP/public network",
+    "B fixed version supported by DOM/AX; screenshot lower rows cropped",
+    "status-timeout.png stale; timeout-refreshed.png is actual visible TIMEOUT",
+    "product pins precede B02/D01; not final EXE"
+  ],
+  "source_log_sha256": "61a98c0dc885e16b073782f39e0edfdf92fc9f4d3f9908d4a45dae8cfdba923b"
+}

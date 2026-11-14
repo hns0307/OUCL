@@ -52,8 +52,10 @@
 | [20261114-v29](20261114-v29/COORDINATION.md) | 统一复核及最小整改派发 | 静态确认、D-03快照限制和隔离候选 |
 | [20261114-v30](20261114-v30/REPORT.md) | 局部候选通过；统一回归未过，未合生产 | lint夹具问题、系统TMP路径拒绝、中断与恢复步骤 |
 
+| [20261114-v31](20261114-v31/REPORT.md) | 八项整改统一回归通过；产品层补证待续 | 691项687PASS/4SKIP；C实际窗口、精确源清单与分层限制 |
+
 版本规则：每次冻结有独立快照与SHA256清单；后续整改进入新快照，不修改已验证版本来追记通过。工作包报告属于来源证据；本目录报告只对所列冻结源码和实际命令负责。产品版本0.3.0、公共契约版本与验收快照v1/v2是不同维度。
 
-当前协调聊天负责最终合并清单和统一回归；两个审查聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
+当前协调聊天负责最终合并清单和统一回归；A–E五个专项聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
 
-当前接续位置为20261114-v24报告；精确交接见最新HANDOFF；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。
+当前接续位置为20261114-v31报告；精确交接见最新HANDOFF；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。

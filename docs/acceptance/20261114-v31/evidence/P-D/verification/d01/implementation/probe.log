@@ -1,0 +1,62 @@
+{
+  "lost": 1,
+  "failedGet": 5,
+  "failedSave": 1,
+  "spawn": 0,
+  "closed": true,
+  "beforeRestart": {
+    "task": {
+      "state": "needsRecovery",
+      "attempt": 1,
+      "lastSequence": 2,
+      "revision": 5,
+      "bytesDone": 0
+    },
+    "session": {
+      "rootId": "00000000-0000-4000-8000-000000000001",
+      "taskId": "00000000-0000-4000-8000-000000000002",
+      "spawned": false,
+      "stopTaskIds": [],
+      "snapshot": {
+        "sessionId": "00000000-0000-4000-8000-000000000002",
+        "instanceId": "00000000-0000-4000-8000-000000000003",
+        "state": "unknown",
+        "revision": 1,
+        "startedAt": "2026-11-14T14:20:48.116Z"
+      }
+    },
+    "cancel": "INVALID_TASK_STATE",
+    "duplicate": {
+      "taskId": "00000000-0000-4000-8000-000000000002"
+    }
+  },
+  "afterRestart": {
+    "task": {
+      "state": "needsRecovery",
+      "attempt": 1,
+      "lastSequence": 2,
+      "revision": 5,
+      "bytesDone": 0
+    },
+    "session": {
+      "rootId": "00000000-0000-4000-8000-000000000001",
+      "taskId": "00000000-0000-4000-8000-000000000002",
+      "spawned": false,
+      "stopTaskIds": [],
+      "snapshot": {
+        "sessionId": "00000000-0000-4000-8000-000000000002",
+        "instanceId": "00000000-0000-4000-8000-000000000003",
+        "state": "unknown",
+        "revision": 1,
+        "startedAt": "2026-11-14T14:20:48.116Z"
+      }
+    },
+    "cancel": "INVALID_TASK_STATE",
+    "duplicate": {
+      "taskId": "00000000-0000-4000-8000-000000000002"
+    }
+  }
+}
+{"initialization":"pass","casConflictRetry":"pass","activeJobGuard":"pass"}
+{"ownedProcessGuard":"pass"}
+{"saveFailureRetainedAndRecoveryContinues":true}

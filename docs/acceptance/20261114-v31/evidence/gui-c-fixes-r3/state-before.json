@@ -1,0 +1,60 @@
+{
+  "hashes": [
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\dep-e66acfc933f7cb4b01466d843e5255c23bfac36b-c362b1fd209ec84e95b86a972df668a7b1ba1485\\dep-e66acfc933f7cb4b01466d843e5255c23bfac36b-c362b1fd209ec84e95b86a972df668a7b1ba1485.jar",
+      "bytes": 61,
+      "sha256": "ceea9aba92c382f0dc748ddc742a1db09c7b320a1a4cf14a0d10953320646549"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\f484b51f-3b27-5d1c-88bc-b4b2aa41806c\\mods\\dependent.jar",
+      "bytes": 204,
+      "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\f484b51f-3b27-5d1c-88bc-b4b2aa41806c\\mods\\provider.jar",
+      "bytes": 388,
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\f51f0a92-bbbf-5609-9aad-1758227d9769\\mods\\dependent.jar",
+      "bytes": 211,
+      "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\f51f0a92-bbbf-5609-9aad-1758227d9769\\mods\\provider.jar",
+      "bytes": 694,
+      "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11"
+    },
+    {
+      "relative": "store\\views\\50000000-0000-4000-8000-000000000001\\libraries\\net\\fabricmc\\fabric-loader\\0.16.14\\fabric-loader-0.16.14.jar",
+      "bytes": 31,
+      "sha256": "174b76d230e22c18930973ec9754ae2d58b272c91faba9b0a083dc195cf53c28"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "2022ad5e-61f1-4497-ab07-f5950e44b947",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "install",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":7,\"revision\":9,\"bytesDone\":106,\"bytesTotal\":106}"
+    },
+    {
+      "id": "a1e12016-30ac-459f-b4d5-b83c444eff8b",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "cd656448-a591-4a1d-a724-16153432fb83",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "fc57a4af-761a-459d-b46f-120e243cdb21",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "install",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":5,\"revision\":7,\"bytesDone\":106,\"bytesTotal\":106}"
+    }
+  ]
+}

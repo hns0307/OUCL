@@ -1,0 +1,188 @@
+[
+  {
+    "path": "docs/contracts/OBJECT_OWNER_LEASE.md",
+    "baselineSha256": null,
+    "candidateSha256": "0f6b300c75ae5fe66e2c95ce3f9334b5ea3f1544cb1a858a0b6ec435eb80f670",
+    "gitNormalizedSha256": "0f6b300c75ae5fe66e2c95ce3f9334b5ea3f1544cb1a858a0b6ec435eb80f670"
+  },
+  {
+    "path": "src/ipc/game-adapter.ts",
+    "baselineSha256": "95b61f8ec1fe37be30eb69bff27fa5bedba697eb9d5dff1923d76ff5b76875e2",
+    "candidateSha256": "a3fd46048fe5d39374ce6f767c3e49a5201680c66b5cf4f80648a9f952d6e9f7",
+    "gitNormalizedSha256": "a3fd46048fe5d39374ce6f767c3e49a5201680c66b5cf4f80648a9f952d6e9f7"
+  },
+  {
+    "path": "src/services/install/installer.ts",
+    "baselineSha256": "61cc82b9efd6ccf284fce40e6f90afeb44243762472eeb191721275f668578fe",
+    "candidateSha256": "210def46d85fce870c2e47ea3fc34fc882612a55fedb00bbc1b3f5af96301ac6",
+    "gitNormalizedSha256": "210def46d85fce870c2e47ea3fc34fc882612a55fedb00bbc1b3f5af96301ac6"
+  },
+  {
+    "path": "src/services/launch/service.ts",
+    "baselineSha256": "1646843329cf4a1b555e0e5d1524074185a994d8a7542eebc05920083c15024a",
+    "candidateSha256": "214080d91810e4213a715042614e74114314faeb4d0b00b842d7dbb5fa917429",
+    "gitNormalizedSha256": "59f5e6da8f6e49f0296b6b733414bad9302a28c38d38ae31989ed20f5a281492"
+  },
+  {
+    "path": "src/services/objects/owner-lease.ts",
+    "baselineSha256": null,
+    "candidateSha256": "96ce29c44f86717dcebaf3f1da0019c9f376e790f689c671b06047e9060410b5",
+    "gitNormalizedSha256": "96ce29c44f86717dcebaf3f1da0019c9f376e790f689c671b06047e9060410b5"
+  },
+  {
+    "path": "src/services/objects/store.ts",
+    "baselineSha256": "d00a9c8f5fc41d7da5369e198cbe64ae22806518148cd0f6bc4ed454f8e9c43b",
+    "candidateSha256": "974c00c1fc27257da68c8aa29661a5dd0c26d104c742a35644500e9f88f1160c",
+    "gitNormalizedSha256": "974c00c1fc27257da68c8aa29661a5dd0c26d104c742a35644500e9f88f1160c"
+  },
+  {
+    "path": "src/services/storage/records.ts",
+    "baselineSha256": "d2d9b32eab8686bd6f084d07c6a131bd9b04505c91715946fa350ecab0513cdf",
+    "candidateSha256": "571ab94bd1850967bbc01b5ec344a99e5cb62296b65e0034ee2d73da75ecfe34",
+    "gitNormalizedSha256": "571ab94bd1850967bbc01b5ec344a99e5cb62296b65e0034ee2d73da75ecfe34"
+  },
+  {
+    "path": "src/services/storage/tasks.ts",
+    "baselineSha256": "d41a767585ea1ec1f9efdaa78a046d86a75ebb03bc506887e96c1b86802540ce",
+    "candidateSha256": "c21e7a016e253ea1adda0b384271a81b2761b534495140d4a569db1311a00a6e",
+    "gitNormalizedSha256": "c21e7a016e253ea1adda0b384271a81b2761b534495140d4a569db1311a00a6e"
+  },
+  {
+    "path": "src/services/workers/mod-targets.ts",
+    "baselineSha256": "c84381f0c29d1abfc6140e0e8db257e924cf5f3da5349f69a28b128723108812",
+    "candidateSha256": "acc02b9254b20532b2f29f70c5e83f86928cd0e797bd01d2d54f5de5add2df7d",
+    "gitNormalizedSha256": "acc02b9254b20532b2f29f70c5e83f86928cd0e797bd01d2d54f5de5add2df7d"
+  },
+  {
+    "path": "src/shared/locales/messages.ts",
+    "baselineSha256": "8ba6a21ad4da2754cb20406be0db2f62210b280cbfcdd4ead12de5709cc2884f",
+    "candidateSha256": "fe0f7da08e56c6101f476832bb11fca8e7a6598fe3fb094d6573b949580812e2",
+    "gitNormalizedSha256": "fe0f7da08e56c6101f476832bb11fca8e7a6598fe3fb094d6573b949580812e2"
+  },
+  {
+    "path": "src/ui/InstallPanel.tsx",
+    "baselineSha256": "0baee89e6dd9ae09427b28a5ea43a6cff03d72dfc88bea35d6e33f05980405af",
+    "candidateSha256": "cae2f4d812e613e58efe0cb44f8ee2467c5c24b301269abd3a5d62c62d9205bb",
+    "gitNormalizedSha256": "cae2f4d812e613e58efe0cb44f8ee2467c5c24b301269abd3a5d62c62d9205bb"
+  },
+  {
+    "path": "src/ui/LaunchControls.tsx",
+    "baselineSha256": "404aabae835decb10084fef3dd35347cabc3f9ff6f5d60e748cee176cdd0bbf1",
+    "candidateSha256": "477fc5bbc5e276c889e559d61e92cfe859f9d6276649212ddae523bfe1c9cd56",
+    "gitNormalizedSha256": "477fc5bbc5e276c889e559d61e92cfe859f9d6276649212ddae523bfe1c9cd56"
+  },
+  {
+    "path": "src/ui/MaintenancePreviewPanel.tsx",
+    "baselineSha256": "51d7ab709a553aa5ace77ac7033c13aa08f638b0cf2292f388544d5c88b7fd8b",
+    "candidateSha256": "1361ad25a2c1366147dd6e2d92cc989137710c468bb8c2db9d8bc7f979df2fcb",
+    "gitNormalizedSha256": "1361ad25a2c1366147dd6e2d92cc989137710c468bb8c2db9d8bc7f979df2fcb"
+  },
+  {
+    "path": "src/ui/task-observer.ts",
+    "baselineSha256": "5aa4b350ad8733f83527c6fc4754fdc157c773fe0ba71627a549df8c6dae2fa6",
+    "candidateSha256": "6389279f1129064ea988bf2b75f38cbc6b2cf7c985580bc33418d948374ab05b",
+    "gitNormalizedSha256": "6389279f1129064ea988bf2b75f38cbc6b2cf7c985580bc33418d948374ab05b"
+  },
+  {
+    "path": "tests/components/launch-recovery/README.md",
+    "baselineSha256": null,
+    "candidateSha256": "1bd18715c24606a778184693ee07fdc6a98b914c443baf36bf012564135799d9",
+    "gitNormalizedSha256": "e8fef250690c97e178774bc7df2b7c126b74b6348fc142c1dba32f93ff7768b2"
+  },
+  {
+    "path": "tests/components/launch-recovery/jsx-shim.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "29cddf664d8806e54408b2a886bd4c4e92fbe76957db249ca4c76bc7341af5dd",
+    "gitNormalizedSha256": "3fe85fe2e5091eca97a4ba35a21fb2089bb2da3b309d02bade1fc01830ba1d92"
+  },
+  {
+    "path": "tests/components/launch-recovery/probe.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "69482cd5b41c390d5a59ee7a52387420d126c7b852d5252f33848c4ec8def9a5",
+    "gitNormalizedSha256": "d0b47ccbb400e4200ee7ebf1e7367f33d1650aeae3d234ae23d886908a5b2b5c"
+  },
+  {
+    "path": "tests/components/launch-recovery/react-shim.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "47ddbc92d5af7391c4bedb07a9b018e100b76a792556997ab0e356a74a4acd7f",
+    "gitNormalizedSha256": "4f833f036a905302d7679ec91f9cfd8e60d012a00008e56e5ba3ba509299ecd2"
+  },
+  {
+    "path": "tests/components/launch-recovery/run.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "219bd24dc433ebf3734f8a9e730f62b29c5dd1fb5da5e828bd9c9708f2d8f39e",
+    "gitNormalizedSha256": "e5b8d83d22eb6e1d7f1ed2dcbae4dbefcc1f69042bc19330f7f05a963b4f2ff8"
+  },
+  {
+    "path": "tests/components/maintenance-preview/component-harness.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "93824a9e0d8abe691b6056053430eddfb7350f61583417a7bf33146483192c23",
+    "gitNormalizedSha256": "192c1e78db6672f9e3ad77797842677d7d83d4f2a5891d40117cc04b698a6efd"
+  },
+  {
+    "path": "tests/components/maintenance-preview/jsx-stub.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "667d59d2188c6138af7d465f280a9599c5cd473b781cf8fb33838a096f9b6fd3",
+    "gitNormalizedSha256": "c269d711d7fd60ab16336675447570c7b1975bff27dd5042454c020a1e013e61"
+  },
+  {
+    "path": "tests/components/maintenance-preview/react-stub.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "f1f47a6879e64bf2b2eca75279402e85bf17d280328cb134ca4b641f14b24bef",
+    "gitNormalizedSha256": "04b93a1cdf81c5332e740604900ba5f9870120c15f809b48cfc56ecfd0a1e43c"
+  },
+  {
+    "path": "tests/fixtures/launch-storage-recovery/budget-probe.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "3d4bd69e26779ff1c4329c6a4f1d16adcd0bb7e8371bee2a60a3fefcc4b661cd",
+    "gitNormalizedSha256": "8212772601c028ce07dc69bbab5666fdd8deed9159d2c9bb4d26aaaa9e974d26"
+  },
+  {
+    "path": "tests/fixtures/launch-storage-recovery/probe.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "155c795d179211c2fc9f4250aaca04556a88d0b12b35fcd68e3f3b1fa6fe9209",
+    "gitNormalizedSha256": "99a9ace270ba926f5a9960e72210986c5f6c475d72d89ddd0ccb37cbbccef358"
+  },
+  {
+    "path": "tests/fixtures/object-owner-child.ts",
+    "baselineSha256": null,
+    "candidateSha256": "db99fa6b9ad16b19a3249f8e2e378281e7a3156a769e7fa6feeddd13937373a7",
+    "gitNormalizedSha256": "db99fa6b9ad16b19a3249f8e2e378281e7a3156a769e7fa6feeddd13937373a7"
+  },
+  {
+    "path": "tests/fixtures/task-target-deadline-worker.ts",
+    "baselineSha256": null,
+    "candidateSha256": "bbc2dd10ecaee25a322755cf5e84d81b570ee1a60cf464f22d0a94206d490fbf",
+    "gitNormalizedSha256": "69aa43a893a1a6f866259324d51a02b8a14691b3e472ae5a4639b4724b50c772"
+  },
+  {
+    "path": "tests/installer-runtime-retry.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "b26c6a00ee849c9461270bf701edaffa198c0ee102d322bc04a69bc3b6e78edb",
+    "gitNormalizedSha256": "b26c6a00ee849c9461270bf701edaffa198c0ee102d322bc04a69bc3b6e78edb"
+  },
+  {
+    "path": "tests/launch-storage-recovery.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "b29cb80b044cb22e6e20f4e7a5f6b350145c29ea6fccf1193514c10338b1e36d",
+    "gitNormalizedSha256": "dd81077ef0cbbe059c3ab94a0f8df52cfea2fe12e1af15a0d3b2d9a8a67a61fa"
+  },
+  {
+    "path": "tests/object-owner-lease.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "2be74239fd36f08e2ba1386a017d994aa5b704a0671ecb7d060a4b81b746078c",
+    "gitNormalizedSha256": "2be74239fd36f08e2ba1386a017d994aa5b704a0671ecb7d060a4b81b746078c"
+  },
+  {
+    "path": "tests/task-observer.test.ts",
+    "baselineSha256": "a457af3ec6303b5390e1f7e89910e4da7a7e12ec7fbca3e79e6e64ec06bb0d83",
+    "candidateSha256": "3ee34c93e072171f5cc3c323cb6e967e4a109a032d9e9609672248c7e3b3fbde",
+    "gitNormalizedSha256": "3ee34c93e072171f5cc3c323cb6e967e4a109a032d9e9609672248c7e3b3fbde"
+  },
+  {
+    "path": "tests/task-target-deadline.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "a9963039fd950fe9889f4d2b6bfb65635a27f3fc9948391b231091c306788e8d",
+    "gitNormalizedSha256": "5a114942488017cf78a114e1ad030163495189427d4433298643ae8f89d68e4b"
+  }
+]

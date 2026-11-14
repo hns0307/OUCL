@@ -1,0 +1,12 @@
+✔ fixed preview is unknown and does not grant install permission (1.1517ms)
+✔ protocol rejects paths and forged worker replies (0.3605ms)
+✔ real worker accepts fixed bytes and rejects a different archive (215.3713ms)
+✔ worker exit, duplicate messages, cancellation and deadlines are enforced (174.3967ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 478.6917
