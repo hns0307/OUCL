@@ -1,0 +1,35 @@
+{
+  "status": "LIMITED_PASS",
+  "verification": "Receipt identity/delivery checks PASS; DOM TIMEOUT, manual cancel/query and result visibility require separate screenshot/log review.",
+  "admissions": 1,
+  "holds": [
+    {
+      "channel": "mods:maintenancePreviewStatus",
+      "previewId": "a6dbaf76-18ff-458f-81c5-627c5d504c37",
+      "status": "completed"
+    },
+    {
+      "channel": "mods:maintenancePreviewCancel",
+      "previewId": "a6dbaf76-18ff-458f-81c5-627c5d504c37",
+      "status": "completed"
+    }
+  ],
+  "exit": {
+    "time": "2026-11-13T17:34:16.515Z",
+    "monoMs": 152694.9748,
+    "kind": "exit",
+    "code": 0
+  },
+  "domSnapshots": 7,
+  "screenshotPins": {
+    "cancel-timeout.png": "7178f8b311e9ea2f26c8459ca4741253ab401a352a606d07b84cf5162901645c",
+    "status-timeout.png": "7178f8b311e9ea2f26c8459ca4741253ab401a352a606d07b84cf5162901645c",
+    "requery-completed.png": "5aef2fea3f834930cb63d68c99df98f1f11a72980f15bc37ca95eaefccccba0c"
+  },
+  "layers": {
+    "receipt": "independently checked original identities, two completed results, unchanged delivery and late same-ID query",
+    "dom": "original DOM snapshots recorded; screenshot interpretation and six JAR/five task comparison supplied by coordinator",
+    "secondTimeout": "inferred from disabled-to-enabled cancel button, actual 8-second hold and original 3-second preload budget; old timeout wording persisted",
+    "profileUnchanged": "coordinator reports six JAR/five task comparison unchanged; not independently recomputed here"
+  }
+}

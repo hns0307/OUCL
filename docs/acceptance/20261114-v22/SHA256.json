@@ -1,0 +1,62 @@
+[
+  {
+    "path": "evidence/c-worker-cancel-v20/audit.json",
+    "bytes": 2022,
+    "sha256": "5108688f4a46c8a5e6c62f2a69b09a088c618d7ace0d48fc17bef6a99766e8fb"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/AUDIT.md",
+    "bytes": 3049,
+    "sha256": "86aa3e7a8a489fe38de6ea073e16b89b5dd5044ae950b3cae7c3f003798010e8"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/cancelled.png",
+    "bytes": 290381,
+    "sha256": "b9720e18e71c2ff7d3bf4405459ab2346dd29e0790f2acb6c6c06925084a0891"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/keepalive.cjs",
+    "bytes": 586,
+    "sha256": "2b01385cadc49545a5729b4fc7519831b59d6f2eb4db4fca5e0f0d192833171c"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/next-completed.png",
+    "bytes": 299251,
+    "sha256": "31581f2685a4a9fe591cea16d3d7eac4af5961eba0b041f43205ef0af3ec7109"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/README.md",
+    "bytes": 2875,
+    "sha256": "0d53926c8371bc899b8d510056d20f731216ea5b8d534d51a201a1c03792142c"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/verified-product.json",
+    "bytes": 900,
+    "sha256": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/window.cjs",
+    "bytes": 4365,
+    "sha256": "d0c8061e9c4cf8501c9f9604e6ac0aa60265ce41afbad8e1e39ac94a2578d893"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/window.jsonl",
+    "bytes": 34865,
+    "sha256": "626cba39e3a4d7f7209c691f35aef900c398e1038064ab5486a55b8bac371cf9"
+  },
+  {
+    "path": "evidence/c-worker-cancel-v20/worker-private.jsonl",
+    "bytes": 94,
+    "sha256": "c425ea0997dbb3278c54f4576b805f6562cf659980ee62ee9f7c100a1712c8d0"
+  },
+  {
+    "path": "evidence/state-v22-worker-after.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  },
+  {
+    "path": "evidence/state-v22-worker-before.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  }
+]

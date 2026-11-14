@@ -1,0 +1,67 @@
+[
+  {
+    "path": "evidence/c-r5-cancel-v21/audit.cjs",
+    "bytes": 4894,
+    "sha256": "0969f2291154697dd03ad8c64134da390275d176707b96b8f3f80300b8a9f6a5"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/audit.json",
+    "bytes": 2433,
+    "sha256": "30c3769402ea4542c473249f2e8ed59866ecc04c61f2d6e7cb0dcc47e014185f"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/AUDIT.md",
+    "bytes": 1286,
+    "sha256": "4813b24177c8875ffc8ca473ec950423853a297b0573e9d1fe5b7e625033f547"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/b-after-late.png",
+    "bytes": 293589,
+    "sha256": "cbf912bc4acfc8642384ae3f9a89f89df3810b4a8ff59793dddba8d389040988"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/first-admission.json",
+    "bytes": 470,
+    "sha256": "a1fa8a5014fab27b8cb24361d72de73f2530839f24f7fc16558ea5c50f5ed427"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/prepare.cjs",
+    "bytes": 417,
+    "sha256": "bc2cc6c65f5e86311c83b09b68e6edc1ea3f1ec3165602a73c9f8dfa3ffe7cb8"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/README.md",
+    "bytes": 1150,
+    "sha256": "aa3d981f36655cb20acfcba32a438be9a194d44b363559c113c436aa2e5b43af"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/verification.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/verified-product.json",
+    "bytes": 900,
+    "sha256": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/window.cjs",
+    "bytes": 5661,
+    "sha256": "bdba74ec55d3b96dc5b4953dd384579b07dc9f982fed1e0191417ec63d7b15ec"
+  },
+  {
+    "path": "evidence/c-r5-cancel-v21/window.jsonl",
+    "bytes": 25443,
+    "sha256": "dc5e0d3d49648d41215a4ed7093d040be9c6544bf477d637fd2d98778205def7"
+  },
+  {
+    "path": "evidence/state-v23-cancel-late-after.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  },
+  {
+    "path": "evidence/state-v23-cancel-late-before.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  }
+]

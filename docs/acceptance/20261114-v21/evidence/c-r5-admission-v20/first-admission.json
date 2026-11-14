@@ -1,0 +1,12 @@
+{
+  "requestId": "9baadfb6-c752-4b06-97e8-54c76cd7eb0a",
+  "previewId": "220ca1ee-35df-46b9-9476-c7428b5c19df",
+  "input": {
+    "rootId": "40000000-0000-4000-8000-000000000001",
+    "instanceId": "40000000-0000-4000-8000-000000000002",
+    "expectedRevision": 1,
+    "expectedFingerprint": "69ec7251c5fddc948157683f22029b83036464aa12d9f6cf3846f16d84cc2f36",
+    "fileId": "5da4231cf237720955df0df9428eb534720d4b54df77edce98aca0f1c6b6014c",
+    "action": "disable"
+  }
+}

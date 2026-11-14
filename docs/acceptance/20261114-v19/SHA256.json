@@ -1,0 +1,72 @@
+[
+  {
+    "path": "evidence/c-cancel-receipt-v19/audit.json",
+    "bytes": 1528,
+    "sha256": "c1fa1a0cd7411cd00f11250e76207b559dac1419a1e7f0ae6e2461c389dd3dc0"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/AUDIT.md",
+    "bytes": 630,
+    "sha256": "745d0a4fa299f48d2e29d1e6eccbfca0e03b15d93b2ff6713f29f156743bce34"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/cancel-timeout.png",
+    "bytes": 312607,
+    "sha256": "7178f8b311e9ea2f26c8459ca4741253ab401a352a606d07b84cf5162901645c"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/first-admission.json",
+    "bytes": 470,
+    "sha256": "615ab1c432b7d3d65e42b41da61dbbb7e516c7b4d5151d91bb5c490728a815d2"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/README.md",
+    "bytes": 2158,
+    "sha256": "92878ca1d92ee91adbfa4f16a987334e152e4d9b68e02663c0970038fc51895b"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/requery-completed.png",
+    "bytes": 516626,
+    "sha256": "5aef2fea3f834930cb63d68c99df98f1f11a72980f15bc37ca95eaefccccba0c"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/status-timeout.png",
+    "bytes": 312607,
+    "sha256": "7178f8b311e9ea2f26c8459ca4741253ab401a352a606d07b84cf5162901645c"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/verification.log",
+    "bytes": 134,
+    "sha256": "71647221bbee368812ea6ff9d04456204b58eb6148211f5abde0b75560c4454f"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/verified-product.json",
+    "bytes": 900,
+    "sha256": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/verify.cjs",
+    "bytes": 1739,
+    "sha256": "abd1da147d07b7491e808332af1b525867e322159796643884861077e6579c46"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/window.cjs",
+    "bytes": 5544,
+    "sha256": "3b618988b4568645dbc065b12c040c19309180fc5259ad24cc90995a0e98502d"
+  },
+  {
+    "path": "evidence/c-cancel-receipt-v19/window.jsonl",
+    "bytes": 27437,
+    "sha256": "82907829f967066d24fd129030cde068d633740210d6b0578c16aa1655212f48"
+  },
+  {
+    "path": "evidence/state-v19-cancel-receipt-after.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  },
+  {
+    "path": "evidence/state-v19-cancel-receipt-before.json",
+    "bytes": 2947,
+    "sha256": "54022a3779ed8cc3ebfcfcaed6bec28c0f4d519ad6add6d6bca2cc4fea01653d"
+  }
+]
