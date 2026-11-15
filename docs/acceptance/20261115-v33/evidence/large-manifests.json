@@ -1,0 +1,20 @@
+[
+  {
+    "path": "D:\\MC_start\\OUCL-review-round-20261114\\P-A\\verification\\v33-game-preparation\\copy-plan.json",
+    "bytes": 8079023,
+    "sha256": "739be355aea44fe9f3377eb4a66467ece62c7b7d85a3c8e7dfd197445e7da69d",
+    "storage": "retained in exclusive preparation directory; not copied into Git"
+  },
+  {
+    "path": "D:\\MC_start\\OUCL-review-round-20261114\\P-A\\verification\\v33-game-preparation\\copy-results.jsonl",
+    "bytes": 10140879,
+    "sha256": "29a19764a15c11cbbc00cfa77c3dec72221875c69d0df4eda3e6778c94e04ee6",
+    "storage": "retained in exclusive preparation directory; not copied into Git"
+  },
+  {
+    "path": "D:\\MC_start\\OUCL-review-round-20261114\\P-A\\verification\\v33-game-preparation\\copy-manifest.json",
+    "bytes": 10787135,
+    "sha256": "e1c077ef7021482487bf9a1f13d8f94b9ab6753f1821f776d11762e51d538f44",
+    "storage": "retained in exclusive preparation directory; not copied into Git"
+  }
+]

@@ -1,0 +1,11 @@
+import {readFile,writeFile} from 'node:fs/promises';
+const report='D:/MC_start/OUCL-review-round-20261114/P-A/verification/v33-game-preparation';
+let script=await readFile('D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/game-data/audit.mjs','utf8');
+script=script.replaceAll("'./compiled/src/","'file:///D:/MC_start/OUCL-remediation-20261114-r1/acceptance-results/full-r3/.test-build/src/");
+script=script.replace("const target = path.join(here, 'isolated');","const target = 'D:/MC_start/OUCL-acceptance-v33-20261114/game-data';");
+const start=script.indexOf('const frozen =');
+const end=script.indexOf('const result =',start);
+script=script.slice(0,start)+`const frozen = JSON.parse(await readFile(path.join(here,'production-seven-sha256.json')));\nfor (const f of frozen.outputs) assert.equal(await hash(path.join('D:/MC_start/OUCL-remediation-20261114-r1',f.path)), f.sha256);\n`+script.slice(end);
+script=script.replace('frozen.files.length','frozen.outputs.length');
+await writeFile(report+'/audit.mjs',script,{flag:'wx'});
+console.log('audit script persisted');

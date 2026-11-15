@@ -1,0 +1,79 @@
+{
+  "profile": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\profile",
+  "dataDirectory": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\games",
+  "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+  "account": {
+    "accountId": "79d07b86-cc2a-44cf-8ed9-8fb01ff67142",
+    "displayName": "A v33 coexistence",
+    "gameName": "OUCLAV33",
+    "uuid": "eb9fae44-8c3b-34d9-a857-fd7dde9c6685"
+  },
+  "java": {
+    "javaId": "1e2bc592-2f13-4396-8924-19bbe1fc8d6f",
+    "executable": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\java17\\bin\\java.exe",
+    "major": 17,
+    "version": "17.0.15",
+    "vendor": "Microsoft"
+  },
+  "instances": [
+    {
+      "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+      "displayName": "PA-v16-Vanilla",
+      "revision": 62,
+      "jar": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\games\\roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\24871144-2454-505b-92aa-2741ccb05834\\24871144-2454-505b-92aa-2741ccb05834.jar",
+      "indexes": [
+        "indexes/5.json"
+      ],
+      "nativeFiles": 18,
+      "inventoryFingerprint": "1317bd858338a4a930f87d2d6397757777c32af8f027ce2be5949bfa3e40b0c2",
+      "localState": "satisfied",
+      "mods": []
+    },
+    {
+      "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "displayName": "PA-v17-Fabric",
+      "revision": 64,
+      "jar": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\games\\roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838.jar",
+      "indexes": [
+        "indexes/5.json"
+      ],
+      "nativeFiles": 18,
+      "inventoryFingerprint": "b5bf8ad287773e3b3e16b07424ad4187e0bf017870d68fcc25ea55cf181a1f11",
+      "localState": "satisfied",
+      "mods": [
+        {
+          "filename": "ferritecore-6.0.1-fabric.jar",
+          "sha256": "c7ba1118a05b2da900d1c369fbe1017a3e3ec3cafe5e51398b851279b9becf24"
+        }
+      ]
+    },
+    {
+      "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "displayName": "PA-v21-Quilt",
+      "revision": 63,
+      "jar": "D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\games\\roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250.jar",
+      "indexes": [
+        "indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json"
+      ],
+      "nativeFiles": 18,
+      "inventoryFingerprint": "27f192b143677d494bd19c2b8692232d32b869da172dca8a1653b6e3f4f3851d",
+      "localState": "satisfied",
+      "mods": []
+    }
+  ],
+  "copiedFiles": 15387,
+  "copiedBytes": 1881117097,
+  "rebuiltProvenanceEntries": 7302,
+  "history": {
+    "snapshot": {
+      "tasks": 21,
+      "requests": 21,
+      "operations": 640,
+      "allCommitted": true,
+      "activeTasks": 0,
+      "matchedRecords": 18
+    },
+    "note": "Genuine historical tasks/sessions/committed transactions retained as history, not new launch success. Failed historical instance JSON preserved but target selection index contains only the three approved ready instances."
+  },
+  "scope": "Preparation only, no GUI/Minecraft started, no source paths modified, no download evidence."
+}

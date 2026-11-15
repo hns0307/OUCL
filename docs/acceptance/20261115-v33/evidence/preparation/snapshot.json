@@ -1,0 +1,10 @@
+{
+  "tasks": 21,
+  "requests": 21,
+  "operations": 640,
+  "allCommitted": true,
+  "activeTasks": 0,
+  "matchedRecords": 18,
+  "method": "node:sqlite backup of read-only connection; JSON commit points and full operation chain verified",
+  "targetDatabaseSha256": "ac2a761c84defebafc9a608a9d1e49d6df4fc2a4f69b334348ce14c5b610aa67"
+}
