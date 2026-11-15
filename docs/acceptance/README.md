@@ -58,8 +58,10 @@
 
 | [20261115-v33](20261115-v33/REPORT.md) | 新EXE三实例真实菜单/自然exit0；启动器重开待补 | 原版、Fabric/FerriteCore、Quilt；系统焦点阻挡正常关闭 |
 
+| [20261115-v34](20261115-v34/REPORT.md) | 独立收尾复核回交；正常重开待补 | 13生产源/最终包证据链与有限接纳、缺证、排除清单 |
+
 版本规则：每次冻结有独立快照与SHA256清单；后续整改进入新快照，不修改已验证版本来追记通过。工作包报告属于来源证据；本目录报告只对所列冻结源码和实际命令负责。产品版本0.3.0、公共契约版本与验收快照v1/v2是不同维度。
 
 当前协调聊天负责最终合并清单和统一回归；A–E五个专项聊天只修改明确分配的报告或隔离整改文件。未经统一回归的修改不得列为可合并。
 
-当前接续位置为20261115-v33报告；精确交接见最新HANDOFF；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。
+当前接续位置为20261115-v34报告；精确交接见最新HANDOFF；v1保留失败证据，v2保留完整别名候选。方案版本入口：B `task-targets.v1`见`../work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md`及`APPROVAL_T1.md`；C只读预览见`../work-packages/P-C/PREVIEW-CONTRACT-20261111.md`和v1目录BC审查；D内部首片见`../work-packages/P-D/IMPLEMENTATION-20261111.md`；E `packs.fixed-preview.v1`见`../work-packages/P-E/E2-IMPLEMENTATION-20261111.md`及`E2-REOPEN-20261111.md`。A/D/E详细历史版本索引见v1目录ADE审查。历史PENDING/未接线段落按日期保留，后继真实批准和冻结代码优先。

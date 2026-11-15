@@ -1,0 +1,17 @@
+[
+  {
+    "path": "evidence/.gitattributes",
+    "bytes": 8,
+    "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+  },
+  {
+    "path": "evidence/REVIEW.md",
+    "bytes": 6012,
+    "sha256": "66a32e83561c70afef39734073af9fdbdd5f11d2ade07f06dbc80d4f75bf2593"
+  },
+  {
+    "path": "evidence/source-sha256.txt",
+    "bytes": 1850,
+    "sha256": "7ec1fdc0cffde3df0235d4272840ae1debd65917969e31ab2331a5a06f2d0647"
+  }
+]
