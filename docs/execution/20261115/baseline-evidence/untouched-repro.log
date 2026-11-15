@@ -1,0 +1,52 @@
+鉁?production HTTPS policy can be exercised through a local HTTP fetch adapter (51.0513ms)
+鉁?real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (35.9673ms)
+鉁?add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1338.8399ms)
+鈩?tests 3
+鈩?suites 0
+鈩?pass 0
+鈩?fail 3
+鈩?cancelled 0
+鈩?skipped 0
+鈩?todo 0
+鈩?duration_ms 1618.5023
+
+鉁?failing tests:
+
+test at .test-build\tests\download-http.test.js:250:1
+鉁?production HTTPS policy can be exercised through a local HTTP fetch adapter (51.0513ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at HttpTransfer.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/http.js:242:58)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-http.test.js:270:5
+      at async fixture (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-http.test.js:35:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\download-parallel.test.js:46:1
+鉁?real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (35.9673ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/parallel-http.js:47:115
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async RequestBudget.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/request-budget.js:17:14)
+      at async ParallelHttpTransfer.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/parallel-http.js:29:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-parallel.test.js:71:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:494:1
+鉁?add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1338.8399ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:498:21)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'SCAN_FAILED'
+  }

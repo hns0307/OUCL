@@ -4,6 +4,7 @@ import type { MessageKey } from '../shared/locales/messages.js';
 import type { InstallStage, InstanceBridge, TaskSnapshot } from '../shared/contracts/instances.js';
 import { TaskObserverPool } from './task-observer.js';
 import type { TaskObservation } from './task-observer.js';
+import { canRequestTaskCancellation } from './task-controls.js';
 import { rendererTaskReads } from './task-query.js';
 import { instanceFailure } from '../shared/contracts/instances.js';
 import { useLauncher } from './launcher-state.js';
@@ -65,12 +66,13 @@ export function InstallTask({ initial, onSettled }: { initial: TaskSnapshot; onS
   useEffect(() => { if (terminal(snapshot)) onSettled(snapshot); }, [snapshot.state, onSettled]);
   async function cancel(): Promise<void> {
     if (!window.oucl || cancelling) return; setCancelling(true); setError(undefined);
-    const result = await window.oucl.controlTask(snapshot.taskId, 'cancel');
-    if (!result.ok) { setError(result.error.messageKey); setCancelling(false); }
+    try { const result = await window.oucl.controlTask(snapshot.taskId, 'cancel');
+      if (!result.ok) { setError(result.error.messageKey); setCancelling(false); }
+    } catch { setError('unavailable'); setCancelling(false); }
   }
   return <article className="install-task" data-task-id={snapshot.taskId} data-task-state={snapshot.state}>
     <div className="task-heading"><strong>{MESSAGES[taskLabel(snapshot)]}</strong>
-      {!terminal(snapshot) && <button disabled={cancelling || snapshot.state === 'committing' || snapshot.state === 'cancelling'} onClick={() => { void cancel(); }}>{MESSAGES[snapshot.kind === 'install' ? 'cancelTask' : 'taskCancelGeneric']}</button>}
+      {canRequestTaskCancellation(snapshot, observation.connection) && <button disabled={cancelling} onClick={() => { void cancel(); }}>{MESSAGES[snapshot.kind === 'install' ? 'cancelTask' : 'taskCancelGeneric']}</button>}
     </div>
     {snapshot.bytesTotal !== undefined && <><progress max={snapshot.bytesTotal || 1} value={snapshot.bytesDone} /><p className="storage-note">{MESSAGES.preparedBytes} {bytes(snapshot.bytesDone)} / {bytes(snapshot.bytesTotal)}</p></>}
     {(cancelling || snapshot.state === 'cancelling') && !terminal(snapshot) && <p role="status">{MESSAGES[snapshot.kind === 'install' ? 'cancellingTask' : 'taskCancellingGeneric']}</p>}

@@ -1,0 +1,19 @@
+PASS 1: loading disables appearance edits
+PASS 2: saving disables appearance edits
+PASS 3: no preview cannot be saved
+PASS 4: defaults create a preview
+PASS 5: pending preview can be saved explicitly
+PASS 6: child Escape does not cancel the panel
+PASS 7: panel Escape cancels its preview
+PASS 8: picker rejection renders a controlled error
+PASS 9: unread settings do not show a missing-configuration checklist or trigger reads
+PASS 10: skip collapses the guide
+PASS 11: guide can be reopened
+PASS 12: explicit retry runs exactly one read callback
+PASS 13: old read error is shown as its controlled message
+PASS 14: read error does not also report ongoing initial loading
+PASS 15: successful retry clears the parent-controlled old error
+PASS 16: retry rejection renders a controlled fallback error
+PASS 17: rejected retry releases its busy state
+PASS 18: retry after a rejection remains usable and clears its local error
+{"checks":18,"failed":0,"kind":"controlled hook/JSX fixture; no React effects, real browser or IPC"}

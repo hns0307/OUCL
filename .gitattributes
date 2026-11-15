@@ -1,3 +1,7 @@
 * text=auto eol=lf
 *.png -text
 *.zip -text
+# Preserve archived evidence bytes and their recorded SHA-256 values.
+docs/delivery/20261115/recheck-evidence/** -text
+docs/execution/20261115/evidence/** -text
+docs/execution/20261115/baseline-evidence/** -text

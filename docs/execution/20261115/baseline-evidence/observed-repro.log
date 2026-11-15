@@ -1,0 +1,472 @@
+BASELINE_FETCH_FAILURE {"name":"TypeError","message":"fetch failed","cause":{"code":"EACCES","message":"connect EACCES 127.0.0.1:64023","syscall":"connect","address":"127.0.0.1","port":64023}}
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (60.8324ms)
+BASELINE_FETCH_FAILURE {"name":"TypeError","message":"fetch failed","cause":{"code":"EACCES","message":"connect EACCES 127.0.0.1:64025","syscall":"connect","address":"127.0.0.1","port":64025}}
+✖ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (60.5589ms)
+BASELINE_NATIVE_FAILURE {"operation":"symlink","code":"EPERM","syscall":"symlink","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-Cnzrej\\outside","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-Cnzrej\\view\\alias"}
+✖ unknown linked parents and target entries are rejected without touching their external target (404.4002ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-lytZPE\\store\\objects\\sha256\\d5\\d5822bde9fb168e17ef2a3e6c4bbf01cd540f8520815416ded7fad27906b1d70","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-lytZPE\\view\\copy.jar"}
+✖ a recorded copy replaced by a hard link never acquires copy ownership (318.2499ms)
+BASELINE_NATIVE_FAILURE {"operation":"symlink","code":"EPERM","syscall":"symlink","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-instance-folder-outside-UP7tqk","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-instance-folder-link-RUgYU5\\roots\\00000000-0000-4000-8000-000000000001\\.minecraft\\versions\\00000000-0000-4000-8000-000000000002\\mods"}
+✖ folder resolver rejects a linked allowlisted directory that escapes the instance (10.517ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-preparation-YOC3MM\\games\\private-game\\.oucl-mod-staging\\4a9a5193-e675-419f-b771-f04fc884f494\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-preparation-YOC3MM\\games\\private-game\\mods\\root.jar"}
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (2344.8638ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-rAROb3\\games\\private-game\\.oucl-mod-staging\\44ab5cdb-07d2-4a22-8a8d-e018ae736c82\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-rAROb3\\games\\private-game\\mods\\root.jar"}
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (2112.8909ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-MnV35Y\\games\\private-game\\.oucl-mod-staging\\2e28dc53-a4b2-49c0-9c27-6100924d4cd5\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-MnV35Y\\games\\private-game\\mods\\root.jar"}
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (1500.5312ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-vzIgMw\\games\\private-game\\.oucl-mod-staging\\f2a2a150-8b59-4298-9297-cfdb93e8ce51\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-vzIgMw\\games\\private-game\\mods\\root.jar"}
+✖ executor restores completion from a real committed transaction after the final task update was absent (1390.8176ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-CrOtwf\\games\\private-game\\.oucl-mod-staging\\c8eb8dcc-3a06-42d9-8aa7-244e171d4652\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-CrOtwf\\games\\private-game\\mods\\root.jar"}
+✖ commit boundary rejects cancellation and close joins the actual transaction (1326.2111ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-7Z5P86\\games\\private-game\\.oucl-mod-staging\\29f94c37-d9c6-4eac-84e2-b9e77666d4f0\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-7Z5P86\\games\\private-game\\mods\\root.jar"}
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1252.7152ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-0aKdAm\\games\\private-game\\.oucl-mod-staging\\05a0d330-4eeb-4636-9928-e8cb87e05ee5\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-0aKdAm\\games\\private-game\\mods\\root.jar"}
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1323.3633ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-ddr91Z\\games\\private-game\\.oucl-mod-staging\\04b73502-2180-4931-9fef-e3d288c45ba3\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-ddr91Z\\games\\private-game\\mods\\root.jar"}
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1312.0295ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-WKcZTr\\games\\private-game\\.oucl-mod-staging\\797e300e-432c-42fb-a4fa-50ef98172f9f\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-WKcZTr\\games\\private-game\\mods\\root.jar"}
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (1235.5711ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-FdoHd4\\games\\private-game\\.oucl-mod-staging\\1a71040e-e171-4176-ad90-678a7c971fcd\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-FdoHd4\\games\\private-game\\mods\\root.jar"}
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (2651.8128ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-gyFUqk\\games\\private-game\\.oucl-mod-staging\\d2f8fbd5-4471-4c22-a7bc-af4f395b3e5d\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-gyFUqk\\games\\private-game\\mods\\root.jar"}
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (1300.6882ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-Ebi6GO\\games\\private-game\\.oucl-mod-staging\\d87f8cb7-29dd-4837-86aa-02621d08478b\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-Ebi6GO\\games\\private-game\\mods\\root.jar"}
+✖ recovery finishes a published instance after index failure using its unique commit ID (1196.98ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-btN0F0\\games\\private-game\\.oucl-mod-staging\\9f07c797-2341-4311-b198-e9970201755c\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-btN0F0\\games\\private-game\\mods\\root.jar"}
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (1260.0037ms)
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-nBl6iW\\games\\private-game\\.oucl-mod-staging\\bd7cf4d1-9cb4-422d-b417-aecf381c3094\\root.jar","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\.test-build\\mod-transaction-nBl6iW\\games\\private-game\\mods\\root.jar"}
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1216.7576ms)
+BASELINE_NATIVE_FAILURE {"operation":"symlink","code":"EPERM","syscall":"symlink","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-native-25745E\\output","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-native-25745E\\alias"}
+✖ actual linked source parents and destination directories never redirect native extraction (19.6531ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-aSmyEh"}
+{"child":22320,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:612b4c5d-97a6-4b97-9520-9f0afb4698fd:2162252404:844424930943259:2162252404:844424930943234"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-aSmyEh\\store\\objects.owner.guard.sqlite","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-aSmyEh\\store\\objects.owner.guard.sqlite.hardlink"}
+✖ preserved new marker rejects hardlink of guard (464.4481ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-HFDvMb"}
+BASELINE_NATIVE_FAILURE {"operation":"link","code":"EPERM","syscall":"link","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-HFDvMb\\objects.owner.guard.sqlite","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-HFDvMb\\objects.owner.guard.sqlite.hardlink"}
+✖ live guard hardlink invalidates subsequent operations and close preserves the marker (70.0633ms)
+BASELINE_NATIVE_FAILURE {"operation":"symlink","code":"EPERM","syscall":"symlink","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-roots-vtdPEY\\游戏 数据","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-roots-vtdPEY\\alias"}
+✖ application directories, their ancestors and linked selections are rejected (254.0098ms)
+BASELINE_NATIVE_FAILURE {"operation":"symlink","code":"EPERM","syscall":"symlink","path":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-storage-sUAxjY\\target","dest":"D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-storage-sUAxjY\\alias"}
+✖ linked repository paths are refused without touching the target (13.3731ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 0
+ℹ fail 24
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19504.0172
+
+✖ failing tests:
+
+test at .test-build\tests\download-http.test.js:250:1
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (60.8324ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at HttpTransfer.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/http.js:242:58)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-http.test.js:270:5
+      at async fixture (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-http.test.js:35:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\download-parallel.test.js:46:1
+✖ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (60.5589ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/parallel-http.js:47:115
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async RequestBudget.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/request-budget.js:17:14)
+      at async ParallelHttpTransfer.run (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/download/parallel-http.js:29:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/download-parallel.test.js:71:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\file-views.test.js:84:1
+✖ unknown linked parents and target entries are rejected without touching their external target (404.4002ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-file-view-Cnzrej\outside' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-file-view-Cnzrej\view\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/file-views.test.js:90:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-Cnzrej\\outside',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-Cnzrej\\view\\alias'
+  }
+
+test at .test-build\tests\file-views.test.js:127:1
+✖ a recorded copy replaced by a hard link never acquires copy ownership (318.2499ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-file-view-lytZPE\store\objects\sha256\d5\d5822bde9fb168e17ef2a3e6c4bbf01cd540f8520815416ded7fad27906b1d70' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-file-view-lytZPE\view\copy.jar'
+      at async link (node:internal/fs/promises:1767:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/file-views.test.js:131:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-lytZPE\\store\\objects\\sha256\\d5\\d5822bde9fb168e17ef2a3e6c4bbf01cd540f8520815416ded7fad27906b1d70',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-file-view-lytZPE\\view\\copy.jar'
+  }
+
+test at .test-build\tests\instance-folders.test.js:80:1
+✖ folder resolver rejects a linked allowlisted directory that escapes the instance (10.517ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-instance-folder-outside-UP7tqk' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-instance-folder-link-RUgYU5\roots\00000000-0000-4000-8000-000000000001\.minecraft\versions\00000000-0000-4000-8000-000000000002\mods'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/instance-folders.test.js:86:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-instance-folder-outside-UP7tqk',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-instance-folder-link-RUgYU5\\roots\\00000000-0000-4000-8000-000000000001\\.minecraft\\versions\\00000000-0000-4000-8000-000000000002\\mods'
+  }
+
+test at .test-build\tests\mod-preparation.test.js:217:1
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (2344.8638ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-preparation.test.js:236:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:178:1
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (2112.8909ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:226:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:241:1
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (1500.5312ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:254:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:435:1
+✖ executor restores completion from a real committed transaction after the final task update was absent (1390.8176ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:440:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:458:1
+✖ commit boundary rejects cancellation and close joins the actual transaction (1326.2111ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:487:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:494:1
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1252.7152ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:498:21)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:516:1
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1323.3633ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(retained.includes("root.jar") && retained.includes("library.jar") && retained.some((name) => name.startsWith("rollback-")))
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:529:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:534:1
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1312.0295ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:543:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:543:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:554:1
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (1235.5711ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'FILES_CHANGED'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:563:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:563:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'FILES_CHANGED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:593:1
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (2651.8128ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'CANCELLED'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:608:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:608:9)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'CANCELLED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:618:1
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (1300.6882ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:631:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:670:1
+✖ recovery finishes a published instance after index failure using its unique commit ID (1196.98ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:673:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:673:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:686:1
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (1260.0037ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:696:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:696:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:709:1
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1216.7576ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/mod-transaction.test.js:712:21)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\native-archive.test.js:16:1
+✖ actual linked source parents and destination directories never redirect native extraction (19.6531ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-native-25745E\output' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-native-25745E\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/native-archive.test.js:19:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/native-archive.test.js:99:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-native-25745E\\output',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-native-25745E\\alias'
+  }
+
+test at .test-build\tests\object-owner-lease.test.js:141:56
+✖ preserved new marker rejects hardlink of guard (464.4481ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-object-owner-aSmyEh\store\objects.owner.guard.sqlite' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-object-owner-aSmyEh\store\objects.owner.guard.sqlite.hardlink'
+      at async link (node:internal/fs/promises:1767:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/object-owner-lease.test.js:152:28)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-aSmyEh\\store\\objects.owner.guard.sqlite',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-aSmyEh\\store\\objects.owner.guard.sqlite.hardlink'
+  }
+
+test at .test-build\tests\object-owner-lease.test.js:204:1
+✖ live guard hardlink invalidates subsequent operations and close preserves the marker (70.0633ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-object-owner-HFDvMb\objects.owner.guard.sqlite' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-object-owner-HFDvMb\objects.owner.guard.sqlite.hardlink'
+      at async link (node:internal/fs/promises:1767:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/object-owner-lease.test.js:208:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-HFDvMb\\objects.owner.guard.sqlite',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-object-owner-HFDvMb\\objects.owner.guard.sqlite.hardlink'
+  }
+
+test at .test-build\tests\roots.test.js:105:1
+✖ application directories, their ancestors and linked selections are rejected (254.0098ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-roots-vtdPEY\游戏 数据' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-roots-vtdPEY\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/roots.test.js:108:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/roots.test.js:25:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-roots-vtdPEY\\游戏 数据',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-roots-vtdPEY\\alias'
+  }
+
+test at .test-build\tests\storage.test.js:151:1
+✖ linked repository paths are refused without touching the target (13.3731ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-storage-sUAxjY\target' -> 'D:\MC_start\OUCL\tmp\execution-baseline-20261115\tmp\oucl-storage-sUAxjY\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async fs.<computed> (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/observe.mjs:5:51)
+      at async file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/storage.test.js:156:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/execution-baseline-20261115/.test-build/tests/storage.test.js:17:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-storage-sUAxjY\\target',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\execution-baseline-20261115\\tmp\\oucl-storage-sUAxjY\\alias'
+  }

@@ -5,7 +5,7 @@ import type { InstanceLoaderIdentity } from '../shared/contracts/instances-v2.js
 import type { MessageKey } from '../shared/locales/messages.js';
 import { rendererTaskReads, TaskQuerySession } from './task-query.js';
 
-export type Page = 'home' | 'downloads' | 'announcements' | 'settings';
+export type Page = 'home' | 'downloads' | 'announcements' | 'settings' | 'tools';
 interface LauncherState {
   page: Page; setPage(page: Page): void; rootId: string | undefined; setRoot(rootId: string | undefined): void;
   accounts: AccountSummary[]; accountId: string | undefined; selectAccount(id: string | undefined): void;

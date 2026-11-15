@@ -6,16 +6,18 @@ import type { InstanceSummary, TaskSnapshot } from '../shared/contracts/instance
 
 /** Queries current owned sessions at a bounded cadence; it never treats a task's acceptance as a running game. */
 export function useGameSessions(enabled: boolean, rootId: string | undefined): SessionSnapshot[] {
-  const [sessions, setSessions] = useState<SessionSnapshot[]>([]);
+  const [view, setView] = useState<{ rootId: string; items: SessionSnapshot[] }>();
   useEffect(() => {
     if (!enabled || !rootId || !window.oucl) return; let active = true; let querying = false; const bridge = window.oucl;
     const refresh = async (): Promise<void> => {
       if (querying) return; querying = true;
-      try { const result = await bridge.listSessions({ limit: 100 }); if (active && result.ok) setSessions(result.data.items); } finally { querying = false; }
+      try { const result = await bridge.listSessions({ limit: 100 }); if (active && result.ok) setView({ rootId, items: result.data.items }); }
+      catch { /* Observation failure does not prove that the previously observed process exited. */ }
+      finally { querying = false; }
     };
     void refresh(); const timer = setInterval(() => { void refresh(); }, 1000);
     return () => { active = false; clearInterval(timer); };
-  }, [enabled, rootId]); return sessions;
+  }, [enabled, rootId]); return enabled && view?.rootId === rootId ? view?.items ?? [] : [];
 }
 /** Uses existing task subscriptions for preparation, then real session facts for running/exit and explicit stop confirmation. */
 export function LaunchControls({ instance, accountId, current }: { instance: InstanceSummary; accountId: string | undefined; current: SessionSnapshot | undefined }) {

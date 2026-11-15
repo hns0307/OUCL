@@ -1,0 +1,50 @@
+[
+  {
+    "file": "dist/main/index.cjs",
+    "onlyLineCommentDifferences": true,
+    "commentDifferences": [
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/stringify.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/stringify.js"
+      }
+    ]
+  },
+  {
+    "file": "dist/workers/entry.cjs",
+    "onlyLineCommentDifferences": true,
+    "commentDifferences": [
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/error.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/error.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/primitive.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/primitive.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/date.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/date.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/extract.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/extract.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/util.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/util.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/struct.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/struct.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/parse.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/parse.js"
+      },
+      {
+        "before": "// ../OUCL/node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/stringify.js",
+        "after": "// ../../../node_modules/.pnpm/smol-toml@1.9.0/node_modules/smol-toml/dist/stringify.js"
+      }
+    ]
+  }
+]

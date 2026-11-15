@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MESSAGES } from '../shared/locales/messages.js';
 import { useConnection } from './state.js';
 import { useLauncher } from './launcher-state.js';
@@ -17,11 +17,15 @@ import { useDesktop } from './desktop-state.js';
 import { Avatar } from './Avatar.js';
 import { ModPanel } from './ModPanel.js';
 import type { Capability } from '../shared/contracts/handshake.js';
-import type { InstanceFolderKind } from '../shared/contracts/instance-folders.js';
+import { InstanceOverview } from './InstanceOverview.js';
+import { InstanceFolders } from './InstanceFolders.js';
+import { FirstRunGuide } from './FirstRunGuide.js';
+import { Toolbox } from './Toolbox.js';
+import { overviewSession } from './instance-overview.js';
 
-const NAV: { id: Page; label: keyof typeof MESSAGES }[] = [{ id: 'home', label: 'uiHome' }, { id: 'downloads', label: 'uiDownloads' }, { id: 'announcements', label: 'uiForum' }, { id: 'settings', label: 'uiSettings' }];
+const NAV: { id: Page; label: keyof typeof MESSAGES }[] = [{ id: 'home', label: 'uiHome' }, { id: 'downloads', label: 'uiDownloads' }, { id: 'announcements', label: 'uiForum' }, { id: 'tools', label: 'uiToolbox' }, { id: 'settings', label: 'uiSettings' }];
 type DownloadTab = 'minecraft' | 'mod' | 'resourcepack' | 'shader' | 'library';
-/** Desktop shell, sharing real profiles, instances and task state across four persistent pages. */
+/** Desktop shell, sharing real profiles, instances and task state across persistent pages. */
 export function App() {
   const { status, setStatus } = useConnection(); const state = useLauncher(); const desktop = useDesktop();
   const appearance = desktop.preview ?? desktop.snapshot.appearance;
@@ -30,7 +34,6 @@ export function App() {
     const root = document.documentElement; for (const [key, value] of Object.entries({ green: appearance.accent, page: appearance.background, surface: appearance.surface, ink: appearance.ink })) root.style.setProperty(`--${key}`, value);
   }, [appearance]);
   const [capabilities, setCapabilities] = useState<string[]>([]); const [downloadTab, setDownloadTab] = useState<DownloadTab>('minecraft'); const [versionId, setVersionId] = useState<string>();
-  const [showVersionSettings, setShowVersionSettings] = useState(false); const [folderError, setFolderError] = useState(false);
   const has = (name: Capability): boolean => capabilities.includes(name);
   useEffect(() => {
     let active = true;
@@ -47,15 +50,12 @@ export function App() {
     refresh(); const timer = setInterval(refresh, 15000); document.addEventListener('visibilitychange', refresh);
     return () => { clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
   }, [state.rootId, state.refreshGame]);
+  const accountsFocus = useRef<HTMLDivElement>(null);
   const sessions = useGameSessions(has('game.v1'), state.rootId);
   const account = state.accounts.find(a => a.accountId === state.accountId); const instance = state.instances.find(i => i.instanceId === state.instanceId);
   const loaderName = (id: string): string => { const value = state.instanceLoaders[id]; return !value || value.kind === 'vanilla' ? MESSAGES.uiVanilla : `${value.kind === 'fabric' ? 'Fabric' : value.kind === 'quilt' ? 'Quilt' : value.kind === 'forge' ? 'Forge' : 'NeoForge'} ${value.version}`; };
   const activeTasks = state.tasks.filter(activeTask).length;
   const recoveryTasks = state.tasks.filter(task => task.state === 'needsRecovery').length;
-  async function openInstanceFolder(folder: InstanceFolderKind): Promise<void> {
-    if (!window.oucl || !instance) return; setFolderError(false);
-    const result = await window.oucl.openInstanceFolder(instance.instanceId, folder); if (!result.ok) setFolderError(true);
-  }
   return <div className={`app-shell ${appearance.sidebarCollapsed ? 'sidebar-collapsed' : ''} density-${appearance.density}`}>
     <header className="topbar"><div className="brand-lockup"><button className="sidebar-toggle secondary" aria-expanded={!appearance.sidebarCollapsed} aria-label={appearance.sidebarCollapsed ? MESSAGES.uiExpandSidebar : MESSAGES.uiCollapseSidebar} disabled={!desktop.loaded || desktop.busy} onClick={() => { void desktop.saveAppearance({ ...desktop.snapshot.appearance, sidebarCollapsed: !appearance.sidebarCollapsed }, true); }}>☰</button>{appearance.icon ? <img className="brand-custom-icon" src={appearance.icon} alt="" /> : <span className="brand-symbol">O<span /></span>}<strong>OUCL</strong><span className="brand-caption">{MESSAGES.uiBrandCaption}</span></div>
       <nav className="top-nav" aria-label={MESSAGES.uiNavigation}>{NAV.map(n => <button key={n.id} aria-current={state.page === n.id ? 'page' : undefined} onClick={() => { state.setPage(n.id); }}>{MESSAGES[n.label]}</button>)}</nav>
@@ -68,23 +68,22 @@ export function App() {
       <button className="add-game secondary" onClick={() => { setDownloadTab('minecraft'); state.setPage('downloads'); }}>＋ {MESSAGES.uiInstallGame}</button>
       <div className="sidebar-bottom"><span className="tiny-square" /><span>OUCL <strong>0.3.0</strong></span><small>{MESSAGES.uiLocalLibrary}</small></div>
     </aside>
-    <main className="main-content"><div className="page-heading"><div><span className="eyebrow">{state.page === 'home' ? 'YOUR NEXT ADVENTURE' : state.page === 'downloads' ? 'EXPLORE & DOWNLOAD' : state.page === 'announcements' ? 'STAY CONNECTED' : 'MAKE IT YOURS'}</span><h1>{MESSAGES[NAV.find(n => n.id === state.page)!.label]}</h1><p>{state.page === 'home' ? MESSAGES.uiHomeSubtitle : state.page === 'downloads' ? MESSAGES.uiDownloadsSubtitle : state.page === 'announcements' ? MESSAGES.uiForumSubtitle : MESSAGES.uiSettingsSubtitle}</p></div>
+    <main className="main-content"><div className="page-heading"><div><span className="eyebrow">{state.page === 'home' ? 'YOUR NEXT ADVENTURE' : state.page === 'downloads' ? 'EXPLORE & DOWNLOAD' : state.page === 'announcements' ? 'STAY CONNECTED' : state.page === 'tools' ? 'CREATE & EXPERIMENT' : 'MAKE IT YOURS'}</span><h1>{MESSAGES[NAV.find(n => n.id === state.page)!.label]}</h1><p>{state.page === 'home' ? MESSAGES.uiHomeSubtitle : state.page === 'downloads' ? MESSAGES.uiDownloadsSubtitle : state.page === 'announcements' ? MESSAGES.uiForumSubtitle : state.page === 'tools' ? MESSAGES.toolboxHint : MESSAGES.uiSettingsSubtitle}</p></div>
       {state.rootId && (activeTasks > 0 || recoveryTasks > 0 || !state.tasksComplete) && <button className="task-pill" onClick={() => { state.setPage('downloads'); }}>{MESSAGES.taskLoadedActive} {activeTasks} · {MESSAGES.taskRecoveryCount} {recoveryTasks}{!state.tasksComplete && <> · {MESSAGES.taskListPartial}</>}</button>}</div>
       {status === 'disconnected' && <p className="error-banner" role="alert">{MESSAGES.unavailable}</p>}
-      <div hidden={state.page !== 'home'}><div className={`home-layout layout-${appearance.layout}`}><section className="home-main"><div className="adventure-card" style={{ order: appearance.homeOrder.indexOf('banner') }} hidden={appearance.homeHidden.includes('banner')}><div className="adventure-content"><span className="tag light">MINECRAFT JAVA EDITION</span><h2>{MESSAGES.uiAdventureTitle}</h2><p>{MESSAGES.uiAdventureSubtitle}</p></div><div className="landscape" aria-hidden="true"><i /><i /><i /><i /><span /></div></div>
+      <div hidden={state.page !== 'home'}><FirstRunGuide settings={state.settings} rootId={state.rootId} accounts={state.accounts} accountId={state.accountId}
+        enabled={has('settings.v1') && has('accounts.v1')} error={state.error} onOpenSettings={() => { state.setPage('settings'); }} onOpenAccounts={() => { accountsFocus.current?.focus(); }}
+        onRetry={async () => { useLauncher.setState({ error: undefined }); await Promise.all([state.refreshProfiles(), state.refreshSettings()]); await state.refreshGame(); }} />
+        <div className={`home-layout layout-${appearance.layout}`}><section className="home-main"><div className="adventure-card" style={{ order: appearance.homeOrder.indexOf('banner') }} hidden={appearance.homeHidden.includes('banner')}><div className="adventure-content"><span className="tag light">MINECRAFT JAVA EDITION</span><h2>{MESSAGES.uiAdventureTitle}</h2><p>{MESSAGES.uiAdventureSubtitle}</p></div><div className="landscape" aria-hidden="true"><i /><i /><i /><i /><span /></div></div>
         <section className="panel selected-instance" style={{ order: appearance.homeOrder.indexOf('game') }}><div className="section-heading"><h2>{MESSAGES.uiSelectedGame}</h2><span className="tag">{instance ? loaderName(instance.instanceId) : MESSAGES.uiVanilla}</span></div>
-          {instance ? <><h3>{instance.displayName}</h3><div className="instance-facts"><span><small>{MESSAGES.uiGameVersion}</small><strong>{instance.mcVersionId}</strong></span><span><small>{MESSAGES.uiIsolation}</small><strong>{instance.isolation === 'off' ? MESSAGES.uiShared : MESSAGES.uiIsolated}</strong></span></div><p className="muted small">{MESSAGES.uiReadyHint}</p>
-            {instance.state === 'ready' && has('instance-folders.v1') && <><button className="secondary version-settings-toggle" onClick={() => { setShowVersionSettings(value => !value); setFolderError(false); }}>{MESSAGES.uiVersionSettings}</button>
-              {showVersionSettings && <div className="version-settings"><p className="muted small">{MESSAGES.uiVersionSettingsHint}</p><div className="folder-actions">{([
-                ['game', 'uiOpenGameFolder'], ['mods', 'uiOpenModsFolder'], ['saves', 'uiOpenSavesFolder'], ['resourcepacks', 'uiOpenResourcepacksFolder'],
-                ['shaderpacks', 'uiOpenShaderpacksFolder'], ['screenshots', 'uiOpenScreenshotsFolder'], ['logs', 'uiOpenLogsFolder'],
-              ] as const).map(([folder, label]) => <button key={folder} onClick={() => { void openInstanceFolder(folder); }}>{MESSAGES[label]}</button>)}</div>
-              {folderError && <p className="form-error" role="alert">{MESSAGES.unavailable}</p>}</div>}</>}
+          {instance ? <><h3>{instance.displayName}</h3><div className="instance-facts"><span><small>{MESSAGES.uiGameVersion}</small><strong>{instance.mcVersionId}</strong></span></div>
+            <InstanceOverview key={`${state.rootId}:${instance.instanceId}`} instance={instance} rootId={state.rootId} targetsEnabled={has('task-targets.v1')} sessions={sessions} tasks={state.tasks} onOpenTasks={() => { state.setPage('downloads'); }} />
+            {instance.state === 'ready' && has('instance-folders.v1') && <InstanceFolders key={`${state.rootId}:${instance.instanceId}`} instanceId={instance.instanceId} />}
           </> : !has('instances.v1') ? <p role="status">{status === 'connecting' ? MESSAGES.connecting : MESSAGES.rootsUnavailable}</p> : <div className="empty-state"><h3>{MESSAGES.uiStartHere}</h3><p>{MESSAGES.uiFirstInstall}</p><button onClick={() => { state.setPage(state.rootId ? 'downloads' : 'settings'); }}>{state.rootId ? MESSAGES.uiInstallGame : MESSAGES.chooseStorage}</button></div>}
         </section><button className="announcement-shortcut panel" style={{ order: appearance.homeOrder.indexOf('community') }} hidden={appearance.homeHidden.includes('community')} onClick={() => { state.setPage('announcements'); }}><span className="notice-icon">◇</span><span><strong>{MESSAGES.uiForum}</strong><small>{MESSAGES.uiForumLocal}</small></span><span>↗</span></button>
       </section><aside className="panel character-card"><div className="character-top"><span className="eyebrow">PLAYER PROFILE</span><span className="tag">{MESSAGES.uiOffline}</span></div><div className="avatar-stage"><Avatar /><div className="avatar-grid" /></div>
-        <div className="player-name"><h2>{account?.displayName ?? MESSAGES.uiGuest}</h2><span>{account?.gameName ?? MESSAGES.uiChooseProfile}</span></div><AccountsPanel enabled={has('accounts.v1')} />
-        {instance?.state === 'ready' ? <LaunchControls key={instance.instanceId} instance={instance} accountId={state.accountId} current={sessions.find(s => s.instanceId === instance.instanceId)} /> : <button className="primary" disabled>{MESSAGES.launchGame}</button>}
+        <div className="player-name"><h2>{account?.displayName ?? MESSAGES.uiGuest}</h2><span>{account?.gameName ?? MESSAGES.uiChooseProfile}</span></div><div ref={accountsFocus} tabIndex={-1} className="accounts-focus"><AccountsPanel enabled={has('accounts.v1')} /></div>
+        {instance?.state === 'ready' ? <LaunchControls key={`${state.rootId}:${instance.instanceId}`} instance={instance} accountId={state.accountId} current={overviewSession(instance.instanceId, sessions)} /> : <button className="primary" disabled>{MESSAGES.launchGame}</button>}
       </aside></div>{instance && <ModPanel key={`${state.rootId}:${instance.instanceId}`} instance={instance} enabled={has('mods.v1')} targetsEnabled={has('task-targets.v1')}
         rootId={state.rootId} maintenanceEnabled={has('mods-maintenance-preview.v1')} />}</div>
       <div hidden={state.page !== 'downloads'}><div className="tabs download-tabs">{(['minecraft', 'mod', 'resourcepack', 'shader', 'library'] as const).map(id => <button key={id} aria-pressed={downloadTab === id} onClick={() => { setDownloadTab(id); }}>{id === 'minecraft' ? 'Minecraft' : id === 'mod' ? MESSAGES.uiMods : id === 'resourcepack' ? MESSAGES.uiResourcepacks : id === 'shader' ? MESSAGES.uiShaders : MESSAGES.uiLibrary}</button>)}</div>
@@ -94,6 +93,7 @@ export function App() {
           kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
         {state.page === 'downloads' && <TaskCenter key={state.rootId ?? 'no-root'} />}
       </div>
+      <div hidden={state.page !== 'tools'}><Toolbox /></div>
       <div hidden={state.page !== 'announcements'}><ForumPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
       <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.3.0</span></footer>
     </main></div>
