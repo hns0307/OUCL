@@ -5,3 +5,4 @@
 docs/delivery/20261115/recheck-evidence/** -text
 docs/execution/20261115/evidence/** -text
 docs/execution/20261115/baseline-evidence/** -text
+docs/execution/20261115/*-evidence/** -text

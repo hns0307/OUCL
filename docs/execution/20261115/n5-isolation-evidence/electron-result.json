@@ -1,0 +1,79 @@
+{
+  "status": "PASS",
+  "fixture": true,
+  "transport": "synthetic HTTPS protocol handler, not TLS/public network",
+  "checks": [
+    {
+      "name": "view ready under actual Electron adapter",
+      "pass": true
+    },
+    {
+      "name": "separate WebContents",
+      "pass": true
+    },
+    {
+      "name": "separate memory session",
+      "pass": true
+    },
+    {
+      "name": "sandbox and Node isolation",
+      "pass": true
+    },
+    {
+      "name": "remote has no application bridge",
+      "pass": true
+    },
+    {
+      "name": "notifications denied",
+      "pass": true
+    },
+    {
+      "name": "clipboard read permission denied",
+      "pass": true
+    },
+    {
+      "name": "unlisted network request denied",
+      "pass": true
+    },
+    {
+      "name": "POST upload denied",
+      "pass": true
+    },
+    {
+      "name": "file chooser interception installed",
+      "pass": true
+    },
+    {
+      "name": "file chooser gives no selected local file",
+      "pass": true
+    },
+    {
+      "name": "popup denied",
+      "pass": true
+    },
+    {
+      "name": "file navigation veto actual listener",
+      "pass": true
+    },
+    {
+      "name": "beforeunload cannot retain remote WebContents",
+      "pass": true
+    },
+    {
+      "name": "cleanup confirms closed",
+      "pass": true
+    },
+    {
+      "name": "dedicated session cookie cleared",
+      "pass": true
+    },
+    {
+      "name": "no extra WebContents survive",
+      "pass": true
+    },
+    {
+      "name": "reopen uses fresh session",
+      "pass": true
+    }
+  ]
+}

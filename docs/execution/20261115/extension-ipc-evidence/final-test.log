@@ -1,0 +1,25 @@
+✔ extension adapters reject untrusted documents, future versions and extra fields before invoking ports (2.7627ms)
+✔ online mutations join identical identities and reject identity reuse across input or operation (1.0866ms)
+✔ online document invalidation closes a late view and blocks replay (0.3885ms)
+✔ online mutation capacity preserves earlier identities and leaves close available (2.6424ms)
+✔ online DTOs accept ordinary titles and reject controls, duplicate IDs and extra snapshot data (0.2246ms)
+✔ distribution previews join pending and completed jobs but reject changed target identities (0.597ms)
+✔ distribution cancellation waits for port settlement and rejects late successful preview (0.5684ms)
+✔ distribution disposal aborts jobs, denies late results and prevents replay (0.2506ms)
+✔ distribution jobs remain bounded and cancellation remains available at capacity (0.5544ms)
+✔ distribution DTOs retain relative file names but reject path escapes, controls and mixed conflicts (0.2708ms)
+✔ distribution public enums require strings rather than coercible arrays (0.1425ms)
+✔ distribution source-list port exceptions become controlled public failures (0.1928ms)
+✔ both adapters redact unexpected port failures instead of exposing private exceptions (0.2515ms)
+✔ preload bridges reject invalid input before IPC and reject forged operation results (0.7359ms)
+✔ preload bridges validate response version and request identity with real adapters (0.4752ms)
+✔ online preload timeout preserves the mutation identity and never implicitly retries (0.6668ms)
+✔ distribution preload timeout never cancels or retries a preview and ignores its late reply (0.24ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.9359

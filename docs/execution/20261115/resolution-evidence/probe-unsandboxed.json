@@ -1,0 +1,9 @@
+{
+  "node": "v24.21.0",
+  "platform": "win32",
+  "link": "PASS",
+  "loopback": {
+    "status": 200,
+    "body": "isolated loopback probe"
+  }
+}

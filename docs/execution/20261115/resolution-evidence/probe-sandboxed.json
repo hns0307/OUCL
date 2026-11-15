@@ -1,0 +1,12 @@
+{
+  "node": "v24.21.0",
+  "platform": "win32",
+  "link": {
+    "code": "EPERM",
+    "syscall": "link"
+  },
+  "loopback": {
+    "code": "EACCES",
+    "message": "connect EACCES 127.0.0.1:62785"
+  }
+}

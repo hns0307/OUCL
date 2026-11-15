@@ -1,0 +1,104 @@
+{
+  "status": "PASS",
+  "fixture": true,
+  "productionIPC": false,
+  "network": false,
+  "electron": "45.0.0",
+  "checks": [
+    {
+      "name": "real ToolsWorkspace initial local tool rendered",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "empty online registry is explicit",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "empty distribution registry has no form",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "configured online fixture reports ready",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "online retry is pending",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "late online retry cannot reopen closed UI",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "leaving online tab invokes close",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "empty package inputs disable preview",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "invalid package identity stays disabled",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "pending preview disables editing and offers cancellation",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "cancel settles and releases input",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "old cancel rejection cannot overwrite newer request",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "newer preview survives old cancellation response",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "switch instance unmount cancels old request",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "old instance preview cannot populate new panel",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "current preview displays safe ownership and conflict facts",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "preview has no execute or install action",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "wide layout no horizontal overflow",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "narrow layout no horizontal overflow",
+      "pass": true,
+      "detail": true
+    }
+  ]
+}

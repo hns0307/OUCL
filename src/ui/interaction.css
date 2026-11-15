@@ -119,6 +119,14 @@ textarea{font:inherit;font-size:13px;padding:12px;border:1px solid var(--outline
 .toolbox-panel .toolbox-output { font-family: monospace; overflow-wrap: anywhere; }
 .toolbox-panel textarea { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
 .toolbox-panel textarea:focus-visible, .appearance-settings:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.tools-tabs { flex-wrap: wrap; }
+.online-tools-attached .online-tools-controls { position: fixed; top: 84px; left: 16px; right: 16px; height: 168px; padding: 12px; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; z-index: 10; }
+.online-tools-attached .online-tools-controls h2 { margin: 0 0 4px; }
+.online-tools-attached .online-tools-controls > p { margin-bottom: 4px; }
+.online-tools-attached .online-tools-controls > p:first-of-type { display: none; }
+.distribution-panel fieldset { display: flex; gap: 12px; flex-wrap: wrap; border: 0; padding: 0; margin: 12px 0; }
+.distribution-panel label { display: grid; gap: 6px; }
+.distribution-panel li { overflow-wrap: anywhere; margin-block: 6px; }
 @media (max-width: 760px) {
   .instance-overview-facts > div { grid-template-columns: 1fr; gap: 4px; }
   .first-run-steps button { display: block; margin: 8px 0 0; }

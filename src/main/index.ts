@@ -86,10 +86,30 @@ import { PACK_CAPABILITY, PACK_CHANNEL } from '../shared/contracts/packs.js';
 import { handleFixedPack } from '../ipc/packs.js';
 import { FixedPackReader } from '../services/packs/fixed-reader.js';
 import { FixedPackCoordinator } from '../services/packs/coordinator.js';
+import { createElectronOnlineToolService } from './online-tools.js';
+import { OnlineToolsAdapter } from '../ipc/online-tools.js';
+import { ONLINE_TOOLS_CAPABILITY, ONLINE_TOOLS_CHANNELS, onlineToolFailure } from '../shared/contracts/online-tools.js';
+import { DISTRIBUTION_CAPABILITY, DISTRIBUTION_CHANNELS, distributionFailure } from '../shared/contracts/distribution-preview.js';
+import { createDistributionPreviewAdapter } from './distribution-preview.js';
+import type { DistributionPreviewAdapter } from '../ipc/distribution-preview.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
+const onlineToolAdapters = new Map<number, OnlineToolsAdapter>();
+const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
+let distributionFetch: typeof fetch | undefined;
+
+/** Revokes remote views and read-only previews when the owner document goes away. */
+function revokeExtensions(id: number): void {
+  const tools = onlineToolAdapters.get(id); onlineToolAdapters.delete(id);
+  void tools?.dispose().catch(() => { console.warn(JSON.stringify({ level: 'warn', event: 'tool-cleanup-failed' })); });
+  distributionAdapters.get(id)?.dispose(); distributionAdapters.delete(id);
+}
+/** Native dialogs never appear beneath an attached remote view. */
+async function closeOnlineView(id: number): Promise<void> {
+  const tools = onlineToolAdapters.get(id); if (tools) await tools.handle('tools:close', { contractVersion: 1, requestId: randomUUID(), payload: {} }, () => sessions.has(id), randomUUID());
+}
 let desktop: DesktopService | undefined; let desktopImages: DesktopImages | undefined;
 let resources: ResourceService | undefined;
 let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
@@ -135,6 +155,10 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
+  window.webContents.once('destroyed', () => { revokeExtensions(id); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) revokeExtensions(id); });
+  window.webContents.on('render-process-gone', () => { revokeExtensions(id); });
+  window.on('hide', () => { revokeExtensions(id); });
   window.webContents.once('destroyed', () => { sessions.delete(id); fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
   window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
@@ -158,6 +182,7 @@ else void app.whenReady().then(async () => {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     const networkFetch = createDesktopFetch(options => net.request(options));
+    distributionFetch = networkFetch;
     profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient(networkFetch));
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     if (portableGameDirectory) {
@@ -218,12 +243,28 @@ else void app.whenReady().then(async () => {
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls);
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+  });
+  for (const channel of ONLINE_TOOLS_CHANNELS) ipcMain.handle(channel, async (event, input: unknown) => {
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner || !trustedSender(event)) { const trace = randomUUID(); return onlineToolFailure(trace, 'INVALID_SENDER', trace); }
+    let adapter = onlineToolAdapters.get(event.sender.id);
+    if (!adapter) { adapter = new OnlineToolsAdapter(createElectronOnlineToolService(owner)); onlineToolAdapters.set(event.sender.id, adapter); }
+    return adapter.handle(channel, input, () => trustedSender(event), randomUUID());
+  });
+  for (const channel of DISTRIBUTION_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trace = randomUUID();
+    if (!trustedSender(event)) return distributionFailure(trace, 'INVALID_SENDER', trace);
+    if (!storage || !distributionFetch) return distributionFailure(trace, 'UNAVAILABLE', trace);
+    let adapter = distributionAdapters.get(event.sender.id);
+    if (!adapter) { adapter = createDistributionPreviewAdapter(storage, distributionFetch); distributionAdapters.set(event.sender.id, adapter); }
+    return adapter.handle(channel, input, () => trustedSender(event), trace);
   });
   ipcMain.handle(PACK_CHANNEL, (event, input: unknown) => handleFixedPack(input, trustedSender(event), randomUUID(), async requestId => {
     if (!fixedPackCoordinator) throw new Error('UNAVAILABLE');
     return fixedPackCoordinator.inspect(event.sender.id, requestId, () => trustedSender(event), async () => {
       const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
       const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: 'Modrinth modpack', extensions: ['mrpack'] }] });
       return selection.canceled ? undefined : selection.filePaths[0];
     });
@@ -284,6 +325,7 @@ else void app.whenReady().then(async () => {
     const pending = iconSelections.get(event.sender.id); if (pending) return pending;
     const job = (async () => {
       const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
       const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: MESSAGES.uiCustomIcon, extensions: ['png', 'jpg', 'jpeg', 'webp'] }] });
       if (!trustedSender(event)) throw new Error('INVALID_SENDER'); if (selection.canceled || !selection.filePaths[0]) return '';
       return DesktopImages.local(selection.filePaths[0]);
@@ -297,7 +339,8 @@ else void app.whenReady().then(async () => {
       while (javaSelections.size >= 64) { const stale = [...javaSelections.keys()].find(item => !pendingSelections.has(item)); if (!stale) throw new ProfileContractError('UNAVAILABLE'); javaSelections.delete(stale); }
       const selection = (async () => {
         const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new ProfileContractError('INVALID_SENDER');
-        const result = await dialog.showOpenDialog(owner, { title: MESSAGES.javaChoose, properties: ['openFile'], filters: [{ name: MESSAGES.javaExecutableLabel, extensions: ['exe'] }] });
+        await closeOnlineView(event.sender.id);
+      const result = await dialog.showOpenDialog(owner, { title: MESSAGES.javaChoose, properties: ['openFile'], filters: [{ name: MESSAGES.javaExecutableLabel, extensions: ['exe'] }] });
         if (!trustedSender(event)) throw new ProfileContractError('INVALID_SENDER'); return result.canceled ? undefined : result.filePaths[0];
       })();
       javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
@@ -325,6 +368,7 @@ else void app.whenReady().then(async () => {
     return roots.choose(async () => {
       const owner = BrowserWindow.fromWebContents(event.sender);
       if (!owner) throw new RootError('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
       const result = await dialog.showOpenDialog(owner, { title: MESSAGES.storageTitle, properties: ['openDirectory', 'createDirectory'] });
       if (!trustedSender(event)) throw new RootError('INVALID_SENDER');
       return result.canceled ? undefined : result.filePaths[0];
@@ -342,6 +386,8 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
+    await Promise.all([...onlineToolAdapters.values()].map(adapter => adapter.dispose())); onlineToolAdapters.clear();
+    for (const adapter of distributionAdapters.values()) await adapter.close(); distributionAdapters.clear();
     targetAdapter?.close(); installerAdapter?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });

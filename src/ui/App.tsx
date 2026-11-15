@@ -20,7 +20,7 @@ import type { Capability } from '../shared/contracts/handshake.js';
 import { InstanceOverview } from './InstanceOverview.js';
 import { InstanceFolders } from './InstanceFolders.js';
 import { FirstRunGuide } from './FirstRunGuide.js';
-import { Toolbox } from './Toolbox.js';
+import { ToolsWorkspace } from './ToolsWorkspace.js';
 import { overviewSession } from './instance-overview.js';
 
 const NAV: { id: Page; label: keyof typeof MESSAGES }[] = [{ id: 'home', label: 'uiHome' }, { id: 'downloads', label: 'uiDownloads' }, { id: 'announcements', label: 'uiForum' }, { id: 'tools', label: 'uiToolbox' }, { id: 'settings', label: 'uiSettings' }];
@@ -93,7 +93,7 @@ export function App() {
           kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
         {state.page === 'downloads' && <TaskCenter key={state.rootId ?? 'no-root'} />}
       </div>
-      <div hidden={state.page !== 'tools'}><Toolbox /></div>
+      {state.page === 'tools' && <ToolsWorkspace onlineEnabled={has('tools.isolated.v1')} distributionEnabled={has('distribution.preview.v1')} rootId={state.rootId} instanceId={instance?.state === 'ready' ? instance.instanceId : undefined} />}
       <div hidden={state.page !== 'announcements'}><ForumPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
       <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.3.0</span></footer>
     </main></div>
