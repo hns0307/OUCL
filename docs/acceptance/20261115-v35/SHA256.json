@@ -1,0 +1,72 @@
+[
+  {
+    "path": "evidence/.gitattributes",
+    "bytes": 8,
+    "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+  },
+  {
+    "path": "evidence/audit-four-games-v35.log",
+    "bytes": 229,
+    "sha256": "ff216a99890f7cbd54c06cd6edfc977aa28512af70eac3a4370c8159c0b586ea"
+  },
+  {
+    "path": "evidence/audit-four-games-v35.py",
+    "bytes": 4403,
+    "sha256": "01d85893d3aa5e8d2044bc2dd158ce3536d6e78c6a6f10004fc4d7fd66619020"
+  },
+  {
+    "path": "evidence/before-reopen-v35.json",
+    "bytes": 350,
+    "sha256": "c7417d6592f8d95d2ef238376d77c540db9443e9102b157689f2cda78dfb7368"
+  },
+  {
+    "path": "evidence/CHECKPOINT-v35.md",
+    "bytes": 2505,
+    "sha256": "debe9e1e9d366a01d33d385fd2341a9acde5bec2320bb57374164871e93f4808"
+  },
+  {
+    "path": "evidence/final-audit-v35.json",
+    "bytes": 5368,
+    "sha256": "b615d5340a26ea063285e1edd044a8e061fa290e6d8b3d41182071082729e44d"
+  },
+  {
+    "path": "evidence/final-audit-v35.log",
+    "bytes": 282,
+    "sha256": "ac6a4d73e9146ceb38fe5c554e28a1fc84e37f6e100afecfa2008b26314f19b0"
+  },
+  {
+    "path": "evidence/final-audit-v35.py",
+    "bytes": 5055,
+    "sha256": "a1e3763264967646e18fb5d5dcfc0de890b8df3e997b678ffb37e31b642b51f5"
+  },
+  {
+    "path": "evidence/four-games-audit-v35.json",
+    "bytes": 4913,
+    "sha256": "cc9cc2b47b70182eef2a076196473c3ca790957ede5b6c040d3cacd6d2616dc6"
+  },
+  {
+    "path": "evidence/launcher-first-exit.json",
+    "bytes": 257,
+    "sha256": "b81e008cfe9330deda8b2955190215a673d27bff7f8455f8199ae16fa95d4770"
+  },
+  {
+    "path": "evidence/launcher-reopened-exit-v35.json",
+    "bytes": 287,
+    "sha256": "1a8ea8c5f37dace60cccde88383bf285cc04c6f01697b9a1b11b6fbb79e6ff68"
+  },
+  {
+    "path": "evidence/quilt-reopened-menu-v35.png",
+    "bytes": 454066,
+    "sha256": "c00e37b586916853e9082df182ca5337e85a266704676ba7534bf7b5c6bcbb04"
+  },
+  {
+    "path": "evidence/quilt-reopened-process-v35.json",
+    "bytes": 215,
+    "sha256": "efaf7c6ed6e10bac9b3abcbd01e46e942f0f2bd824cc08716e541eb6f895dac4"
+  },
+  {
+    "path": "evidence/watch-reopened-v35.ps1",
+    "bytes": 1229,
+    "sha256": "f593b5d2467c67de0cc70657d37de7f9070320a18d2589f4636d45af891a48b7"
+  }
+]

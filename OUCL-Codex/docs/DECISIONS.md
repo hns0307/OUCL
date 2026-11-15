@@ -394,3 +394,6 @@
 
 
 2026-11-14 v31验收整改追加（非新增批准）：五包审查的八项最小修复在独立统一候选完成691项687PASS/0FAIL/4既有SKIP，类型/全lint/build及C/D组件、固定worker专项通过。源代码0c2a889ccea544d3294136a80c74ac8a5e6f348f，13生产文件及配套测试/对象租约内部契约；A对象域租约沿11月1日授权，metadata OwnerGuard不变、未知旧锁仍停写。C受控真实窗口标签及超时后成功清错通过；尚不等同修复后最终EXE/游戏验证。真实强杀恢复、公网取消等缺项继续保留，完整方案不标全部验收。见根docs/acceptance/20261114-v31/REPORT.md及HANDOFF.md；不push发布。
+
+
+2026-11-15 v35收尾记录（非新增批准）：本轮已批选定增量在记录限制下技术接纳并完成本地整合。修复后同v32EXE四次实际菜单/游戏内自然exit0、正常关窗重开及最终launcher真实exit0、metadata/对象/gameDir租约释放审计通过；首次launcher数值退出码未观测保留。原691项687PASS/4SKIP及类型lintbuild全过、source0c2a889c不变。A最终EXE强杀/C公网取消等缺证仍DEFERRED/NOT_EXERCISED，不宣称全历史方案全验；具体有限接纳/保留/排除见根docs/acceptance/20261115-v35/REPORT.md。当前无可自动推进的本轮步骤，结束该验收轮询，独立额度监测保留。未push发布，活跃共享树未整体暂存/提交。
