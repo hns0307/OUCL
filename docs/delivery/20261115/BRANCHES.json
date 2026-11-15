@@ -1,0 +1,17 @@
+[
+  {
+    "branch": "codex/acceptance-20261111",
+    "commit": "8022e3fd83b1068e8d6643fc5a856b3d5369a333",
+    "containedInMain": true
+  },
+  {
+    "branch": "main",
+    "commit": "8022e3fd83b1068e8d6643fc5a856b3d5369a333",
+    "containedInMain": true
+  },
+  {
+    "branch": "mod_loaders",
+    "commit": "b87be9dc8d3640468dbb069d29e70b6af5712d7d",
+    "containedInMain": true
+  }
+]

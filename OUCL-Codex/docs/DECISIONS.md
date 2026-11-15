@@ -400,3 +400,6 @@
 
 
 2026-11-15 v36续验事实（非新增批准）：用户要求继续后完成安全无窗口网络诊断，原C独立审阅。Electron45本机回环证明request close后仍有HTTP200/原生abort，旧壳closed即事务结束判据被反例证伪；生产compiled createDesktopFetch受控HTTPS AbortSignal至原生abort链通过，四用例/真实子进程exit0。历史具体请求关联UNKNOWN及公网取消NOT_EXERCISED仍保留，不等同完整C预览/GUI取消；无生产改动、TLS降低、旧壳覆盖或全量重跑。见根docs/acceptance/20261115-v36/REPORT.md。v35有限接纳不变，不push发布。
+
+
+2026-11-15 用户最新指令：取消剩余补证，直接生成最终版本EXE、整合梳理全部提交并重新梳理目录。本轮批准执行最终本地交付和目录/文档整理，不再推进A强杀/C公网取消/不可达frame补证，不将取消等于通过。main已包含全部本地分支提交，保留共享未提交WIP。最终0.3.0沿已验源码/七产物，仅重新打包正式名称；交付/提交/目录入口见docs/delivery/20261115与docs/PROJECT_LAYOUT.md。不push发布。
