@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "electron": "45.0.0",
+  "node": "24.22.0",
+  "scope": "Headless native Electron net, real HTTP loopback only; not product HTTPS/public-network cancellation",
+  "browserWindows": 0,
+  "cases": [
+    {
+      "mode": "response",
+      "closed": true,
+      "closeCount": 1,
+      "finish": true,
+      "response": true,
+      "responseEnded": true,
+      "abort": false,
+      "serverReceived": true,
+      "serverResponseClosed": true,
+      "callbackCount": 0,
+      "bodyBytes": 14,
+      "status": 200
+    },
+    {
+      "mode": "abort",
+      "closed": true,
+      "closeCount": 1,
+      "finish": true,
+      "response": false,
+      "responseEnded": false,
+      "abort": true,
+      "serverReceived": true,
+      "serverResponseClosed": true,
+      "callbackCount": 0,
+      "bodyBytes": 14
+    },
+    {
+      "mode": "reject",
+      "closed": true,
+      "closeCount": 1,
+      "finish": true,
+      "response": false,
+      "responseEnded": false,
+      "abort": true,
+      "serverReceived": false,
+      "serverResponseClosed": false,
+      "callbackCount": 1,
+      "bodyBytes": 0,
+      "errorToken": "ERR_BLOCKED_BY_CLIENT"
+    }
+  ]
+}

@@ -609,3 +609,6 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 
 
 2026-11-15 v35收尾记录（非新增批准）：本轮已批选定增量在记录限制下技术接纳并完成本地整合。修复后同v32EXE四次实际菜单/游戏内自然exit0、正常关窗重开及最终launcher真实exit0、metadata/对象/gameDir租约释放审计通过；首次launcher数值退出码未观测保留。原691项687PASS/4SKIP及类型lintbuild全过、source0c2a889c不变。A最终EXE强杀/C公网取消等缺证仍DEFERRED/NOT_EXERCISED，不宣称全历史方案全验；具体有限接纳/保留/排除见根docs/acceptance/20261115-v35/REPORT.md。当前无可自动推进的本轮步骤，结束该验收轮询，独立额度监测保留。未push发布，活跃共享树未整体暂存/提交。
+
+
+2026-11-15 v36续验事实（非新增批准）：用户要求继续后完成安全无窗口网络诊断，原C独立审阅。Electron45本机回环证明request close后仍有HTTP200/原生abort，旧壳closed即事务结束判据被反例证伪；生产compiled createDesktopFetch受控HTTPS AbortSignal至原生abort链通过，四用例/真实子进程exit0。历史具体请求关联UNKNOWN及公网取消NOT_EXERCISED仍保留，不等同完整C预览/GUI取消；无生产改动、TLS降低、旧壳覆盖或全量重跑。见根docs/acceptance/20261115-v36/REPORT.md。v35有限接纳不变，不push发布。

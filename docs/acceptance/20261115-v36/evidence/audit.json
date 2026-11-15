@@ -1,0 +1,28 @@
+{
+  "status": "FINITE_DIAGNOSTIC_PASS",
+  "checks": {
+    "close_not_transaction_terminal": true,
+    "abort_after_server_receipt": true,
+    "own_rejection_matches_blocked": true,
+    "production_adapter_signal_reaches_native": true
+  },
+  "runtimeMatchesV32Preseed": true,
+  "electronExeSha256": "8e84549b05d27d444da2957653200d1e0ac287eff0fc5722b92835b9e0821a59",
+  "networkSourceLfSha256": "36c77661a83aaf09749d73e16b354152956a39c8508583ebd99c3f6a6c9cba93",
+  "compiledAdapterSha256": "0b6478f329f5f9e3b4efc4c50aa5e569fb099f264f375b3a8e7506b6a8b1e44a",
+  "processExit": {
+    "code": 0,
+    "signal": null,
+    "scope": "own headless diagnostic, no BrowserWindow"
+  },
+  "publicNetworkCancellation": "NOT_EXERCISED",
+  "previewDomainAndGuiCancellation": "NOT_EXERCISED_BY_THIS_PROBE",
+  "historicalRequestCorrelation": "UNKNOWN; no retrospective identity mapping is invented",
+  "limitations": [
+    "networkAllowed is an initialized design field, not a packet capture",
+    "server response close is not independent TCP socket-close observation",
+    "reject abort flag comes from probe cleanup after rejection",
+    "adapter callback entry/return not separately traced; code count and successful exit provide limited evidence",
+    "compiled adapter hash is observed identity, not an independent source-to-final-bundle mapping"
+  ]
+}
