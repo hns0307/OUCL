@@ -433,3 +433,6 @@
 
 
 2026-11-16 r2保存：相对句柄native helper与Node内部factory完成，专项14及12项通过，完整832项828PASS/0FAIL/4既有SKIP。新r2候选尚未打包/实跑，公共执行未开放、真实配置仍空。primary剩余10%按约保存；恢复与证据见根docs/execution/20261116-r2/CHECKPOINT.md。历史失败保留，无push/正式EXE覆盖。
+
+
+2026-11-17用户要求继续，primary开始0%已用，按持续执行授权恢复。先补checks及独立execution-20261117候选打包/外层验证，再补真实SQLite/OwnerGuard与native factory联合恢复内部测试；不改公共执行、真实配置仍空。计划和实际证据见根docs/execution/20261117，结果不预记。

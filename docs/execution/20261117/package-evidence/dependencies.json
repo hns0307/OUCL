@@ -1,0 +1,47 @@
+{
+  "node": "v24.21.0",
+  "packages": [
+    {
+      "name": "react",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\react@19.3.1\\node_modules\\react",
+      "version": "19.3.1"
+    },
+    {
+      "name": "react-dom",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\react-dom@19.3.1_react@19.3.1\\node_modules\\react-dom",
+      "version": "19.3.1"
+    },
+    {
+      "name": "zustand",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\zustand@5.0.16_@types+react@19.3.0_react@19.3.1\\node_modules\\zustand",
+      "version": "5.0.16"
+    },
+    {
+      "name": "smol-toml",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\smol-toml@1.9.0\\node_modules\\smol-toml",
+      "version": "1.9.0"
+    },
+    {
+      "name": "electron",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\electron@45.0.0\\node_modules\\electron",
+      "version": "45.0.0"
+    },
+    {
+      "name": "esbuild",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\esbuild@0.28.2\\node_modules\\esbuild",
+      "version": "0.28.2"
+    },
+    {
+      "name": "vite",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\vite@8.3.5_@types+node@24.19.2_esbuild@0.28.2\\node_modules\\vite",
+      "version": "8.3.5"
+    },
+    {
+      "name": "scheduler",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\scheduler@0.28.0\\node_modules\\scheduler",
+      "version": "0.28.0"
+    }
+  ],
+  "verifiedFor": "execution-20261117",
+  "verification": "installed package name/version; runtime file hashes independently checked by candidate smoke"
+}

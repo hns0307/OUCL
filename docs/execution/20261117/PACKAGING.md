@@ -1,0 +1,11 @@
+# 独立候选打包与实际壳验证
+
+源码基线38c441b7，候选OUCL-0.3.0-execution-20261117.exe，445440字节，SHA256 37e76f53f0ef5a29eb365d1f65d2e011bf2a56b60fe3bfb9b3a094194ea31dc7。source-manifest.json记录本次产品/构建输入摘要，不声称跨机器逐字节可重现。
+
+类型、全lint、build及34项bootstrap检查exit0，见check-evidence原始日志与status。完整832项828PASS/0FAIL/4SKIP沿前次相同产品源码记录，本次未重新运行全库。
+
+包审计11应用文件通过，helper exe及metadata包含其中，精确hash/size核验。实际外层候选18检查通过，外层/Electron/Worker exit0，owner.lock释放；运行后11应用及73runtime文件再次摘要匹配。隐藏窗口截图目视无横向溢出，实际内容宽/窄检查通过。使用合成catalog、仅内存隐藏hook、缓存官方runtime且网络封闭，无真实站点、游戏或分发执行。
+
+首轮result.json的applicationEntriesVerified误写9，源码loop已实际校验全部audit.entries；修复report字段为数组长度，第二轮独占root同候选再验18通过并正确记录11。首轮证据保留，不手改。该改动只影响测试报告，不改候选产品字节。
+
+正式OUCL-0.3.0.exe仍SHA256 6d4f7f25d29a06b4d3730fd79ad64a160dbcdb28f747e20eda1ce05f98cc690e，未替换、未push。当前公共能力仍为隔离工具/只读preview，真实配置空；native primitive出现在包内不等于分发执行已开放。
