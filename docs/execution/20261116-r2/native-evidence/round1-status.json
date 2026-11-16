@@ -1,0 +1,19 @@
+{
+  "round": "round1",
+  "compiler": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/r:System.Web.Extensions.dll",
+    "/out:file-guard-v2.exe",
+    "NativeGuard.cs",
+    "Program.cs"
+  ],
+  "compileExitCode": 0,
+  "environment": "caller tool records sandbox approval",
+  "exitCode": 1,
+  "signal": null,
+  "executableSha256": "555aa51f07d00bda3fb96a911e83fb4d3f929cc69349021ee9c59cca48be05d5",
+  "nativeGuardSha256": "cff8a04bbfc42919f6161d72ce4afaa0b06524e988c252ae89ac8be99ee1a480",
+  "programSha256": "da5941898ad07eee629d13d4a4a7a5953bbbebcd4f697955578aefa364cbde1c"
+}

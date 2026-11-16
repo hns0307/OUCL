@@ -1,0 +1,22 @@
+diff --git a/spikes/distribution-file-guard/v3/RelativeNative.cs b/spikes/distribution-file-guard/v4/RelativeNative.cs
+index f8555e88..56974681 100644
+--- a/spikes/distribution-file-guard/v3/RelativeNative.cs
++++ b/spikes/distribution-file-guard/v4/RelativeNative.cs
+@@ -105,7 +105,7 @@ internal static class RelativeNative
+                     guard = CreateFileW(root, Read | Sync, 3, IntPtr.Zero, 3, 0x02000000 | 0x00200000, IntPtr.Zero);
+                     if (guard.IsInvalid) { guard.Dispose(); throw new Win32Exception(Marshal.GetLastWin32Error()); }
+                 }
+-                handle = CreateFileW(root, Access, 1, IntPtr.Zero, 3, 0x02000000 | 0x00200000, IntPtr.Zero);
++                handle = CreateFileW(root, Access, separateGuard ? 3u : 1u, IntPtr.Zero, 3, 0x02000000 | 0x00200000, IntPtr.Zero);
+                 if (handle.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error());
+                 if (Information(handle).Volume != volume.serial) { handle.Dispose(); if (guard != null) guard.Dispose(); throw new InvalidOperationException("VOLUME_CHANGED"); } Add(root, handle, guard);
+             }
+@@ -117,7 +117,7 @@ internal static class RelativeNative
+                 {
+                     SafeFileHandle guard = null;
+                     if (separateGuard) guard = OpenRelative(handle, part, true, Read | Sync, false, 3);
+-                    try { child = OpenRelative(handle, part, true, Access); } catch { if (guard != null) guard.Dispose(); throw; }
++                    try { child = OpenRelative(handle, part, true, Access, false, separateGuard ? 3u : 1u); } catch { if (guard != null) guard.Dispose(); throw; }
+                     Add(next, child, guard);
+                 }
+                 handle = child; current = next;

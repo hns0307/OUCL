@@ -430,3 +430,6 @@
 独立额度检测确认300分钟窗口恢复（实测开始2%已用、98%剩余），按用户“额度够高立刻恢复”规则继续，不创建重复监测。当前增量：修正测试夹具的Worker断点恢复以验证原候选；v2 Windows句柄原语/隔离helper与transaction native factory；执行请求的active/tombstone/TTL和根目录inode绑定。信任配置选固定快照，无产品热改pins接口；需要变更时先close/drain旧coordinator再启用新快照，不承诺跨域瞬时撤销。真实站点/来源/公钥仍空，不新增真实网络执行。文件所有权按子代理独占：候选夹具/helper、v2原语spike、execution生命周期/独立review；主协调拥有事务根绑定、Node native适配、构建/最终整合。细节与证据见docs/execution/20261116-r2。
 
 2026-11-16 r2候选初始化闭合：独立实测定位为smoke调试夹具未恢复storage Worker的Break on start（非产品初始化缺陷）。仅修夹具后，同一候选外层18项通过，外层/Electron/Worker正常exit0且owner.lock释放，九应用/73运行时摘要不变；历史失败保留。原生文件helper准入仍独立进行，不能由本条视为分发执行已开放。见docs/execution/20261116-r2/CANDIDATE-INIT.md。
+
+
+2026-11-16 r2保存：相对句柄native helper与Node内部factory完成，专项14及12项通过，完整832项828PASS/0FAIL/4既有SKIP。新r2候选尚未打包/实跑，公共执行未开放、真实配置仍空。primary剩余10%按约保存；恢复与证据见根docs/execution/20261116-r2/CHECKPOINT.md。历史失败保留，无push/正式EXE覆盖。

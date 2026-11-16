@@ -1,0 +1,22 @@
+{
+  "round": "round1",
+  "mode": "strong",
+  "compileExitCode": 0,
+  "compiler": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/r:System.Web.Extensions.dll",
+    "/out:relative-spike.exe",
+    "RelativeNative.cs",
+    "Program.cs"
+  ],
+  "fixture": "D:\\MC_start\\OUCL\\tmp\\file-guard-v3-20261116\\fixture-LiPgfU",
+  "preexistingJunction": true,
+  "exitCode": 1,
+  "signal": null,
+  "executableSha256": "7373909e14ddbde8b528d0cda702ab6eb76515de5436921b3bc8e659c85a2bca",
+  "nativeSourceSha256": "20589dbd5c3b589141189fe9cad2f670a7ae3df02db5b627943a2000f957c33f",
+  "programSha256": "a40fa90ea4fa8abdbb0da7896f54025415bd2d6fe61ba24de94e2ec22d18443e",
+  "preexistingJunctionSentinelPreserved": true
+}

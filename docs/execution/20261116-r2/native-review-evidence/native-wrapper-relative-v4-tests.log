@@ -1,0 +1,20 @@
+✔ Node wrapper executes real C# identity-bound link, delete, rename and lease release (781.0508ms)
+✔ existing destination is preserved for both native no-replace rename and hardlink (162.0494ms)
+✔ wrong file inode, volume, hash and size cannot mutate the real source (279.7227ms)
+✔ wrong root identity or lease token fail before native publication and preserve the lease (116.3324ms)
+✔ renamed original root and replacement same-path namespace do not satisfy persisted directory identity (72.7234ms)
+✔ binary digest mismatch rejects a valid operation before launching the helper (4.9398ms)
+✔ wrapper rejects path escape, protected regions, wrong transaction staging, ADS and unknown DTO fields (5.5194ms)
+✔ transaction file factory really uses the native helper for publication, rollback moves and lease release (392.9816ms)
+✔ real transaction published crash recovery uses the native factory and persisted root identity (275.6776ms)
+✔ real transaction receipt-committed crash recovery uses the native factory and persisted root identity (288.5333ms)
+✔ packaged metadata loader returns a working real native factory from freshly built protected payload entries (262.9596ms)
+✔ packaged metadata loader rejects schema/path/hash/size tampering and changed executable bytes without granting a factory (438.5596ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3168.0891

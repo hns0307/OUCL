@@ -1,0 +1,61 @@
+{
+  "admission": "NOT_ADMITTED_REPARSE_ATOMIC",
+  "files": [
+    {
+      "path": "native/distribution-files/NativeGuard.cs",
+      "bytes": 11125,
+      "sha256": "73b802fd3c92f030f49424dd5ccd3a3415cff31acb54c611eac0671c02b0b20b"
+    },
+    {
+      "path": "native/distribution-files/Program.cs",
+      "bytes": 13383,
+      "sha256": "217db1ffbb01986a9f3a0104de33c9aafbd0cc28c04dce1424c7d4925a6338cf"
+    },
+    {
+      "path": "scripts/build-distribution-files.mjs",
+      "bytes": 1326,
+      "sha256": "31cfff28287f8bf73d571c98f826dd1fe612aa9ecaae3cc1a2edd2bd4f97776a"
+    },
+    {
+      "path": "tests/distribution-native-helper.test.ts",
+      "bytes": 14357,
+      "sha256": "4da19a34a30da667f2a48143bc92ef9e6a60d3c747255616571447fa8c546f3d"
+    },
+    {
+      "path": "docs/execution/20261116-r2/native-helper-evidence/share-read-only-source/NativeGuard.cs",
+      "bytes": 11076,
+      "sha256": "be938779d475ced978bae8abb3dcf1545da3afff048778fb5de6fb449b96f380"
+    },
+    {
+      "path": "docs/execution/20261116-r2/native-helper-evidence/share-read-only-source/Program.cs",
+      "bytes": 13383,
+      "sha256": "217db1ffbb01986a9f3a0104de33c9aafbd0cc28c04dce1424c7d4925a6338cf"
+    }
+  ],
+  "binaries": [
+    {
+      "variant": "functional-share-read-write",
+      "executable": "D:\\MC_start\\OUCL\\tmp\\native-helper-20261116-r2-tests\\distribution-native-helper\\build\\native\\distribution-files.exe",
+      "bytes": 17408,
+      "sha256": "2b85798c333a856ec95fa3d421cf243094c1894e136a3f5ec6b26c1131be60e8",
+      "buildMetadata": {
+        "formatVersion": 1,
+        "file": "distribution-files.exe",
+        "sha256": "2b85798c333a856ec95fa3d421cf243094c1894e136a3f5ec6b26c1131be60e8",
+        "bytes": 17408
+      }
+    },
+    {
+      "variant": "rejected-share-read-only",
+      "executable": "D:\\MC_start\\OUCL\\tmp\\native-helper-20261116-r2-share-read-tests\\distribution-native-helper\\build\\native\\distribution-files.exe",
+      "bytes": 17408,
+      "sha256": "c20e66eb73a66ebf28293f21285e6e208d5c1cb13b98c78acfc1860916635424",
+      "buildMetadata": {
+        "formatVersion": 1,
+        "file": "distribution-files.exe",
+        "sha256": "c20e66eb73a66ebf28293f21285e6e208d5c1cb13b98c78acfc1860916635424",
+        "bytes": 17408
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "round": "anchor-share3",
+  "mode": "metadata",
+  "compileExitCode": 0,
+  "compiler": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/r:System.Web.Extensions.dll",
+    "/out:relative-spike.exe",
+    "RelativeNative.cs",
+    "Program.cs"
+  ],
+  "fixture": "D:\\MC_start\\OUCL\\tmp\\file-guard-v4-20261116\\fixture-mJpanH",
+  "preexistingJunction": true,
+  "exitCode": 0,
+  "signal": null,
+  "executableSha256": "acb916fc7d8f2bcd32631ae2759b062214f2cb4dc6d49b030f80f2d326017d63",
+  "nativeSourceSha256": "b8017f6ee60fba7676388c736bef9122d90e8c5b106fb74a2c9090b1b46696bf",
+  "programSha256": "1ebc443a8b7c932943ac1ee03f607d3299fe571ed7d946ca8476c86246c7c653",
+  "preexistingJunctionSentinelPreserved": true,
+  "crossLanguage": {
+    "native": {
+      "dev": "2162252404",
+      "ino": "281474978248361",
+      "sha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4",
+      "size": 5,
+      "links": 1
+    },
+    "node": {
+      "dev": "2162252404",
+      "ino": "281474978248361",
+      "size": 5,
+      "sha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    "equal": true
+  }
+}

@@ -1,0 +1,21 @@
+✔ native helper accepts Node dev/ino/SHA proof and publishes exactly one protected hardlink (423.2996ms)
+✔ native helper accepts valid v7 transaction and lease UUIDs used by the shared contract (78.6815ms)
+✔ native no-replace rename and link preserve a preoccupied destination (146.9891ms)
+✔ native same-handle rename preserves Node inode and hash (69.8427ms)
+✔ native delete removes one proven alias without deleting its live published pair (131.1526ms)
+✔ native lease release reuses its protected source handle and rejects a wrong token (130.0859ms)
+✔ native helper refuses a replaced source or wrong proof without deleting replacement bytes (79.3309ms)
+✔ native root identity and lease gates precede mutation (110.9214ms)
+✔ native helper refuses unknown third hardlinks (57.6266ms)
+✔ native schema rejects extra/duplicate fields, unbounded input, invalid UTF8 and future versions (488.2172ms)
+✔ native paths reject foreign transaction staging, traversal, ADS, cross-volume and unrelated files (260.4519ms)
+✔ native helper rejects a real junction ancestor before touching its sentinel (56.8965ms)
+✔ production guard source blocks source edits and ancestor renames from an independent process (287.6108ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2398.0116

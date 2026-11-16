@@ -1,0 +1,37 @@
+{
+  "status": "BOUNDED_FIXED_LOCAL_NTFS_PASS",
+  "publicExecutionEnabled": false,
+  "files": [
+    {
+      "path": "native/distribution-files/NativeGuard.cs",
+      "bytes": 18536,
+      "sha256": "547143af5a6d24469208c5808fd4b0bdcbf828ccf401911557e6e4de8379657f"
+    },
+    {
+      "path": "native/distribution-files/Program.cs",
+      "bytes": 13474,
+      "sha256": "aba0b8632d4de64d548e358c7f8eabc103d241c2e668ffcf1f5d918aa651705d"
+    },
+    {
+      "path": "scripts/build-distribution-files.mjs",
+      "bytes": 1326,
+      "sha256": "31cfff28287f8bf73d571c98f826dd1fe612aa9ecaae3cc1a2edd2bd4f97776a"
+    },
+    {
+      "path": "tests/distribution-native-helper.test.ts",
+      "bytes": 19049,
+      "sha256": "e7ced6de5e4b14eec4930dd167b29e44a654f4988c4a65a4ef453091795c6a03"
+    }
+  ],
+  "binary": {
+    "executable": "D:/MC_start/OUCL/tmp/native-helper-v4-merge/final-tests/distribution-native-helper/build/native/distribution-files.exe",
+    "sha256": "e3cc4580f86f38cf78b7cd750f8faddc18e2e29a3a94bf37246e0216b11ca841",
+    "bytes": 21504,
+    "metadata": {
+      "formatVersion": 1,
+      "file": "distribution-files.exe",
+      "sha256": "e3cc4580f86f38cf78b7cd750f8faddc18e2e29a3a94bf37246e0216b11ca841",
+      "bytes": 21504
+    }
+  }
+}

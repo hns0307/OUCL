@@ -52,17 +52,28 @@ if (extraction.error || extraction.status !== 0) throw new Error('RESOURCE_EXTRA
 const embedded = JSON.parse(await readFile(extracted, 'utf8'));
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const expected = ['dist/main/index.cjs', 'dist/preload/index.cjs', 'dist/renderer/index.html', 'dist/workers/entry.cjs', 'dist/workers/fixed-pack.cjs'];
+let nativeMetadata;
+try { nativeMetadata = JSON.parse(await readFile(path.resolve(buildRoot, 'native/distribution-files.json'), 'utf8')); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
+if (nativeMetadata) {
+  assert.deepEqual(Object.keys(nativeMetadata).sort(), ['bytes', 'file', 'formatVersion', 'sha256']);
+  assert.equal(nativeMetadata.formatVersion, 1); assert.equal(nativeMetadata.file, 'distribution-files.exe');
+  assert.match(nativeMetadata.sha256, /^[a-f0-9]{64}$/); assert.ok(Number.isSafeInteger(nativeMetadata.bytes) && nativeMetadata.bytes > 0 && nativeMetadata.bytes <= 4 * 1024 ** 2);
+  const nativeBytes = await readFile(path.resolve(buildRoot, 'native/distribution-files.exe'));
+  assert.equal(nativeBytes.length, nativeMetadata.bytes); assert.equal(sha256(nativeBytes), nativeMetadata.sha256);
+  expected.push('dist/native/distribution-files.exe', 'dist/native/distribution-files.json');
+}
 const assets = embedded.entries.map(entry => entry.path).filter(name => /^dist\/renderer\/assets\/index-[a-zA-Z0-9_-]+\.(css|js)$/.test(name));
 assert.equal(assets.length, 2, 'EXPECTED_RENDERER_CSS_AND_JS');
 assert.equal(assets.filter(name => name.endsWith('.js')).length, 1);
 assert.equal(assets.filter(name => name.endsWith('.css')).length, 1);
 expected.push(...assets, 'package.json', 'THIRD_PARTY_NOTICES.txt');
-assert.deepEqual(embedded.entries.map(entry => entry.path).sort(), [...expected].sort(), 'EXACT_NINE_ENTRIES');
-assert.equal(new Set(embedded.entries.map(entry => entry.path.toLowerCase())).size, 9, 'NO_DUPLICATE_ENTRIES');
+assert.deepEqual(embedded.entries.map(entry => entry.path).sort(), [...expected].sort(), 'EXACT_REVIEWED_ENTRIES');
+assert.equal(new Set(embedded.entries.map(entry => entry.path.toLowerCase())).size, expected.length, 'NO_DUPLICATE_ENTRIES');
 const manifest = new Map(embedded.appManifest.trimEnd().split('\n').map(line => {
   assert.match(line, /^[a-f0-9]{64} {2}[^\r\n]+$/); return [line.slice(66), line.slice(0, 64)];
 }));
-assert.equal(manifest.size, 9);
+assert.equal(manifest.size, expected.length);
 const checks = [];
 for (const entry of embedded.entries) {
   assert.equal(entry.sha256, manifest.get(entry.path), `EMBEDDED_MANIFEST:${entry.path}`);

@@ -1,0 +1,14 @@
+{
+  "exitCode": 1,
+  "testRoot": "D:\\MC_start\\OUCL\\tmp\\native-adapter-review-r2",
+  "helper": {
+    "formatVersion": 1,
+    "file": "distribution-files.exe",
+    "sha256": "9e789a6df4f067c272cf92bb4cffe99fa480bc4d6a415674de6a9dc826b347d0",
+    "bytes": 17408
+  },
+  "testSourceSha256": "c45a1bc2c72cd69f6c5aaa42414bfb486aa7a24b7f82b8a22717bc7e8674a315",
+  "wrapperSourceSha256": "bf8838f5744bec18d404bc1aa10c0ca7c0dd13fcc74fb880168c1a6e897c81b2",
+  "guardSourceSha256": "be938779d475ced978bae8abb3dcf1545da3afff048778fb5de6fb449b96f380",
+  "programSourceSha256": "217db1ffbb01986a9f3a0104de33c9aafbd0cc28c04dce1424c7d4925a6338cf"
+}
