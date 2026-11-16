@@ -1,15 +1,17 @@
 import { createHash, createPublicKey, verify } from 'node:crypto';
+import { lstat } from 'node:fs/promises';
 import { exactObject, UUID_PATTERN } from '../../shared/contracts/handshake.js';
-import { canonicalDistributionReleasePayload, checkDistributionReleaseTime } from '../../core/distribution/release.js';
+import { canonicalDistributionReleasePayload, checkDistributionReleaseTime, ReleaseError } from '../../core/distribution/release.js';
 import { distributionDiff } from '../../core/distribution/manifest.js';
 import type { DistributionDiff, DistributionManifest } from '../../core/distribution/manifest.js';
 import { projectDistributionOwnership } from '../../core/distribution/ownership.js';
 import { observeDistributionFiles } from './preview.js';
 import { PinnedReleaseSource } from './release-source.js';
+import { guardDirectory, StorageError } from '../storage/files.js';
 import type { TrustedDistributionSource } from './source.js';
 import type { DistributionStore } from './store.js';
 import { DistributionTransactionService } from './transaction.js';
-import type { DistributionTransactionTarget } from './transaction.js';
+import type { DistributionTransactionPorts, DistributionTransactionTarget } from './transaction.js';
 import { DistributionTransactionError, transactionDigest } from './transaction-record.js';
 import type { DistributionJournal, DistributionPlan } from './transaction-record.js';
 
@@ -30,10 +32,35 @@ export interface DistributionExecutionOptions {
   artifact(plan: DistributionPlan, operationIndex: number): Promise<string>;
   /** Mandatory domain validation, repeated immediately before the receipt commit under the gameDir lease. */
   validate(plan: DistributionPlan): Promise<void>;
+  /** Main-owned platform factory; persistent recovery passes the original journal directory identity. */
+  createFiles?: NonNullable<DistributionTransactionPorts['createFiles']>;
   fetcher?: typeof fetch; now?: () => number;
+  /** Internal document-session bounds. Seen identities are never evicted and reused in this coordinator. */
+  lifecycle?: { maxActiveRequests?: number; maxSeenRequests?: number; proposalTtlMs?: number };
 }
 interface Prepared { proposal: DistributionProposal; plan: DistributionPlan; fingerprint: string }
-interface Request { digest: string; controller: AbortController; prepared: Promise<Prepared>; confirming?: Promise<DistributionJournal>; cancelled: boolean; executing: boolean }
+interface Request { digest: string; controller: AbortController; prepared: Promise<Prepared>; confirming?: Promise<DistributionJournal>; cancelled: boolean; executing: boolean; deadline: number }
+export type ExecutionLifecycleCode = 'EXECUTION_ACTIVE_LIMIT' | 'EXECUTION_IDENTITY_LIMIT' | 'EXECUTION_REQUEST_EXPIRED' | 'EXECUTION_REQUEST_FINISHED' | 'EXECUTION_REQUEST_FAILED';
+/** Internal lifecycle outcomes; a new document may create a coordinator, but an old request identity is never silently replayed. */
+export class DistributionExecutionLifecycleError extends Error {
+  constructor(readonly code: ExecutionLifecycleCode) { super(code); this.name = 'DistributionExecutionLifecycleError'; }
+}
+type Failure = { kind: 'transaction'; code: DistributionTransactionError['code'] } | { kind: 'release'; code: ReleaseError['code'] }
+  | { kind: 'storage'; code: StorageError['code'] } | { kind: 'lifecycle'; code: ExecutionLifecycleCode };
+type Tombstone = { digest: string; outcome: 'failed' | 'cancelled' | 'expired'; failure: Failure }
+  | { digest: string; outcome: 'completed'; planDigest: string; phase: 'committed' | 'rolledBack' };
+function failure(error: unknown): Failure {
+  if (error instanceof DistributionTransactionError) return { kind: 'transaction', code: error.code };
+  if (error instanceof ReleaseError) return { kind: 'release', code: error.code };
+  if (error instanceof StorageError) return { kind: 'storage', code: error.code };
+  return { kind: 'lifecycle', code: error instanceof DistributionExecutionLifecycleError ? error.code : 'EXECUTION_REQUEST_FAILED' };
+}
+function failureError(value: Failure): Error {
+  if (value.kind === 'transaction') return new DistributionTransactionError(value.code);
+  if (value.kind === 'release') return new ReleaseError(value.code);
+  if (value.kind === 'storage') return new StorageError(value.code);
+  return new DistributionExecutionLifecycleError(value.code);
+}
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 function invalid(): never { throw new DistributionTransactionError('INVALID_TRANSACTION'); }
 
@@ -42,13 +69,50 @@ export class DistributionExecutionCoordinator {
   private readonly sources: readonly TrustedDistributionSource[];
   private readonly now: () => number;
   private readonly requests = new Map<string, Request>();
+  private readonly tombstones = new Map<string, Tombstone>();
+  private readonly jobs = new Map<string, Set<Promise<unknown>>>();
+  private readonly replays = new Map<string, Promise<DistributionJournal>>();
+  private readonly maxActive: number;
+  private readonly maxSeen: number;
+  private readonly proposalTtl: number;
   private readonly transactions: DistributionTransactionService;
   private disposed = false;
+  private closing: Promise<void> | undefined;
   constructor(private readonly options: DistributionExecutionOptions) {
     this.sources = structuredClone(options.sources); this.now = options.now ?? Date.now;
+    this.maxActive = options.lifecycle?.maxActiveRequests ?? 16; this.maxSeen = options.lifecycle?.maxSeenRequests ?? 1024;
+    this.proposalTtl = options.lifecycle?.proposalTtlMs ?? 300000;
+    if (!Number.isSafeInteger(this.maxActive) || this.maxActive < 1 || this.maxActive > 16 || !Number.isSafeInteger(this.maxSeen)
+      || this.maxSeen < this.maxActive || this.maxSeen > 4096 || !Number.isSafeInteger(this.proposalTtl) || this.proposalTtl < 1 || this.proposalTtl > 300000) invalid();
     this.transactions = new DistributionTransactionService({ journals: options.store.journals, receipts: options.store.receipts,
       readTarget: options.readTarget, isIdle: options.isIdle, artifact: options.artifact,
+      ...(options.createFiles ? { createFiles: options.createFiles } : {}),
       canRecover: (txId, token) => options.store.canRecover(txId, token), authorize: plan => this.authorize(plan) });
+  }
+  private track<T>(id: string, promise: Promise<T>): Promise<T> {
+    const jobs = this.jobs.get(id) ?? new Set<Promise<unknown>>(); jobs.add(promise); this.jobs.set(id, jobs);
+    const finished = (): void => { jobs.delete(promise); if (!jobs.size) this.jobs.delete(id); };
+    void promise.then(finished, finished); return promise;
+  }
+  private activeSize(): number { return new Set([...this.requests.keys(), ...this.jobs.keys()]).size; }
+  private terminal(id: string, request: Request, outcome: 'failed' | 'cancelled' | 'expired', error: unknown): void {
+    if (this.tombstones.has(id)) return;
+    this.requests.delete(id); this.tombstones.set(id, { digest: request.digest, outcome, failure: failure(error) });
+  }
+  private terminalError(value: Tombstone): Error {
+    return value.outcome === 'completed' ? new DistributionExecutionLifecycleError('EXECUTION_REQUEST_FINISHED') : failureError(value.failure);
+  }
+  private sweep(): void {
+    const now = this.now();
+    for (const [id, request] of this.requests) if (!request.confirming && now >= request.deadline) {
+      request.controller.abort(); this.terminal(id, request, 'expired', new DistributionExecutionLifecycleError('EXECUTION_REQUEST_EXPIRED'));
+    }
+  }
+  private ensurePreparing(id: string, request: Request): void {
+    const terminal = this.tombstones.get(id); if (terminal) throw this.terminalError(terminal);
+    if (request.cancelled || request.controller.signal.aborted) throw new DistributionTransactionError('CANCELLED');
+    if (this.now() >= request.deadline) { request.controller.abort(); throw new DistributionExecutionLifecycleError('EXECUTION_REQUEST_EXPIRED'); }
+    this.check();
   }
   private source(sourceId: string): TrustedDistributionSource {
     const source = (this.options.readSources?.() ?? this.sources).find(item => item.sourceId === sourceId);
@@ -81,11 +145,16 @@ export class DistributionExecutionCoordinator {
     if (!trustedSignature(this.source(plan.sourceId))) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
   }
   private async snapshot(target: DistributionExecutionTarget, signal: AbortSignal) {
+    await guardDirectory(target.gameDir); const before = await lstat(target.gameDir, { bigint: true });
+    if (!before.isDirectory() || before.isSymbolicLink() || before.ino === 0n) throw new DistributionTransactionError('FILES_CHANGED');
     const receipt = await this.options.store.receipts.read(target.instanceId);
     const files = await observeDistributionFiles(target.gameDir, signal);
     const latest = await this.target(target); const receiptAfter = await this.options.store.receipts.read(target.instanceId);
-    if (JSON.stringify(latest) !== JSON.stringify(target) || transactionDigest(receipt ?? null) !== transactionDigest(receiptAfter ?? null)) throw new DistributionTransactionError('FILES_CHANGED');
-    return { receipt, files, fingerprint: transactionDigest([target, receipt ?? null, files]) };
+    await guardDirectory(target.gameDir); const after = await lstat(target.gameDir, { bigint: true });
+    if (!after.isDirectory() || after.isSymbolicLink() || before.dev !== after.dev || before.ino !== after.ino
+      || JSON.stringify(latest) !== JSON.stringify(target) || transactionDigest(receipt ?? null) !== transactionDigest(receiptAfter ?? null)) throw new DistributionTransactionError('FILES_CHANGED');
+    const rootIdentity = { dev: String(before.dev), ino: String(before.ino) };
+    return { receipt, files, fingerprint: transactionDigest([target, rootIdentity, receipt ?? null, files]) };
   }
   async prepare(requestId: string, query: DistributionExecutionQuery): Promise<DistributionProposal> {
     this.check();
@@ -93,19 +162,33 @@ export class DistributionExecutionCoordinator {
       || !exactObject(query, ['rootId', 'instanceId', 'sourceId', 'packageId', 'packageVersion'])
       || ![query.rootId, query.instanceId].every(value => typeof value === 'string' && UUID_PATTERN.test(value) && value === value.toLowerCase())
       || ![query.sourceId, query.packageId, query.packageVersion].every(value => typeof value === 'string' && identifier.test(value))) invalid();
-    const digest = transactionDigest(query); const previous = this.requests.get(requestId);
-    if (previous) { if (previous.digest !== digest) invalid(); return structuredClone((await previous.prepared).proposal); }
-    if (this.requests.size >= 16) throw new DistributionTransactionError('INSTANCE_BUSY');
+    this.sweep(); const digest = transactionDigest(query); const terminal = this.tombstones.get(requestId);
+    if (terminal) { if (terminal.digest !== digest) invalid(); throw this.terminalError(terminal); }
+    const previous = this.requests.get(requestId);
+    if (previous) {
+      if (previous.digest !== digest) invalid(); const value = await previous.prepared;
+      this.ensurePreparing(requestId, previous); return structuredClone(value.proposal);
+    }
+    if (this.requests.size + this.tombstones.size >= this.maxSeen) throw new DistributionExecutionLifecycleError('EXECUTION_IDENTITY_LIMIT');
+    if (this.activeSize() >= this.maxActive) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     const controller = new AbortController(); const copied = structuredClone(query);
-    const prepared = this.build(requestId, copied, controller.signal);
-    this.requests.set(requestId, { digest, controller, prepared, cancelled: false, executing: false });
+    const deadline = this.now() + this.proposalTtl;
+    const prepared = Promise.resolve().then(() => { this.ensurePreparing(requestId, request); return this.build(requestId, copied, controller.signal, () => { this.ensurePreparing(requestId, request); }); }).then(value => {
+      request.deadline = Math.min(deadline, value.proposal.expiresAt); value.proposal.expiresAt = request.deadline;
+      this.ensurePreparing(requestId, request); return value;
+    }).catch((error: unknown) => {
+      this.terminal(requestId, request, error instanceof DistributionExecutionLifecycleError && error.code === 'EXECUTION_REQUEST_EXPIRED' ? 'expired' : 'failed', error);
+      throw this.terminalError(this.tombstones.get(requestId)!);
+    });
+    const request: Request = { digest, controller, prepared, cancelled: false, executing: false, deadline };
+    this.requests.set(requestId, request); this.track(requestId, prepared);
     return structuredClone((await prepared).proposal);
   }
-  private async build(requestId: string, query: DistributionExecutionQuery, signal: AbortSignal): Promise<Prepared> {
-    const source = this.source(query.sourceId); const target = await this.target(query);
+  private async build(requestId: string, query: DistributionExecutionQuery, signal: AbortSignal, check: () => void): Promise<Prepared> {
+    const source = this.source(query.sourceId); const target = await this.target(query); check();
     const accepted = await new PinnedReleaseSource(source, this.options.store, { ...(this.options.fetcher ? { fetcher: this.options.fetcher } : {}), now: this.now }).resolve({ packageId: query.packageId, packageVersion: query.packageVersion, target: target.environment }, signal);
-    await this.options.store.saveAcceptedRelease(accepted); this.check();
-    const snapshot = await this.snapshot(target, signal); const payload = accepted.envelope.payload;
+    check(); await this.options.store.saveAcceptedRelease(accepted); check();
+    const snapshot = await this.snapshot(target, signal); check(); const payload = accepted.envelope.payload;
     const ledger = snapshot.receipt?.data;
     const ownership = projectDistributionOwnership(snapshot.files, ledger ? { formatVersion: 1, instanceId: target.instanceId, entries: ledger.entries } : undefined, query);
     const diff = distributionDiff(payload.manifest, ownership);
@@ -116,35 +199,68 @@ export class DistributionExecutionCoordinator {
     if (diff.conflicts.length) diff.changes = [];
     const plan: DistributionPlan = { formatVersion: 1, txId: requestId, rootId: query.rootId, instanceId: query.instanceId, instanceRevision: target.revision,
       sourceId: query.sourceId, packageId: query.packageId, packageVersion: query.packageVersion, sequence: payload.sequence, manifestSha256: payload.manifestSha256, manifest: payload.manifest };
-    await this.authorize(plan); if (signal.aborted) throw new DistributionTransactionError('CANCELLED');
+    await this.authorize(plan); check();
     return { plan, fingerprint: snapshot.fingerprint, proposal: { proposalId: requestId, ...query, sequence: payload.sequence, expiresAt: Math.min(this.now() + 300000, payload.expiresAt), changes: diff.changes, conflicts: diff.conflicts } };
   }
   async confirm(proposalId: string): Promise<DistributionJournal> {
-    this.check(); const request = this.requests.get(proposalId); if (!request) invalid();
-    if (request.confirming) return request.confirming;
+    this.check(); this.sweep(); const terminal = this.tombstones.get(proposalId);
+    if (terminal) {
+      if (terminal.outcome !== 'completed') throw this.terminalError(terminal);
+      const previous = this.replays.get(proposalId); if (previous) return structuredClone(await previous);
+      if (!this.jobs.has(proposalId) && this.activeSize() >= this.maxActive) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
+      const replay = (async () => {
+        const saved = await this.options.store.journals.read(proposalId);
+        if (!saved || saved.data.planDigest !== terminal.planDigest || saved.data.phase !== terminal.phase) throw new DistributionTransactionError('NEEDS_RECOVERY');
+        return saved.data;
+      })().finally(() => { this.replays.delete(proposalId); });
+      this.replays.set(proposalId, replay); return structuredClone(await this.track(proposalId, replay));
+    }
+    const request = this.requests.get(proposalId); if (!request) invalid();
+    if (request.confirming) return structuredClone(await request.confirming);
     request.confirming = (async () => {
       const prepared = await request.prepared;
-      if (request.cancelled || request.controller.signal.aborted) throw new DistributionTransactionError('CANCELLED');
-      if (this.now() >= prepared.proposal.expiresAt || prepared.proposal.conflicts.length) throw new DistributionTransactionError('FILES_CHANGED');
+      this.ensurePreparing(proposalId, request);
+      if (prepared.proposal.conflicts.length) throw new DistributionTransactionError('FILES_CHANGED');
       const target = await this.target(prepared.plan); const current = await this.snapshot(target, request.controller.signal);
       if (current.fingerprint !== prepared.fingerprint) throw new DistributionTransactionError('FILES_CHANGED');
-      await this.authorize(prepared.plan); this.check();
+      await this.authorize(prepared.plan); this.ensurePreparing(proposalId, request);
       request.executing = true;
       return this.transactions.commit(prepared.plan, request.controller.signal);
-    })();
-    return request.confirming;
+    })().then(journal => {
+      if (journal.phase !== 'committed' && journal.phase !== 'rolledBack') throw new DistributionTransactionError('NEEDS_RECOVERY');
+      this.requests.delete(proposalId); this.tombstones.set(proposalId, { digest: request.digest, outcome: 'completed', planDigest: journal.planDigest, phase: journal.phase });
+      return journal;
+    }).catch((error: unknown) => {
+      this.terminal(proposalId, request, error instanceof DistributionExecutionLifecycleError && error.code === 'EXECUTION_REQUEST_EXPIRED' ? 'expired' : 'failed', error);
+      throw this.terminalError(this.tombstones.get(proposalId)!);
+    });
+    this.track(proposalId, request.confirming); return structuredClone(await request.confirming);
   }
   async cancel(requestId: string): Promise<void> {
+    this.check(); this.sweep(); const terminal = this.tombstones.get(requestId);
+    if (terminal) {
+      if (terminal.outcome === 'completed' && terminal.phase === 'committed') throw new DistributionTransactionError('CANCEL_TOO_LATE');
+      return;
+    }
     const request = this.requests.get(requestId); if (!request) invalid();
     if (request.confirming && request.executing) await this.transactions.cancel(requestId);
-    else { request.cancelled = true; request.controller.abort(); }
+    else { request.cancelled = true; request.controller.abort(); this.terminal(requestId, request, 'cancelled', new DistributionTransactionError('CANCELLED')); }
   }
-  async recover(txId: string): Promise<DistributionJournal> { this.check(); return this.transactions.recover(txId); }
-  async close(): Promise<void> {
+  async recover(txId: string): Promise<DistributionJournal> {
+    this.check(); this.sweep(); if (this.activeSize() >= this.maxActive) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
+    return this.track(txId, this.transactions.recover(txId));
+  }
+  close(): Promise<void> {
+    if (this.closing) return this.closing;
     this.disposed = true;
-    for (const [id, request] of this.requests) {
-      if (request.confirming && request.executing) await this.transactions.cancel(id).catch(() => {}); else request.controller.abort();
-    }
-    await Promise.allSettled([...this.requests.values()].map(request => request.confirming ?? request.prepared));
+    this.closing = (async () => {
+      for (const [id, request] of this.requests) {
+        if (request.confirming && request.executing) await this.transactions.cancel(id).catch(() => {});
+        else { request.cancelled = true; request.controller.abort(); this.terminal(id, request, 'cancelled', new DistributionTransactionError('CANCELLED')); }
+      }
+      while (this.jobs.size) await Promise.allSettled([...this.jobs.values()].flatMap(jobs => [...jobs]));
+      this.requests.clear(); this.tombstones.clear(); this.replays.clear();
+    })();
+    return this.closing;
   }
 }

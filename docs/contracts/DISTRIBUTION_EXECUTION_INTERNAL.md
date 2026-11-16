@@ -9,3 +9,5 @@
 - 内部prepare/confirm最多16身份；同ID异输入拒绝，确认重读快照及当前信任/环境。要求真实产品注入JAR/依赖/许可证验证和可信制品适配，空配置不能执行。
 
 Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台适配、热撤销代次与常驻请求回收未闭合前不开放产品执行。详见执行报告的准入缺项，不能把内部单测成功理解为全产品远程更新已交付。
+
+2026-11-16 r2后继：内部journal升级为formatVersion2，新增不可变gameIdentity:{dev,ino}；恢复先核对当前gameDir实际inode，旧v1 journal按未知格式停写，不自动迁移。coordinator快照同样纳入根目录inode。请求上限改为16个active作业与1024个seen身份的轻量tombstone；TTL为5分钟，过期或失败身份不重新执行，完成确认从权威journal只读恢复；达到seen上限需新document生命周期，绝不LRU驱逐旧ID。createFiles仅为内部平台factory端口，cooperative默认适配器不是产品准入；native helper仍有独立阻断，不能由本条视为已启用。

@@ -4,7 +4,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
 import { DistributionTransactionFiles, sameProof } from './transaction-files.js';
 import { DistributionTransactionError, SimulatedDistributionCrash, assertDistributionJournalTransition, parseDistributionJournal, parseDistributionPlan, parseDistributionReceipt, transactionDigest, transactionReceipt } from './transaction-record.js';
-import type { DistributionJournal, DistributionPlan, JournalRepository, ReceiptRepository, TransactionEnvelope } from './transaction-record.js';
+import type { DirectoryProof, DistributionJournal, DistributionPlan, JournalRepository, ReceiptRepository, TransactionEnvelope } from './transaction-record.js';
 
 export interface DistributionTransactionTarget { rootId: string; instanceId: string; revision: number; gameDir: string }
 export type DistributionTransactionCheckpoint = 'staged' | 'backed-up' | 'published' | 'receipt-committed' | 'journal-committed' | 'journal-rolled-back';
@@ -17,6 +17,7 @@ export interface DistributionTransactionPorts {
   artifact(plan: DistributionPlan, operationIndex: number): Promise<string>;
   /** Requires a new exclusive private-metadata owner; the gameDir token alone is not recovery permission. */
   canRecover(txId: string, leaseToken: string): Promise<boolean>;
+  createFiles?(gameDir: string, txId: string, expectedRoot?: DirectoryProof): DistributionTransactionFiles;
   checkpoint?(point: DistributionTransactionCheckpoint, index?: number): Promise<void>;
 }
 type Saved = TransactionEnvelope<DistributionJournal>;
@@ -118,7 +119,7 @@ export class DistributionTransactionService {
       if (receipt && receipt.instanceId !== plan.instanceId) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
       const prior = receipt?.releases.find(entry => entry.sourceId === plan.sourceId && entry.packageId === plan.packageId);
       if (prior && plan.sequence <= prior.sequence) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
-      game = new DistributionTransactionFiles(target.gameDir, plan.txId); await game.initialize();
+      game = this.ports.createFiles?.(target.gameDir, plan.txId) ?? new DistributionTransactionFiles(target.gameDir, plan.txId); await game.initialize();
       const files: DistributionJournal['files'] = [];
       for (const [operationIndex, operation] of plan.manifest.operations.entries()) {
         check(); if (operation.kind === 'keep') continue;
@@ -133,7 +134,7 @@ export class DistributionTransactionService {
         const fresh = operation.kind === 'remove' ? null : await game.copy(await this.ports.artifact(plan, operationIndex), files.length, operation.sha256, operation.size);
         files.push({ operationIndex, old: oldFile ?? null, fresh, stage: 'untouched' });
       }
-      saved = await this.persist(undefined, { formatVersion: 1, plan, planDigest: transactionDigest(plan), leaseToken: randomUUID(), phase: 'prepared',
+      saved = await this.persist(undefined, { formatVersion: 2, plan, planDigest: transactionDigest(plan), leaseToken: randomUUID(), gameIdentity: game.gameIdentity, phase: 'prepared',
         beforeReceiptRevision: before?.revision ?? 0, beforeReceipt: receipt, afterReceipt: transactionReceipt(plan, receipt), files, pending: null });
       await game.claim(saved.data.leaseToken, false); owned = true;
       await this.target(plan, game.gameDir); if (await this.ledger(saved.data) !== 'before') throw new DistributionTransactionError('NEEDS_RECOVERY');
@@ -190,7 +191,8 @@ export class DistributionTransactionService {
       if (saved.data.plan.txId !== txId || !await this.ports.canRecover(txId, saved.data.leaseToken)) throw new DistributionTransactionError('NEEDS_RECOVERY');
       const target = await this.ports.readTarget(saved.data.plan.instanceId); await guardDirectory(target.gameDir);
       if (target.rootId !== saved.data.plan.rootId || target.instanceId !== saved.data.plan.instanceId || !await this.ports.isIdle(target)) throw new DistributionTransactionError('INSTANCE_BUSY');
-      const game = new DistributionTransactionFiles(target.gameDir, txId);
+      const game = this.ports.createFiles?.(target.gameDir, txId, saved.data.gameIdentity) ?? new DistributionTransactionFiles(target.gameDir, txId, { expectedRoot: saved.data.gameIdentity });
+      await game.bindRoot();
       if (saved.data.phase === 'committed' || saved.data.phase === 'rolledBack') {
         if ((await readRegular(game.lock, 100))?.toString('utf8') === saved.data.leaseToken) {
           const expected = saved.data.phase === 'committed' ? 'after' : 'before';

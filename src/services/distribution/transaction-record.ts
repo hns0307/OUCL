@@ -17,9 +17,10 @@ export interface ReceiptClaim { sourceId: string; packageId: string; packageVers
 export interface ReleaseClaim { sourceId: string; packageId: string; sequence: number; manifestSha256: string }
 export interface DistributionReceipt { formatVersion: 1; instanceId: string; txId: string; planDigest: string; entries: ReceiptClaim[]; releases: ReleaseClaim[] }
 export interface FileProof { dev: string; ino: string; sha256: string; size: number }
+export interface DirectoryProof { dev: string; ino: string }
 export interface TransactionFile { operationIndex: number; old: FileProof | null; fresh: FileProof | null; stage: 'untouched' | 'backedUp' | 'published' }
 export interface DistributionJournal {
-  formatVersion: 1; plan: DistributionPlan; planDigest: string; leaseToken: string;
+  formatVersion: 2; plan: DistributionPlan; planDigest: string; leaseToken: string; gameIdentity: DirectoryProof;
   phase: 'prepared' | 'applying' | 'committed' | 'rolledBack' | 'needsRecovery';
   beforeReceiptRevision: number; beforeReceipt: DistributionReceipt | null; afterReceipt: DistributionReceipt;
   files: TransactionFile[]; pending: { index: number; step: 'backup' | 'publish' } | null;
@@ -99,8 +100,9 @@ function proof(value: unknown): value is FileProof {
 }
 /** Unknown formats, altered preparation and illegal pending mutations stop recovery without touching files. */
 export function parseDistributionJournal(value: unknown): DistributionJournal {
-  if (!exactObject(value, ['formatVersion', 'plan', 'planDigest', 'leaseToken', 'phase', 'beforeReceiptRevision', 'beforeReceipt', 'afterReceipt', 'files', 'pending'])
-    || value.formatVersion !== 1 || !hash(value.planDigest) || !uuid(value.leaseToken) || typeof value.phase !== 'string'
+  if (!exactObject(value, ['formatVersion', 'plan', 'planDigest', 'leaseToken', 'gameIdentity', 'phase', 'beforeReceiptRevision', 'beforeReceipt', 'afterReceipt', 'files', 'pending'])
+    || value.formatVersion !== 2 || !exactObject(value.gameIdentity, ['dev', 'ino']) || typeof value.gameIdentity.dev !== 'string' || !/^\d+$/.test(value.gameIdentity.dev)
+    || typeof value.gameIdentity.ino !== 'string' || !/^[1-9]\d*$/.test(value.gameIdentity.ino) || !hash(value.planDigest) || !uuid(value.leaseToken) || typeof value.phase !== 'string'
     || !['prepared', 'applying', 'committed', 'rolledBack', 'needsRecovery'].includes(value.phase)
     || typeof value.beforeReceiptRevision !== 'number' || !Number.isSafeInteger(value.beforeReceiptRevision) || value.beforeReceiptRevision < 0 || !Array.isArray(value.files)) invalid();
   const plan = parseDistributionPlan(value.plan);
@@ -144,7 +146,7 @@ export function assertDistributionJournalTransition(before: DistributionJournal 
   after = parseDistributionJournal(after);
   if (!before) { if (after.phase !== 'prepared' || after.pending !== null) invalid(); return; }
   before = parseDistributionJournal(before);
-  const immutable = (journal: DistributionJournal): unknown => ({ plan: journal.plan, planDigest: journal.planDigest, leaseToken: journal.leaseToken,
+  const immutable = (journal: DistributionJournal): unknown => ({ plan: journal.plan, planDigest: journal.planDigest, leaseToken: journal.leaseToken, gameIdentity: journal.gameIdentity,
     beforeReceiptRevision: journal.beforeReceiptRevision, beforeReceipt: journal.beforeReceipt, afterReceipt: journal.afterReceipt,
     files: journal.files.map(({ operationIndex, old, fresh }) => ({ operationIndex, old, fresh })) });
   if (transactionDigest(immutable(before)) !== transactionDigest(immutable(after))) invalid();

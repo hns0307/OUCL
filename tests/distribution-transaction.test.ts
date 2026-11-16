@@ -227,11 +227,29 @@ test('unknown journal versions and tampered lease/pending/manifest proof stop re
     f.ports.checkpoint = async (point: DistributionTransactionCheckpoint) => { if (point === 'staged') throw new SimulatedDistributionCrash(); };
     await assert.rejects(f.service().commit(plan), SimulatedDistributionCrash);
     const journal = (await f.ports.journals.read(plan.txId))!.data;
-    for (const invalid of [{ ...journal, formatVersion: 2 }, { ...journal, leaseToken: 'foreign' }, { ...journal, planDigest: 'a'.repeat(64) },
+    for (const invalid of [{ ...journal, formatVersion: 3 }, { ...journal, formatVersion: 1 }, { ...journal, gameIdentity: { dev: '1', ino: '0' } }, { ...journal, leaseToken: 'foreign' }, { ...journal, planDigest: 'a'.repeat(64) },
       { ...journal, pending: { index: 0, step: 'publish' } }, { ...journal, phase: 'applying', pending: { index: 0, step: ['publish'] } },
       { ...journal, files: [{ ...journal.files[0], operationIndex: 42 }] }]) assert.throws(() => parseDistributionJournal(invalid), errorCode('INVALID_TRANSACTION'));
     assert.throws(() => assertDistributionJournalTransition(journal, { ...journal, phase: 'applying', leaseToken: randomUUID() }), errorCode('INVALID_TRANSACTION'));
+    assert.throws(() => assertDistributionJournalTransition(journal, { ...journal, phase: 'applying', gameIdentity: { ...journal.gameIdentity, ino: '1' } }), errorCode('INVALID_TRANSACTION'));
     assert.throws(() => assertDistributionJournalTransition(undefined, { ...journal, phase: 'applying' }), errorCode('INVALID_TRANSACTION'));
+  } finally { await f.close(); }
+});
+
+test('recovery refuses a replacement game-directory inode even with matching persisted token and file bytes', async () => {
+  const f = await fixture();
+  try {
+    const bytes = await f.source('root-bound'); const plan = f.plan([{ kind: 'add', area: 'mods', path: 'new.jar', artifactId: 'a', ...bytes }]);
+    f.ports.checkpoint = async point => { if (point === 'staged') throw new SimulatedDistributionCrash(); };
+    await assert.rejects(f.service().commit(plan), SimulatedDistributionCrash);
+    const journal = (await f.ports.journals.read(plan.txId))!.data;
+    await rename(f.game, path.join(f.base, 'original-game'));
+    await mkdir(f.game); await writeFile(path.join(f.game, 'oucl.session.lock'), journal.leaseToken);
+    await writeFile(path.join(f.game, 'sentinel'), 'new-directory-kept'); f.recoverable();
+    await assert.rejects(f.service().recover(plan.txId), errorCode('FILES_CHANGED'));
+    assert.equal(await readFile(path.join(f.game, 'sentinel'), 'utf8'), 'new-directory-kept');
+    assert.equal(await readFile(path.join(f.game, 'oucl.session.lock'), 'utf8'), journal.leaseToken);
+    await assert.rejects(readFile(path.join(f.game, 'mods', 'new.jar')), { code: 'ENOENT' });
   } finally { await f.close(); }
 });
 

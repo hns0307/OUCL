@@ -4,7 +4,13 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
 import { DistributionTransactionError } from './transaction-record.js';
-import type { FileProof } from './transaction-record.js';
+import type { DirectoryProof, FileProof } from './transaction-record.js';
+
+export interface DistributionMutationContext { root: string; txId: string; rootIdentity: DirectoryProof; leaseToken: string }
+export interface AtomicDistributionMutations {
+  mutate(operation: 'rename' | 'link' | 'delete' | 'release', context: DistributionMutationContext, source: string, expected: FileProof, destination?: string): Promise<void>;
+}
+export interface DistributionFileOptions { expectedRoot?: DirectoryProof; mutations?: AtomicDistributionMutations }
 
 function changed(): never { throw new DistributionTransactionError('FILES_CHANGED'); }
 export const sameProof = (left: FileProof, right: FileProof): boolean => left.dev === right.dev && left.ino === right.ino && left.sha256 === right.sha256 && left.size === right.size;
@@ -15,11 +21,28 @@ export const sameProof = (left: FileProof, right: FileProof): boolean => left.de
 export class DistributionTransactionFiles {
   readonly staging: string;
   readonly lock: string;
-  constructor(readonly gameDir: string, txId: string) {
+  private boundRoot: DirectoryProof | undefined;
+  private leaseToken: string | undefined;
+  constructor(readonly gameDir: string, private readonly txId: string, private readonly options: DistributionFileOptions = {}) {
     this.staging = path.join(gameDir, '.oucl-distribution-staging', txId);
     this.lock = path.join(gameDir, 'oucl.session.lock');
+    this.boundRoot = options.expectedRoot ? { ...options.expectedRoot } : undefined;
+  }
+  get gameIdentity(): DirectoryProof { if (!this.boundRoot) throw new DistributionTransactionError('NEEDS_RECOVERY'); return { ...this.boundRoot }; }
+  /** Bind this transaction to the actual game-directory inode, including across recovery. */
+  async bindRoot(): Promise<void> {
+    await guardDirectory(this.gameDir); const info = await lstat(this.gameDir, { bigint: true });
+    if (!info.isDirectory() || info.isSymbolicLink() || info.ino === 0n) changed();
+    const actual = { dev: String(info.dev), ino: String(info.ino) };
+    if (this.boundRoot && (actual.dev !== this.boundRoot.dev || actual.ino !== this.boundRoot.ino)) changed();
+    this.boundRoot ??= actual;
+  }
+  private async context(token = this.leaseToken): Promise<DistributionMutationContext> {
+    await this.bindRoot(); if (!token) throw new DistributionTransactionError('NEEDS_RECOVERY');
+    return { root: this.gameDir, txId: this.txId, rootIdentity: this.gameIdentity, leaseToken: token };
   }
   async directory(directory: string): Promise<void> {
+    await this.bindRoot();
     const relative = path.relative(this.gameDir, directory);
     if (relative.startsWith('..') || path.isAbsolute(relative)) changed();
     let current = await guardDirectory(this.gameDir);
@@ -27,6 +50,7 @@ export class DistributionTransactionFiles {
       current = path.join(current, component);
       try { await mkdir(current); } catch (error) { if (!hasCode(error, 'EEXIST')) throw error; }
       await guardDirectory(current);
+      await this.bindRoot();
     }
   }
   async initialize(): Promise<void> {
@@ -38,6 +62,7 @@ export class DistributionTransactionFiles {
   retired(index: number): string { return path.join(this.staging, `${index}.rollback`); }
   /** Missing is distinct from unsafe or replaced; content hashing is bounded and checks the same open inode. */
   async inspect(file: string, maximumLinks = 2): Promise<FileProof | undefined> {
+    await this.bindRoot();
     try { await guardDirectory(path.dirname(file)); } catch (error) { if (hasCode(error, 'ENOENT')) return undefined; throw error; }
     let initial; try { initial = await lstat(file, { bigint: true }); } catch (error) { if (hasCode(error, 'ENOENT')) return undefined; throw error; }
     if (!initial.isFile() || initial.isSymbolicLink() || initial.ino === 0n || initial.nlink < 1n || initial.nlink > BigInt(maximumLinks) || initial.size > 1024n ** 3n) changed();
@@ -50,7 +75,7 @@ export class DistributionTransactionFiles {
       const after = await handle.stat({ bigint: true }); const current = await lstat(file, { bigint: true });
       if (position !== Number(initial.size) || before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size || before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs
         || current.dev !== after.dev || current.ino !== after.ino || current.size !== after.size || current.mtimeNs !== after.mtimeNs || current.ctimeNs !== after.ctimeNs || current.isSymbolicLink()) changed();
-      return { dev: String(after.dev), ino: String(after.ino), size: position, sha256: hash.digest('hex') };
+      await this.bindRoot(); return { dev: String(after.dev), ino: String(after.ino), size: position, sha256: hash.digest('hex') };
     } finally { await handle.close(); }
   }
   async require(file: string, expected: FileProof): Promise<void> {
@@ -64,20 +89,27 @@ export class DistributionTransactionFiles {
     if (!result || result.sha256 !== sha256 || result.size !== size) changed(); return result;
   }
   async claim(token: string, recovery: boolean): Promise<void> {
-    await guardDirectory(this.gameDir);
+    await this.bindRoot();
     if (recovery && (await readRegular(this.lock, 100))?.toString('utf8') === token) { await this.assertLease(token); return; }
     let handle; try { handle = await open(this.lock, 'wx'); } catch (error) { if (hasCode(error, 'EEXIST')) throw new DistributionTransactionError('INSTANCE_BUSY'); throw error; }
     try { await handle.writeFile(token); await handle.sync(); } finally { await handle.close(); }
+    this.leaseToken = token; await this.bindRoot();
   }
   async assertLease(token: string): Promise<void> {
-    await guardDirectory(this.gameDir); const info = await lstat(this.lock);
+    await this.bindRoot(); const info = await lstat(this.lock);
     if (!info.isFile() || info.isSymbolicLink() || info.nlink !== 1 || (await readRegular(this.lock, 100))?.toString('utf8') !== token) throw new DistributionTransactionError('NEEDS_RECOVERY');
+    this.leaseToken = token;
   }
   async release(token: string): Promise<void> {
     await this.assertLease(token);
-    await unlink(this.lock);
+    if (this.options.mutations) {
+      const proof = await this.inspect(this.lock, 1); if (!proof) throw new DistributionTransactionError('NEEDS_RECOVERY');
+      await this.options.mutations.mutate('release', await this.context(token), this.lock, proof);
+    } else await unlink(this.lock);
+    this.leaseToken = undefined;
   }
   async moveAside(target: string, retained: string, expected: FileProof): Promise<void> {
+    if (this.options.mutations) { await this.options.mutations.mutate('rename', await this.context(), target, expected, retained); await this.require(retained, expected); return; }
     await this.require(target, expected); await guardDirectory(path.dirname(retained));
     if (await this.inspect(retained)) changed();
     await rename(target, retained);
@@ -85,8 +117,12 @@ export class DistributionTransactionFiles {
     await this.require(retained, expected);
   }
   async publish(source: string, target: string, expected: FileProof): Promise<void> {
+    if (this.options.mutations) { await this.options.mutations.mutate('link', await this.context(), source, expected, target); await this.require(target, expected); return; }
     await this.require(source, expected); await guardDirectory(path.dirname(target));
     await link(source, target); await this.require(target, expected);
   }
-  async removeOwned(file: string, expected: FileProof): Promise<void> { await this.require(file, expected); await unlink(file); }
+  async removeOwned(file: string, expected: FileProof): Promise<void> {
+    if (this.options.mutations) { await this.options.mutations.mutate('delete', await this.context(), file, expected); return; }
+    await this.require(file, expected); await unlink(file);
+  }
 }

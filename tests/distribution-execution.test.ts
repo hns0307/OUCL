@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash, generateKeyPairSync, randomUUID, sign } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { DistributionExecutionCoordinator } from '../src/services/distribution/execution.js';
+import type { DistributionExecutionOptions } from '../src/services/distribution/execution.js';
 import { DistributionStore } from '../src/services/distribution/store.js';
 import { PinnedReleaseSource } from '../src/services/distribution/release-source.js';
 import { canonicalDistributionPayload } from '../src/core/distribution/manifest.js';
@@ -13,7 +14,7 @@ import type { DistributionReleasePayload } from '../src/core/distribution/releas
 
 const windows = { skip: process.platform !== 'win32' };
 const hash = (text: string): string => createHash('sha256').update(text).digest('hex');
-async function fixture(empty = false) {
+async function fixture(empty = false, lifecycle?: DistributionExecutionOptions['lifecycle']) {
   const parent = path.resolve(process.env.OUCL_TEST_ROOT ?? 'tmp/distribution-execution-tests'); await mkdir(parent, { recursive: true });
   const directory = await mkdtemp(path.join(parent, 'execution-'));
   const gameDir = path.join(directory, 'game'); const metadata = path.join(directory, 'metadata'); const artifact = path.join(directory, 'fixture-artifact');
@@ -45,11 +46,12 @@ async function fixture(empty = false) {
     },
     isIdle: async () => idle, artifact: async () => artifact,
     validate: async () => { validations++; if (rejectValidation) throw new Error('SYNTHETIC_VALIDATOR_REJECTION'); await validationHook?.(validations); }, fetcher, now: () => now,
+    ...(lifecycle ? { lifecycle } : {}),
   });
   const query = () => ({ rootId, instanceId, sourceId: record.sourceId, packageId: 'club', packageVersion: version });
   return { directory, gameDir, store, record, coordinator, query, instanceId, fetcher, environment,
-    counters: () => ({ validations, targetReads, fetches }), now: () => now, expire: () => { now = 1794762000000; },
-    newer: () => { version = '2'; sequence = 2; }, reject: () => { rejectValidation = true; }, busy: () => { idle = false; },
+    counters: () => ({ validations, targetReads, fetches }), now: () => now, expire: () => { now = 1794762000000; }, advance: (milliseconds: number) => { now += milliseconds; },
+    newer: () => { version = '2'; sequence = 2; }, reject: () => { rejectValidation = true; }, allow: () => { rejectValidation = false; }, busy: () => { idle = false; },
     onValidation: (hook: (count: number) => Promise<void>) => { validationHook = hook; },
     blockTarget: () => {
       let enter = (): void => {}; let release = (): void => {};
@@ -70,6 +72,8 @@ test('execution integrates real signature, SQLite authority, file publication an
     await absent(path.join(f.gameDir, 'mods', 'fixture.jar'));
     const result = await f.coordinator.confirm(id); assert.equal(result.phase, 'committed');
     assert.deepEqual(await f.coordinator.confirm(id), result);
+    await assert.rejects(f.coordinator.cancel(id), { code: 'CANCEL_TOO_LATE' });
+    await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'EXECUTION_REQUEST_FINISHED' });
     assert.equal(await readFile(path.join(f.gameDir, 'mods', 'fixture.jar'), 'utf8'), 'synthetic-text-fixture');
     assert.equal((await f.store.receipts.read(f.instanceId))?.data.txId, result.plan.txId);
     assert.ok(f.counters().validations >= 2, 'product validator must run again before final commit');
@@ -109,7 +113,7 @@ test('expired prepared release/proposal cannot publish a file or receipt', windo
   const f = await fixture();
   try {
     const id = randomUUID(); await f.coordinator.prepare(id, f.query()); f.expire();
-    await assert.rejects(f.coordinator.confirm(id), { code: 'FILES_CHANGED' });
+    await assert.rejects(f.coordinator.confirm(id), { code: 'EXECUTION_REQUEST_EXPIRED' });
     await absent(path.join(f.gameDir, 'mods', 'fixture.jar')); assert.equal(await f.store.receipts.read(f.instanceId), undefined);
   } finally { await f.close(); }
 });
@@ -200,4 +204,117 @@ test('product validator rejection and active session prevent trusted release exe
       await absent(path.join(f.gameDir, 'mods', 'fixture.jar')); assert.equal(await f.store.receipts.read(f.instanceId), undefined);
     } finally { await f.close(); }
   }
+});
+
+test('failed identities release active capacity but retain bounded same-input failure and reject changed input', windows, async () => {
+  const f = await fixture(true, { maxActiveRequests: 2, maxSeenRequests: 24 });
+  try {
+    const ids = Array.from({ length: 24 }, () => randomUUID());
+    for (const id of ids) await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'UNTRUSTED_DISTRIBUTION' });
+    await assert.rejects(f.coordinator.prepare(randomUUID(), f.query()), { code: 'EXECUTION_IDENTITY_LIMIT' });
+    await assert.rejects(f.coordinator.prepare(ids[0]!, f.query()), { code: 'UNTRUSTED_DISTRIBUTION' });
+    await assert.rejects(f.coordinator.confirm(ids[0]!), { code: 'UNTRUSTED_DISTRIBUTION' });
+    await assert.rejects(f.coordinator.prepare(ids[0]!, { ...f.query(), packageId: 'different' }), { code: 'INVALID_TRANSACTION' });
+    assert.deepEqual(f.counters(), { validations: 0, targetReads: 0, fetches: 0 });
+  } finally { await f.close(); }
+});
+
+test('TTL releases a ready slot without allowing expired identity to fetch or execute again', windows, async () => {
+  const f = await fixture(false, { maxActiveRequests: 1, maxSeenRequests: 8, proposalTtlMs: 20 });
+  try {
+    const first = randomUUID(); const second = randomUUID(); await f.coordinator.prepare(first, f.query());
+    await assert.rejects(f.coordinator.prepare(second, f.query()), { code: 'EXECUTION_ACTIVE_LIMIT' });
+    f.advance(20); await f.coordinator.prepare(second, f.query()); const before = f.counters();
+    for (const id of [first, first]) await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'EXECUTION_REQUEST_EXPIRED' });
+    await assert.rejects(f.coordinator.confirm(first), { code: 'EXECUTION_REQUEST_EXPIRED' });
+    await assert.rejects(f.coordinator.prepare(first, { ...f.query(), packageVersion: 'other' }), { code: 'INVALID_TRANSACTION' });
+    assert.deepEqual(f.counters(), before);
+    await f.coordinator.cancel(second); await assert.rejects(f.coordinator.prepare(second, f.query()), { code: 'CANCELLED' });
+    await f.coordinator.prepare(randomUUID(), f.query()); await absent(path.join(f.gameDir, 'mods', 'fixture.jar'));
+  } finally { await f.close(); }
+});
+
+test('expired unresolved work still consumes the active budget until its underlying job settles', windows, async () => {
+  const f = await fixture(false, { maxActiveRequests: 1, maxSeenRequests: 8, proposalTtlMs: 20 });
+  try {
+    const id = randomUUID(); const gate = f.blockTarget(); const first = f.coordinator.prepare(id, f.query());
+    const failed = assert.rejects(first, { code: 'EXECUTION_REQUEST_EXPIRED' }); await gate.entered; f.advance(20);
+    try { await assert.rejects(f.coordinator.prepare(randomUUID(), f.query()), { code: 'EXECUTION_ACTIVE_LIMIT' }); }
+    finally { gate.release(); }
+    await failed; assert.equal(f.counters().fetches, 0, 'expired build must not start a late network request');
+    await f.coordinator.prepare(randomUUID(), f.query());
+  } finally { await f.close(); }
+});
+
+test('in-flight duplicate preparation shares one effect and cancelled requests free slots beyond the former sixteen limit', windows, async () => {
+  const f = await fixture(false, { maxActiveRequests: 2, maxSeenRequests: 32 });
+  try {
+    const id = randomUUID(); const gate = f.blockTarget(); const first = f.coordinator.prepare(id, f.query()); await gate.entered;
+    const duplicate = f.coordinator.prepare(id, f.query()); gate.release();
+    const [one, two] = await Promise.all([first, duplicate]); assert.deepEqual(one, two); assert.equal(f.counters().fetches, 1);
+    await f.coordinator.cancel(id);
+    for (let index = 0; index < 20; index++) { const next = randomUUID(); await f.coordinator.prepare(next, f.query()); await f.coordinator.cancel(next); }
+    await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'CANCELLED' });
+    await absent(path.join(f.gameDir, 'mods', 'fixture.jar'));
+  } finally { await f.close(); }
+});
+
+test('unknown validator errors become small stable failures and cannot rerun the same identity after recovery', windows, async () => {
+  const f = await fixture(false, { maxActiveRequests: 1, maxSeenRequests: 8 });
+  try {
+    const id = randomUUID(); f.reject(); await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'EXECUTION_REQUEST_FAILED' });
+    const before = f.counters(); f.allow();
+    await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'EXECUTION_REQUEST_FAILED' }); assert.deepEqual(f.counters(), before);
+    const another = randomUUID(); await f.coordinator.prepare(another, f.query()); await f.coordinator.cancel(another);
+  } finally { await f.close(); }
+});
+
+test('close is idempotent, cancels pre-transaction confirmation and drains its delayed target read', windows, async () => {
+  const f = await fixture();
+  try {
+    const id = randomUUID(); await f.coordinator.prepare(id, f.query()); const gate = f.blockTarget();
+    const confirmation = f.coordinator.confirm(id); const rejected = assert.rejects(confirmation, { code: 'CANCELLED' }); await gate.entered;
+    const closing = f.coordinator.close(); assert.equal(f.coordinator.close(), closing); let done = false; void closing.then(() => { done = true; });
+    await new Promise<void>(resolve => { setImmediate(resolve); }); assert.equal(done, false, 'close cannot release the store before pending work settles');
+    gate.release(); await rejected; await closing;
+    await assert.rejects(f.coordinator.prepare(randomUUID(), f.query()), { code: 'CANCELLED' });
+    await absent(path.join(f.gameDir, 'mods', 'fixture.jar')); assert.equal(await f.store.receipts.read(f.instanceId), undefined);
+  } finally { await f.close(); }
+});
+
+test('replacing an empty game directory namespace after prepare invalidates the unchanged-looking proposal', windows, async () => {
+  const f = await fixture();
+  try {
+    const id = randomUUID(); await f.coordinator.prepare(id, f.query());
+    const retained = path.join(f.directory, 'retained-original-game'); await rename(f.gameDir, retained); await mkdir(f.gameDir);
+    await assert.rejects(f.coordinator.confirm(id), { code: 'FILES_CHANGED' });
+    assert.deepEqual(await readdir(f.gameDir), []); assert.deepEqual(await readdir(retained), []);
+    assert.equal(await f.store.receipts.read(f.instanceId), undefined);
+  } finally { await f.close(); }
+});
+
+test('completed identities retain read-only confirmation under the total identity limit without retaining proposal capability', windows, async () => {
+  const f = await fixture(false, { maxActiveRequests: 1, maxSeenRequests: 1 });
+  try {
+    const id = randomUUID(); await f.coordinator.prepare(id, f.query()); const committed = await f.coordinator.confirm(id);
+    await assert.rejects(f.coordinator.prepare(randomUUID(), f.query()), { code: 'EXECUTION_IDENTITY_LIMIT' });
+    const results = await Promise.all(Array.from({ length: 20 }, () => f.coordinator.confirm(id)));
+    for (const value of results) assert.deepEqual(value, committed);
+    await assert.rejects(f.coordinator.prepare(id, f.query()), { code: 'EXECUTION_REQUEST_FINISHED' });
+    await assert.rejects(f.coordinator.prepare(id, { ...f.query(), packageId: 'other' }), { code: 'INVALID_TRANSACTION' });
+    await assert.rejects(f.coordinator.cancel(id), { code: 'CANCEL_TOO_LATE' });
+    assert.equal((await f.store.receipts.read(f.instanceId))?.revision, 1);
+  } finally { await f.close(); }
+});
+
+test('close also drains a preparation whose trusted target port is still pending', windows, async () => {
+  const f = await fixture();
+  try {
+    const id = randomUUID(); const gate = f.blockTarget(); const preparation = f.coordinator.prepare(id, f.query());
+    const rejected = assert.rejects(preparation, { code: 'CANCELLED' }); await gate.entered;
+    let closed = false; const closing = f.coordinator.close().then(() => { closed = true; });
+    await new Promise<void>(resolve => { setImmediate(resolve); }); assert.equal(closed, false);
+    gate.release(); await rejected; await closing; assert.equal(f.counters().fetches, 0);
+    await absent(path.join(f.gameDir, 'mods', 'fixture.jar'));
+  } finally { await f.close(); }
 });

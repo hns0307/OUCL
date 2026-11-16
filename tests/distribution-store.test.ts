@@ -20,7 +20,7 @@ function journal(): DistributionJournal {
   const manifest = { formatVersion: 1 as const, packageId: 'club', packageVersion: 'one', target: { minecraft: '1.20.1', javaMajor: 17 as const, loader: 'vanilla' as const, loaderVersion: null }, operations: [] };
   const plan: DistributionPlan = { formatVersion: 1, txId: randomUUID(), rootId: randomUUID(), instanceId: randomUUID(), instanceRevision: 1,
     sourceId: 'club-source', packageId: 'club', packageVersion: 'one', sequence: 1, manifestSha256: transactionDigest(manifest), manifest };
-  return { formatVersion: 1, plan, planDigest: transactionDigest(plan), leaseToken: randomUUID(), phase: 'prepared',
+  return { formatVersion: 2, plan, planDigest: transactionDigest(plan), leaseToken: randomUUID(), gameIdentity: { dev: '1', ino: '1' }, phase: 'prepared',
     beforeReceiptRevision: 0, beforeReceipt: null, afterReceipt: transactionReceipt(plan, null), files: [], pending: null };
 }
 
