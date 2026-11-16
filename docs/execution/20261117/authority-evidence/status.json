@@ -1,0 +1,16 @@
+{
+  "exitCode": 0,
+  "testRoot": "D:\\MC_start\\OUCL\\tmp\\native-authority-20261117",
+  "helper": {
+    "formatVersion": 1,
+    "file": "distribution-files.exe",
+    "sha256": "926d119d16ce203000f395dba01db92edd4d1e7187ce471703840c40f6bef559",
+    "bytes": 21504
+  },
+  "testSourceSha256": "dc6a15113e7718e6e14dccbdc5bedaa34c3c664c6be4125f09c6bd49f6ec073e",
+  "storeSourceSha256": "d84a71443428cd12c6dcf315488352071b2586c45aa05ccc9a48d659e58ce105",
+  "transactionSourceSha256": "cd33941525df7c6ab0fa9d3d609a472918aaf103809f6e6d2ba326533f584703",
+  "nativeFactorySourceSha256": "bf8838f5744bec18d404bc1aa10c0ca7c0dd13fcc74fb880168c1a6e897c81b2",
+  "guardSourceSha256": "547143af5a6d24469208c5808fd4b0bdcbf828ccf401911557e6e4de8379657f",
+  "programSourceSha256": "aba0b8632d4de64d548e358c7f8eabc103d241c2e668ffcf1f5d918aa651705d"
+}

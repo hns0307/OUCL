@@ -1,0 +1,12 @@
+✔ real SQLite owner restart and native published recovery preserve the authoritative commit boundary (806.4224ms)
+✔ real SQLite owner restart and native receipt-committed recovery preserve the authoritative commit boundary (358.8111ms)
+✔ real reopened owner rejects recovery into a replacement game namespace without touching either directory or authority (205.7661ms)
+✔ real reopened owner preserves a foreign game lease and all persisted evidence when recovery is busy (187.7463ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1643.296

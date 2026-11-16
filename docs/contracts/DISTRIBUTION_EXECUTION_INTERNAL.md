@@ -11,3 +11,8 @@
 Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台适配、热撤销代次与常驻请求回收未闭合前不开放产品执行。详见执行报告的准入缺项，不能把内部单测成功理解为全产品远程更新已交付。
 
 2026-11-16 r2后继：内部journal升级为formatVersion2，新增不可变gameIdentity:{dev,ino}；恢复先核对当前gameDir实际inode，旧v1 journal按未知格式停写，不自动迁移。coordinator快照同样纳入根目录inode。请求上限改为16个active作业与1024个seen身份的轻量tombstone；TTL为5分钟，过期或失败身份不重新执行，完成确认从权威journal只读恢复；达到seen上限需新document生命周期，绝不LRU驱逐旧ID。createFiles仅为内部平台factory端口，cooperative默认适配器不是产品准入；native helper仍有独立阻断，不能由本条视为已启用。
+
+
+2026-11-17 native准入后继（保留上文历史状态）：相对NtCreateFile目录图与NtSetInformationFile leaf mutation、固定NTFS检查、同handle proof/lease/delete已完成限定本机验证；14项helper及12项wrapper/factory通过，生产独立审查未发现该边界新增阻断问题。产品调用必须显式使用loadWindowsDistributionFiles/createWindowsDistributionFiles，默认cooperative只限内部测试。候选已包含摘要保护的helper及metadata，11文件审计/外层18检查通过。公共执行仍未开放，真实JAR/依赖/许可适配、持久任务与确认接线未完成。真实SQLite/OwnerGuard×native联合恢复正在补证，不把此前分离测试当作该完整链路证明。固定信任快照选择不承诺热撤销，变更需close/drain旧coordinator。见execution/20261117。
+
+2026-11-17联合恢复后继：真实SQLite/OwnerGuard与native factory的published、receipt-committed注入中断及活owner/root替换/foreign lease拒绝，共4项通过；同一Node进程实际close/reopen，不是强杀/跨进程重启证明。内部恢复准入证据见execution/20261117/AUTHORITY.md。
