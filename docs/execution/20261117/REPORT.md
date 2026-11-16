@@ -13,3 +13,5 @@
 隐藏窗口与合成catalog/缓存runtime证据不代表公网、真实站点、Mod许可证、游戏或实际强杀验收。authority测试是同进程真实close/reopen，而非独立进程被杀。历史失败、首轮计数错误及既有skip全部保留。
 
 后继：LOCAL-DOMAIN-DESIGN.md整理本地JAR、最终完整库存、平台/许可证据的缺口；尚未实现完整domain adapter。公共执行契约/持久任务/确认仍未接线；新公共方案只作PENDING草案，不作为批准。真实N5工具站点、N6来源/sourceId/keyId/公钥继续空出，因此没有真实远程分发能力。
+
+后继纯投影：local-mod-projection完整库存规则已实现，9项专注通过，独立只读认可。最新完整853项849PASS/0FAIL/4既有SKIP，type/全lint/build通过，见PROJECTION.md及projection-final-evidence。它不构成完整domain adapter。公共方案已准备并单独请求明确批准，目前未收到答复，仍PENDING/NOT_IMPLEMENTED。

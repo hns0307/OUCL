@@ -18,3 +18,5 @@ Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台
 2026-11-17联合恢复后继：真实SQLite/OwnerGuard与native factory的published、receipt-committed注入中断及活owner/root替换/foreign lease拒绝，共4项通过；同一Node进程实际close/reopen，不是强杀/跨进程重启证明。内部恢复准入证据见execution/20261117/AUTHORITY.md。
 
 2026-11-17取消后继：内部authorize/validate/artifact接受可选AbortSignal；prepare/confirm传原请求signal，事务两次授权及artifact传组合signal。artifact迟到返回先check后copy；receipt.commit/finish/rollback/recover不接取消，提交开始后仍CANCEL_TOO_LATE且drain实际settlement。局部48通过，完整844项840PASS/0FAIL/4既有SKIP及type/lint/build通过，见execution/20261117/CANCELLATION.md和final-evidence。公共执行未接线，domain实现仍待后继。
+
+2026-11-17本地规则后继：新增projectDistributionMods纯投影，完整baseline保留、旧hash删除/替换、op-index新scan绑定和有界事实校验；9项专注及最新853项849PASS/0FAIL/4SKIP与type/lint/build通过。此函数无IO、无许可或ownership授权，不是完整domain验证器；见execution/20261117/PROJECTION.md。
