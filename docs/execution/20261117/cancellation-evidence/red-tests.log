@@ -1,0 +1,58 @@
+✖ cancellation signal reaches a pending preparation validator without releasing its unfinished work (90.5996ms)
+✖ cancellation signal reaches artifact work through the transaction local cancel controller (70.6634ms)
+✖ cancelled artifact late success cannot start a new copy or persist a journal (56.4029ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 211.8069
+
+✖ failing tests:
+
+test at ..\..\tmp\distribution-cancellation-20261117\red\distribution-execution.test.mjs:2476:1
+✖ cancellation signal reaches a pending preparation validator without releasing its unfinished work (90.5996ms)
+  AssertionError [ERR_ASSERTION]: validate must receive the request signal
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-cancellation-20261117/red/distribution-execution.test.mjs:2498:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\distribution-cancellation-20261117\red\distribution-transaction.test.mjs:1217:1
+✖ cancellation signal reaches artifact work through the transaction local cancel controller (70.6634ms)
+  AssertionError [ERR_ASSERTION]: artifact must receive the combined transaction signal
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-cancellation-20261117/red/distribution-transaction.test.mjs:1244:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\distribution-cancellation-20261117\red\distribution-transaction.test.mjs:1254:1
+✖ cancelled artifact late success cannot start a new copy or persist a journal (56.4029ms)
+  AssertionError [ERR_ASSERTION]: late artifact success must not launch filesystem copying
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-cancellation-20261117/red/distribution-transaction.test.mjs:1293:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -9,6 +9,7 @@ import { SimulatedDistributionCrash, assertDistributionJournalTransition, parseD
 import type { DistributionPlan, TransactionEnvelope } from '../src/services/distribution/transaction-record.js';
 import type { DistributionManifest, DistributionOperation } from '../src/core/distribution/manifest.js';
 import { parseDistributionManifest } from '../src/core/distribution/manifest.js';
+import { DistributionTransactionFiles } from '../src/services/distribution/transaction-files.js';
 
 async function fixture() {
   const parent = path.resolve(process.env.OUCL_TEST_ROOT ?? 'tmp', 'distribution-transactions'); await mkdir(parent, { recursive: true });
@@ -262,4 +263,58 @@ test('linked target ancestors are never followed by the transaction', async () =
     assert.equal(await readFile(path.join(external, 'sentinel'), 'utf8'), 'preserve');
     await assert.rejects(readFile(path.join(external, 'new.jar')), { code: 'ENOENT' });
   } finally { await f.close(); }
+});
+
+test('cancellation signal reaches artifact work through the transaction local cancel controller', async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const finished = new Promise<void>(resolve => { release = resolve; });
+  try {
+    const bytes = await f.source('cancel-artifact'); const plan = f.plan([{ kind: 'add', area: 'mods', path: 'new.jar', artifactId: 'a', ...bytes }]);
+    const artifact = f.ports.artifact; let observed: AbortSignal | undefined;
+    f.ports.artifact = async (current, index, signal?: AbortSignal) => { observed = signal; enter(); await finished; return artifact(current, index); };
+    const service = f.service(); const pending = service.commit(plan); const rejected = assert.rejects(pending, errorCode('CANCELLED'));
+    try {
+      await entered; await service.cancel(plan.txId);
+      assert.ok(observed, 'artifact must receive the combined transaction signal'); assert.equal(observed.aborted, true);
+    } finally { release(); await rejected; }
+  } finally { await f.close(); }
+});
+
+test('cancelled artifact late success cannot start a new copy or persist a journal', async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const finished = new Promise<void>(resolve => { release = resolve; });
+  try {
+    const bytes = await f.source('late-artifact'); const plan = f.plan([{ kind: 'add', area: 'mods', path: 'new.jar', artifactId: 'a', ...bytes }]);
+    let copies = 0; const artifact = f.ports.artifact;
+    f.ports.artifact = async (current, index) => { enter(); await finished; return artifact(current, index); };
+    f.ports.createFiles = (game, txId, expectedRoot) => {
+      const files = new DistributionTransactionFiles(game, txId, expectedRoot ? { expectedRoot } : {}); const copy = files.copy.bind(files);
+      files.copy = async (...args) => { copies++; return copy(...args); }; return files;
+    };
+    const service = f.service(); const pending = service.commit(plan); const rejected = assert.rejects(pending, errorCode('CANCELLED'));
+    try { await entered; await service.cancel(plan.txId); }
+    finally { release(); await rejected; }
+    assert.equal(copies, 0, 'late artifact success must not launch filesystem copying');
+    assert.equal(await f.ports.journals.read(plan.txId), undefined);
+    await assert.rejects(readFile(path.join(f.game, 'oucl.session.lock')), { code: 'ENOENT' });
+  } finally { await f.close(); }
+});
+
+test('cancellation after receipt commit starts cannot interrupt its acknowledgement or committed cleanup', async () => {
+  const f = await fixture(); const controller = new AbortController(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const settled = new Promise<void>(resolve => { release = resolve; });
+  try {
+    const bytes = await f.source('commit-in-flight'); const plan = f.plan([{ kind: 'add', area: 'mods', path: 'new.jar', artifactId: 'a', ...bytes }]);
+    const commit = f.ports.receipts.commit; f.ports.receipts.commit = async (...args) => { enter(); await settled; return commit(...args); };
+    const service = f.service(); const pending = service.commit(plan, controller.signal);
+    try {
+      await entered; assert.equal(await f.receipt(), undefined, 'the atomic commit has not acknowledged yet');
+      await assert.rejects(service.cancel(plan.txId), errorCode('CANCEL_TOO_LATE')); controller.abort();
+    } finally { release(); await pending; }
+    assert.equal((await f.ports.journals.read(plan.txId))?.data.phase, 'committed');
+    assert.equal((await f.receipt())?.data.txId, plan.txId);
+    assert.equal(await readFile(path.join(f.game, 'mods', 'new.jar'), 'utf8'), 'commit-in-flight');
+    assert.equal((await lstat(path.join(f.game, 'mods', 'new.jar'))).nlink, 1);
+    await assert.rejects(readFile(path.join(f.game, 'oucl.session.lock')), { code: 'ENOENT' });
+  } finally { release(); await f.close(); }
 });

@@ -16,3 +16,5 @@ Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台
 2026-11-17 native准入后继（保留上文历史状态）：相对NtCreateFile目录图与NtSetInformationFile leaf mutation、固定NTFS检查、同handle proof/lease/delete已完成限定本机验证；14项helper及12项wrapper/factory通过，生产独立审查未发现该边界新增阻断问题。产品调用必须显式使用loadWindowsDistributionFiles/createWindowsDistributionFiles，默认cooperative只限内部测试。候选已包含摘要保护的helper及metadata，11文件审计/外层18检查通过。公共执行仍未开放，真实JAR/依赖/许可适配、持久任务与确认接线未完成。真实SQLite/OwnerGuard×native联合恢复正在补证，不把此前分离测试当作该完整链路证明。固定信任快照选择不承诺热撤销，变更需close/drain旧coordinator。见execution/20261117。
 
 2026-11-17联合恢复后继：真实SQLite/OwnerGuard与native factory的published、receipt-committed注入中断及活owner/root替换/foreign lease拒绝，共4项通过；同一Node进程实际close/reopen，不是强杀/跨进程重启证明。内部恢复准入证据见execution/20261117/AUTHORITY.md。
+
+2026-11-17取消后继：内部authorize/validate/artifact接受可选AbortSignal；prepare/confirm传原请求signal，事务两次授权及artifact传组合signal。artifact迟到返回先check后copy；receipt.commit/finish/rollback/recover不接取消，提交开始后仍CANCEL_TOO_LATE且drain实际settlement。局部48通过，完整844项840PASS/0FAIL/4既有SKIP及type/lint/build通过，见execution/20261117/CANCELLATION.md和final-evidence。公共执行未接线，domain实现仍待后继。

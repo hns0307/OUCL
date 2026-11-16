@@ -29,9 +29,9 @@ export interface DistributionExecutionOptions {
   readTarget(instanceId: string): Promise<DistributionExecutionTarget>;
   isIdle(target: DistributionTransactionTarget): Promise<boolean>;
   /** Product adapters must supply trusted local bytes after source, size/hash, JAR/environment and licence validation. */
-  artifact(plan: DistributionPlan, operationIndex: number): Promise<string>;
+  artifact(plan: DistributionPlan, operationIndex: number, signal?: AbortSignal): Promise<string>;
   /** Mandatory domain validation, repeated immediately before the receipt commit under the gameDir lease. */
-  validate(plan: DistributionPlan): Promise<void>;
+  validate(plan: DistributionPlan, signal?: AbortSignal): Promise<void>;
   /** Main-owned platform factory; persistent recovery passes the original journal directory identity. */
   createFiles?: NonNullable<DistributionTransactionPorts['createFiles']>;
   fetcher?: typeof fetch; now?: () => number;
@@ -87,7 +87,7 @@ export class DistributionExecutionCoordinator {
     this.transactions = new DistributionTransactionService({ journals: options.store.journals, receipts: options.store.receipts,
       readTarget: options.readTarget, isIdle: options.isIdle, artifact: options.artifact,
       ...(options.createFiles ? { createFiles: options.createFiles } : {}),
-      canRecover: (txId, token) => options.store.canRecover(txId, token), authorize: plan => this.authorize(plan) });
+      canRecover: (txId, token) => options.store.canRecover(txId, token), authorize: (plan, signal) => this.authorize(plan, signal) });
   }
   private track<T>(id: string, promise: Promise<T>): Promise<T> {
     const jobs = this.jobs.get(id) ?? new Set<Promise<unknown>>(); jobs.add(promise); this.jobs.set(id, jobs);
@@ -125,9 +125,11 @@ export class DistributionExecutionCoordinator {
     return target;
   }
   /** Revalidates current key pins and accepted payload immediately before both transaction admission and commit. */
-  private async authorize(plan: DistributionPlan): Promise<void> {
-    this.check(); const source = this.source(plan.sourceId);
+  private async authorize(plan: DistributionPlan, signal?: AbortSignal): Promise<void> {
+    const check = (): void => { this.check(); if (signal?.aborted) throw new DistributionTransactionError('CANCELLED'); };
+    check(); const source = this.source(plan.sourceId);
     const accepted = await this.options.store.readAcceptedRelease({ sourceId: plan.sourceId, packageId: plan.packageId });
+    check();
     if (!accepted) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
     const { payload, signature } = accepted.envelope; const canonical = canonicalDistributionReleasePayload(payload);
     const trustedSignature = (record: TrustedDistributionSource): boolean => {
@@ -139,8 +141,9 @@ export class DistributionExecutionCoordinator {
       || payload.manifestSha256 !== plan.manifestSha256 || transactionDigest(payload.manifest) !== transactionDigest(plan.manifest)) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
     checkDistributionReleaseTime(payload, this.now());
     const target = await this.target(plan);
+    check();
     if (target.revision !== plan.instanceRevision || JSON.stringify(target.environment) !== JSON.stringify(payload.manifest.target)) throw new DistributionTransactionError('FILES_CHANGED');
-    await this.options.validate(plan); this.check();
+    await this.options.validate(plan, signal); check();
     checkDistributionReleaseTime(payload, this.now());
     if (!trustedSignature(this.source(plan.sourceId))) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
   }
@@ -199,7 +202,7 @@ export class DistributionExecutionCoordinator {
     if (diff.conflicts.length) diff.changes = [];
     const plan: DistributionPlan = { formatVersion: 1, txId: requestId, rootId: query.rootId, instanceId: query.instanceId, instanceRevision: target.revision,
       sourceId: query.sourceId, packageId: query.packageId, packageVersion: query.packageVersion, sequence: payload.sequence, manifestSha256: payload.manifestSha256, manifest: payload.manifest };
-    await this.authorize(plan); check();
+    await this.authorize(plan, signal); check();
     return { plan, fingerprint: snapshot.fingerprint, proposal: { proposalId: requestId, ...query, sequence: payload.sequence, expiresAt: Math.min(this.now() + 300000, payload.expiresAt), changes: diff.changes, conflicts: diff.conflicts } };
   }
   async confirm(proposalId: string): Promise<DistributionJournal> {
@@ -223,7 +226,7 @@ export class DistributionExecutionCoordinator {
       if (prepared.proposal.conflicts.length) throw new DistributionTransactionError('FILES_CHANGED');
       const target = await this.target(prepared.plan); const current = await this.snapshot(target, request.controller.signal);
       if (current.fingerprint !== prepared.fingerprint) throw new DistributionTransactionError('FILES_CHANGED');
-      await this.authorize(prepared.plan); this.ensurePreparing(proposalId, request);
+      await this.authorize(prepared.plan, request.controller.signal); this.ensurePreparing(proposalId, request);
       request.executing = true;
       return this.transactions.commit(prepared.plan, request.controller.signal);
     })().then(journal => {

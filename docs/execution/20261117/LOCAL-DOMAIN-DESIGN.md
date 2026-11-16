@@ -1,0 +1,13 @@
+# 下一内部本地域验证增量（设计，未实现）
+
+真实来源/公钥仍空。本设计不开放执行、不定义URL约定、不改变签名清单或下载TrustAnchor。
+
+现有artifactId只有id/hash/size，不能推导下载URL；现有下载TrustAnchor无distribution种类。ModInstallPreparation是add-only且绑定Mod计划，不能直接当作通用replace/remove提交。
+
+拟通过main-owned typed ports提供受控本地文件及明确许可证据。许可必须绑定计划/操作/制品摘要，区分verified、denied、unknown；unknown/缺证据不授权。现有PlatformModVersion.evidence的URL和摘要仅为平台元数据来源，不是许可证。当前没有可复用许可类型，不伪造许可证事实。
+
+Mod验证顺序：实际上下文复测MC/loader/Java/language；ModArchiveReader有界worker读本地JAR并核对大小/hash和前后文件identity；从完整库存剔除精确replace/remove旧项，再以plannedModFacts加入新项；checkLocalMods重算所有依赖（remove亦不能破坏剩余依赖）；保留ModInstallPreparation对新增SERVER_ONLY_MOD的硬阻断策略。checkPlatformMods需要真实versionsByHash，缺平台证据保持unknown，禁止构造假PlatformModVersion。
+
+初片仅Mod字节验证，不将resourcepacks/config当成Mod检查已通过；缺对应验证器时明确unsupported。完整前后快照及最终提交前复验仍由主进程内部authorize/validate调用，取消signal由当前前置增量贯通。
+
+最小有意义测试：真实合成有效/无效JAR，大小/hash与文件替换拒绝；replacement去重、remove破坏依赖、server-only/unknown阻断；许可denied/unknown、平台无证据拒绝、取消worker并等待退出。只有后续实现并取得证据后才能标记完成。

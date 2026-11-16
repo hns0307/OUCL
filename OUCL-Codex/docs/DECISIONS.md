@@ -436,3 +436,5 @@
 
 
 2026-11-17用户要求继续，primary开始0%已用，按持续执行授权恢复。先补checks及独立execution-20261117候选打包/外层验证，再补真实SQLite/OwnerGuard与native factory联合恢复内部测试；不改公共执行、真实配置仍空。计划和实际证据见根docs/execution/20261117，结果不预记。
+
+2026-11-17内部取消增量：实际复现未传signal及迟到copy后修复；局部48PASS，完整844项840PASS/0FAIL/4既有SKIP，type/全lint/build通过。候选execution-20261117沿38c441b7快照已11文件审计及18outer检查通过；不冒称该候选包含后续内部signal源码。真实来源/公钥空，公共执行未开放，无push。详根docs/execution/20261117。

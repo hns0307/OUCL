@@ -11,6 +11,7 @@ import { canonicalDistributionPayload } from '../src/core/distribution/manifest.
 import type { DistributionManifest } from '../src/core/distribution/manifest.js';
 import { canonicalDistributionReleasePayload } from '../src/core/distribution/release.js';
 import type { DistributionReleasePayload } from '../src/core/distribution/release.js';
+import type { DistributionPlan } from '../src/services/distribution/transaction-record.js';
 
 const windows = { skip: process.platform !== 'win32' };
 const hash = (text: string): string => createHash('sha256').update(text).digest('hex');
@@ -21,7 +22,8 @@ async function fixture(empty = false, lifecycle?: DistributionExecutionOptions['
   await mkdir(gameDir); await mkdir(metadata); await writeFile(artifact, 'synthetic-text-fixture');
   const store = await DistributionStore.open(metadata); const rootId = randomUUID(); const instanceId = randomUUID();
   let now = 1794758400000; let version = '1'; let sequence = 1; let validations = 0; let targetReads = 0; let fetches = 0; let rejectValidation = false; let idle = true;
-  let validationHook: ((count: number) => Promise<void>) | undefined;
+  let validationHook: ((count: number, signal?: AbortSignal) => Promise<void>) | undefined;
+  let artifactHook: ((signal?: AbortSignal) => Promise<void>) | undefined;
   let targetGate: { entered(): void; promise: Promise<void> } | undefined;
   const pair = generateKeyPairSync('ed25519');
   const record = { sourceId: 'club-source', manifestOrigin: 'https://publisher.example', manifestPathPrefix: '/releases/',
@@ -44,15 +46,16 @@ async function fixture(empty = false, lifecycle?: DistributionExecutionOptions['
       if (held) { held.entered(); await held.promise; }
       return { rootId, instanceId, revision: 1, gameDir, environment };
     },
-    isIdle: async () => idle, artifact: async () => artifact,
-    validate: async () => { validations++; if (rejectValidation) throw new Error('SYNTHETIC_VALIDATOR_REJECTION'); await validationHook?.(validations); }, fetcher, now: () => now,
+    isIdle: async () => idle, artifact: async (_plan: DistributionPlan, _index: number, signal?: AbortSignal) => { await artifactHook?.(signal); return artifact; },
+    validate: async (_plan: DistributionPlan, signal?: AbortSignal) => { validations++; if (rejectValidation) throw new Error('SYNTHETIC_VALIDATOR_REJECTION'); await validationHook?.(validations, signal); }, fetcher, now: () => now,
     ...(lifecycle ? { lifecycle } : {}),
   });
   const query = () => ({ rootId, instanceId, sourceId: record.sourceId, packageId: 'club', packageVersion: version });
   return { directory, gameDir, store, record, coordinator, query, instanceId, fetcher, environment,
     counters: () => ({ validations, targetReads, fetches }), now: () => now, expire: () => { now = 1794762000000; }, advance: (milliseconds: number) => { now += milliseconds; },
     newer: () => { version = '2'; sequence = 2; }, reject: () => { rejectValidation = true; }, allow: () => { rejectValidation = false; }, busy: () => { idle = false; },
-    onValidation: (hook: (count: number) => Promise<void>) => { validationHook = hook; },
+    onValidation: (hook: (count: number, signal?: AbortSignal) => Promise<void>) => { validationHook = hook; },
+    onArtifact: (hook: (signal?: AbortSignal) => Promise<void>) => { artifactHook = hook; },
     blockTarget: () => {
       let enter = (): void => {}; let release = (): void => {};
       const entered = new Promise<void>(resolve => { enter = resolve; }); const promise = new Promise<void>(resolve => { release = resolve; });
@@ -317,4 +320,85 @@ test('close also drains a preparation whose trusted target port is still pending
     gate.release(); await rejected; await closing; assert.equal(f.counters().fetches, 0);
     await absent(path.join(f.gameDir, 'mods', 'fixture.jar'));
   } finally { await f.close(); }
+});
+
+test('cancellation signal reaches a pending preparation validator without releasing its unfinished work', windows, async () => {
+  const f = await fixture(); let entered!: () => void; let release!: () => void;
+  const inValidator = new Promise<void>(resolve => { entered = resolve; }); const exited = new Promise<void>(resolve => { release = resolve; });
+  let observed: AbortSignal | undefined;
+  f.onValidation(async (_count, signal) => { observed = signal; entered(); await exited; });
+  const id = randomUUID(); const preparing = f.coordinator.prepare(id, f.query());
+  const rejected = assert.rejects(preparing, { code: 'CANCELLED' });
+  try {
+    await inValidator; await f.coordinator.cancel(id);
+    assert.ok(observed, 'validate must receive the request signal'); assert.equal(observed.aborted, true);
+  } finally { release(); await rejected; await f.close(); }
+});
+
+test('close aborts validator work but drains its actual settlement before the store can close', windows, async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const settled = new Promise<void>(resolve => { release = resolve; });
+  let observed: AbortSignal | undefined; let aborted = false;
+  f.onValidation(async (_count, signal) => {
+    observed = signal; const abort = (): void => { aborted = true; }; signal?.addEventListener('abort', abort, { once: true });
+    enter(); try { await settled; } finally { signal?.removeEventListener('abort', abort); }
+  });
+  const pending = f.coordinator.prepare(randomUUID(), f.query()); const rejected = assert.rejects(pending, { code: 'CANCELLED' });
+  let closing: Promise<void> | undefined;
+  try {
+    await entered; let done = false; closing = f.coordinator.close(); void closing.then(() => { done = true; });
+    assert.ok(observed); assert.equal(observed.aborted, true); assert.equal(aborted, true);
+    await new Promise<void>(resolve => { setImmediate(resolve); }); assert.equal(done, false, 'abort is not worker exit acknowledgement');
+  } finally { release(); await rejected; await closing; await f.close(); }
+});
+
+test('cancel during the authority read prevents a late validator from starting', windows, async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const settled = new Promise<void>(resolve => { release = resolve; });
+  const read = f.store.readAcceptedRelease.bind(f.store);
+  f.store.readAcceptedRelease = async scope => { enter(); await settled; return read(scope); };
+  const id = randomUUID(); const pending = f.coordinator.prepare(id, f.query()); const rejected = assert.rejects(pending, { code: 'CANCELLED' });
+  try { await entered; await f.coordinator.cancel(id); }
+  finally { release(); await rejected; }
+  try {
+    assert.equal(f.counters().validations, 0); assert.equal(await f.store.journals.read(id), undefined);
+  } finally { await f.close(); }
+});
+
+test('transaction-local cancellation reaches the final domain validator and rolls back published bytes', windows, async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const settled = new Promise<void>(resolve => { release = resolve; });
+  let observed: AbortSignal | undefined;
+  f.onValidation(async (_count, signal) => {
+    try { await readFile(path.join(f.gameDir, 'mods', 'fixture.jar')); }
+    catch (error) { if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') return; throw error; }
+    observed = signal; enter(); await settled;
+  });
+  try {
+    const id = randomUUID(); await f.coordinator.prepare(id, f.query()); const pending = f.coordinator.confirm(id);
+    const rejected = assert.rejects(pending, { code: 'CANCELLED' });
+    try {
+      await entered; await f.coordinator.cancel(id);
+      assert.ok(observed, 'the last validate must receive the transaction combined signal'); assert.equal(observed.aborted, true);
+    } finally { release(); await rejected; }
+    assert.equal((await f.store.journals.read(id))?.data.phase, 'rolledBack');
+    assert.equal(await f.store.receipts.read(f.instanceId), undefined);
+    await absent(path.join(f.gameDir, 'mods', 'fixture.jar')); await absent(path.join(f.gameDir, 'oucl.session.lock'));
+    assert.equal(await readFile(path.join(f.gameDir, '.oucl-distribution-staging', id, '0.rollback'), 'utf8'), 'synthetic-text-fixture');
+  } finally { release(); await f.close(); }
+});
+
+test('coordinator cancellation reaches artifact work through the transaction combined signal', windows, async () => {
+  const f = await fixture(); let enter!: () => void; let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; }); const settled = new Promise<void>(resolve => { release = resolve; });
+  let observed: AbortSignal | undefined;
+  f.onArtifact(async signal => { observed = signal; enter(); await settled; });
+  try {
+    const id = randomUUID(); await f.coordinator.prepare(id, f.query()); const pending = f.coordinator.confirm(id);
+    const rejected = assert.rejects(pending, { code: 'CANCELLED' });
+    try { await entered; await f.coordinator.cancel(id); assert.ok(observed); assert.equal(observed.aborted, true); }
+    finally { release(); await rejected; }
+    assert.equal(await f.store.journals.read(id), undefined); assert.equal(await f.store.receipts.read(f.instanceId), undefined);
+    await absent(path.join(f.gameDir, 'mods', 'fixture.jar')); await absent(path.join(f.gameDir, 'oucl.session.lock'));
+  } finally { release(); await f.close(); }
 });

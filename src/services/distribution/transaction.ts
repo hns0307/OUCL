@@ -4,17 +4,17 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
 import { DistributionTransactionFiles, sameProof } from './transaction-files.js';
 import { DistributionTransactionError, SimulatedDistributionCrash, assertDistributionJournalTransition, parseDistributionJournal, parseDistributionPlan, parseDistributionReceipt, transactionDigest, transactionReceipt } from './transaction-record.js';
-import type { DirectoryProof, DistributionJournal, DistributionPlan, JournalRepository, ReceiptRepository, TransactionEnvelope } from './transaction-record.js';
+import type { DirectoryProof, DistributionJournal, DistributionPlan, FileProof, JournalRepository, ReceiptRepository, TransactionEnvelope } from './transaction-record.js';
 
 export interface DistributionTransactionTarget { rootId: string; instanceId: string; revision: number; gameDir: string }
 export type DistributionTransactionCheckpoint = 'staged' | 'backed-up' | 'published' | 'receipt-committed' | 'journal-committed' | 'journal-rolled-back';
 export interface DistributionTransactionPorts {
   journals: JournalRepository; receipts: ReceiptRepository;
   /** Must authenticate this exact source/manifest/sequence binding using main-owned trust, not renderer evidence. */
-  authorize(plan: DistributionPlan): Promise<void>;
+  authorize(plan: DistributionPlan, signal?: AbortSignal): Promise<void>;
   readTarget(instanceId: string): Promise<DistributionTransactionTarget>;
   isIdle(target: DistributionTransactionTarget): Promise<boolean>;
-  artifact(plan: DistributionPlan, operationIndex: number): Promise<string>;
+  artifact(plan: DistributionPlan, operationIndex: number, signal?: AbortSignal): Promise<string>;
   /** Requires a new exclusive private-metadata owner; the gameDir token alone is not recovery permission. */
   canRecover(txId: string, leaseToken: string): Promise<boolean>;
   createFiles?(gameDir: string, txId: string, expectedRoot?: DirectoryProof): DistributionTransactionFiles;
@@ -113,7 +113,7 @@ export class DistributionTransactionService {
         if (parsed.phase === 'committed' || parsed.phase === 'rolledBack') return parsed;
         throw new DistributionTransactionError('NEEDS_RECOVERY');
       }
-      check(); await this.ports.authorize(plan); check(); const target = await this.target(plan);
+      check(); await this.ports.authorize(plan, combined); check(); const target = await this.target(plan);
       const before = await this.ports.receipts.read(plan.instanceId);
       const receipt = before ? parseDistributionReceipt(before.data) : null;
       if (receipt && receipt.instanceId !== plan.instanceId) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
@@ -131,7 +131,11 @@ export class DistributionTransactionService {
           if (operation.area === 'config' || !oldFile || oldFile.sha256 !== operation.expectedSha256 || !claim || claim.managedId !== operation.managedId
             || claim.sha256 !== operation.expectedSha256 || claim.sourceId !== plan.sourceId || claim.packageId !== plan.packageId) throw new DistributionTransactionError('FILES_CHANGED');
         }
-        const fresh = operation.kind === 'remove' ? null : await game.copy(await this.ports.artifact(plan, operationIndex), files.length, operation.sha256, operation.size);
+        let fresh: FileProof | null = null;
+        if (operation.kind !== 'remove') {
+          const artifact = await this.ports.artifact(plan, operationIndex, combined); check();
+          fresh = await game.copy(artifact, files.length, operation.sha256, operation.size); check();
+        }
         files.push({ operationIndex, old: oldFile ?? null, fresh, stage: 'untouched' });
       }
       saved = await this.persist(undefined, { formatVersion: 2, plan, planDigest: transactionDigest(plan), leaseToken: randomUUID(), gameIdentity: game.gameIdentity, phase: 'prepared',
@@ -153,7 +157,7 @@ export class DistributionTransactionService {
           saved = await this.persist(saved, { ...saved.data, pending: null, files: saved.data.files.map((item, at) => at === index ? { ...item, stage: 'published' } : item) });
         }
       }
-      await this.target(plan, game.gameDir); await this.ports.authorize(plan); check();
+      await this.target(plan, game.gameDir); await this.ports.authorize(plan, combined); check();
       for (const [index, file] of saved.data.files.entries()) {
         if (file.fresh) await game.require(this.filePath(game, saved.data, index), file.fresh);
         else if (await game.inspect(this.filePath(game, saved.data, index))) throw new DistributionTransactionError('FILES_CHANGED');
