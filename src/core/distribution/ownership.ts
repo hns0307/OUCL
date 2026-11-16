@@ -26,7 +26,7 @@ export function parsePackageReceipt(value: unknown, instanceId: string): Package
   const entries = value.entries.map((raw: unknown): PackageReceiptEntry => {
     if (!exactObject(raw, ['sourceId', 'packageId', 'packageVersion', 'managedId', 'area', 'path', 'sha256'])
       || !id(raw.sourceId) || !id(raw.packageId) || !id(raw.packageVersion) || typeof raw.managedId !== 'string' || !UUID_PATTERN.test(raw.managedId)
-      || !['mods', 'resourcepacks', 'config'].includes(String(raw.area)) || typeof raw.path !== 'string' || !hash(raw.sha256)) invalid();
+      || typeof raw.area !== 'string' || !['mods', 'resourcepacks', 'config'].includes(raw.area) || typeof raw.path !== 'string' || !hash(raw.sha256)) invalid();
     try { installRelativePath(raw.path); } catch { invalid(); }
     const identity = `${raw.sourceId}/${raw.packageId}/${raw.managedId.toLowerCase()}`;
     if (identities.has(identity)) invalid(); identities.add(identity);

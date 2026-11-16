@@ -27,7 +27,7 @@ const id = (value: unknown): value is string => typeof value === 'string' && /^[
 const hash = (value: unknown): value is string => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 function invalid(): never { throw new DistributionError('INVALID_MANIFEST'); }
 function location(area: unknown, relative: unknown): TargetFile {
-  if (!['mods', 'resourcepacks', 'config'].includes(String(area)) || typeof relative !== 'string') invalid();
+  if (typeof area !== 'string' || !['mods', 'resourcepacks', 'config'].includes(area) || typeof relative !== 'string') invalid();
   try { installRelativePath(relative); } catch { invalid(); }
   return { area: area as DistributionArea, path: relative };
 }
@@ -36,7 +36,7 @@ export function parseDistributionManifest(value: unknown): DistributionManifest 
   if (!exactObject(value, ['formatVersion', 'packageId', 'packageVersion', 'target', 'operations']) || value.formatVersion !== 1
     || !id(value.packageId) || !id(value.packageVersion) || !exactObject(value.target, ['minecraft', 'javaMajor', 'loader', 'loaderVersion'])
     || !id(value.target.minecraft) || ![8, 17, 21].includes(Number(value.target.javaMajor)) || typeof value.target.javaMajor !== 'number'
-    || !['vanilla', 'fabric', 'quilt', 'forge', 'neoforge'].includes(String(value.target.loader))
+    || typeof value.target.loader !== 'string' || !['vanilla', 'fabric', 'quilt', 'forge', 'neoforge'].includes(value.target.loader)
     || (value.target.loader === 'vanilla' ? value.target.loaderVersion !== null : !id(value.target.loaderVersion))
     || !Array.isArray(value.operations) || value.operations.length > 256) invalid();
   const paths: string[] = [];
@@ -44,7 +44,7 @@ export function parseDistributionManifest(value: unknown): DistributionManifest 
     if (!rawEntry || typeof rawEntry !== 'object' || !('kind' in rawEntry)) invalid();
     const entry = rawEntry as Record<string, unknown>;
     const download = entry.kind === 'add' || entry.kind === 'replace'; const managed = entry.kind === 'replace' || entry.kind === 'remove';
-    if (!['add', 'replace', 'remove', 'keep'].includes(String(entry.kind))
+    if (typeof entry.kind !== 'string' || !['add', 'replace', 'remove', 'keep'].includes(entry.kind)
       || !exactObject(entry, ['kind', 'area', 'path', ...(download ? ['artifactId', 'sha256', 'size'] : []), ...(managed ? ['managedId', 'expectedSha256'] : [])])) invalid();
     const target = location(entry.area, entry.path); const key = `${target.area}/${target.path}`.toLowerCase();
     if (paths.some(other => other === key || other.startsWith(`${key}/`) || key.startsWith(`${other}/`))) invalid(); paths.push(key);

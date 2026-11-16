@@ -1,0 +1,61 @@
+{
+  "base": "49086688327fe260443e3fc21f5f9479ccc7744b",
+  "startedAt": "2026-11-16T08:57:58.913Z",
+  "commands": [
+    {
+      "name": "build",
+      "command": [
+        "D:\\nodejs\\node.exe",
+        "scripts/build.mjs"
+      ],
+      "cwd": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source",
+      "exitCode": 0,
+      "elapsedMs": 2344
+    },
+    {
+      "name": "bootstrap",
+      "command": [
+        "D:\\nodejs\\node.exe",
+        "scripts/bootstrap-test.mjs"
+      ],
+      "cwd": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source",
+      "exitCode": 0,
+      "elapsedMs": 2221
+    },
+    {
+      "name": "package",
+      "command": [
+        "D:\\nodejs\\node.exe",
+        "scripts/bootstrap-package.mjs"
+      ],
+      "cwd": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source",
+      "exitCode": 0,
+      "elapsedMs": 3522
+    },
+    {
+      "name": "audit",
+      "command": [
+        "D:\\nodejs\\node.exe",
+        "scripts/extensions-package-check.mjs"
+      ],
+      "cwd": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source",
+      "exitCode": 0,
+      "elapsedMs": 929
+    },
+    {
+      "name": "duplicate-protection",
+      "command": [
+        "D:\\nodejs\\node.exe",
+        "scripts/bootstrap-package.mjs"
+      ],
+      "cwd": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source",
+      "exitCode": 1,
+      "elapsedMs": 1510
+    }
+  ],
+  "completedAt": "2026-11-16T08:58:11.918Z",
+  "status": "PASS",
+  "output": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\release\\OUCL-0.3.0-execution-20261116.exe",
+  "protectedArtifactsUnchanged": true,
+  "copiedArtifactSha256": "7ee7bfc5166659361dc39b575c6e82324156a5caa22c8a9b7d817b7d93b2265e"
+}

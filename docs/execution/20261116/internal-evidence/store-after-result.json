@@ -1,0 +1,365 @@
+[
+  {
+    "kind": "sql-read",
+    "name": "StorageError",
+    "code": "NEEDS_RECOVERY",
+    "message": "NEEDS_RECOVERY"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 3,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 3,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 3,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 9,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 10,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 10,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "StorageError",
+    "code": "NEEDS_RECOVERY",
+    "message": "NEEDS_RECOVERY"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "StorageError",
+    "code": "STORAGE_IO",
+    "message": "STORAGE_IO"
+  }
+]

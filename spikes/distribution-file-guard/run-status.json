@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-16",
+  "exitCode": 1,
+  "nativeRunCount": 1,
+  "environment": "require_escalated auto-review approved",
+  "stdoutProvenance": "native-stdout.log copied exactly from tool stdout chunk 70fba8; not rerun",
+  "sourceSha256": "f04729d311dcf83242411534482682a6daa322e62121c4b7f21f037e9c711698",
+  "executablePath": "D:/MC_start/OUCL/tmp/distribution-file-guard-20261116/file-guard-spike.exe",
+  "executableSha256": "0ed5722096f6d84862b917d0dbaab48f545d36daaab70984d0e9cc33f1dcfec8",
+  "compileExitCode": 0
+}

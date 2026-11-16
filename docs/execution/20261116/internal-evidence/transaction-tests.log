@@ -1,0 +1,26 @@
+✔ distribution transaction add, replace, remove and keep use private ledger and unique receipt commit (215.5279ms)
+✔ distribution transaction rejects forged game receipts, owned config edits and rollback publisher sequence (72.3438ms)
+✔ distribution cancellation before receipt commit rolls back published files and retains private bytes (67.377ms)
+✔ receipt acknowledgement loss reconciles exact txID and cancellation after commit is too late (71.2663ms)
+✔ fresh distribution service recovers durable backed-up crash from exact journal proofs (129.8272ms)
+✔ fresh distribution service recovers durable published crash from exact journal proofs (137.7435ms)
+✔ fresh distribution service recovers durable receipt-committed crash from exact journal proofs (153.5465ms)
+✔ fresh distribution service recovers durable journal-committed crash from exact journal proofs (153.1167ms)
+✔ cancellation arriving after receipt publication cannot roll back committed files (68.2063ms)
+✔ rolled-back journal crash recovery releases only the proven original lease (79.38ms)
+✔ terminal recovery preserves foreign leases and refuses an unrecognized ledger commit (88.6825ms)
+✔ lost journal acknowledgements reconcile exact durable records without publishing twice (97.0426ms)
+✔ lease replacement during staging stops before publication and preserves the foreign lease (49.1823ms)
+✔ in-place external changes to a published inode are retained instead of rolled back (66.9279ms)
+✔ external replacement during a crashed publication is preserved with needsRecovery and lease evidence (82.0951ms)
+✔ existing game lease, live sessions and changed target revision block distribution mutation (32.1925ms)
+✔ unknown journal versions and tampered lease/pending/manifest proof stop recovery before file access (40.2769ms)
+✔ linked target ancestors are never followed by the transaction (15.9998ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1700.0286

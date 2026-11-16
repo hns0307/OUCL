@@ -1,0 +1,25 @@
+✔ execution integrates real signature, SQLite authority, file publication and idempotent confirmation (159.1116ms)
+✔ empty source registry rejects without target, network, artifact or receipt access (22.7139ms)
+✔ new accepted publisher sequence invalidates an earlier prepared proposal before publication (45.827ms)
+✔ revocation after prepare is checked against current pinned configuration (34.023ms)
+✔ expired prepared release/proposal cannot publish a file or receipt (28.9167ms)
+✔ archived signature metadata is reverified before execution, beyond its accepted payload hash (38.119ms)
+✔ publisher upgrade during final product validation cannot pass the SQLite receipt commit guard (100.122ms)
+✔ same request cannot change identity; cancelled and closed coordinators cannot confirm preparation (40.1517ms)
+✔ cancel between confirm admission and transaction start aborts the original proposal (30.9402ms)
+✔ revocation during awaited product validation is rechecked before receipt commit (91.5891ms)
+✔ external filesystem changes after prepare are retained and invalidate confirmation (36.85ms)
+✔ product validator rejection and active session prevent trusted release execution (73.2679ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (45.1909ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (54.4284ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (22.7765ms)
+✔ executor archives must match already-authenticated canonical release high-water state (38.7704ms)
+✔ SQL schema failures and concurrent close reads remain controlled without leaking native errors (38.5505ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 779.2265

@@ -11,6 +11,14 @@ export const EMPTY_DISTRIBUTION_SOURCES: readonly TrustedDistributionSource[] = 
 export const MAX_DISTRIBUTION_ENVELOPE_BYTES = 1024 * 1024;
 const id = (value: string): boolean => /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(value);
 function untrusted(): never { throw new DistributionError('UNTRUSTED_DISTRIBUTION'); }
+function interruptible<T>(operation: Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const stop = (): void => { reject(new Error('DISTRIBUTION_ABORTED')); };
+    if (signal.aborted) { reject(new Error('DISTRIBUTION_ABORTED')); return; }
+    signal.addEventListener('abort', stop, { once: true });
+    void operation.then(value => { signal.removeEventListener('abort', stop); resolve(value); }, error => { signal.removeEventListener('abort', stop); reject(error); });
+  });
+}
 
 /** HTTPS source with pinned Ed25519 SPKI keys, exact request binding, no redirects and bounded streaming. */
 export class PinnedDistributionSource implements DistributionSource {
@@ -34,8 +42,10 @@ export class PinnedDistributionSource implements DistributionSource {
     const timeout = AbortSignal.timeout(15000); const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
     let response: Response | undefined;
     try {
-      response = await this.fetcher(url, { method: 'GET', redirect: 'error', credentials: 'omit', signal: combined,
+      const loading = this.fetcher(url, { method: 'GET', redirect: 'error', credentials: 'omit', signal: combined,
         headers: { Accept: 'application/json' } });
+      void loading.then(late => { if (combined.aborted) void late.body?.cancel().catch(() => {}); }, () => {});
+      response = await interruptible(loading, combined);
       if (!response.ok || response.redirected || response.url && response.url !== url || !response.body) untrusted();
       const length = response.headers.get('content-length');
       if (length !== null && (!/^\d+$/.test(length) || Number(length) > MAX_DISTRIBUTION_ENVELOPE_BYTES)) untrusted();
@@ -43,10 +53,10 @@ export class PinnedDistributionSource implements DistributionSource {
       try {
         while (true) {
           if (combined.aborted) throw new Error('ABORTED');
-          const read = await reader.read(); if (read.done) break;
+          const read = await interruptible(reader.read(), combined); if (read.done) break;
           size += read.value.byteLength; if (size > MAX_DISTRIBUTION_ENVELOPE_BYTES) untrusted(); chunks.push(read.value);
         }
-      } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+      } finally { void reader.cancel().catch(() => {}); try { reader.releaseLock(); } catch { /* A bounded interrupted read may still hold its lock. */ } }
       const bytes = Buffer.concat(chunks); const envelope = parseDistributionEnvelope(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown);
       const key = this.record.keys.find(entry => entry.keyId === envelope.signature.keyId && !entry.revoked);
       if (!key || request.packageId !== envelope.payload.packageId || request.packageVersion !== envelope.payload.packageVersion
@@ -55,6 +65,6 @@ export class PinnedDistributionSource implements DistributionSource {
     } catch {
       if (signal?.aborted) throw new DistributionError('CANCELLED');
       return untrusted();
-    } finally { if (response?.body && !response.body.locked) await response.body.cancel().catch(() => {}); }
+    } finally { if (response?.body && !response.body.locked) void response.body.cancel().catch(() => {}); }
   }
 }

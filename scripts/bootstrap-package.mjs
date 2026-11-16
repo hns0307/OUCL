@@ -13,12 +13,25 @@ if (tag && !/^[a-z][a-z0-9-]{0,39}$/.test(tag)) throw new Error('INVALID_BUILD_T
 const artifactVersion = `${meta.version}${tag ? `-${tag}` : ''}`;
 const work = path.resolve('.test-build', `bootstrap-${meta.version}-${Date.now()}`); await mkdir(work, { recursive: true });
 const app = path.join(work, 'app'); await mkdir(app);
-await cp('dist', path.join(app, 'dist'), { recursive: true });
+const buildRoot = path.resolve(process.env.OUCL_BUILD_ROOT ?? 'dist');
+await cp(buildRoot, path.join(app, 'dist'), { recursive: true });
 await writeFile(path.join(app, 'package.json'), JSON.stringify({ name: 'oucl', version: meta.version, main: 'dist/main/index.cjs' }));
+const require = createRequire(import.meta.url);
+// Follow Node's actual installed resolution, including parent pnpm stores and packages that hide package.json exports.
+async function packageRoot(name, resolver = require) {
+  let directory = path.dirname(await realpath(resolver.resolve(name)));
+  while (true) {
+    try { if (JSON.parse(await readFile(path.join(directory, 'package.json'), 'utf8')).name === name) return directory; }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    const parent = path.dirname(directory);
+    if (parent === directory) throw new Error('PACKAGE_ROOT_NOT_FOUND');
+    directory = parent;
+  }
+}
 const notices = [];
-for (const name of ['react', 'react-dom', 'zustand', 'smol-toml']) notices.push(`--- ${name} ---\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`);
-const fromReact = createRequire(await realpath('node_modules/react-dom/package.json'));
-notices.push(`--- scheduler ---\n${await readFile(path.join(path.dirname(fromReact.resolve('scheduler/package.json')), 'LICENSE'), 'utf8')}`);
+for (const name of ['react', 'react-dom', 'zustand', 'smol-toml']) notices.push(`--- ${name} ---\n${await readFile(path.join(await packageRoot(name), 'LICENSE'), 'utf8')}`);
+const fromReact = createRequire(path.join(await packageRoot('react-dom'), 'package.json'));
+notices.push(`--- scheduler ---\n${await readFile(path.join(await packageRoot('scheduler', fromReact), 'LICENSE'), 'utf8')}`);
 await writeFile(path.join(app, 'THIRD_PARTY_NOTICES.txt'), notices.join('\n'));
 async function manifest(directory, prefix = '') {
   const lines = [];
@@ -31,12 +44,13 @@ async function manifest(directory, prefix = '') {
   return lines;
 }
 const appManifest = (await manifest(app)).join('\n') + '\n';
-const runtimeManifest = (await manifest(path.resolve('node_modules/electron/dist'))).join('\n') + '\n';
+const electronRoot = await packageRoot('electron');
+const runtimeManifest = (await manifest(path.join(electronRoot, 'dist'))).join('\n') + '\n';
 const appHash = createHash('sha256').update(appManifest).digest('hex');
 await writeFile(path.join(work, 'app.manifest'), appManifest); await writeFile(path.join(work, 'runtime.manifest'), runtimeManifest);
-const version = JSON.parse(await readFile('node_modules/electron/package.json', 'utf8')).version;
+const version = JSON.parse(await readFile(path.join(electronRoot, 'package.json'), 'utf8')).version;
 const filename = `electron-v${version}-win32-x64.zip`;
-const checksum = JSON.parse(await readFile('node_modules/electron/checksums.json', 'utf8'))[filename];
+const checksum = JSON.parse(await readFile(path.join(electronRoot, 'checksums.json'), 'utf8'))[filename];
 if (!/^[a-f0-9]{64}$/.test(checksum)) throw new Error('MISSING_OFFICIAL_CHECKSUM');
 await writeFile(path.join(work, 'configuration'), `${checksum}\nhttps://github.com/electron/electron/releases/download/v${version}/${filename}\n${appHash}\n`);
 function run(file, args, env = process.env) {

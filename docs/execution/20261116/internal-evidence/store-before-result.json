@@ -1,0 +1,330 @@
+[
+  {
+    "kind": "sql-read",
+    "name": "Error",
+    "code": "ERR_SQLITE_ERROR",
+    "message": "no such table: release_states"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 0,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 1,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 2,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 3,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 4,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 5,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 6,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 7,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 8,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 9,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 9,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 9,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 9,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 10,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 10,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 11,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 12,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 13,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  },
+  {
+    "kind": "close-race",
+    "attempt": 14,
+    "name": "Error",
+    "code": "ERR_INVALID_STATE",
+    "message": "database is not open"
+  }
+]

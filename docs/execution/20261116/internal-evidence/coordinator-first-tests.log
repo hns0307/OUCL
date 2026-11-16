@@ -1,0 +1,14 @@
+✔ signed manifest enum fields reject arrays and objects rather than coercing their string value (2.5506ms)
+✔ local receipt area must be an exact string before it can influence ownership classification (1.5399ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (60.3251ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (39.9588ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (20.7393ms)
+✔ executor archives must match already-authenticated canonical release high-water state (28.8603ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 247.423

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "../../node_modules/eslint/bin/eslint.js",
+    "scripts/bootstrap-package.mjs",
+    "scripts/extensions-package-check.mjs"
+  ],
+  "cwd": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main",
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": ""
+}
