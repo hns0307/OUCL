@@ -1,0 +1,7 @@
+
+Debugger listening on ws://127.0.0.1:61051/f64f7806-96c2-4193-a708-52c8641ba2cc
+For help, see: https://nodejs.org/learn/getting-started/debugging
+Debugger attached.
+CANDIDATE_WORKER construct {"entry":"D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710\\dist\\workers\\entry.cjs","kind":"storage","directory":"D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1\\profile\\metadata","mainExecArgv":[],"inspectBrkSwitch":"127.0.0.1:61051"}
+CANDIDATE_WORKER exit {"code":1}
+Waiting for the debugger to disconnect...

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { constants } from 'node:fs';
+import { constants, writeFileSync } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, lstat, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
@@ -52,6 +52,11 @@ let launcherLog = ''; outer.stdout.on('data', chunk => { launcherLog += chunk.to
 let observedOuterExit;
 const outerExit = new Promise((resolve, reject) => { outer.once('error', reject); outer.once('exit', (code, signal) => { observedOuterExit = { code, signal }; resolve(observedOuterExit); }); });
 let socket; let nextId = 0; let pausedFrame; let inspectorPid; const pending = new Map(); const events = [];
+const workerProtocol = []; let workerProtocolId = 0;
+function recordWorkerProtocol(detail) {
+  workerProtocol.push({ at: Date.now(), ...detail });
+  writeFileSync(path.join(evidence, 'worker-inspector.json'), JSON.stringify(workerProtocol, null, 2));
+}
 const wait = milliseconds => new Promise(resolve => { setTimeout(resolve, milliseconds); });
 function command(method, params = {}) {
   const id = ++nextId;
@@ -67,6 +72,28 @@ function installFixture(options, load) {
   const checks = []; let report = { status: 'RUNNING', checks }; let currentWindow; const preloadScripts = []; let ipcReply;
   const output = path.join(options.evidence, 'application-result.json');
   const save = () => { fs.writeFileSync(output, JSON.stringify(report, null, 2)); };
+  const workerEvents = [];
+  const workerLog = (stage, detail = {}) => {
+    workerEvents.push({ at: Date.now(), stage, ...detail });
+    fs.writeFileSync(path.join(options.evidence, 'worker-events.json'), JSON.stringify(workerEvents, null, 2));
+    process.stderr.write(`CANDIDATE_WORKER ${stage} ${JSON.stringify(detail)}\n`);
+  };
+  const threads = load('node:worker_threads'); const OriginalWorker = threads.Worker;
+  threads.Worker = new Proxy(OriginalWorker, { construct(Target, args) {
+    const [entry, settings] = args;
+    workerLog('construct', { entry: String(entry), kind: settings?.workerData?.kind, directory: settings?.workerData?.directory,
+      explicitExecArgv: settings?.execArgv, mainExecArgv: process.execArgv, inspectBrkSwitch: app.commandLine.getSwitchValue('inspect-brk') });
+    let worker;
+    try { worker = Reflect.construct(Target, args); } catch (error) { workerLog('constructor-error', { code: error.code, message: error.message, stack: error.stack }); throw error; }
+    worker.on('online', () => { workerLog('online', { threadId: worker.threadId }); });
+    worker.on('error', error => { workerLog('error', { code: error.code, message: error.message, stack: error.stack }); });
+    worker.on('exit', code => { workerLog('exit', { code }); });
+    worker.on('message', message => { workerLog('message', { kind: message?.kind, code: message?.code, features: message?.features, ok: message?.ok }); });
+    const postMessage = worker.postMessage;
+    worker.postMessage = function(...values) { workerLog('post-message', { kind: values[0]?.kind, command: values[0]?.command?.kind }); return postMessage.apply(this, values); };
+    return worker;
+  } });
+  load('node:module').syncBuiltinESMExports();
   const check = (name, condition) => { if (!condition) throw new Error(name); checks.push({ name, pass: true }); };
   globalThis.__ouclCandidateQuit = () => { currentWindow?.close(); app.quit(); };
   // Do not propagate this test's main-process break-on-start flag to production storage workers.
@@ -154,6 +181,20 @@ try {
   await new Promise((resolve, reject) => { socket.addEventListener('open', resolve, { once:true }); socket.addEventListener('error', reject, { once:true }); });
   socket.addEventListener('message', event => {
     const value=JSON.parse(String(event.data)); if(value.method) events.push(value);
+    if (value.method === 'NodeWorker.attachedToWorker') {
+      recordWorkerProtocol({ event: value.method, ...value.params });
+      for (const method of ['Runtime.enable', 'Debugger.enable', 'Runtime.runIfWaitingForDebugger']) {
+        const message = JSON.stringify({ id: ++workerProtocolId, method });
+        recordWorkerProtocol({ event: 'send', sessionId: value.params.sessionId, method });
+        void command('NodeWorker.sendMessageToWorker', { sessionId: value.params.sessionId, message }).catch(error => { recordWorkerProtocol({ event: 'send-error', error: error.message }); });
+      }
+    } else if (value.method === 'NodeWorker.receivedMessageFromWorker') {
+      const message = JSON.parse(value.params.message);
+      if (message.method === 'Debugger.paused') {
+        recordWorkerProtocol({ event: message.method, sessionId: value.params.sessionId, reason: message.params.reason, frames: message.params.callFrames.slice(0, 2).map(frame => ({ url: frame.url, functionName: frame.functionName })) });
+        void command('NodeWorker.sendMessageToWorker', { sessionId: value.params.sessionId, message: JSON.stringify({ id: ++workerProtocolId, method: 'Debugger.resume' }) }).catch(error => { recordWorkerProtocol({ event: 'resume-error', error: error.message }); });
+      } else if (message.id) recordWorkerProtocol({ event: 'reply', sessionId: value.params.sessionId, id: message.id, error: message.error });
+    } else if (value.method === 'NodeWorker.detachedFromWorker') recordWorkerProtocol({ event: value.method, ...value.params });
     const request=pending.get(value.id);if(!request)return;clearTimeout(request.timer);pending.delete(value.id);
     if(value.error)request.reject(new Error(value.error.message));else request.resolve(value.result);
   });
@@ -161,6 +202,7 @@ try {
   for(let i=0;i<100&&!events.some(item=>item.method==='Debugger.paused');i++)await wait(50);
   pausedFrame=events.find(item=>item.method==='Debugger.paused')?.params.callFrames[0]?.callFrameId;
   assert.ok(pausedFrame,'INITIAL_BREAK_REQUIRED');
+  await command('NodeWorker.enable', { waitForDebuggerOnStart: false });
   // --inspect-brk first pauses Electron's default_app ESM entry, before it loads the product CJS main.
   const installed=await command('Debugger.evaluateOnCallFrame',{callFrameId:pausedFrame,expression:`(${installFixture.toString()})(${JSON.stringify({evidence,application,profile,networkFixture:path.join(repository,'scripts/electron-network-fixture.cjs')})},process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json'))`,returnByValue:true});
   assert.equal(installed.exceptionDetails,undefined);assert.equal(installed.result.value.hooked,true);inspectorPid=installed.result.value.pid;

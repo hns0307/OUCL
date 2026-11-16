@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "actual app path is candidate bootstrap extraction",
+      "pass": true
+    },
+    {
+      "name": "isolated explicit profile used",
+      "pass": true
+    },
+    {
+      "name": "packaged window security unchanged",
+      "pass": true
+    },
+    {
+      "name": "renderer loaded from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "preload script parsed from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "packaged handshake advertises both initialized extensions",
+      "pass": true
+    },
+    {
+      "name": "packaged renderer has no Node globals",
+      "pass": true
+    },
+    {
+      "name": "packaged tools registry is empty and closed",
+      "pass": true
+    },
+    {
+      "name": "unknown tool refused",
+      "pass": true
+    },
+    {
+      "name": "arbitrary URL refused",
+      "pass": true
+    },
+    {
+      "name": "packaged pinned sources registry is empty",
+      "pass": true
+    },
+    {
+      "name": "empty source cannot scan or install",
+      "pass": true
+    },
+    {
+      "name": "close IPC confirms closed",
+      "pass": true
+    },
+    {
+      "name": "packaged online tab displays unconfigured site",
+      "pass": true
+    },
+    {
+      "name": "packaged package tab displays unconfigured sources and keys",
+      "pass": true
+    },
+    {
+      "name": "wide packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "narrow packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "no additional product windows",
+      "pass": true
+    }
+  ],
+  "packagedMain": true,
+  "packagedPreload": true,
+  "preloadScripts": [
+    "electron/js2c/event_emitter_dispatch",
+    "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-2\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710\\dist\\preload\\index.cjs",
+    "",
+    "file:///D:/MC_start/OUCL/tmp/candidate-init-20261116-r2-run-2/OUCL.runtime/app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710/dist/renderer/assets/index-CVgd03lx.js"
+  ],
+  "inspectorArguments": [],
+  "syntheticCatalog": true,
+  "externalNetwork": false,
+  "visibilityHook": true,
+  "application": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-2\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710",
+  "profile": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-2\\profile",
+  "pid": 5520,
+  "nodeExitCode": 0,
+  "applicationQuitCode": 0,
+  "applicationQuitObserved": true
+}

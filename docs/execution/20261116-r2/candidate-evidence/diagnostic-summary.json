@@ -1,0 +1,20 @@
+{
+  "run1": {
+    "workerLifetimeMs": 10015,
+    "onlineObserved": false,
+    "messageObserved": false,
+    "workerExit": 1
+  },
+  "run2": {
+    "onlineAfterMs": 78,
+    "readyAfterMs": 113,
+    "breakReason": "Break on start",
+    "workerExit": 0,
+    "metadataOwnerReleased": true,
+    "outerExit": 0,
+    "electronExit": 0,
+    "checks": 18
+  },
+  "officialExeSha256": "6d4f7f25d29a06b4d3730fd79ad64a160dbcdb28f747e20eda1ce05f98cc690e",
+  "candidateExeSha256": "7ee7bfc5166659361dc39b575c6e82324156a5caa22c8a9b7d817b7d93b2265e"
+}

@@ -639,3 +639,10 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 用户要求“继续”，沿2026-11-15持续实施授权恢复；开始实测codex primary 300分钟窗口4%已用、96%剩余。真实站点、来源、公钥继续留空。当前增量为N6独立v2签名发布序号/有效期、私有SQLite高水位与收据/事务journal、真实文件提交/回滚/恢复内部服务及可信编排；不把裸游戏目录receipt当管理证明。新增存储和协议采用具体文档/typed schema与测试同步，不批量改历史批准。公共执行接线待内部证据齐备；新候选EXE独立tag、冻结49086688只读首片，不覆盖正式EXE。任务/风险/真实结果索引docs/execution/20261116/；无新依赖、不push发布，旧WIP不清理。
 
 2026-11-16阶段保存：N6独立v2发布/私有SQLite高水位与journal/receipt/内部事务及编排已实现，最终796项792PASS/0FAIL/4既有SKIP、type/lint/build通过；尚未接公共执行，真实配置仍空。候选execution-20261116九文件完整性通过但外层初始化未通过（capabilities为空、根因UNKNOWN），不替换正式EXE。Windows同handle文件guard spike1PASS/3FAIL，不能据此开放执行。详细成果/失败/恢复次序见docs/execution/20261116/REPORT.md与CHECKPOINT.md。
+
+
+## 2026-11-16 r2 自动恢复
+
+独立额度检测确认300分钟窗口恢复（实测开始2%已用、98%剩余），按用户“额度够高立刻恢复”规则继续，不创建重复监测。当前增量：修正测试夹具的Worker断点恢复以验证原候选；v2 Windows句柄原语/隔离helper与transaction native factory；执行请求的active/tombstone/TTL和根目录inode绑定。信任配置选固定快照，无产品热改pins接口；需要变更时先close/drain旧coordinator再启用新快照，不承诺跨域瞬时撤销。真实站点/来源/公钥仍空，不新增真实网络执行。文件所有权按子代理独占：候选夹具/helper、v2原语spike、execution生命周期/独立review；主协调拥有事务根绑定、Node native适配、构建/最终整合。细节与证据见docs/execution/20261116-r2。
+
+2026-11-16 r2候选初始化闭合：独立实测定位为smoke调试夹具未恢复storage Worker的Break on start（非产品初始化缺陷）。仅修夹具后，同一候选外层18项通过，外层/Electron/Worker正常exit0且owner.lock释放，九应用/73运行时摘要不变；历史失败保留。原生文件helper准入仍独立进行，不能由本条视为分发执行已开放。见docs/execution/20261116-r2/CANDIDATE-INIT.md。

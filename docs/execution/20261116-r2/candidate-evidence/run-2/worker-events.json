@@ -1,0 +1,436 @@
+[
+  {
+    "at": 1794824923930,
+    "stage": "construct",
+    "entry": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-2\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710\\dist\\workers\\entry.cjs",
+    "kind": "storage",
+    "directory": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-2\\profile\\metadata",
+    "mainExecArgv": [],
+    "inspectBrkSwitch": "127.0.0.1:57538"
+  },
+  {
+    "at": 1794824924008,
+    "stage": "online",
+    "threadId": 1
+  },
+  {
+    "at": 1794824924043,
+    "stage": "message",
+    "kind": "ready",
+    "features": [
+      "mod-targets.read.v1"
+    ]
+  },
+  {
+    "at": 1794824924045,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924053,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924058,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924066,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924075,
+    "stage": "post-message",
+    "command": "installation:set"
+  },
+  {
+    "at": 1794824924087,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924088,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794824924089,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924096,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794824924104,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924111,
+    "stage": "post-message",
+    "command": "sessions:get"
+  },
+  {
+    "at": 1794824924120,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924127,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924136,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924141,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794824924149,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924157,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924166,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924171,
+    "stage": "post-message",
+    "command": "mod-jobs:get"
+  },
+  {
+    "at": 1794824924180,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924185,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924188,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924193,
+    "stage": "post-message",
+    "command": "mod-confirm:list"
+  },
+  {
+    "at": 1794824924198,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924367,
+    "stage": "post-message",
+    "command": "desktop:get"
+  },
+  {
+    "at": 1794824924369,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924378,
+    "stage": "post-message",
+    "command": "profiles:get"
+  },
+  {
+    "at": 1794824924385,
+    "stage": "post-message",
+    "command": "profiles:get"
+  },
+  {
+    "at": 1794824924385,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924392,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794824924393,
+    "stage": "post-message",
+    "command": "catalog:get"
+  },
+  {
+    "at": 1794824924394,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924399,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794824924400,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924406,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924407,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924407,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924407,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924438,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924439,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924439,
+    "stage": "post-message",
+    "command": "desktop:get"
+  },
+  {
+    "at": 1794824924451,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794824924452,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924462,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924466,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924469,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924475,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924476,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794824924483,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924484,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924490,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924498,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924498,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794824924506,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924978,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824924981,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924988,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794824924990,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824924996,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794824925003,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925009,
+    "stage": "post-message",
+    "command": "mod-jobs:get"
+  },
+  {
+    "at": 1794824925010,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925016,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824925019,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925024,
+    "stage": "post-message",
+    "command": "mod-confirm:list"
+  },
+  {
+    "at": 1794824925026,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925475,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824925477,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925484,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794824925494,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824925499,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794824925500,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824926064,
+    "stage": "post-message",
+    "command": "close"
+  },
+  {
+    "at": 1794824926070,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794824926076,
+    "stage": "exit",
+    "code": 0
+  }
+]

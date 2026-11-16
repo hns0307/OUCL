@@ -1,0 +1,16 @@
+[
+  {
+    "at": 1794824821048,
+    "stage": "construct",
+    "entry": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710\\dist\\workers\\entry.cjs",
+    "kind": "storage",
+    "directory": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1\\profile\\metadata",
+    "mainExecArgv": [],
+    "inspectBrkSwitch": "127.0.0.1:61051"
+  },
+  {
+    "at": 1794824831063,
+    "stage": "exit",
+    "code": 1
+  }
+]
