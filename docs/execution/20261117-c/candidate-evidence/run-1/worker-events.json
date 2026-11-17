@@ -1,0 +1,403 @@
+[
+  {
+    "at": 1794900167832,
+    "stage": "construct",
+    "entry": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-c-r1\\OUCL.runtime\\app-77b3da600194862145ca7aa35a67319779f998beaaf316a0f9a920ee8224514b\\dist\\workers\\entry.cjs",
+    "kind": "storage",
+    "directory": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-c-r1\\profile\\metadata",
+    "mainExecArgv": [],
+    "inspectBrkSwitch": "127.0.0.1:50439"
+  },
+  {
+    "at": 1794900167902,
+    "stage": "online",
+    "threadId": 1
+  },
+  {
+    "at": 1794900167943,
+    "stage": "message",
+    "kind": "ready",
+    "features": [
+      "mod-targets.read.v1"
+    ]
+  },
+  {
+    "at": 1794900167945,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900167955,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900167960,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900167967,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900167974,
+    "stage": "post-message",
+    "command": "installation:set"
+  },
+  {
+    "at": 1794900167985,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900167985,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794900167987,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900167992,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794900168000,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168005,
+    "stage": "post-message",
+    "command": "sessions:get"
+  },
+  {
+    "at": 1794900168012,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168018,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168026,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168031,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794900168038,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168044,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168051,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168056,
+    "stage": "post-message",
+    "command": "mod-jobs:get"
+  },
+  {
+    "at": 1794900168062,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168068,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168075,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168080,
+    "stage": "post-message",
+    "command": "mod-confirm:list"
+  },
+  {
+    "at": 1794900168088,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168327,
+    "stage": "post-message",
+    "command": "desktop:get"
+  },
+  {
+    "at": 1794900168329,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168336,
+    "stage": "post-message",
+    "command": "profiles:get"
+  },
+  {
+    "at": 1794900168342,
+    "stage": "post-message",
+    "command": "profiles:get"
+  },
+  {
+    "at": 1794900168342,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168342,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794900168350,
+    "stage": "post-message",
+    "command": "catalog:get"
+  },
+  {
+    "at": 1794900168356,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168362,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794900168371,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168371,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168377,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168378,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168384,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168419,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168420,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168420,
+    "stage": "post-message",
+    "command": "desktop:get"
+  },
+  {
+    "at": 1794900168421,
+    "stage": "post-message",
+    "command": "settings:get"
+  },
+  {
+    "at": 1794900168429,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168435,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168439,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168447,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168453,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168453,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168459,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794900168460,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168460,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168460,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794900168467,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168473,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168944,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900168945,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168952,
+    "stage": "post-message",
+    "command": "instances:get"
+  },
+  {
+    "at": 1794900168953,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168959,
+    "stage": "post-message",
+    "command": "resources:get"
+  },
+  {
+    "at": 1794900168966,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168973,
+    "stage": "post-message",
+    "command": "mod-jobs:get"
+  },
+  {
+    "at": 1794900168974,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900168979,
+    "stage": "post-message",
+    "command": "installation:get"
+  },
+  {
+    "at": 1794900169012,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900169012,
+    "stage": "post-message",
+    "command": "mod-confirm:list"
+  },
+  {
+    "at": 1794900169016,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900169154,
+    "stage": "post-message",
+    "command": "close"
+  },
+  {
+    "at": 1794900169161,
+    "stage": "message",
+    "kind": "response",
+    "ok": true
+  },
+  {
+    "at": 1794900169165,
+    "stage": "exit",
+    "code": 0
+  }
+]

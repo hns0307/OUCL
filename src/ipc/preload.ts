@@ -14,6 +14,7 @@ import { createTargetBridge } from './preload-task-targets.js';
 import { createPacksBridge } from './preload-packs.js';
 import { createOnlineToolsBridge } from './preload-online-tools.js';
 import { createDistributionBridge } from './preload-distribution.js';
+import { createDistributionExecutionBridge } from './preload-distribution-execution.js';
 import { createProfilesBridge } from './preload-profiles.js';
 import { createGameBridge } from './preload-game.js';
 import { createLoadersBridge } from './preload-loaders.js';
@@ -36,6 +37,7 @@ async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 
 const bridge: LauncherBridge = Object.freeze({
   ...createOnlineToolsBridge(ipcRenderer),
   ...createDistributionBridge(ipcRenderer),
+  ...createDistributionExecutionBridge(ipcRenderer),
   ...createPacksBridge(),
   ...createInstanceBridge(),
   ...createTargetBridge(),

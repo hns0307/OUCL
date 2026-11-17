@@ -1,0 +1,29 @@
+✔ unconfigured or unavailable execution rejects all five channels before any backend dispatch (2.875ms)
+✔ request and sender validation reject future versions, extras, channels and malformed IDs without dispatch (0.3705ms)
+✔ strict complete response envelopes and business identities are checked on every channel (3.2792ms)
+✔ active duplicates share the exact promise and sorted flat payload digest rejects changed identities (0.3965ms)
+✔ completed IDs retain digest only and redispatch exact retries without transport pretending durable authorization (0.3001ms)
+✔ active quota16 and seen quota1024 reject new identities without evicting old digests (43.4541ms)
+✔ sender revocation rejects late success or throw even if the same closure becomes trusted again (5.6968ms)
+✔ close aborts immediately but waits for noncooperative real promise settlement before port close (0.6372ms)
+✔ upstream errors are redacted while exact public error envelopes preserve commit-too-late semantics (1.1122ms)
+✔ distribution execution receipts reject other existing task kinds (1.4541ms)
+✔ execution contract defines five channels and the approved bounded lifecycle constants (2.525ms)
+✔ requests reject future versions, unknown fields, noncanonical UUIDs and arbitrary path or URL input (0.2918ms)
+✔ proposal enforces 256 operations, exact 1024 path boundary, safe Windows paths and nonoverlap (2.2879ms)
+✔ preparation states constrain proposal/error to one exact discriminated variant (0.2501ms)
+✔ accepted/recovery validate real TaskSnapshot structure and cannot substitute task identity or unintroduced kind (0.2303ms)
+✔ result correlation rejects wrong prepare identities, cross-instance proposals, wrong proposal and mixed channel DTOs (0.6814ms)
+✔ all error codes roundtrip their exact mapping; unknown codes, details, retry drift and oversized responses fail (3.2675ms)
+✔ owners reject untrusted/invalid/closed senders before creating any backend generation (1.8082ms)
+✔ retired generation cannot admit late replies and shutdown waits for retired plus live settlement (5.8784ms)
+✔ retired close errors are remembered after settlement without retaining every finished promise (2.5065ms)
+✔ factory failures stay redacted and repeated completed revocations close each generation once (3.107ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 142.661

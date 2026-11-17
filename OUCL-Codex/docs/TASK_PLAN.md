@@ -672,3 +672,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-17用户继续且primary恢复（实测1%已用），沿已批准方案A实现严格任务kind回执、有界完整admission/任务投影读取与双库对账。只补固定ID元数据投影/ack读回，已projected丢task及孤儿拒绝，不自动文件执行、不广告public能力；source/key空。分工/预算/真实证据见根docs/execution/20261117-b。
 
 2026-11-17方案A对账增量完成：严格执行回执kind、完整有界admission/task读取、真实双库固定ID对账及ack读回，915项911PASS/0FAIL/4SKIP、type/全lint/build通过。未广告执行或文件重放，A持续批准无需重复询问；后继接线/真实配置条件见根docs/execution/20261117-b/CHECKPOINT.md。
+
+2026-11-17 A调用层C：五通道transport/preload/main文档owners已接，生产no-port/无execute广告；937项933PASS/0FAIL/4SKIP，type/全lint/build通过。独立候选execution-20261117-c 11文件审计/真实outer26检查/正常退出锁释放及73runtime摘要通过，不覆盖正式EXE。后继ticket/持久执行backend尚未完成，A持续授权；见根docs/execution/20261117-c。

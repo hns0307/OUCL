@@ -1,0 +1,17 @@
+✔ five fixed methods send exact payloads and preserve caller identities (4.0405ms)
+✔ local invalid UUID, extra fields and unsafe identifiers never invoke (0.4249ms)
+✔ wrong envelope and business identities are redacted as unavailable (0.7021ms)
+✔ rejects future versions, wrong task kind, unsafe paths, huge, cyclic and throwing outputs (2.9444ms)
+✔ upstream fixed errors pass through while unknown codes and detail injection are rejected (0.4667ms)
+✔ sync throws and async rejection expose no exception details (0.274ms)
+✔ timeout preserves identity without retries or cancel; late completion cannot replace returned result (13.0376ms)
+✔ late rejection is handled; timeout override cannot relax production budget (15.2236ms)
+✔ input and result snapshots are detached from caller and transport references (0.6076ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.5621

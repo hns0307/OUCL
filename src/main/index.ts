@@ -91,6 +91,9 @@ import { OnlineToolsAdapter } from '../ipc/online-tools.js';
 import { ONLINE_TOOLS_CAPABILITY, ONLINE_TOOLS_CHANNELS, onlineToolFailure } from '../shared/contracts/online-tools.js';
 import { DISTRIBUTION_CAPABILITY, DISTRIBUTION_CHANNELS, distributionFailure } from '../shared/contracts/distribution-preview.js';
 import { createDistributionPreviewAdapter } from './distribution-preview.js';
+import { DistributionExecutionAdapter } from '../ipc/distribution-execution.js';
+import { DistributionExecutionOwners } from '../ipc/distribution-execution-owners.js';
+import { DISTRIBUTION_EXECUTION_CHANNELS, distributionExecutionFailure } from '../shared/contracts/distribution-execution.js';
 import type { DistributionPreviewAdapter } from '../ipc/distribution-preview.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
@@ -98,13 +101,16 @@ const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 const onlineToolAdapters = new Map<number, OnlineToolsAdapter>();
 const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
+// Real sources, policy and the persistent execution service are not configured. No backend is constructed here.
+const distributionExecutionOwners = new DistributionExecutionOwners(() => new DistributionExecutionAdapter());
 let distributionFetch: typeof fetch | undefined;
 
 /** Revokes remote views and read-only previews when the owner document goes away. */
-function revokeExtensions(id: number): void {
+function revokeExtensions(id: number, documentGone = true): void {
   const tools = onlineToolAdapters.get(id); onlineToolAdapters.delete(id);
   void tools?.dispose().catch(() => { console.warn(JSON.stringify({ level: 'warn', event: 'tool-cleanup-failed' })); });
   distributionAdapters.get(id)?.dispose(); distributionAdapters.delete(id);
+  if (documentGone) distributionExecutionOwners.revoke(id);
 }
 /** Native dialogs never appear beneath an attached remote view. */
 async function closeOnlineView(id: number): Promise<void> {
@@ -158,7 +164,7 @@ function createWindow(): BrowserWindow {
   window.webContents.once('destroyed', () => { revokeExtensions(id); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) revokeExtensions(id); });
   window.webContents.on('render-process-gone', () => { revokeExtensions(id); });
-  window.on('hide', () => { revokeExtensions(id); });
+  window.on('hide', () => { revokeExtensions(id, false); });
   window.webContents.once('destroyed', () => { sessions.delete(id); fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
   window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
@@ -259,6 +265,11 @@ else void app.whenReady().then(async () => {
     let adapter = distributionAdapters.get(event.sender.id);
     if (!adapter) { adapter = createDistributionPreviewAdapter(storage, distributionFetch); distributionAdapters.set(event.sender.id, adapter); }
     return adapter.handle(channel, input, () => trustedSender(event), trace);
+  });
+  for (const channel of DISTRIBUTION_EXECUTION_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trace = randomUUID();
+    if (!trustedSender(event)) return distributionExecutionFailure(trace, 'INVALID_SENDER', trace);
+    return distributionExecutionOwners.handle(event.sender.id, channel, input, () => trustedSender(event), trace);
   });
   ipcMain.handle(PACK_CHANNEL, (event, input: unknown) => handleFixedPack(input, trustedSender(event), randomUUID(), async requestId => {
     if (!fixedPackCoordinator) throw new Error('UNAVAILABLE');
@@ -386,6 +397,7 @@ app.on('before-quit', event => {
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
+    await distributionExecutionOwners.close();
     await Promise.all([...onlineToolAdapters.values()].map(adapter => adapter.dispose())); onlineToolAdapters.clear();
     for (const adapter of distributionAdapters.values()) await adapter.close(); distributionAdapters.clear();
     targetAdapter?.close(); installerAdapter?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();

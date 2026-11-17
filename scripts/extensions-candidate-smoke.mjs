@@ -135,7 +135,25 @@ function installFixture(options, load) {
             const arbitrary=await window.oucl.openOnlineTool(crypto.randomUUID(),'https://unreviewed.example.com/');
             const id=crypto.randomUUID(); const preview=await window.oucl.previewDistribution(id,{rootId:id,instanceId:id,sourceId:'missing',packageId:'package',packageVersion:'one'});
             const closed=await window.oucl.closeOnlineTool(crypto.randomUUID());
-            return {handshake,tools,sources,open,arbitrary,preview,closed,noNode:typeof require==='undefined'&&typeof process==='undefined'};
+            const executionMethods=['prepareDistributionExecution','getDistributionExecutionPreparation','cancelDistributionExecutionPreparation','confirmDistributionExecution','recoverDistributionExecution'];
+            const executionBridge=executionMethods.every(name=>typeof window.oucl[name]==='function');
+            if(!executionBridge) return {handshake,tools,sources,open,arbitrary,preview,closed,executionBridge,noNode:typeof require==='undefined'&&typeof process==='undefined'};
+            const rootId=crypto.randomUUID(),instanceId=crypto.randomUUID(),prepareId=crypto.randomUUID(),proposalId=crypto.randomUUID(),taskId=crypto.randomUUID();
+            const execution={
+              prepare:await window.oucl.prepareDistributionExecution(prepareId,{rootId,instanceId,sourceId:'missing',packageId:'package',packageVersion:'one'}),
+              status:await window.oucl.getDistributionExecutionPreparation(prepareId),
+              cancel:await window.oucl.cancelDistributionExecutionPreparation(prepareId),
+              confirm:await window.oucl.confirmDistributionExecution(crypto.randomUUID(),{proposalId,instanceRevision:1,sequence:1}),
+              recover:await window.oucl.recoverDistributionExecution(crypto.randomUUID(),taskId)
+            };
+            const invalidExecution=[
+              await window.oucl.prepareDistributionExecution(crypto.randomUUID(),{rootId,instanceId,sourceId:'missing',packageId:'package',packageVersion:'one',path:'forbidden'}),
+              await window.oucl.getDistributionExecutionPreparation('invalid'),
+              await window.oucl.cancelDistributionExecutionPreparation('invalid'),
+              await window.oucl.confirmDistributionExecution(crypto.randomUUID(),{proposalId,instanceRevision:1,sequence:1,path:'forbidden'}),
+              await window.oucl.recoverDistributionExecution(crypto.randomUUID(),'invalid')
+            ];
+            return {handshake,tools,sources,open,arbitrary,preview,closed,executionBridge,execution,invalidExecution,noNode:typeof require==='undefined'&&typeof process==='undefined'};
           })()`);
           ipcReply = reply;
           check('packaged handshake advertises both initialized extensions', reply.handshake.ok && ['tools.isolated.v1', 'distribution.preview.v1'].every(item => reply.handshake.data.capabilities.includes(item)));
@@ -146,6 +164,12 @@ function installFixture(options, load) {
           check('packaged pinned sources registry is empty', reply.sources.ok && !reply.sources.data.sources.length);
           check('empty source cannot scan or install', !reply.preview.ok && reply.preview.error.code === 'SOURCE_UNAVAILABLE');
           check('close IPC confirms closed', reply.closed.ok && reply.closed.data.snapshot.phase === 'closed');
+          check('packaged preload exposes all five execution bridge methods', reply.executionBridge);
+          check('packaged handshake does not advertise distribution execution', reply.handshake.ok && !reply.handshake.data.capabilities.includes('distribution.execute.v1'));
+          for (const name of ['prepare', 'status', 'cancel', 'confirm', 'recover']) {
+            check(`unconfigured execution ${name} fails closed`, reply.execution[name]?.ok === false && reply.execution[name].error.code === 'SOURCE_UNAVAILABLE');
+          }
+          check('all five execution bridges reject invalid payloads', reply.invalidExecution.length === 5 && reply.invalidExecution.every(result => result.ok === false && result.error.code === 'INVALID_ARGUMENT'));
           await window.webContents.executeJavaScript(`(() => { const button=[...document.querySelectorAll('.top-nav button')].find(item=>item.textContent==='工具箱'); if(!button) throw Error('TOOLS_NAV_MISSING'); button.click(); })()`);
           await new Promise(resolve => setTimeout(resolve, 120));
           await window.webContents.executeJavaScript(`document.querySelectorAll('.tools-tabs button')[1].click()`);

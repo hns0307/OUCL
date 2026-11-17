@@ -1,0 +1,45 @@
+{
+  "base": "41120eed",
+  "sources": [
+    {
+      "file": "src/ipc/distribution-execution.ts",
+      "sha256": "b8743aa759231146491f1e6410491b1921da27d1092311a731743459c178fd5b"
+    },
+    {
+      "file": "src/ipc/distribution-execution-owners.ts",
+      "sha256": "d54e914f4148e174a9373a6a7eb4860ced3a3502e51fa6c4a7d76cf4afd49f89"
+    },
+    {
+      "file": "src/ipc/preload-distribution-execution.ts",
+      "sha256": "b83341236d4599c060ac5afea50a2133a2959af210ffb4b01163788a72342f4f"
+    },
+    {
+      "file": "src/main/index.ts",
+      "sha256": "399a8a945a6e6b0a5a60ff0cbb850e5df03523c3b959c8e9e1022471a42b8f4f"
+    },
+    {
+      "file": "src/ipc/preload.ts",
+      "sha256": "c6e60982ce8e9c3f462e601d7eacf276530ebe795b21bea3974c542fa93fdd6f"
+    },
+    {
+      "file": "src/shared/contracts/handshake.ts",
+      "sha256": "d259a46bf115a8021a973f1c8fbd205914038734f5150cfa866e3a2f6965612b"
+    },
+    {
+      "file": "scripts/extensions-candidate-smoke.mjs",
+      "sha256": "f388e5bf8678925ae9a28ff40d4ac39ca4945f145557470edda6e45236db0d02"
+    },
+    {
+      "file": "tests/distribution-execution-adapter.test.ts",
+      "sha256": "46049eb0cd1961c830ab6c74bdf3e53f8d5f3bfb98f3686a69ca3de9005bfa31"
+    },
+    {
+      "file": "tests/distribution-execution-owners.test.ts",
+      "sha256": "7a18d420be63c0530a949186224cd47c7b1e0f443a3faed9e99716ad2395464a"
+    },
+    {
+      "file": "tests/preload-distribution-execution.test.ts",
+      "sha256": "aac63d4274602a301e1196ae66c2dda996efd713d8f1366d175a268aa673358a"
+    }
+  ]
+}
