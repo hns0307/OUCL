@@ -42,3 +42,5 @@
 - 当前seen达1024后新proposal保守拒绝，不驱逐旧身份；容量与新服务实例的恢复行为不是durable执行许可。跨coordinator/root服务的共享domain、trust变更close/drain及任务调度仍由main受审装配保证。
 
 上述边界不构成在未配置生产入口上开放执行的依据。最终测试/全检及原失败、修正前日志由主协调与测试代理精确收存；本报告只读源码结论现已冻结。
+
+主协调后继更正（2026-11-18）：上文440d07摘要属于ticket顺序修复时审查快照；随后full发现并修复close同步撤销，最终execution摘要为01291d5042c39880bbbf60e22d930db38ebbe6d883920563fc2a6a7a5aba71a0，helper不变。最终close-r2 35PASS及全979/975PASS/4SKIP见REPORT.md和checks-r2-evidence，不能将旧头部摘要当最终源码。

@@ -1,0 +1,13 @@
+# A持续恢复点K
+
+本轮先补I全检a2ab41c3（970/966PASS/4SKIP），J内部executeAdmitted f3c7fc9c（979/975PASS/4SKIP）已闭合首次claim→原目录native→H，K任务终态落盘已完整986项982PASS/0FAIL/4既有SKIP及type/全lint/build0。K真实专项7PASS，全部证据见REPORT.md。J首轮关闭同步abort一FAIL已修，原日志保留，旧Jreview摘要已有主协调更正。
+
+下一最小增量应为root-owned任务运行编排，把J与K纳入同一job/singleflight/close-drain，保持claim、文件执行、终态CAS的完整生命周期；防J刚释放slot就让后继同实例事务推进receipt而使旧任务首次K保守拒。不能仅把J薄结果直接返回为TaskSnapshot.completed，也不能自动重授unknown claim。重开先完整admission/outbox对账和只读终态收敛，未知/部分journal必须显式恢复，不自动重放。
+
+接着实现真实task-target/get/list/control/subscribe观察、受控结果/错误、持久queued取消和恢复请求幂等。A批准明确包含distribution-install实例归属与结果/worker/task-target扩展，无需重问同义批准；schema若超出A具体设计仍先写可审细节。prepared取消不是持久任务取消，任务历史已settled不应因较新receipt降级；首次缺稳定历史证据则继续NEEDS_RECOVERY。
+
+document facade应只撤销未确认prepare。confirm元数据链已进入时，document revoke不得取消未知接纳或关闭global store；原响应可因sender失效被拒，但任务必须由root持续并可按原ID恢复。root管理domain/coordinator/任务生命周期，避免confirmed任务依赖会被旧document关闭的Prepared/domain信号。所有全局pool预算沿既有约束，不放大为每doc独立无限资源。
+
+当前production五方法仍no-port/SOURCE_UNAVAILABLE且不广告execute，真实source/key/locator/许可政策/站点空。root装配/恢复/任务观察、UI确认与configured受控内链验证均未完成；fixture许可与平台是合成，不能开放真实分发。正式EXE不覆盖，C候选仅C时快照，无push，原WIP/tmp保留。
+
+额度规则继续：primary低于20%不启新实现，10%及以下保存并仅收齐已启动检查；足够高按持续授权恢复，无需重批A，不使用reset/购买、不按weekly停止。本页作为下一次恢复入口，先核真实额度和仓库状态。

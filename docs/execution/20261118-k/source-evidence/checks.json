@@ -1,0 +1,14 @@
+{
+  "typecheckExitCode": 0,
+  "files": [
+    {
+      "file": "src/core/distribution/task-settlement.ts",
+      "sha256": "2ea7756e0cfb7ad0d101b9556ae734c3fa1f276b82d3ad769e7856543acfd0fe"
+    },
+    {
+      "file": "src/services/distribution/settlement.ts",
+      "sha256": "f9b55aa971132c87bfd43551c5b70aace1de6f4da5cf1f8c4e09d59a16b7d9d9"
+    }
+  ],
+  "lintExitCode": 0
+}
