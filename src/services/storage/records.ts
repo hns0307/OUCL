@@ -210,6 +210,14 @@ export class RecordStore {
     });
   }
 
+  /** Reads the complete bounded distribution task projection without changing either table. */
+  readDistributionTaskProjections(ownerId: string) {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).readDistributionProjections(ownerId);
+    });
+  }
+
   /** Reads a task only for its stable application owner. */
   getTask(ownerId: string, taskId: string): Promise<StoredTask | undefined> {
     return this.serial(async () => {

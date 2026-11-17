@@ -1,0 +1,15 @@
+✔ real RecordStore and worker return the complete fixed identity projection and reject stale roots (143.6685ms)
+✔ SQL reader rejects either orphan, kind mismatch, invalid digest and overflow without writing (51.5774ms)
+✔ private query parser rejects owner injection and reply duplicate aliases (0.4066ms)
+✔ real RecordStore projects the exact admitted task identity idempotently without executing it (40.3013ms)
+✔ SQL projection rejects either orphan side and foreign kind instead of adopting existing rows (2.3995ms)
+✔ real worker bridge derives owner and rejects a stale expected root without projection (108.2895ms)
+✔ private projection command rejects caller owner fields and malformed bindings (0.7337ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 294.4527

@@ -8,6 +8,7 @@ import { StorageError } from './files.js';
 export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check', 'mod-install', 'distribution-install'] as const;
 export type TaskKind = typeof TASK_KINDS[number];
 export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
+export interface DistributionTaskProjection { proposalId: string; payloadDigest: string; task: StoredTask }
 export interface ModConfirmation { planRequestId: string; payloadDigest: string; task: StoredTask }
 export interface ModTargetAdmission { requestId: string; payloadDigest: string; task: StoredTask }
 const STATES = ['queued', 'running', 'verifying', 'committing', 'pausing', 'paused', 'cancelling', 'cancelled', 'completed', 'failing', 'failed', 'needsRecovery'];
@@ -33,6 +34,31 @@ function identity(value: string): void { if (!UUID_PATTERN.test(value)) throw ne
 /** SQLite-only tasks and request deduplication, called exclusively while RecordStore owns its lease. */
 export class TaskTable {
   constructor(private readonly db: DatabaseSync) {}
+
+  /** Reads a complete bounded projection inventory, rejecting either orphan side. */
+  readDistributionProjections(ownerId: string): DistributionTaskProjection[] {
+    identity(ownerId);
+    if (ownerId !== ownerId.toLowerCase()) throw new StorageError('INVALID_RECORD');
+    const requests = this.db.prepare("SELECT * FROM requests WHERE owner_id=? AND kind='distribution-install' ORDER BY request_id LIMIT 1025").all(ownerId);
+    const tasks = this.db.prepare("SELECT id FROM tasks WHERE owner_id=? AND kind='distribution-install' LIMIT 1025").all(ownerId);
+    if (requests.length > 1024 || tasks.length > 1024 || requests.length !== tasks.length) throw new StorageError('NEEDS_RECOVERY');
+    const remaining = new Set<string>(); const proposals = new Set<string>(); const result: DistributionTaskProjection[] = [];
+    for (const row of tasks) {
+      if (typeof row.id !== 'string' || !UUID_PATTERN.test(row.id) || row.id !== row.id.toLowerCase() || remaining.has(row.id)) throw new StorageError('NEEDS_RECOVERY');
+      remaining.add(row.id);
+    }
+    for (const row of requests) {
+      if (typeof row.request_id !== 'string' || !UUID_PATTERN.test(row.request_id) || row.request_id !== row.request_id.toLowerCase()
+        || proposals.has(row.request_id) || typeof row.payload_digest !== 'string' || !/^[a-f0-9]{64}$/.test(row.payload_digest)
+        || typeof row.task_id !== 'string' || !remaining.delete(row.task_id)) throw new StorageError('NEEDS_RECOVERY');
+      proposals.add(row.request_id);
+      const task = this.get(ownerId, row.task_id);
+      if (!task || task.kind !== 'distribution-install') throw new StorageError('NEEDS_RECOVERY');
+      result.push({ proposalId: row.request_id, payloadDigest: row.payload_digest, task });
+    }
+    if (remaining.size) throw new StorageError('NEEDS_RECOVERY');
+    return result;
+  }
 
   /** Reads both sides of each requested domain's acceptance inventory without changing storage. */
   modTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[], checkBudget?: () => void): ModTargetAdmission[] {

@@ -19,10 +19,12 @@ export interface AdmissionRepository {
   readByRequest(confirmRequestId: string): Promise<AdmissionRecord | undefined>;
   readByProposal(proposalId: string): Promise<AdmissionRecord | undefined>;
   listPending(limit?: number): Promise<AdmissionRecord[]>;
+  listAll(): Promise<AdmissionRecord[]>;
   markProjected(proposalId: string, taskId: string): Promise<AdmissionRecord>;
 }
 const MAX_ADMISSIONS = 1024;
 const MAX_ALIASES = 4096;
+export const MAX_ADMISSION_TOTAL_BYTES = 16 * 1024 * 1024;
 function reject(code: 'INVALID_RECORD' | 'REVISION_CONFLICT' | 'NEEDS_RECOVERY' = 'INVALID_RECORD'): never { throw new StorageError(code); }
 function uuid(value: unknown): asserts value is string {
   if (typeof value !== 'string' || !UUID_PATTERN.test(value) || value !== value.toLowerCase()) reject();
@@ -59,6 +61,14 @@ function parseData(value: unknown): AdmissionData {
     releaseSha256: value.releaseSha256, gameIdentity: identity(value.gameIdentity), previewFingerprint: value.previewFingerprint });
   if (transactionDigest(input) !== value.inputDigest) reject();
   return { formatVersion: 1, ...input, taskId: value.taskId, inputDigest: value.inputDigest };
+}
+
+/** Strict detached authority record parser for internal ports and reconciliation read-back. */
+export function parseAdmissionRecord(value: unknown): AdmissionRecord {
+  if (!exactObject(value, ['formatVersion', 'proposalId', 'taskId', 'inputDigest', 'plan', 'releaseSha256', 'gameIdentity', 'previewFingerprint', 'phase', 'revision'])
+    || !(value.phase === 'accepted' && value.revision === 1 || value.phase === 'projected' && value.revision === 2)) reject();
+  const { phase, revision, ...data } = value;
+  try { return { ...parseData(data), phase, revision }; } catch { return reject(); }
 }
 
 const columns: Record<string, string[]> = {
@@ -105,13 +115,19 @@ export function initializeAdmissionSchema(database: DatabaseSync): void {
     } catch (error) { database.exec('ROLLBACK'); throw error; }
   }
   schema(database, 2);
-  if (database.prepare('PRAGMA foreign_key_check').all().length) reject('NEEDS_RECOVERY');
+  if (database.prepare('PRAGMA foreign_key_check').get()) reject('NEEDS_RECOVERY');
 }
 
 /** Private confirmation/outbox repository. It only records acceptance, never runs or projects a task. */
 export class SqliteAdmissionRepository implements AdmissionRepository {
   constructor(private readonly database: DatabaseSync, private readonly verify: () => Promise<void>,
     private readonly assertAuthority: (value: AdmissionIntent) => void) {}
+
+  private totalBytes(): number {
+    const bytes = this.database.prepare('SELECT COALESCE(SUM(length(CAST(data AS BLOB))),0) AS bytes FROM admissions').get()?.bytes;
+    if (typeof bytes !== 'number' || !Number.isSafeInteger(bytes) || bytes < 0) reject('NEEDS_RECOVERY');
+    return bytes;
+  }
 
   private record(id: string): AdmissionRecord | undefined {
     const row = this.database.prepare(`SELECT a.proposal_id,a.task_id,a.input_digest,a.data,o.task_id AS out_task,o.phase,o.revision
@@ -122,7 +138,7 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
       const data = parseData(JSON.parse(row.data) as unknown);
       if (data.proposalId !== row.proposal_id || data.taskId !== row.task_id || data.taskId !== row.out_task || data.inputDigest !== row.input_digest
         || !(row.phase === 'accepted' && row.revision === 1 || row.phase === 'projected' && row.revision === 2)) reject();
-      return { ...data, phase: row.phase, revision: row.revision };
+      return parseAdmissionRecord({ ...data, phase: row.phase, revision: row.revision });
     } catch { return reject('NEEDS_RECOVERY'); }
   }
 
@@ -134,6 +150,7 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
     const aliases = this.database.prepare('SELECT request_id,proposal_id FROM admission_aliases LIMIT 4097').all();
     const outbox = this.database.prepare('SELECT proposal_id FROM admission_outbox LIMIT 1025').all();
     if (rows.length > MAX_ADMISSIONS || aliases.length > MAX_ALIASES || outbox.length !== rows.length) reject('NEEDS_RECOVERY');
+    if (this.totalBytes() > MAX_ADMISSION_TOTAL_BYTES) reject('NEEDS_RECOVERY');
     const ids = new Set<string>();
     for (const row of rows) {
       if (typeof row.proposal_id !== 'string' || !this.record(row.proposal_id)) reject('NEEDS_RECOVERY');
@@ -148,10 +165,10 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
     for (const row of outbox) if (typeof row.proposal_id !== 'string' || !ids.has(row.proposal_id)) reject('NEEDS_RECOVERY');
   }
 
-  private transaction<T>(work: () => T): T {
+  private transaction<T>(work: () => T, readOnly = false): T {
     let begun = false;
     try {
-      this.database.exec('BEGIN IMMEDIATE'); begun = true;
+      this.database.exec(readOnly ? 'BEGIN' : 'BEGIN IMMEDIATE'); begun = true;
       this.validateStored(); const value = work(); this.database.exec('COMMIT'); return value;
     } catch (error) {
       if (begun) { try { this.database.exec('ROLLBACK'); } catch { return reject('NEEDS_RECOVERY'); } }
@@ -174,7 +191,9 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
         const count = this.database.prepare('SELECT COUNT(*) AS n FROM admissions').get()?.n;
         if (typeof count !== 'number' || count >= MAX_ADMISSIONS) reject('REVISION_CONFLICT');
         const data: AdmissionData = { formatVersion: 1, ...input, taskId: randomUUID(), inputDigest: digest };
-        this.database.prepare('INSERT INTO admissions VALUES(?,?,?,?)').run(value.proposalId, data.taskId, digest, serialize(data));
+        const text = serialize(data);
+        if (this.totalBytes() + Buffer.byteLength(text) > MAX_ADMISSION_TOTAL_BYTES) reject('REVISION_CONFLICT');
+        this.database.prepare('INSERT INTO admissions VALUES(?,?,?,?)').run(value.proposalId, data.taskId, digest, text);
         this.database.prepare("INSERT INTO admission_outbox VALUES(?,?,1,'accepted')").run(value.proposalId, data.taskId);
         record = { ...data, phase: 'accepted', revision: 1 };
       }
@@ -210,6 +229,17 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
       return this.database.prepare("SELECT proposal_id FROM admission_outbox WHERE phase='accepted' ORDER BY proposal_id LIMIT ?").all(limit)
         .map(row => { if (typeof row.proposal_id !== 'string') return reject('NEEDS_RECOVERY'); return this.record(row.proposal_id)!; });
     } catch (error) { throw error instanceof StorageError ? error : new StorageError('NEEDS_RECOVERY'); }
+  }
+  /** Complete bounded authority snapshot for reconciliation; accepted and projected are both retained. */
+  async listAll(): Promise<AdmissionRecord[]> {
+    await this.verify();
+    return this.transaction(() => this.database.prepare('SELECT proposal_id FROM admissions ORDER BY proposal_id').all()
+      .map(row => {
+        if (typeof row.proposal_id !== 'string') return reject('NEEDS_RECOVERY');
+        const value = this.record(row.proposal_id);
+        if (!value) return reject('NEEDS_RECOVERY');
+        return value;
+      }), true);
   }
   async markProjected(proposalId: string, taskId: string): Promise<AdmissionRecord> {
     uuid(proposalId); uuid(taskId); await this.verify();

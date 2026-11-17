@@ -68,8 +68,14 @@ async function storage(directory: string, ownerToken?: string): Promise<void> {
         let modConfirmations;
         let modTargets;
         let modResult;
+        let distributionProjections;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'distribution-task:list') {
+          const root = await store.read('installation', parseInstallation);
+          if (!root || command.expectedRootId !== root.data.rootId.toLowerCase()) throw new WorkerError('NEEDS_RECOVERY');
+          distributionProjections = await store.readDistributionTaskProjections(root.data.rootId.toLowerCase());
+        }
         else if (command.kind === 'distribution-task:project') {
           const root = await store.read('installation', parseInstallation);
           if (!root) throw new WorkerError('INVALID_RECORD');
@@ -188,7 +194,7 @@ async function storage(directory: string, ownerToken?: string): Promise<void> {
         } else { closing = true; transfers?.close(); index?.close(); await store.close(); }
         send({ version: 1, kind: 'response', id: request.id, ok: true, ...(task === undefined ? {} : { task }), ...(object === undefined ? {} : { object }),
           ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }), ...(transfer === undefined ? {} : { transfer }),
-          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }), ...(modTargets === undefined ? {} : { modTargets }) });
+          ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(distributionProjections === undefined ? {} : { distributionProjections }), ...(modConfirmations === undefined ? {} : { modConfirmations }), ...(modResult === undefined ? {} : { modResult }), ...(modTargets === undefined ? {} : { modTargets }) });
         if (closing) port!.close();
       } catch (error) { send({ version: 1, kind: 'response', id: request.id, ok: false, code: code(error) }); }
     }).catch(() => { send({ version: 1, kind: 'startup-failed', code: 'WORKER_FAILED' }); port!.close(); });

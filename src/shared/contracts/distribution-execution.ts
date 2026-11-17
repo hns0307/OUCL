@@ -146,7 +146,7 @@ export function isDistributionExecutionRequest<C extends DistributionExecutionCh
   return exactObject(value, ['contractVersion', 'requestId', 'payload']) && value.contractVersion === 1 && uuid(value.requestId) && isDistributionExecutionPayload(value.payload, channel);
 }
 function task(value: unknown): value is TaskSnapshot {
-  return isTaskSnapshot(value) && uuid(value.taskId) && (!value.error || uuid(value.error.traceId));
+  return isTaskSnapshot(value) && value.kind === 'distribution-install' && uuid(value.taskId) && (!value.error || uuid(value.error.traceId));
 }
 export function isDistributionExecutionData<C extends DistributionExecutionChannel>(value: unknown, channel: C): value is DistributionExecutionData[C] {
   if (!bounded(value)) return false;

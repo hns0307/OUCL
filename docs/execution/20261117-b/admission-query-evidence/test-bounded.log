@@ -1,0 +1,15 @@
+✔ listAll returns accepted and projected admissions completely and detached across restart (82.4403ms)
+✔ listAll audit and results share one real SQLite snapshot during a concurrent committed update (46.4434ms)
+✔ listAll returns exactly 1024 records and rejects 1025 rather than silently truncating (255.3733ms)
+✔ listAll rejects corrupt records, orphan identities and unknown schema without returning a partial set (189.9244ms)
+✔ existing confirmation remains a receipt after authority advances, while a new alias needs current authority (35.659ms)
+✔ listAll checks the held owner marker and handles concurrent close with controlled errors (25.2784ms)
+✔ strict admission parser rejects unknown fields, changed canonical binding and illegal phase revisions (32.9393ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 749.6117

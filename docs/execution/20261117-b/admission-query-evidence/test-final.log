@@ -1,0 +1,28 @@
+✔ listAll returns accepted and projected admissions completely and detached across restart (110.6633ms)
+✔ listAll audit and results share one real SQLite snapshot during a concurrent committed update (54.6702ms)
+✔ listAll returns exactly 1024 records and rejects 1025 rather than silently truncating (299.9722ms)
+✔ listAll rejects corrupt records, orphan identities and unknown schema without returning a partial set (198.3505ms)
+✔ existing confirmation remains a receipt after authority advances, while a new alias needs current authority (45.6447ms)
+✔ listAll checks the held owner marker and handles concurrent close with controlled errors (31.3161ms)
+✔ strict admission parser rejects unknown fields, changed canonical binding and illegal phase revisions (34.4602ms)
+✔ admission keeps one task/outbox across exact retries and confirmation aliases (91.1237ms)
+✔ immutable binding rejects same request/proposal with changed snapshot, inode, plan or identity (51.6514ms)
+✔ new admissions require current archived release but old exact receipts survive high-water advance (69.851ms)
+✔ lost acceptance and projection acknowledgements reopen as exact original task, without execution (135.6408ms)
+✔ schema v1 migrates atomically while preserving legacy release, journal and receipt bytes (64.0391ms)
+✔ unknown versions/schema and corrupt admission/outbox records fail closed without repair (201.7878ms)
+✔ admission reads reject invalid bounds and stop on live corruption without leaking native SQL (28.5816ms)
+✔ identity bounds preserve old receipts and reject new aliases/admissions without eviction (598.0631ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (75.9344ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (72.2327ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (27.907ms)
+✔ executor archives must match already-authenticated canonical release high-water state (42.1408ms)
+✔ SQL schema failures and concurrent close reads remain controlled without leaking native errors (93.7955ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1357.8833

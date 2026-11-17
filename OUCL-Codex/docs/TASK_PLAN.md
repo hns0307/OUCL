@@ -668,3 +668,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 首个可验证基础增量为严格公共契约与私有库schema2确认接纳/outbox；基线f825b8bb、主协调实测primary57%已用。精确计划/分工见根docs/execution/20261117-a/PLAN.md；结果不预记。
 
 2026-11-17方案A基础保存：严格公共契约、私有schema2确认接纳/outbox、固定ID任务投影/expectedRoot绑定及kind标签已实现，完整893项889PASS/0FAIL/4SKIP、type/全lint/build通过。公共handler/双库对账/执行/UI尚未接线，不广告能力。primary91%已用触发保存；恢复首步收紧Accepted/Recovery snapshot.kind，再继续已批准A（不重复问批准）。详根docs/execution/20261117-a/REPORT.md与CHECKPOINT.md。
+
+2026-11-17用户继续且primary恢复（实测1%已用），沿已批准方案A实现严格任务kind回执、有界完整admission/任务投影读取与双库对账。只补固定ID元数据投影/ack读回，已projected丢task及孤儿拒绝，不自动文件执行、不广告public能力；source/key空。分工/预算/真实证据见根docs/execution/20261117-b。
+
+2026-11-17方案A对账增量完成：严格执行回执kind、完整有界admission/task读取、真实双库固定ID对账及ack读回，915项911PASS/0FAIL/4SKIP、type/全lint/build通过。未广告执行或文件重放，A持续批准无需重复询问；后继接线/真实配置条件见根docs/execution/20261117-b/CHECKPOINT.md。

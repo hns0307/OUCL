@@ -49,6 +49,7 @@ export class WorkerError extends Error {
 }
 
 export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
+  | { kind: 'distribution-task:list'; expectedRootId: string }
   | { kind: 'distribution-task:project'; expectedRootId: string; proposalId: string; payloadDigest: string; taskId: string }
   | { kind: 'find-accepted'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'get'; ownerId: string; taskId: string }
@@ -95,7 +96,7 @@ export interface HashResult { size: number; sha1: string; sha256: string }
 export interface HashJobRequest { version: 1; kind: 'hash-job'; jobId: string; file: string; maximumBytes: number }
 export type WorkerReply = { version: 1; kind: 'ready'; features?: Array<'mod-targets.read.v1'> }
   | { version: 1; kind: 'startup-failed'; code: WorkerCode }
-  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; desktop?: RecordEnvelope<DesktopState>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; modResult?: RecordEnvelope<ModInstallResult>; modTargets?: ModTargets }
+  | { version: 1; kind: 'response'; id: string; ok: true; task?: StoredTask; object?: IndexedObject; installation?: RecordEnvelope<Installation>; catalog?: RecordEnvelope<CatalogCache>; transfer?: TransferRecord; instances?: RecordEnvelope<InstanceIndex>; instance?: RecordEnvelope<InstanceRecord>; profiles?: RecordEnvelope<LaunchProfiles>; sessions?: RecordEnvelope<GameSessions>; desktop?: RecordEnvelope<DesktopState>; settings?: RecordEnvelope<LaunchSettings>; resources?: RecordEnvelope<ResourceLibrary>; modJobs?: RecordEnvelope<ModJobs>; modReport?: RecordEnvelope<StoredModReport>; modPlan?: RecordEnvelope<StoredModPlan>; modTransaction?: RecordEnvelope<ModTransaction>; modConfirmations?: ModConfirmation[]; distributionProjections?: import('../storage/tasks.js').DistributionTaskProjection[]; modResult?: RecordEnvelope<ModInstallResult>; modTargets?: ModTargets }
   | { version: 1; kind: 'response'; id: string; ok: false; code: WorkerCode }
   | { version: 1; kind: 'hash-progress'; bytesDone: number; bytesTotal: number }
   | { version: 1; kind: 'hash-result'; result: HashResult }
@@ -175,6 +176,7 @@ export function parseStorageRequest(value: unknown): StorageRequest {
       && exact(command, command.kind === 'object:lookup' ? ['kind', 'sourceKey'] : ['kind', 'sourceKey', 'object']));
     if (command.kind === 'object:remember') parseIndexed(command.object);
   }
+  else if (command.kind === 'distribution-task:list') requireMessage(exact(command, ['kind', 'expectedRootId']) && uuid(command.expectedRootId));
   else if (command.kind === 'distribution-task:project') requireMessage(exact(command, ['kind', 'expectedRootId', 'proposalId', 'payloadDigest', 'taskId'])
       && uuid(command.expectedRootId) && uuid(command.proposalId) && uuid(command.taskId) && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
   else {
@@ -190,6 +192,20 @@ export function parseStorageRequest(value: unknown): StorageRequest {
     } else throw new WorkerError('INVALID_MESSAGE');
   }
   return value as unknown as StorageRequest;
+}
+
+function parseDistributionProjections(value: unknown): import('../storage/tasks.js').DistributionTaskProjection[] {
+  requireMessage(Array.isArray(value) && value.length <= 1024);
+  const proposals = new Set<string>(); const tasks = new Set<string>();
+  return value.map((row: unknown) => {
+    requireMessage(object(row) && exact(row, ['proposalId', 'payloadDigest', 'task']) && uuid(row.proposalId)
+      && row.proposalId === row.proposalId.toLowerCase() && typeof row.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(row.payloadDigest));
+    const task = parseTask(row.task);
+    requireMessage(task.kind === 'distribution-install' && task.taskId === task.taskId.toLowerCase()
+      && task.ownerId === task.ownerId.toLowerCase() && !proposals.has(row.proposalId) && !tasks.has(task.taskId));
+    proposals.add(row.proposalId); tasks.add(task.taskId);
+    return { proposalId: row.proposalId, payloadDigest: row.payloadDigest, task };
+  });
 }
 
 function parseModConfirmations(value: unknown): ModConfirmation[] {
@@ -248,8 +264,8 @@ export function parseReply(value: unknown): WorkerReply {
   if (value.kind === 'response') {
     requireMessage(uuid(value.id));
     if (value.ok === true) {
-      requireMessage([value.desktop, value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance, value.profiles, value.sessions, value.settings, value.resources, value.modJobs, value.modReport, value.modPlan, value.modTransaction, value.modConfirmations, value.modResult, value.modTargets].filter(item => item !== undefined).length <= 1
-        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.desktop === undefined ? [] : ['desktop']), ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance']), ...(value.profiles === undefined ? [] : ['profiles']), ...(value.sessions === undefined ? [] : ['sessions']), ...(value.settings === undefined ? [] : ['settings']), ...(value.resources === undefined ? [] : ['resources']), ...(value.modJobs === undefined ? [] : ['modJobs']), ...(value.modReport === undefined ? [] : ['modReport']), ...(value.modPlan === undefined ? [] : ['modPlan']), ...(value.modTransaction === undefined ? [] : ['modTransaction']), ...(value.modConfirmations === undefined ? [] : ['modConfirmations']), ...(value.modResult === undefined ? [] : ['modResult']), ...(value.modTargets === undefined ? [] : ['modTargets'])]));
+      requireMessage([value.desktop, value.task, value.object, value.installation, value.catalog, value.transfer, value.instances, value.instance, value.profiles, value.sessions, value.settings, value.resources, value.modJobs, value.modReport, value.modPlan, value.modTransaction, value.modConfirmations, value.distributionProjections, value.modResult, value.modTargets].filter(item => item !== undefined).length <= 1
+        && exact(value, ['version', 'kind', 'id', 'ok', ...(value.desktop === undefined ? [] : ['desktop']), ...(value.task === undefined ? [] : ['task']), ...(value.object === undefined ? [] : ['object']), ...(value.installation === undefined ? [] : ['installation']), ...(value.catalog === undefined ? [] : ['catalog']), ...(value.transfer === undefined ? [] : ['transfer']), ...(value.instances === undefined ? [] : ['instances']), ...(value.instance === undefined ? [] : ['instance']), ...(value.profiles === undefined ? [] : ['profiles']), ...(value.sessions === undefined ? [] : ['sessions']), ...(value.settings === undefined ? [] : ['settings']), ...(value.resources === undefined ? [] : ['resources']), ...(value.modJobs === undefined ? [] : ['modJobs']), ...(value.modReport === undefined ? [] : ['modReport']), ...(value.modPlan === undefined ? [] : ['modPlan']), ...(value.modTransaction === undefined ? [] : ['modTransaction']), ...(value.distributionProjections === undefined ? [] : ['distributionProjections']), ...(value.modConfirmations === undefined ? [] : ['modConfirmations']), ...(value.modResult === undefined ? [] : ['modResult']), ...(value.modTargets === undefined ? [] : ['modTargets'])]));
       let modTransaction: RecordEnvelope<ModTransaction> | undefined;
       let modResult: RecordEnvelope<ModInstallResult> | undefined;
       if (value.modResult !== undefined) {
@@ -332,7 +348,7 @@ export function parseReply(value: unknown): WorkerReply {
       }
       return { version: 1, kind: 'response', id: value.id, ok: true, ...(value.task === undefined ? {} : { task: parseTask(value.task) }),
         ...(value.object === undefined ? {} : { object: parseIndexed(value.object) }), ...(installation === undefined ? {} : { installation }), ...(catalog === undefined ? {} : { catalog }),
-        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(value.modConfirmations === undefined ? {} : { modConfirmations: parseModConfirmations(value.modConfirmations) }), ...(modResult === undefined ? {} : { modResult }), ...(value.modTargets === undefined ? {} : { modTargets: parseModTargets(value.modTargets) }) };
+        ...(value.transfer === undefined ? {} : { transfer: parseTransferRecord(value.transfer) }), ...(instances === undefined ? {} : { instances }), ...(instance === undefined ? {} : { instance }), ...(profiles === undefined ? {} : { profiles }), ...(sessions === undefined ? {} : { sessions }), ...(settings === undefined ? {} : { settings }), ...(desktop === undefined ? {} : { desktop }), ...(resources === undefined ? {} : { resources }), ...(modJobs === undefined ? {} : { modJobs }), ...(modReport === undefined ? {} : { modReport }), ...(modPlan === undefined ? {} : { modPlan }), ...(modTransaction === undefined ? {} : { modTransaction }), ...(value.distributionProjections === undefined ? {} : { distributionProjections: parseDistributionProjections(value.distributionProjections) }), ...(value.modConfirmations === undefined ? {} : { modConfirmations: parseModConfirmations(value.modConfirmations) }), ...(modResult === undefined ? {} : { modResult }), ...(value.modTargets === undefined ? {} : { modTargets: parseModTargets(value.modTargets) }) };
     }
     requireMessage(value.ok === false && exact(value, ['version', 'kind', 'id', 'ok', 'code']) && typeof value.code === 'string' && CODES.includes(value.code));
     return { version: 1, kind: 'response', id: value.id, ok: false, code: value.code as WorkerCode };

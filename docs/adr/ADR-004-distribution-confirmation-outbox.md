@@ -13,3 +13,5 @@ outbox与admission同库提交。后继以固定taskId将任务和request原子�
 迁移：私有distribution schema1→2须事务保留旧四表和已存权威记录；unknown schema/corruption/owner不明拒绝。具体列/唯一约束/限额由首片typed schema与真实迁移测试给出，不宣称当前task接线已完成。
 
 验证：重复确认同task、别ID同proposal alias、冲突拒绝；确认已落盘但任务/ack丢失的重开；固定ID双库对账、取消commit边界、真实native链及空配置无副作用。未得到证据的格继续保留未完成。
+
+2026-11-17对账实施后继：accepted缺任务可补固定ID；已projected但任务消失可能代表权威投影数据丢失/曾执行，不重新造queued，而是needsRecovery。读取上限1024及16MiB总字节，新写同事务门禁，旧超额数据保留。完整915项911PASS/4SKIP及真实双SQLite代表格见execution/20261117-b。

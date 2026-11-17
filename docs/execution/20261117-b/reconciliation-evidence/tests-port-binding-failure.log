@@ -1,0 +1,40 @@
+✔ real authority and worker reconcile a fixed task identity exactly once (238.918ms)
+✖ actual project commit with lost acknowledgement recovers the same task (156.6378ms)
+✖ actual mark commit with lost acknowledgement recovers the same task (156.7962ms)
+✔ refuses orphan without reconstructing a queued task (196.5549ms)
+✔ refuses digest without reconstructing a queued task (172.353ms)
+✔ refuses task-id without reconstructing a queued task (175.4558ms)
+✔ refuses projected-missing without reconstructing a queued task (175.8732ms)
+✔ unconfirmed proposals and another root never create a task; worker enforces expected root (166.9898ms)
+✔ close drains a held actual commit and rejects subsequent reconciliation (175.9658ms)
+✔ final audit rejects admissions added after the startup snapshot (219.8917ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 8
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1964.6279
+
+✖ failing tests:
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:26:41
+✖ actual project commit with lost acknowledgement recovers the same task (156.6378ms)
+  Error [DistributionReconciliationError]: NEEDS_RECOVERY
+      at DistributionAdmissionReconciler.work (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/distribution/reconciliation.js:112:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:44:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:26:41
+✖ actual mark commit with lost acknowledgement recovers the same task (156.7962ms)
+  Error [DistributionReconciliationError]: NEEDS_RECOVERY
+      at DistributionAdmissionReconciler.work (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/distribution/reconciliation.js:112:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:44:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY'
+  }

@@ -1,0 +1,30 @@
+{
+  "lintExitCode": 0,
+  "typecheckExitCode": 0,
+  "files": [
+    {
+      "file": "src/services/storage/tasks.ts",
+      "sha256": "617eb81ef8b9e4b403f5cc986cbc91e10f94e0d0e915b35c3396070442c1cc5c"
+    },
+    {
+      "file": "src/services/storage/records.ts",
+      "sha256": "c92a50d3e816d8e8ac2f7d51960b6bd593e04c92d68d79a12aa419ffae8174fe"
+    },
+    {
+      "file": "src/services/workers/protocol.ts",
+      "sha256": "412c724a1296a45a16806ee8da743e324767879d250c99fa4d45352162a34084"
+    },
+    {
+      "file": "src/services/workers/storage-client.ts",
+      "sha256": "c083eae2dac8d22e19a80a8c128f4f86cc4561e44f1c1f26798fd636343fadb5"
+    },
+    {
+      "file": "src/services/workers/entry.ts",
+      "sha256": "dd6b30c830c8eefc7b752c2e79a8c2ab82d4d94c6435b4135a1093b22216d83a"
+    },
+    {
+      "file": "tests/distribution-task-projection-query.test.ts",
+      "sha256": "b30fa25cd298c40b6fe3e4d3fd3d71ce60503c9fdc8846d0e09878acbe5852f9"
+    }
+  ]
+}

@@ -18,7 +18,15 @@ function proposal(): DistributionExecutionProposal {
   return { ...binding, proposalId, sequence: 1, instanceRevision: 2, expiresAt: 1795000000000,
     changes: [{ area: 'mods', path: 'fixture.jar', kind: 'add' }], conflicts: [] };
 }
-const snapshot: TaskSnapshot = { taskId, kind: 'mod-install', state: 'queued', stage: 'queued', revision: 1, bytesDone: 0 };
+const snapshot: TaskSnapshot = { taskId, kind: 'distribution-install', state: 'queued', stage: 'queued', revision: 1, bytesDone: 0 };
+
+test('distribution execution receipts reject other existing task kinds', () => {
+  for (const kind of ['install', 'launch', 'mod-install'] as const) {
+    const other = { ...snapshot, kind };
+    assert.equal(isDistributionExecutionData({ taskId, proposalId, snapshot: other }, 'distribution:confirmExecution'), false);
+    assert.equal(isDistributionExecutionData({ taskId, recoveryRequestId: ids[5]!, snapshot: other }, 'distribution:recoverExecution'), false);
+  }
+});
 const payloads: DistributionExecutionPayloads = {
   'distribution:prepareExecution': binding, 'distribution:executionPreparation': { prepareRequestId: prepareId },
   'distribution:cancelExecutionPreparation': { prepareRequestId: prepareId },
