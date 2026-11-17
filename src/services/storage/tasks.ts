@@ -5,7 +5,7 @@ import type { Execution } from '../../core/task/machine.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { StorageError } from './files.js';
 
-export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check', 'mod-install'] as const;
+export const TASK_KINDS = ['download', 'install', 'java', 'launch', 'stop', 'mod-check', 'mod-install', 'distribution-install'] as const;
 export type TaskKind = typeof TASK_KINDS[number];
 export interface StoredTask { taskId: string; ownerId: string; kind: TaskKind; execution: Execution }
 export interface ModConfirmation { planRequestId: string; payloadDigest: string; task: StoredTask }
@@ -105,7 +105,7 @@ export class TaskTable {
   /** Persists requestId and task together; identical retries recover the original acceptance. */
   accept(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): StoredTask {
     identity(ownerId); identity(requestId);
-    if (!KINDS.includes(kind) || !/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
+    if (!KINDS.includes(kind) || kind === 'distribution-install' || !/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
     return this.transaction(() => {
       const accepted = this.db.prepare('SELECT task_id, kind, payload_digest FROM requests WHERE owner_id=? AND request_id=?').get(ownerId, requestId);
       if (accepted) {
@@ -117,6 +117,30 @@ export class TaskTable {
       const task: StoredTask = { taskId: randomUUID(), ownerId, kind, execution: createExecution() };
       this.db.prepare('INSERT INTO tasks VALUES (?, ?, ?, ?)').run(task.taskId, ownerId, kind, JSON.stringify(task.execution));
       this.db.prepare('INSERT INTO requests VALUES (?, ?, ?, ?, ?)').run(ownerId, requestId, kind, payloadDigest, task.taskId);
+      return task;
+    });
+  }
+
+  /** Projects an already admitted identity; this never authorizes or starts execution. */
+  projectDistribution(ownerId: string, requestId: string, payloadDigest: string, taskId: string): StoredTask {
+    for (const value of [ownerId, requestId, taskId]) {
+      identity(value); if (value !== value.toLowerCase()) throw new StorageError('INVALID_RECORD');
+    }
+    if (!/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
+    return this.transaction(() => {
+      const requests = this.db.prepare('SELECT * FROM requests WHERE (owner_id=? AND request_id=?) OR task_id=?').all(ownerId, requestId, taskId);
+      const existing = this.db.prepare('SELECT owner_id, kind FROM tasks WHERE id=?').get(taskId);
+      if (requests.length || existing) {
+        if (requests.length !== 1 || !existing) throw new StorageError('NEEDS_RECOVERY');
+        const request = requests[0]!;
+        if (request.owner_id !== ownerId || request.request_id !== requestId || request.task_id !== taskId
+          || request.kind !== 'distribution-install' || request.payload_digest !== payloadDigest
+          || existing.owner_id !== ownerId || existing.kind !== 'distribution-install') throw new StorageError('NEEDS_RECOVERY');
+        const task = this.get(ownerId, taskId); if (!task) throw new StorageError('NEEDS_RECOVERY'); return task;
+      }
+      const task: StoredTask = { taskId, ownerId, kind: 'distribution-install', execution: createExecution() };
+      this.db.prepare('INSERT INTO tasks VALUES (?, ?, ?, ?)').run(taskId, ownerId, task.kind, JSON.stringify(task.execution));
+      this.db.prepare('INSERT INTO requests VALUES (?, ?, ?, ?, ?)').run(ownerId, requestId, task.kind, payloadDigest, taskId);
       return task;
     });
   }

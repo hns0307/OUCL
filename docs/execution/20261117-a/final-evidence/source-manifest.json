@@ -1,0 +1,61 @@
+{
+  "base": "f825b8bb",
+  "files": [
+    {
+      "file": "src/services/distribution/store.ts",
+      "sha256": "3146bc5a49df515533df1c16957aaeaa9e797f145d41a410dde6647f4f85ce0b"
+    },
+    {
+      "file": "src/services/distribution/admission-record.ts",
+      "sha256": "f54347f86fe69b99f6d9a083aa74233b41ae5f94db56a92c06c64743d2fbdbde"
+    },
+    {
+      "file": "src/shared/contracts/distribution-execution.ts",
+      "sha256": "c0f3960932315b1ab848c9c4e2b959d47557039b7e3b99e647ed2e556109c870"
+    },
+    {
+      "file": "src/services/storage/tasks.ts",
+      "sha256": "2fbfc5528704439bf0b8aee2314b046dc95b6983ef891661b1de2c375f39b04c"
+    },
+    {
+      "file": "src/services/storage/records.ts",
+      "sha256": "cad33ed9b528b4d7196cb4eebf1f95a1a393ed106fe88d28ed46c767a7ecab51"
+    },
+    {
+      "file": "src/services/workers/protocol.ts",
+      "sha256": "c4c4aeca00e8482042c92365aa424d4a0b0de817ab3d9e9bd01088cf47226607"
+    },
+    {
+      "file": "src/services/workers/storage-client.ts",
+      "sha256": "42c7da969652bbde41c879767eee7a6b2a213b5a5084c4c3c4b834e2adb30c73"
+    },
+    {
+      "file": "src/services/workers/entry.ts",
+      "sha256": "c2a7243ff8459b5c98c87ed2e7b565cee160e3fe1d2c8a0ff65f68d336e67eaf"
+    },
+    {
+      "file": "src/shared/contracts/instances.ts",
+      "sha256": "a57be53d6cea28d1040216221edf84426f681a9d3dad07d354b7b7c0dae2ee6e"
+    },
+    {
+      "file": "src/shared/locales/messages.ts",
+      "sha256": "af27e6dc3bff5c3a36a7feace69c69f866e44bcefbb847481dfdb30b0a7e3a55"
+    },
+    {
+      "file": "src/ui/TaskCenter.tsx",
+      "sha256": "1a05be2c4a5055852b3fc33583bc46163a3c498c9ea86fcc6420f7cf94b136e9"
+    },
+    {
+      "file": "tests/distribution-admission.test.ts",
+      "sha256": "b544ec4c7d8bc8da7bf2aead5a811178a4db80e6c7bd7e1e12c0c921b1314be6"
+    },
+    {
+      "file": "tests/distribution-execution-contract.test.ts",
+      "sha256": "a8b377f0854110d2ee8c260df844812a1087df27d4cc1d12be6aad28496aa49a"
+    },
+    {
+      "file": "tests/distribution-task-projection.test.ts",
+      "sha256": "8f15ce168f7f5c0676142920b40a36b9438819a31a3e7fc7beaaaebc5eec1fc1"
+    }
+  ]
+}

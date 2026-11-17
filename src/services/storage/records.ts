@@ -202,6 +202,14 @@ export class RecordStore {
     });
   }
 
+  /** Projects a confirmed distribution identity without starting or recovering work. */
+  projectDistributionTask(ownerId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).projectDistribution(ownerId, proposalId, payloadDigest, taskId);
+    });
+  }
+
   /** Reads a task only for its stable application owner. */
   getTask(ownerId: string, taskId: string): Promise<StoredTask | undefined> {
     return this.serial(async () => {

@@ -444,3 +444,11 @@
 2026-11-17 r3额度恢复：独立监测通知primary100%剩余，主协调实测1%已用后沿持续内部授权继续本地Mod域适配（真实artifact/worker/runtime/platform/许可typed port、journal前后阶段、有界取消/关闭），复用已验纯投影。公共执行A仍待明确批准，真实source/key空，不改IPC/持久格式/依赖、不push。计划/分工/风险与后继真实证据见根docs/execution/20261117-r3/PLAN.md。
 
 2026-11-17 r3内部Mod域适配完成：证据6PASS、真实worker/Inventory/SQLite/native/Coordinator联合15PASS，完整874项870PASS/0FAIL/4既有SKIP，type/全lint/build通过。只支持mods顶层JAR，许可/runtime/platform端口合成测试不等于真实政策；公共A仍未批准、source/key空。源码/原始日志/限制与恢复点见根docs/execution/20261117-r3，未push或覆盖正式EXE。
+
+
+## 2026-11-17 公共执行方案A明确批准
+
+2026-11-17真实批准：用户先要求讲述方案A，主协调解释独立执行接口、持久任务、双库接纳/outbox与配置空时禁用后，用户明确回复“批准”。本次G2允许按PUBLIC-EXECUTION-PROPOSAL方案A持续小步实现distribution.execute.v1、confirmation admission/outbox、distribution-install任务/对账及受控接线/验证；真实来源、公钥和站点仍空，领域或政策条件未齐不广告/启用执行。后续不为本范围重复索取同义批准，不批量改历史PENDING，不push或替换正式EXE。
+首个可验证基础增量为严格公共契约与私有库schema2确认接纳/outbox；基线f825b8bb、主协调实测primary57%已用。精确计划/分工见根docs/execution/20261117-a/PLAN.md；结果不预记。
+
+2026-11-17方案A基础保存：严格公共契约、私有schema2确认接纳/outbox、固定ID任务投影/expectedRoot绑定及kind标签已实现，完整893项889PASS/0FAIL/4SKIP、type/全lint/build通过。公共handler/双库对账/执行/UI尚未接线，不广告能力。primary91%已用触发保存；恢复首步收紧Accepted/Recovery snapshot.kind，再继续已批准A（不重复问批准）。详根docs/execution/20261117-a/REPORT.md与CHECKPOINT.md。

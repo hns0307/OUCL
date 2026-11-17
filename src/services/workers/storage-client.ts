@@ -132,6 +132,13 @@ export class StorageClient {
   async readModPlan(requestId: string): Promise<RecordEnvelope<StoredModPlan> | undefined> {
     return (await this.request({ kind: 'mod-plan:get', requestId })).modPlan;
   }
+  /** Main-only fixed identity projection; application owner comes from the worker's installation record. */
+  async projectDistributionTask(expectedRootId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    const result = (await this.request({ kind: 'distribution-task:project', expectedRootId, proposalId, payloadDigest, taskId })).task;
+    if (!result || result.kind !== 'distribution-install' || result.taskId !== taskId) throw new WorkerError('INVALID_MESSAGE');
+    return result;
+  }
+
   /** Durable admission only; executors must separately revalidate and run the accepted task. */
   async acceptModConfirmation(planRequestId: string, planId: string, confirmed: true): Promise<StoredTask> {
     const result = (await this.request({ kind: 'mod-confirm:accept', planRequestId, planId, confirmed })).task;

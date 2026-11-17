@@ -49,6 +49,7 @@ export class WorkerError extends Error {
 }
 
 export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
+  | { kind: 'distribution-task:project'; expectedRootId: string; proposalId: string; payloadDigest: string; taskId: string }
   | { kind: 'find-accepted'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'get'; ownerId: string; taskId: string }
   | { kind: 'update'; ownerId: string; taskId: string; expectedRevision: number; execution: Execution }
@@ -174,11 +175,13 @@ export function parseStorageRequest(value: unknown): StorageRequest {
       && exact(command, command.kind === 'object:lookup' ? ['kind', 'sourceKey'] : ['kind', 'sourceKey', 'object']));
     if (command.kind === 'object:remember') parseIndexed(command.object);
   }
+  else if (command.kind === 'distribution-task:project') requireMessage(exact(command, ['kind', 'expectedRootId', 'proposalId', 'payloadDigest', 'taskId'])
+      && uuid(command.expectedRootId) && uuid(command.proposalId) && uuid(command.taskId) && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
   else {
     requireMessage(uuid(command.ownerId));
     if (command.kind === 'accept' || command.kind === 'find-accepted') requireMessage(exact(command, ['kind', 'ownerId', 'requestId', 'taskKind', 'payloadDigest'])
       && uuid(command.requestId) && typeof command.taskKind === 'string' && (TASK_KINDS as readonly string[]).includes(command.taskKind)
-      && (command.kind !== 'accept' || command.taskKind !== 'mod-install')
+      && (command.kind !== 'accept' || command.taskKind !== 'mod-install' && command.taskKind !== 'distribution-install')
       && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
     else if (command.kind === 'get') requireMessage(exact(command, ['kind', 'ownerId', 'taskId']) && uuid(command.taskId));
     else if (command.kind === 'update') {

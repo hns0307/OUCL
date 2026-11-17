@@ -70,6 +70,12 @@ async function storage(directory: string, ownerToken?: string): Promise<void> {
         let modResult;
         if (command.kind === 'accept') task = await store.acceptTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
         else if (command.kind === 'find-accepted') task = await store.findAcceptedTask(command.ownerId, command.requestId, command.taskKind, command.payloadDigest);
+        else if (command.kind === 'distribution-task:project') {
+          const root = await store.read('installation', parseInstallation);
+          if (!root) throw new WorkerError('INVALID_RECORD');
+          if (command.expectedRootId !== root.data.rootId.toLowerCase()) throw new WorkerError('NEEDS_RECOVERY');
+          task = await store.projectDistributionTask(root.data.rootId.toLowerCase(), command.proposalId, command.payloadDigest, command.taskId);
+        }
         else if (command.kind === 'mod-targets:read') modTargets = await readModTargets(store, command);
         else if (command.kind === 'mod-confirm:accept' || command.kind === 'mod-confirm:list') {
           const root = await store.read('installation', parseInstallation);

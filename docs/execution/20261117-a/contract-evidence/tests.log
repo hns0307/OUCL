@@ -1,0 +1,15 @@
+✔ execution contract defines five channels and the approved bounded lifecycle constants (3.6357ms)
+✔ requests reject future versions, unknown fields, noncanonical UUIDs and arbitrary path or URL input (1.0087ms)
+✔ proposal enforces 256 operations, exact 1024 path boundary, safe Windows paths and nonoverlap (2.3127ms)
+✔ preparation states constrain proposal/error to one exact discriminated variant (0.2152ms)
+✔ accepted/recovery validate real TaskSnapshot structure and cannot substitute task identity or unintroduced kind (0.2838ms)
+✔ result correlation rejects wrong prepare identities, cross-instance proposals, wrong proposal and mixed channel DTOs (0.7614ms)
+✔ all error codes roundtrip their exact mapping; unknown codes, details, retry drift and oversized responses fail (9.1101ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 99.9085

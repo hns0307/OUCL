@@ -8,7 +8,7 @@ import type { TaskSnapshot } from '../shared/contracts/instances.js';
 
 const KINDS: Record<TaskSnapshot['kind'], MessageKey> = {
   install: 'taskKindInstall', launch: 'launchGame', stop: 'taskKindStop', download: 'taskKindDownload',
-  'mod-check': 'modsCheck', 'mod-install': 'taskKindModInstall',
+  'mod-check': 'modsCheck', 'mod-install': 'taskKindModInstall', 'distribution-install': 'taskKindDistributionInstall',
 };
 // Mounting another page of already settled records must not replace the history cursor.
 const historicalSettled = (): void => {};

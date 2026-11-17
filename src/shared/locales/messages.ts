@@ -55,7 +55,7 @@ export const MESSAGES = {
   taskHistoryBrowsing: '浏览历史期间保留当前分页；要获取新列表，请选择“重新查询列表”。',
   taskHistoryRestarted: '历史分页已过期，已从第一页重新读取；可以继续载入。',
   taskLoadHistory: '载入更多历史', taskLoading: '正在读取任务与实例记录…', taskPaused: '已暂停',
-  taskKindInstall: '游戏安装', taskKindStop: '结束游戏', taskKindDownload: '资源下载', taskKindModInstall: '模组安装',
+  taskKindInstall: '游戏安装', taskKindStop: '结束游戏', taskKindDownload: '资源下载', taskKindModInstall: '模组安装', taskKindDistributionInstall: '社团包安装',
   instancesPartial: '游戏列表尚未完整', instancesLoadMore: '继续载入游戏', taskQueryOriginal: '查询原任务',
   taskObservationConfirmed: '已确认任务状态', taskObservationChecking: '正在确认任务状态…',
   taskObservationUnconfirmed: '暂时无法确认任务状态，显示上次记录。', taskObservationLastConfirmed: '上次确认',

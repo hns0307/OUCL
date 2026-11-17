@@ -9,6 +9,8 @@ import { guardDatabase, guardDirectory, hasCode, MAX_RECORD_BYTES, readRegular, 
 import type { AcceptedDistributionRelease, ReleaseScope, ReleaseState, ReleaseStateStore } from './release-source.js';
 import { assertDistributionJournalTransition, parseDistributionJournal, parseDistributionReceipt } from './transaction-record.js';
 import type { JournalRepository, ReceiptRepository, TransactionEnvelope } from './transaction-record.js';
+import { initializeAdmissionSchema, SqliteAdmissionRepository } from './admission-record.js';
+import type { AdmissionIntent, AdmissionRepository } from './admission-record.js';
 
 const DATABASE_NAME = 'distribution.sqlite';
 const APPLICATION_ID = 0x4f554450;
@@ -53,8 +55,9 @@ export class DistributionStore implements ReleaseStateStore {
         CREATE TABLE receipts(id TEXT PRIMARY KEY,revision INTEGER NOT NULL,data TEXT NOT NULL);
         CREATE TABLE accepted_releases(source_id TEXT NOT NULL,package_id TEXT NOT NULL,data TEXT NOT NULL,PRIMARY KEY(source_id,package_id));
         PRAGMA application_id=${APPLICATION_ID}; PRAGMA user_version=1; COMMIT;`);
-      if (database.prepare('PRAGMA application_id').get()?.application_id !== APPLICATION_ID || database.prepare('PRAGMA user_version').get()?.user_version !== 1
+      if (database.prepare('PRAGMA application_id').get()?.application_id !== APPLICATION_ID
         || database.prepare('PRAGMA integrity_check').get()?.integrity_check !== 'ok') throw new StorageError('NEEDS_RECOVERY');
+      initializeAdmissionSchema(database);
       const rows = database.prepare('SELECT id,data FROM journals LIMIT 1025').all();
       if (rows.length > 1024) throw new StorageError('NEEDS_RECOVERY');
       const recoverable = new Set<string>();
@@ -65,6 +68,7 @@ export class DistributionStore implements ReleaseStateStore {
         recoverable.add(row.id);
       }
       const store = new DistributionStore(root, file, { dev: before.dev, ino: before.ino }, owner, database, recoverable);
+      store.admissionRepository().validateStored();
       await store.verify(); return store;
     } catch (error) {
       try { database?.close(); } finally { await owner.close(); }
@@ -179,6 +183,28 @@ export class DistributionStore implements ReleaseStateStore {
     return { read: async instanceId => { id(instanceId); await this.verify(); const value = this.record('receipts', instanceId, parseDistributionReceipt);
       if (value && value.data.instanceId !== instanceId) throw new StorageError('NEEDS_RECOVERY'); return value; },
     commit: (instanceId, revision, value) => { if (value.instanceId !== instanceId) throw new StorageError('INVALID_RECORD'); return this.write('receipts', instanceId, revision, value, parseDistributionReceipt); } };
+  }
+  private admissionRepository(): SqliteAdmissionRepository {
+    return new SqliteAdmissionRepository(this.database, () => this.verify(), value => this.assertAdmissionAuthority(value));
+  }
+  /** Durable confirmation identity and outbox only; task creation/execution are separate controlled steps. */
+  get admissions(): AdmissionRepository { return this.admissionRepository(); }
+  private assertAdmissionAuthority(value: AdmissionIntent): void {
+    const plan = value.plan;
+    const highest = this.current({ sourceId: plan.sourceId, packageId: plan.packageId });
+    if (!highest || highest.sequence !== plan.sequence || highest.releaseSha256 !== value.releaseSha256) throw new StorageError('REVISION_CONFLICT');
+    const row = this.database.prepare('SELECT data FROM accepted_releases WHERE source_id=? AND package_id=?').get(plan.sourceId, plan.packageId);
+    if (typeof row?.data !== 'string' || Buffer.byteLength(row.data) > MAX_RECORD_BYTES) throw new StorageError('REVISION_CONFLICT');
+    let accepted: unknown;
+    try { accepted = JSON.parse(row.data) as unknown; } catch { throw new StorageError('NEEDS_RECOVERY'); }
+    if (!exactObject(accepted, ['envelope', 'releaseSha256'])) throw new StorageError('NEEDS_RECOVERY');
+    const envelope = parseDistributionReleaseEnvelope(accepted.envelope);
+    const hash = createHash('sha256').update(canonicalDistributionReleasePayload(envelope.payload)).digest('hex');
+    if (hash !== accepted.releaseSha256) throw new StorageError('NEEDS_RECOVERY');
+    if (hash !== value.releaseSha256 || envelope.payload.sourceId !== plan.sourceId || envelope.payload.packageId !== plan.packageId
+      || envelope.payload.packageVersion !== plan.packageVersion || envelope.payload.sequence !== plan.sequence
+      || envelope.payload.manifestSha256 !== plan.manifestSha256
+      || JSON.stringify(envelope.payload.manifest) !== JSON.stringify(plan.manifest)) throw new StorageError('REVISION_CONFLICT');
   }
   /** Only journals discovered when this exclusively owned store was opened can represent a dead predecessor. */
   async canRecover(txId: string, leaseToken: string): Promise<boolean> {
