@@ -464,3 +464,8 @@
 2026-11-17 A确认材料D完成：内部ticket真实Prepared抽取及多次权威复验、互斥/singleflight/cancel-close drain，专项7PASS；944项940PASS/0FAIL/4SKIP、type/全lint/build通过。仅材料，不接纳/任务/文件执行；下一持久确认与执行服务见根docs/execution/20261117-d/NEXT-SERVICE.md，A授权不变。
 
 2026-11-17 A旧回执E：新增只绑定已有root/digest匹配record的request alias恢复原语，不创建admission/outbox/task或授执行；945项941PASS/0FAIL/4SKIP、type/全lint/build通过。primary92%已用/8%剩余触发保存，仅收齐已启动checks，后继持久确认/执行backend仍未完成。A批准持续有效，恢复后按根docs/execution/20261117-e/CHECKPOINT.md继续，无需重复问批准。
+
+
+2026-11-17 A持久确认F：沿用户已批准A从e666a2a5实现main-owned确认服务，真实ticket→admission/旧alias→双库对账→真实同ID任务回执。并发metadata lane及durable回执先于seen；不进行文件执行，不开放能力，source/key仍空。专注真实合装9PASS，完整检查结果另记；计划/证据见根docs/execution/20261117-f。历史批准不覆写，无push/正式EXE覆盖。
+
+2026-11-17 A确认F完成：真实合装9PASS，完整954项950PASS/0FAIL/4既有SKIP、type/全lint/build0；持久回执优先、metadata串行和close排空已验证。只记录任务不执行文件，下一内部原子claim见根docs/execution/20261117-f/CHECKPOINT.md；A批准持续有效。
