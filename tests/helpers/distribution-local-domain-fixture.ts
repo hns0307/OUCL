@@ -23,7 +23,7 @@ import type { ModInventoryContext } from '../../src/services/mods/inventory.js';
 import { ModArchiveReader } from '../../src/services/workers/mod-archive-reader.js';
 import { modZip } from '../fixtures/mod-zip.js';
 
-export const ROOT = path.resolve(process.env.OUCL_TEST_ROOT ?? 'tmp/distribution-domain-20261117-r3', 'domain');
+export const ROOT = path.resolve(process.env.OUCL_TEST_ROOT ?? 'tmp/distribution-domain-20261117-r3', 'domain', String(process.pid));
 const execute = promisify(execFile);
 const SOURCE_ROOT = process.env.OUCL_SOURCE_ROOT ?? process.cwd();
 const ENTRY = new URL('../../src/services/workers/entry.js', import.meta.url);

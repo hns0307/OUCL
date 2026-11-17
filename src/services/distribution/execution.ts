@@ -14,12 +14,13 @@ import { DistributionTransactionService } from './transaction.js';
 import type { DistributionTransactionPorts, DistributionTransactionTarget } from './transaction.js';
 import { DistributionTransactionError, transactionDigest } from './transaction-record.js';
 import type { DistributionJournal, DistributionPlan } from './transaction-record.js';
+import type { AdmissionIntent } from './admission-record.js';
 
 export interface DistributionExecutionTarget extends DistributionTransactionTarget { environment: DistributionManifest['target'] }
 export interface DistributionExecutionQuery { rootId: string; instanceId: string; sourceId: string; packageId: string; packageVersion: string }
 export interface DistributionProposal {
   proposalId: string; rootId: string; instanceId: string; sourceId: string; packageId: string; packageVersion: string;
-  sequence: number; expiresAt: number; changes: DistributionDiff['changes']; conflicts: DistributionDiff['conflicts'];
+  sequence: number; instanceRevision: number; expiresAt: number; changes: DistributionDiff['changes']; conflicts: DistributionDiff['conflicts'];
 }
 export interface DistributionExecutionOptions {
   sources: readonly TrustedDistributionSource[];
@@ -38,7 +39,10 @@ export interface DistributionExecutionOptions {
   /** Internal document-session bounds. Seen identities are never evicted and reused in this coordinator. */
   lifecycle?: { maxActiveRequests?: number; maxSeenRequests?: number; proposalTtlMs?: number };
 }
-interface Prepared { proposal: DistributionProposal; plan: DistributionPlan; fingerprint: string }
+interface Prepared {
+  proposal: DistributionProposal; plan: DistributionPlan; fingerprint: string;
+  rootIdentity: AdmissionIntent['gameIdentity']; releaseSha256: string;
+}
 interface Request { digest: string; controller: AbortController; prepared: Promise<Prepared>; confirming?: Promise<DistributionJournal>; cancelled: boolean; executing: boolean; deadline: number }
 export type ExecutionLifecycleCode = 'EXECUTION_ACTIVE_LIMIT' | 'EXECUTION_IDENTITY_LIMIT' | 'EXECUTION_REQUEST_EXPIRED' | 'EXECUTION_REQUEST_FINISHED' | 'EXECUTION_REQUEST_FAILED';
 /** Internal lifecycle outcomes; a new document may create a coordinator, but an old request identity is never silently replayed. */
@@ -72,6 +76,7 @@ export class DistributionExecutionCoordinator {
   private readonly tombstones = new Map<string, Tombstone>();
   private readonly jobs = new Map<string, Set<Promise<unknown>>>();
   private readonly replays = new Map<string, Promise<DistributionJournal>>();
+  private readonly tickets = new Map<string, Promise<Omit<AdmissionIntent, 'confirmRequestId'>>>();
   private readonly maxActive: number;
   private readonly maxSeen: number;
   private readonly proposalTtl: number;
@@ -157,7 +162,7 @@ export class DistributionExecutionCoordinator {
     if (!after.isDirectory() || after.isSymbolicLink() || before.dev !== after.dev || before.ino !== after.ino
       || JSON.stringify(latest) !== JSON.stringify(target) || transactionDigest(receipt ?? null) !== transactionDigest(receiptAfter ?? null)) throw new DistributionTransactionError('FILES_CHANGED');
     const rootIdentity = { dev: String(before.dev), ino: String(before.ino) };
-    return { receipt, files, fingerprint: transactionDigest([target, rootIdentity, receipt ?? null, files]) };
+    return { receipt, files, rootIdentity, fingerprint: transactionDigest([target, rootIdentity, receipt ?? null, files]) };
   }
   async prepare(requestId: string, query: DistributionExecutionQuery): Promise<DistributionProposal> {
     this.check();
@@ -203,7 +208,46 @@ export class DistributionExecutionCoordinator {
     const plan: DistributionPlan = { formatVersion: 1, txId: requestId, rootId: query.rootId, instanceId: query.instanceId, instanceRevision: target.revision,
       sourceId: query.sourceId, packageId: query.packageId, packageVersion: query.packageVersion, sequence: payload.sequence, manifestSha256: payload.manifestSha256, manifest: payload.manifest };
     await this.authorize(plan, signal); check();
-    return { plan, fingerprint: snapshot.fingerprint, proposal: { proposalId: requestId, ...query, sequence: payload.sequence, expiresAt: Math.min(this.now() + 300000, payload.expiresAt), changes: diff.changes, conflicts: diff.conflicts } };
+    return { plan, fingerprint: snapshot.fingerprint, rootIdentity: snapshot.rootIdentity, releaseSha256: accepted.releaseSha256,
+      proposal: { proposalId: requestId, ...query, sequence: payload.sequence, instanceRevision: plan.instanceRevision,
+        expiresAt: Math.min(this.now() + 300000, payload.expiresAt), changes: diff.changes, conflicts: diff.conflicts } };
+  }
+  /** Fresh main-owned confirmation material only: no durable admission, task creation or file execution. */
+  async ticket(proposalId: string): Promise<Omit<AdmissionIntent, 'confirmRequestId'>> {
+    this.check(); this.sweep();
+    const terminal = this.tombstones.get(proposalId); if (terminal) throw this.terminalError(terminal);
+    const request = this.requests.get(proposalId); if (!request) invalid();
+    if (request.confirming || request.executing) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
+    const previous = this.tickets.get(proposalId); if (previous) return structuredClone(await previous);
+    const pending = Promise.resolve().then(async () => {
+      const prepared = await request.prepared; this.ensurePreparing(proposalId, request);
+      if (prepared.proposal.conflicts.length) throw new DistributionTransactionError('FILES_CHANGED');
+      const observe = async (): Promise<void> => {
+        const target = await this.target(prepared.plan); this.ensurePreparing(proposalId, request);
+        const current = await this.snapshot(target, request.controller.signal); this.ensurePreparing(proposalId, request);
+        if (current.fingerprint !== prepared.fingerprint || transactionDigest(current.rootIdentity) !== transactionDigest(prepared.rootIdentity)) throw new DistributionTransactionError('FILES_CHANGED');
+      };
+      await observe();
+      await this.authorize(prepared.plan, request.controller.signal); this.ensurePreparing(proposalId, request);
+      await observe();
+      const accepted = await this.options.store.readAcceptedRelease({ sourceId: prepared.plan.sourceId, packageId: prepared.plan.packageId });
+      this.ensurePreparing(proposalId, request);
+      if (!accepted || accepted.releaseSha256 !== prepared.releaseSha256) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
+      const { payload, signature } = accepted.envelope; const canonical = canonicalDistributionReleasePayload(payload);
+      const key = this.source(prepared.plan.sourceId).keys.find(value => value.keyId === signature.keyId && !value.revoked);
+      let trusted = false;
+      try { trusted = !!key && verify(null, Buffer.from(canonical), createPublicKey(key.spki), Buffer.from(signature.value, 'base64')); } catch { /* untrusted key */ }
+      const plan = prepared.plan;
+      if (!trusted || createHash('sha256').update(canonical).digest('hex') !== prepared.releaseSha256
+        || payload.sourceId !== plan.sourceId || payload.packageId !== plan.packageId || payload.packageVersion !== plan.packageVersion
+        || payload.sequence !== plan.sequence || payload.manifestSha256 !== plan.manifestSha256
+        || transactionDigest(payload.manifest) !== transactionDigest(plan.manifest)) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
+      checkDistributionReleaseTime(payload, this.now()); this.ensurePreparing(proposalId, request);
+      return { proposalId, plan: prepared.plan, releaseSha256: prepared.releaseSha256,
+        gameIdentity: prepared.rootIdentity, previewFingerprint: prepared.fingerprint };
+    }).finally(() => { this.tickets.delete(proposalId); });
+    this.tickets.set(proposalId, pending);
+    return structuredClone(await this.track(proposalId, pending));
   }
   async confirm(proposalId: string): Promise<DistributionJournal> {
     this.check(); this.sweep(); const terminal = this.tombstones.get(proposalId);
@@ -218,6 +262,7 @@ export class DistributionExecutionCoordinator {
       })().finally(() => { this.replays.delete(proposalId); });
       this.replays.set(proposalId, replay); return structuredClone(await this.track(proposalId, replay));
     }
+    if (this.tickets.has(proposalId)) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     const request = this.requests.get(proposalId); if (!request) invalid();
     if (request.confirming) return structuredClone(await request.confirming);
     request.confirming = (async () => {
@@ -262,7 +307,7 @@ export class DistributionExecutionCoordinator {
         else { request.cancelled = true; request.controller.abort(); this.terminal(id, request, 'cancelled', new DistributionTransactionError('CANCELLED')); }
       }
       while (this.jobs.size) await Promise.allSettled([...this.jobs.values()].flatMap(jobs => [...jobs]));
-      this.requests.clear(); this.tombstones.clear(); this.replays.clear();
+      this.requests.clear(); this.tombstones.clear(); this.replays.clear(); this.tickets.clear();
     })();
     return this.closing;
   }

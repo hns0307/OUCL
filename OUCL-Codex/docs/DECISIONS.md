@@ -458,3 +458,7 @@
 2026-11-17方案A对账增量完成：严格执行回执kind、完整有界admission/task读取、真实双库固定ID对账及ack读回，915项911PASS/0FAIL/4SKIP、type/全lint/build通过。未广告执行或文件重放，A持续批准无需重复询问；后继接线/真实配置条件见根docs/execution/20261117-b/CHECKPOINT.md。
 
 2026-11-17 A调用层C：五通道transport/preload/main文档owners已接，生产no-port/无execute广告；937项933PASS/0FAIL/4SKIP，type/全lint/build通过。独立候选execution-20261117-c 11文件审计/真实outer26检查/正常退出锁释放及73runtime摘要通过，不覆盖正式EXE。后继ticket/持久执行backend尚未完成，A持续授权；见根docs/execution/20261117-c。
+
+2026-11-17 A内部确认材料D：从46197ef9继续ticket(proposalId)最小main-owned接口，重新验证真实prepare快照/目录/发行/领域；仅材料、不接纳或执行。真实测试及进程隔离夹具/全检由主协调收存；A批准不变，计划和后继持久服务顺序见根docs/execution/20261117-d。
+
+2026-11-17 A确认材料D完成：内部ticket真实Prepared抽取及多次权威复验、互斥/singleflight/cancel-close drain，专项7PASS；944项940PASS/0FAIL/4SKIP、type/全lint/build通过。仅材料，不接纳/任务/文件执行；下一持久确认与执行服务见根docs/execution/20261117-d/NEXT-SERVICE.md，A授权不变。

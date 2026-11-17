@@ -1,0 +1,15 @@
+✔ real signed/worker/domain ticket is detached; durable admission repeats one task without publication (803.4412ms)
+✔ ticket rejects an external file change and leaves unknown content untouched (175.0214ms)
+✔ new accepted release high-water invalidates the old ticket without publication (220.8866ms)
+✔ expired proposal identity cannot obtain a ticket or revive on retry (220.4196ms)
+✔ ticket cancel rejects and drains a held real domain context before shutdown (194.8073ms)
+✔ ticket close rejects and drains a held real domain context before shutdown (182.3231ms)
+✔ ticket singleflight and legacy confirm are mutually exclusive before any publication (437.2565ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2366.0228
