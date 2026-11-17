@@ -1,0 +1,19 @@
+✔ real Store claim permits one pristine start and rejects wrong binding without changing queued state (52.8507ms)
+✔ real Store non-pristine queued tasks cannot regain first-start permission through generic updates (57.6856ms)
+✔ a committed claim with lost acknowledgement is not replayed, including after real worker recovery (170.1069ms)
+✔ claim private protocol rejects arbitrary owner and malformed bindings (0.4804ms)
+✔ real RecordStore and worker return the complete fixed identity projection and reject stale roots (126.989ms)
+✔ SQL reader rejects either orphan, kind mismatch, invalid digest and overflow without writing (57.7905ms)
+✔ private query parser rejects owner injection and reply duplicate aliases (0.3648ms)
+✔ real RecordStore projects the exact admitted task identity idempotently without executing it (39.4095ms)
+✔ SQL projection rejects either orphan side and foreign kind instead of adopting existing rows (1.5982ms)
+✔ real worker bridge derives owner and rejects a stale expected root without projection (114.9741ms)
+✔ private projection command rejects caller owner fields and malformed bindings (0.7646ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 376.7679

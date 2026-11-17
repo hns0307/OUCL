@@ -51,6 +51,7 @@ export class WorkerError extends Error {
 export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'distribution-task:list'; expectedRootId: string }
   | { kind: 'distribution-task:project'; expectedRootId: string; proposalId: string; payloadDigest: string; taskId: string }
+  | { kind: 'distribution-task:claim'; expectedRootId: string; proposalId: string; payloadDigest: string; taskId: string }
   | { kind: 'find-accepted'; ownerId: string; requestId: string; taskKind: TaskKind; payloadDigest: string }
   | { kind: 'get'; ownerId: string; taskId: string }
   | { kind: 'update'; ownerId: string; taskId: string; expectedRevision: number; execution: Execution }
@@ -177,7 +178,7 @@ export function parseStorageRequest(value: unknown): StorageRequest {
     if (command.kind === 'object:remember') parseIndexed(command.object);
   }
   else if (command.kind === 'distribution-task:list') requireMessage(exact(command, ['kind', 'expectedRootId']) && uuid(command.expectedRootId));
-  else if (command.kind === 'distribution-task:project') requireMessage(exact(command, ['kind', 'expectedRootId', 'proposalId', 'payloadDigest', 'taskId'])
+  else if (command.kind === 'distribution-task:project' || command.kind === 'distribution-task:claim') requireMessage(exact(command, ['kind', 'expectedRootId', 'proposalId', 'payloadDigest', 'taskId'])
       && uuid(command.expectedRootId) && uuid(command.proposalId) && uuid(command.taskId) && typeof command.payloadDigest === 'string' && /^[a-f0-9]{64}$/.test(command.payloadDigest));
   else {
     requireMessage(uuid(command.ownerId));

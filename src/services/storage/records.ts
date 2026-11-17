@@ -210,6 +210,14 @@ export class RecordStore {
     });
   }
 
+  /** Claims a pristine distribution task once; an unknown acknowledgement must not be read back as permission. */
+  claimDistributionTask(ownerId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).claimDistribution(ownerId, proposalId, payloadDigest, taskId);
+    });
+  }
+
   /** Reads the complete bounded distribution task projection without changing either table. */
   readDistributionTaskProjections(ownerId: string) {
     return this.serial(async () => {

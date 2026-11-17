@@ -469,3 +469,8 @@
 2026-11-17 A持久确认F：沿用户已批准A从e666a2a5实现main-owned确认服务，真实ticket→admission/旧alias→双库对账→真实同ID任务回执。并发metadata lane及durable回执先于seen；不进行文件执行，不开放能力，source/key仍空。专注真实合装9PASS，完整检查结果另记；计划/证据见根docs/execution/20261117-f。历史批准不覆写，无push/正式EXE覆盖。
 
 2026-11-17 A确认F完成：真实合装9PASS，完整954项950PASS/0FAIL/4既有SKIP、type/全lint/build0；持久回执优先、metadata串行和close排空已验证。只记录任务不执行文件，下一内部原子claim见根docs/execution/20261117-f/CHECKPOINT.md；A批准持续有效。
+
+
+2026-11-17 A内部认领G启动：F已本地403f15b4保存；本片只在既有任务SQLite新增内部首次start原子认领，真实installation root及双表绑定/pristine检查，不改schema/公共IPC，不执行文件或广告能力。范围/测试见根docs/execution/20261117-g/PLAN.md，结果不预记，A授权不变。
+
+2026-11-17 A认领G完成：新4项+原7项专注11PASS；完整958项954PASS/0FAIL/4SKIP、type/全lint/build0，独立只读审查有限认可。首次start先持久化且未知ack不读回重授；无文件执行/生产开放。后继严格终态checker与执行服务见根docs/execution/20261117-g/CHECKPOINT.md。

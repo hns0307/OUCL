@@ -1,0 +1,30 @@
+{
+  "lintExitCode": 0,
+  "typecheckExitCode": 0,
+  "files": [
+    {
+      "sha256": "94e84f9079a759a44e039a6108bc4d439324f122207529cb74d8cdf0ac9a33a3",
+      "file": "src/services/storage/tasks.ts"
+    },
+    {
+      "sha256": "d922db19c79f8c852e83dc7d162a1e05c3d1a0a9fd5b7c83a2f0ed6635735d1c",
+      "file": "src/services/storage/records.ts"
+    },
+    {
+      "sha256": "e77306cd303a7782e3917d8efa7d3c30397e744d04a532e85c8788dd1170936a",
+      "file": "src/services/workers/protocol.ts"
+    },
+    {
+      "sha256": "dc899bddcdcc274dcafc5fd7af57ddf1fc6e84d4793030dfc2f60748699ed429",
+      "file": "src/services/workers/storage-client.ts"
+    },
+    {
+      "sha256": "20e147f5faff725c64d8ae6fe966950089b16c0e776ba06eae48965e2daa4e9e",
+      "file": "src/services/workers/entry.ts"
+    },
+    {
+      "sha256": "4873c1c2f8dffbbd5724110c44f57867ec79b436de61f8e99950cc8033973900",
+      "file": "tests/distribution-task-claim.test.ts"
+    }
+  ]
+}

@@ -171,6 +171,28 @@ export class TaskTable {
     });
   }
 
+  /** Atomically grants only this call the pristine task's first start; retries never grant it again. */
+  claimDistribution(ownerId: string, proposalId: string, payloadDigest: string, taskId: string): StoredTask {
+    for (const value of [ownerId, proposalId, taskId]) {
+      identity(value); if (value !== value.toLowerCase()) throw new StorageError('INVALID_RECORD');
+    }
+    if (!/^[a-f0-9]{64}$/.test(payloadDigest)) throw new StorageError('INVALID_RECORD');
+    return this.transaction(() => {
+      const rows = this.db.prepare('SELECT * FROM requests WHERE (owner_id=? AND request_id=?) OR task_id=? LIMIT 2').all(ownerId, proposalId, taskId);
+      const row = rows[0]; const task = this.get(ownerId, taskId);
+      if (rows.length !== 1 || !row || row.owner_id !== ownerId || row.request_id !== proposalId || row.task_id !== taskId
+        || row.payload_digest !== payloadDigest || row.kind !== 'distribution-install' || !task || task.kind !== 'distribution-install') throw new StorageError('NEEDS_RECOVERY');
+      const current = task.execution;
+      if (current.state !== 'queued' || current.attempt !== 0 || current.revision !== 1 || current.lastSequence !== 0
+        || current.bytesDone !== 0 || current.bytesTotal !== undefined) throw new StorageError('NEEDS_RECOVERY');
+      const next = controlTask(current, 'start');
+      if (next.rejected || next.execution.state !== 'running' || next.execution.attempt !== 1 || next.execution.revision !== 2
+        || next.execution.lastSequence !== 0 || next.execution.bytesDone !== 0 || next.execution.bytesTotal !== undefined) throw new StorageError('NEEDS_RECOVERY');
+      this.db.prepare('UPDATE tasks SET execution=? WHERE id=? AND owner_id=?').run(JSON.stringify(next.execution), taskId, ownerId);
+      return { ...task, execution: next.execution };
+    });
+  }
+
   /** Looks up by stable application owner, not a transient window session. */
   get(ownerId: string, taskId: string): StoredTask | undefined {
     identity(ownerId); identity(taskId);

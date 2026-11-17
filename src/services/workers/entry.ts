@@ -76,11 +76,13 @@ async function storage(directory: string, ownerToken?: string): Promise<void> {
           if (!root || command.expectedRootId !== root.data.rootId.toLowerCase()) throw new WorkerError('NEEDS_RECOVERY');
           distributionProjections = await store.readDistributionTaskProjections(root.data.rootId.toLowerCase());
         }
-        else if (command.kind === 'distribution-task:project') {
+        else if (command.kind === 'distribution-task:project' || command.kind === 'distribution-task:claim') {
           const root = await store.read('installation', parseInstallation);
           if (!root) throw new WorkerError('INVALID_RECORD');
           if (command.expectedRootId !== root.data.rootId.toLowerCase()) throw new WorkerError('NEEDS_RECOVERY');
-          task = await store.projectDistributionTask(root.data.rootId.toLowerCase(), command.proposalId, command.payloadDigest, command.taskId);
+          task = command.kind === 'distribution-task:claim'
+            ? await store.claimDistributionTask(root.data.rootId.toLowerCase(), command.proposalId, command.payloadDigest, command.taskId)
+            : await store.projectDistributionTask(root.data.rootId.toLowerCase(), command.proposalId, command.payloadDigest, command.taskId);
         }
         else if (command.kind === 'mod-targets:read') modTargets = await readModTargets(store, command);
         else if (command.kind === 'mod-confirm:accept' || command.kind === 'mod-confirm:list') {

@@ -139,6 +139,15 @@ export class StorageClient {
     return result;
   }
 
+  /** Only this successful call grants a fresh start; timeout/rejection never permits a read-back substitute. */
+  async claimDistributionTask(expectedRootId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    const task = (await this.request({ kind: 'distribution-task:claim', expectedRootId, proposalId, payloadDigest, taskId })).task;
+    if (!task || task.ownerId !== expectedRootId || task.taskId !== taskId || task.kind !== 'distribution-install'
+      || task.execution.state !== 'running' || task.execution.attempt !== 1 || task.execution.revision !== 2
+      || task.execution.lastSequence !== 0 || task.execution.bytesDone !== 0 || task.execution.bytesTotal !== undefined) throw new WorkerError('INVALID_MESSAGE');
+    return task;
+  }
+
   /** Main-only fixed identity projection; application owner comes from the worker's installation record. */
   async projectDistributionTask(expectedRootId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
     const result = (await this.request({ kind: 'distribution-task:project', expectedRootId, proposalId, payloadDigest, taskId })).task;
