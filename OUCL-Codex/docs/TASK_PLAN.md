@@ -702,3 +702,8 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-17 A额度保存I：实测primary剩8%，停止新实现和新完整检查，仅收齐已启动专注5PASS；源static通过但最终新增测试未跑tsc/lint，全test/build待恢复。I按WIP保存不标完成，首轮预期错误4PASS/1FAIL原日志保留。最近完整通过仍H55fa9a35（965/961PASS/4SKIP）；恢复首步根docs/execution/20261117-i/run-checks.mjs，A持续批准无需重问。
 
 2026-11-18额度恢复，primary实测2%已用。已按I恢复点补齐完整970项966PASS/0FAIL/4SKIP、最终source/test类型/全lint/build0，I不再待全检。下一内部executeAdmitted从durable admission/projection取计划、重验现场与当前authority、亲自fresh claim再bound事务；不开放production或填真实配置。根docs/execution/20261117-i证据，A持续批准。
+
+
+2026-11-18 A内部已接纳执行J启动：I a2ab41c3全检完成，新增受信executeAdmitted，从durable admission/任务投影验证、H终态只读、本人fresh claim后I原目录绑定事务；含有界互斥/cancel/close-drain。不新增公共IPC/schema或生产接线，任务终态持久化属后继K，source/key空。计划根docs/execution/20261118-j/PLAN.md，结果不预记，A持续批准。
+
+2026-11-18 A内部执行J完成：真实专注9PASS及关闭修复35PASS；首轮全检关闭同步abort一FAIL已定位修复且原日志保留，最终979项975PASS/0FAIL/4SKIP、type/全lint/build0。从durable record本人claim再native，未知ack不授效果，取消/close真实排空。J薄结果后task仍running，K终态落盘/产品接线未做；根docs/execution/20261118-j/CHECKPOINT.md，A持续批准/source-key空。

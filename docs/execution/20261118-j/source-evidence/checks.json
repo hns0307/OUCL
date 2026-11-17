@@ -1,0 +1,14 @@
+{
+  "typecheckExitCode": 0,
+  "lintExitCode": 0,
+  "files": [
+    {
+      "sha256": "01291d5042c39880bbbf60e22d930db38ebbe6d883920563fc2a6a7a5aba71a0",
+      "file": "src/services/distribution/execution.ts"
+    },
+    {
+      "sha256": "1cfd7c10d162833ca9c2193c8cc9fabd25b177099ac9937d6a735561348a9600",
+      "file": "src/services/distribution/admitted-execution.ts"
+    }
+  ]
+}

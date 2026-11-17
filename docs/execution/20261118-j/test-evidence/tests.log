@@ -1,0 +1,17 @@
+✔ durable admission/projected task freshly claims once and commits through native; repeat reads terminal evidence only (1904.9049ms)
+✔ real claim commit with lost acknowledgement leaves running and no journal/files; retry never regrants effects (560.66ms)
+✔ busy target and original preview file snapshot changes reject before claim and preserve unknown content (423.8574ms)
+✔ same-path replacement root cannot inherit admitted original directory identity (407.3031ms)
+✔ current synthetic trust revocation or signed release expiry blocks a fresh claim (846.9204ms)
+✔ cancel and close drain held real domain validation and exclude legacy confirmation before publication (838.9621ms)
+✔ legacy-created terminal journal with pristine queued task is not admitted execution evidence (1303.2302ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup (1420.8091ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup with unknown terminal metadata (1447.9732ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9314.1368

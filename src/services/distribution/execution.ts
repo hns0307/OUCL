@@ -15,6 +15,9 @@ import type { DistributionTransactionPorts, DistributionTransactionTarget } from
 import { DistributionTransactionError, transactionDigest } from './transaction-record.js';
 import type { DistributionJournal, DistributionPlan } from './transaction-record.js';
 import type { AdmissionIntent } from './admission-record.js';
+import { AdmittedExecution } from './admitted-execution.js';
+import type { AdmittedExecutionPorts } from './admitted-execution.js';
+import type { AdmittedTerminalEvidence } from './admitted-terminal.js';
 
 export interface DistributionExecutionTarget extends DistributionTransactionTarget { environment: DistributionManifest['target'] }
 export interface DistributionExecutionQuery { rootId: string; instanceId: string; sourceId: string; packageId: string; packageVersion: string }
@@ -23,6 +26,7 @@ export interface DistributionProposal {
   sequence: number; instanceRevision: number; expiresAt: number; changes: DistributionDiff['changes']; conflicts: DistributionDiff['conflicts'];
 }
 export interface DistributionExecutionOptions {
+  admitted?: AdmittedExecutionPorts;
   sources: readonly TrustedDistributionSource[];
   /** Optional main-owned configuration lookup. A key revocation never comes from a renderer or signed package. */
   readSources?(): readonly TrustedDistributionSource[];
@@ -77,6 +81,7 @@ export class DistributionExecutionCoordinator {
   private readonly jobs = new Map<string, Set<Promise<unknown>>>();
   private readonly replays = new Map<string, Promise<DistributionJournal>>();
   private readonly tickets = new Map<string, Promise<Omit<AdmissionIntent, 'confirmRequestId'>>>();
+  private readonly admitted: AdmittedExecution | undefined;
   private readonly maxActive: number;
   private readonly maxSeen: number;
   private readonly proposalTtl: number;
@@ -93,6 +98,35 @@ export class DistributionExecutionCoordinator {
       readTarget: options.readTarget, isIdle: options.isIdle, artifact: options.artifact,
       ...(options.createFiles ? { createFiles: options.createFiles } : {}),
       canRecover: (txId, token) => options.store.canRecover(txId, token), authorize: (plan, signal) => this.authorize(plan, signal) });
+    if (options.admitted) this.admitted = new AdmittedExecution(options.admitted, {
+      journals: options.store.journals, receipts: options.store.receipts, transactions: this.transactions,
+      protectedFactory: options.createFiles !== undefined, legacyBusy: () => this.jobs.size > 0 || this.tickets.size > 0,
+      busy: () => { throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT'); },
+      snapshot: async (plan, signal) => {
+        const target = await this.target(plan); this.check();
+        if (signal.aborted) throw new DistributionTransactionError('CANCELLED');
+        if (!await options.isIdle(target)) throw new DistributionTransactionError('INSTANCE_BUSY');
+        const observed = await this.snapshot(target, signal);
+        if (!await options.isIdle(target)) throw new DistributionTransactionError('INSTANCE_BUSY');
+        this.check(); if (signal.aborted) throw new DistributionTransactionError('CANCELLED');
+        return observed;
+      },
+      authorize: async (record, signal) => {
+        await this.authorize(record.plan, signal);
+        const accepted = await options.store.readAcceptedRelease({ sourceId: record.plan.sourceId, packageId: record.plan.packageId });
+        this.check(); if (signal.aborted) throw new DistributionTransactionError('CANCELLED');
+        if (!accepted || accepted.releaseSha256 !== record.releaseSha256) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
+        const { payload, signature } = accepted.envelope; const canonical = canonicalDistributionReleasePayload(payload);
+        const key = this.source(record.plan.sourceId).keys.find(value => value.keyId === signature.keyId && !value.revoked);
+        let trusted = false;
+        try { trusted = !!key && verify(null, Buffer.from(canonical), createPublicKey(key.spki), Buffer.from(signature.value, 'base64')); } catch { /* untrusted key */ }
+        if (!trusted || createHash('sha256').update(canonical).digest('hex') !== record.releaseSha256
+          || payload.sequence !== record.plan.sequence || payload.sourceId !== record.plan.sourceId
+          || payload.packageId !== record.plan.packageId || payload.packageVersion !== record.plan.packageVersion
+          || payload.manifestSha256 !== record.plan.manifestSha256 || transactionDigest(payload.manifest) !== transactionDigest(record.plan.manifest)) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
+        checkDistributionReleaseTime(payload, this.now());
+      },
+    });
   }
   private track<T>(id: string, promise: Promise<T>): Promise<T> {
     const jobs = this.jobs.get(id) ?? new Set<Promise<unknown>>(); jobs.add(promise); this.jobs.set(id, jobs);
@@ -166,6 +200,7 @@ export class DistributionExecutionCoordinator {
   }
   async prepare(requestId: string, query: DistributionExecutionQuery): Promise<DistributionProposal> {
     this.check();
+    if (this.admitted?.busy) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     if (typeof requestId !== 'string' || !UUID_PATTERN.test(requestId) || requestId !== requestId.toLowerCase()
       || !exactObject(query, ['rootId', 'instanceId', 'sourceId', 'packageId', 'packageVersion'])
       || ![query.rootId, query.instanceId].every(value => typeof value === 'string' && UUID_PATTERN.test(value) && value === value.toLowerCase())
@@ -214,7 +249,9 @@ export class DistributionExecutionCoordinator {
   }
   /** Fresh main-owned confirmation material only: no durable admission, task creation or file execution. */
   async ticket(proposalId: string): Promise<Omit<AdmissionIntent, 'confirmRequestId'>> {
-    this.check(); this.sweep();
+    this.check();
+    if (this.admitted?.busy) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
+    this.sweep();
     const terminal = this.tombstones.get(proposalId); if (terminal) throw this.terminalError(terminal);
     const request = this.requests.get(proposalId); if (!request) invalid();
     if (request.confirming || request.executing) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
@@ -250,6 +287,7 @@ export class DistributionExecutionCoordinator {
     return structuredClone(await this.track(proposalId, pending));
   }
   async confirm(proposalId: string): Promise<DistributionJournal> {
+    if (this.admitted?.busy) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     this.check(); this.sweep(); const terminal = this.tombstones.get(proposalId);
     if (terminal) {
       if (terminal.outcome !== 'completed') throw this.terminalError(terminal);
@@ -285,6 +323,7 @@ export class DistributionExecutionCoordinator {
     this.track(proposalId, request.confirming); return structuredClone(await request.confirming);
   }
   async cancel(requestId: string): Promise<void> {
+    if (await this.admitted?.cancel(requestId)) return;
     this.check(); this.sweep(); const terminal = this.tombstones.get(requestId);
     if (terminal) {
       if (terminal.outcome === 'completed' && terminal.phase === 'committed') throw new DistributionTransactionError('CANCEL_TOO_LATE');
@@ -295,6 +334,7 @@ export class DistributionExecutionCoordinator {
     else { request.cancelled = true; request.controller.abort(); this.terminal(requestId, request, 'cancelled', new DistributionTransactionError('CANCELLED')); }
   }
   async recover(txId: string): Promise<DistributionJournal> {
+    if (this.admitted?.busy) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     this.check(); this.sweep(); if (this.activeSize() >= this.maxActive) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     return this.track(txId, this.transactions.recover(txId));
   }
@@ -302,13 +342,22 @@ export class DistributionExecutionCoordinator {
     if (this.closing) return this.closing;
     this.disposed = true;
     this.closing = (async () => {
+      const admittedClosing = this.admitted?.close();
+      const cancelling: Promise<void>[] = [];
       for (const [id, request] of this.requests) {
-        if (request.confirming && request.executing) await this.transactions.cancel(id).catch(() => {});
+        if (request.confirming && request.executing) cancelling.push(this.transactions.cancel(id).catch(() => {}));
         else { request.cancelled = true; request.controller.abort(); this.terminal(id, request, 'cancelled', new DistributionTransactionError('CANCELLED')); }
       }
+      await Promise.all([admittedClosing, ...cancelling]);
       while (this.jobs.size) await Promise.allSettled([...this.jobs.values()].flatMap(jobs => [...jobs]));
       this.requests.clear(); this.tombstones.clear(); this.replays.clear(); this.tickets.clear();
     })();
     return this.closing;
+  }
+  /** Executes only a durable, projected admission after this call obtains the first-start claim. */
+  async executeAdmitted(proposalId: string, taskId: string): Promise<AdmittedTerminalEvidence> {
+    this.check();
+    if (!this.admitted) throw new DistributionTransactionError('NEEDS_RECOVERY');
+    return this.track(proposalId, this.admitted.execute(proposalId, taskId));
   }
 }
