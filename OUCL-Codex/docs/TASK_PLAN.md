@@ -700,3 +700,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-17 A首次事务绑定I启动：H已55fa9a35保存，实测primary剩21%启动最后小步。内部fresh-bound强制factory/原目录proof、拒已有journal，legacy路径保持；不授执行或开放产品。范围及后继实际证据见根docs/execution/20261117-i，低于20%不再启新实现。
 
 2026-11-17 A额度保存I：实测primary剩8%，停止新实现和新完整检查，仅收齐已启动专注5PASS；源static通过但最终新增测试未跑tsc/lint，全test/build待恢复。I按WIP保存不标完成，首轮预期错误4PASS/1FAIL原日志保留。最近完整通过仍H55fa9a35（965/961PASS/4SKIP）；恢复首步根docs/execution/20261117-i/run-checks.mjs，A持续批准无需重问。
+
+2026-11-18额度恢复，primary实测2%已用。已按I恢复点补齐完整970项966PASS/0FAIL/4SKIP、最终source/test类型/全lint/build0，I不再待全检。下一内部executeAdmitted从durable admission/projection取计划、重验现场与当前authority、亲自fresh claim再bound事务；不开放production或填真实配置。根docs/execution/20261117-i证据，A持续批准。

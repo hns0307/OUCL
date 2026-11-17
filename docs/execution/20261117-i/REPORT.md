@@ -7,3 +7,7 @@
 primary实测剩8%进入保存，没有启动I完整回归。最近完整验证为H55fa9a35的965项961PASS/0FAIL/4SKIP，不能套用到I。I是已保存WIP，不标完成；恢复先运行run-checks.mjs，检查真实结果再继续执行服务。
 
 未接公开执行或真实来源，无新依赖/schema/公共契约。真实source/key/站点仍空，生产no-port不广告。没有push、替换正式EXE或清理原WIP/tmp；后续执行顺序和缺项见CHECKPOINT.md。
+
+## 2026-11-18恢复完整检查
+
+primary恢复后主协调实测2%已用，按持续授权运行run-checks.mjs：完整970项966PASS/0FAIL/4既有SKIP，71725.5297ms；最终全部源码/测试tsc、全ESLint、build均exit0。原始命令/退出码/日志见checks-evidence；上文8%暂停/WIP是历史保存事实，本次检查补齐后I完成，不抹去初轮失败。无产品接线/发布/正式EXE改动。

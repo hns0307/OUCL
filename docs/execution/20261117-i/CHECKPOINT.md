@@ -9,3 +9,5 @@
 执行生命周期仍需专用singleflight/active预算、与legacy互斥、实际cancel/close-drain、receipt commit前后太迟语义；任务进度/终态持久化、目标观察、显式恢复、document facade/backend/UI和configured内链验证尚未完成。不得仅有文件函数就广告execute。source/key/站点仍空，生产no-port保持关闭。
 
 当前仅本地提交，不push、不替换正式EXE，原WIP/tmp保留。C候选仍为C时构建，不冒称包含F—I或真实分发验收。
+
+2026-11-18恢复补齐：I全量970项966PASS/0FAIL/4SKIP、type/全lint/build0。原暂停状态为历史事实；下一沿本页executeAdmitted顺序继续，A无需重批。
