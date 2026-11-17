@@ -1,0 +1,22 @@
+✔ local domain validates real JAR worker facts before and after a real SQLite/native transaction (1535.6932ms)
+✔ replace and remove final validation does not require the old JAR to remain in the published inventory (3885.6696ms)
+✔ external final JAR mutation is rejected and rollback preserves the unknown replacement with needsRecovery (602.4898ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint staged (363.7294ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint published (449.2193ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint receipt-committed (733.8687ms)
+✔ class bridge blocks unknown permission, missing platform, server-only additions and unknown runtime facts (309.1495ms)
+✔ local domain rejects unsupported nested mod paths and other content areas without publishing (217.7362ms)
+✔ artifact cannot silently rebind an identical-content source to a different inode after validation (197.1513ms)
+✔ local domain TTL, active session and total identity bounds do not revive expired plans (218.5536ms)
+✔ clock rollback during an awaited port expires the existing artifact session before returning its path (219.5685ms)
+✔ aborting the original prepared request releases its session slot and preserves a cancelled identity (211.8834ms)
+✔ real archive worker cancel settles before local domain releases its active operation (147.9308ms)
+✔ real archive worker close settles before local domain releases its active operation (36.5786ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9253.2043

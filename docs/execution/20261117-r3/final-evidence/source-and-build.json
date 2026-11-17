@@ -1,0 +1,71 @@
+{
+  "base": "c250ca9b",
+  "sources": [
+    {
+      "file": "src/services/distribution/local-mod-domain-types.ts",
+      "sha256": "96ed362c4714ada778b6487b850ae5a82b78e52a1473aa73eb5433aa973bf854"
+    },
+    {
+      "file": "src/services/distribution/local-mod-evidence.ts",
+      "sha256": "0bfe74cb1fa4c29ac0110400af6358a3a628a8eff1fbcb734c3401053697d112"
+    },
+    {
+      "file": "src/services/distribution/local-mod-domain.ts",
+      "sha256": "baf105a843295fd961aa824eaf9c3c67f4b35cf1f80880cb1ccbad79ce0f5dfd",
+      "testedSha256": "2f850757db0afe8c041b5a111f4dd74549f690df9b39740b3291dab2681bd8d7",
+      "testedSnapshot": "docs/execution/20261117-r3/final-evidence/tested-local-mod-domain.ts",
+      "note": "Only CRLF-to-LF and trailing blank line removal after the full run; no executable text changed."
+    },
+    {
+      "file": "tests/distribution-local-mod-evidence.test.ts",
+      "sha256": "aa798e10eb4042e16b4b109b7a33bb4f67dc4d58a7e475be8dffbcab6bf3885d"
+    },
+    {
+      "file": "tests/distribution-local-mod-domain.test.ts",
+      "sha256": "c97e4cdc2dd77e54dd2878f28c09843d744539673f5140ab92ac2a7635684f7a"
+    },
+    {
+      "file": "tests/helpers/distribution-local-domain-fixture.ts",
+      "sha256": "aabab1135adc08d28497298b7d582433116e44303a18accafc80539f2ad02242"
+    }
+  ],
+  "buildRoot": "D:/MC_start/OUCL/tmp/20261117-r3-final-build/dist",
+  "build": [
+    {
+      "file": "main/index.cjs",
+      "sha256": "5f35c73a92ae4516850918a1fa756cbf7f75bc7cb34237923a08c3fed08f0f9d"
+    },
+    {
+      "file": "native/distribution-files.exe",
+      "sha256": "9ada9a0decff62e4b940007bb1f14c5e8a50be23e755cb71d0b3bbcecbb714d8"
+    },
+    {
+      "file": "native/distribution-files.json",
+      "sha256": "e0f0a1487c51795f631d87ee0d48889dac1b66b1c7bbd22b0ebdb03d34f29941"
+    },
+    {
+      "file": "preload/index.cjs",
+      "sha256": "561d9ec76f98c5b245d889ba41812e6681f453ff0140e3616e3b51e8c577df71"
+    },
+    {
+      "file": "renderer/assets/index-BBn04PRj.css",
+      "sha256": "a5c88d2ce8a4e5db3a2d990339c17b90bb705eaaa851026529bf84f03e8df62b"
+    },
+    {
+      "file": "renderer/assets/index-CVgd03lx.js",
+      "sha256": "085f973e49a93bc530ed7c29649b91d337deaa88e54835d13fda734555d53de2"
+    },
+    {
+      "file": "renderer/index.html",
+      "sha256": "a01b042d98c0f3ef982d9f39e6e79eb0ba2a46ee037ef6d0d9ee7c05f0c8511d"
+    },
+    {
+      "file": "workers/entry.cjs",
+      "sha256": "aa4fd915cc63ed602efe7f17cf4a24db23500fc2f5d06378bfd64e0caddebb78"
+    },
+    {
+      "file": "workers/fixed-pack.cjs",
+      "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+    }
+  ]
+}

@@ -20,3 +20,5 @@ Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台
 2026-11-17取消后继：内部authorize/validate/artifact接受可选AbortSignal；prepare/confirm传原请求signal，事务两次授权及artifact传组合signal。artifact迟到返回先check后copy；receipt.commit/finish/rollback/recover不接取消，提交开始后仍CANCEL_TOO_LATE且drain实际settlement。局部48通过，完整844项840PASS/0FAIL/4既有SKIP及type/lint/build通过，见execution/20261117/CANCELLATION.md和final-evidence。公共执行未接线，domain实现仍待后继。
 
 2026-11-17本地规则后继：新增projectDistributionMods纯投影，完整baseline保留、旧hash删除/替换、op-index新scan绑定和有界事实校验；9项专注及最新853项849PASS/0FAIL/4SKIP与type/lint/build通过。此函数无IO、无许可或ownership授权，不是完整domain验证器；见execution/20261117/PROJECTION.md。
+
+2026-11-17 r3：LocalModDomain本地Mod内部gate已实现。typed证据许可绑定计划/操作/制品；真实worker scan和前后source stamp；实际rootinode/runtime context；strict journal区分基线/已发布，完整最终facts/local+platform复核。one-active、16sessions/1024seen、TTL/时钟回退、prepared取消释放cache但保留tombstone、close/drain等待实际settle。6+15专项及完整874项870PASS/0FAIL/4SKIP、type/lint/build通过。它不是实际artifact locator/许可政策，不开放公共能力，其他区域域验证unsupported；详execution/20261117-r3。

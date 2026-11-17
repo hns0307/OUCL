@@ -656,3 +656,7 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-17内部取消增量：实际复现未传signal及迟到copy后修复；局部48PASS，完整844项840PASS/0FAIL/4既有SKIP，type/全lint/build通过。候选execution-20261117沿38c441b7快照已11文件审计及18outer检查通过；不冒称该候选包含后续内部signal源码。真实来源/公钥空，公共执行未开放，无push。详根docs/execution/20261117。
 
 2026-11-17本地纯投影增量完成：9项专注通过，最新完整853项849PASS/0FAIL/4既有SKIP，type/全lint/build通过。未接公共执行、未实现完整域适配；公共execution提案已具体备好并请求批准，未收到答复不实施新增IPC/持久格式。当前状态/恢复点见根docs/execution/20261117/CHECKPOINT.md。
+
+2026-11-17 r3额度恢复：独立监测通知primary100%剩余，主协调实测1%已用后沿持续内部授权继续本地Mod域适配（真实artifact/worker/runtime/platform/许可typed port、journal前后阶段、有界取消/关闭），复用已验纯投影。公共执行A仍待明确批准，真实source/key空，不改IPC/持久格式/依赖、不push。计划/分工/风险与后继真实证据见根docs/execution/20261117-r3/PLAN.md。
+
+2026-11-17 r3内部Mod域适配完成：证据6PASS、真实worker/Inventory/SQLite/native/Coordinator联合15PASS，完整874项870PASS/0FAIL/4既有SKIP，type/全lint/build通过。只支持mods顶层JAR，许可/runtime/platform端口合成测试不等于真实政策；公共A仍未批准、source/key空。源码/原始日志/限制与恢复点见根docs/execution/20261117-r3，未push或覆盖正式EXE。

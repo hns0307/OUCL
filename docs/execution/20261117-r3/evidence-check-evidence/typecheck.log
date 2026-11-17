@@ -1,0 +1,4 @@
+src/services/distribution/local-mod-evidence.ts(57,12): error TS2352: Conversion of type 'Record<string, unknown>' to type 'LocalModDomainContext' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'LocalModDomainContext': rootId, gameIdentity, context
+src/services/distribution/local-mod-evidence.ts(73,10): error TS2352: Conversion of type 'Record<string, unknown>' to type 'LocalArtifactEvidence' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'LocalArtifactEvidence': binding, path, permission
