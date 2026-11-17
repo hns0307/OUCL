@@ -474,3 +474,8 @@
 2026-11-17 A内部认领G启动：F已本地403f15b4保存；本片只在既有任务SQLite新增内部首次start原子认领，真实installation root及双表绑定/pristine检查，不改schema/公共IPC，不执行文件或广告能力。范围/测试见根docs/execution/20261117-g/PLAN.md，结果不预记，A授权不变。
 
 2026-11-17 A认领G完成：新4项+原7项专注11PASS；完整958项954PASS/0FAIL/4SKIP、type/全lint/build0，独立只读审查有限认可。首次start先持久化且未知ack不读回重授；无文件执行/生产开放。后继严格终态checker与执行服务见根docs/execution/20261117-g/CHECKPOINT.md。
+
+
+2026-11-17 A只读终态H启动：从6116daf0补独立admission终态checker，严格J/R稳定复读与plan/目录proof及receipt前后方向；不执行文件、不授claim、不改schema/公共契约。计划和后继真实证据见根docs/execution/20261117-h，A授权不变，真实配置空。
+
+2026-11-17 A只读终态H完成：真实专注7PASS，完整965项961PASS/0FAIL/4SKIP、type/全lint/build0；严格J/R稳定及前后receipt方向，薄历史证据不授文件执行。taskId须未来durable projection独立核，真实配置仍空。后继fresh-bound入口见根docs/execution/20261117-h/CHECKPOINT.md。

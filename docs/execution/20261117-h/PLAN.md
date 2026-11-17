@@ -1,0 +1,9 @@
+# 方案A H：已接纳事务终态只读核验
+
+G2，从6116daf0继续用户已批准A。新增内部admitted-terminal.ts和独立真实合装测试，不改公共契约、schema、依赖或产品接线。本片只读元数据，不执行/恢复文件或授予启动许可。
+
+入口有界快照并严格parse projected admission及expectedRoot；J/R/J/R复读journal/receipt，校精确envelope、安全revision、完整planDigest/原目录身份和一致快照。committed只接受精确afterReceipt与beforeRevision+1；rolledBack只接受精确beforeReceipt及beforeRevision（null要求实际无记录）。部分journal、较新/错方向receipt、漂移或损坏一律NEEDS_RECOVERY。稳定缺journal返回undefined，仅表示缺失事实。
+
+薄证据只含proposal/task/planDigest/gameIdentity/phase及两revision。实现代理独占source及source-evidence，测试代理独占新test及test-evidence；主协调集成、审查及全检。真实store/native生成终态供checker读取，恶意端口注入和合成许可仍须单列，不称真实分发验收。
+
+风险：单一receipt没有历史表，后续合法事务推进receipt后可能保守拒旧终态；不以revision较大直接算成功，不暗增历史schema。下一执行服务仍必须核durable任务与原快照、取得G本次成功claim、使用绑定原目录identity的native factory。source/key/站点仍空、生产no-port不广告；不push/覆盖EXE。
