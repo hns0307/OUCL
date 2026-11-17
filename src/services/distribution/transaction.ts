@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import { exactObject, UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { guardDirectory, hasCode, readRegular } from '../storage/files.js';
 import { DistributionTransactionFiles, sameProof } from './transaction-files.js';
 import { DistributionTransactionError, SimulatedDistributionCrash, assertDistributionJournalTransition, parseDistributionJournal, parseDistributionPlan, parseDistributionReceipt, transactionDigest, transactionReceipt } from './transaction-record.js';
@@ -99,6 +99,23 @@ export class DistributionTransactionService {
   }
   /** Stages trusted local artifacts, acquires the existing gameDir lease, then publishes an atomic private receipt. */
   async commit(input: DistributionPlan, signal?: AbortSignal): Promise<DistributionJournal> {
+    return this.commitInternal(input, signal);
+  }
+  /** Fresh-only protected entry. The trusted executor must obtain its own successful durable claim first;
+   * this method is not an independent execution grant and never replays an existing journal.
+   */
+  async commitFreshBound(input: DistributionPlan, expectedRoot: DirectoryProof, signal?: AbortSignal): Promise<DistributionJournal> {
+    let proof: DirectoryProof;
+    try {
+      if (!exactObject(expectedRoot, ['dev', 'ino'])) throw new DistributionTransactionError('INVALID_TRANSACTION');
+      const dev: unknown = expectedRoot.dev; const ino: unknown = expectedRoot.ino;
+      if (typeof dev !== 'string' || !/^\d{1,30}$/.test(dev) || typeof ino !== 'string' || !/^[1-9]\d{0,29}$/.test(ino)) throw new DistributionTransactionError('INVALID_TRANSACTION');
+      proof = { dev, ino };
+    } catch { throw new DistributionTransactionError('INVALID_TRANSACTION'); }
+    if (!this.ports.createFiles) throw new DistributionTransactionError('NEEDS_RECOVERY');
+    return this.commitInternal(input, signal, { dev: proof.dev, ino: proof.ino });
+  }
+  private async commitInternal(input: DistributionPlan, signal?: AbortSignal, expectedRoot?: DirectoryProof): Promise<DistributionJournal> {
     const plan = parseDistributionPlan(input);
     if (this.active) throw new DistributionTransactionError('INSTANCE_BUSY');
     const controller = new AbortController(); this.active = { txId: plan.txId, controller, committing: false };
@@ -108,6 +125,7 @@ export class DistributionTransactionService {
     try {
       const old = await this.ports.journals.read(plan.txId);
       if (old) {
+        if (expectedRoot) throw new DistributionTransactionError('NEEDS_RECOVERY');
         const parsed = parseDistributionJournal(old.data);
         if (parsed.planDigest !== transactionDigest(plan)) throw new DistributionTransactionError('INVALID_TRANSACTION');
         if (parsed.phase === 'committed' || parsed.phase === 'rolledBack') return parsed;
@@ -119,7 +137,12 @@ export class DistributionTransactionService {
       if (receipt && receipt.instanceId !== plan.instanceId) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
       const prior = receipt?.releases.find(entry => entry.sourceId === plan.sourceId && entry.packageId === plan.packageId);
       if (prior && plan.sequence <= prior.sequence) throw new DistributionTransactionError('UNTRUSTED_DISTRIBUTION');
-      game = this.ports.createFiles?.(target.gameDir, plan.txId) ?? new DistributionTransactionFiles(target.gameDir, plan.txId); await game.initialize();
+      if (expectedRoot) {
+        if (!this.ports.createFiles) throw new DistributionTransactionError('NEEDS_RECOVERY');
+        game = this.ports.createFiles(target.gameDir, plan.txId, { ...expectedRoot });
+      } else game = this.ports.createFiles?.(target.gameDir, plan.txId) ?? new DistributionTransactionFiles(target.gameDir, plan.txId);
+      await game.initialize();
+      if (expectedRoot && (game.gameIdentity.dev !== expectedRoot.dev || game.gameIdentity.ino !== expectedRoot.ino)) throw new DistributionTransactionError('FILES_CHANGED');
       const files: DistributionJournal['files'] = [];
       for (const [operationIndex, operation] of plan.manifest.operations.entries()) {
         check(); if (operation.kind === 'keep') continue;

@@ -479,3 +479,8 @@
 2026-11-17 A只读终态H启动：从6116daf0补独立admission终态checker，严格J/R稳定复读与plan/目录proof及receipt前后方向；不执行文件、不授claim、不改schema/公共契约。计划和后继真实证据见根docs/execution/20261117-h，A授权不变，真实配置空。
 
 2026-11-17 A只读终态H完成：真实专注7PASS，完整965项961PASS/0FAIL/4SKIP、type/全lint/build0；严格J/R稳定及前后receipt方向，薄历史证据不授文件执行。taskId须未来durable projection独立核，真实配置仍空。后继fresh-bound入口见根docs/execution/20261117-h/CHECKPOINT.md。
+
+
+2026-11-17 A首次事务绑定I启动：H已55fa9a35保存，实测primary剩21%启动最后小步。内部fresh-bound强制factory/原目录proof、拒已有journal，legacy路径保持；不授执行或开放产品。范围及后继实际证据见根docs/execution/20261117-i，低于20%不再启新实现。
+
+2026-11-17 A额度保存I：实测primary剩8%，停止新实现和新完整检查，仅收齐已启动专注5PASS；源static通过但最终新增测试未跑tsc/lint，全test/build待恢复。I按WIP保存不标完成，首轮预期错误4PASS/1FAIL原日志保留。最近完整通过仍H55fa9a35（965/961PASS/4SKIP）；恢复首步根docs/execution/20261117-i/run-checks.mjs，A持续批准无需重问。

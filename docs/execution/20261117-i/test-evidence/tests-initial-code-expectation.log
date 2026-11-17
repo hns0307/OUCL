@@ -1,0 +1,42 @@
+✔ real native fresh-bound first commit binds the captured root and refuses a second call (1636.7737ms)
+✖ replacement of the original root inode fails before lease, journal or publication (63.3391ms)
+✔ missing protected factory and malformed proof reject before calling authorization or artifacts (57.3188ms)
+✔ existing terminal and interrupted journals never call fresh factory or artifact (1332.9995ms)
+✔ caller proof mutation during awaited authorization cannot change the captured expected root (929.7007ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4191.1076
+
+✖ failing tests:
+
+test at ..\..\tmp\fresh-bound-20261117-i\build\tests\distribution-fresh-bound.test.js:52:1
+✖ replacement of the original root inode fails before lease, journal or publication (63.3391ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'NEEDS_RECOVERY'
+  -   code: 'FILES_CHANGED'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/fresh-bound-20261117-i/build/tests/distribution-fresh-bound.test.js:60:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DistributionTransactionError: NEEDS_RECOVERY
+        at DistributionTransactionService.commitInternal (file:///D:/MC_start/OUCL/tmp/fresh-bound-20261117-i/build/src/services/distribution/transaction.js:243:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/fresh-bound-20261117-i/build/tests/distribution-fresh-bound.test.js:60:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'FILES_CHANGED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
