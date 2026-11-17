@@ -678,3 +678,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-17 A内部确认材料D：从46197ef9继续ticket(proposalId)最小main-owned接口，重新验证真实prepare快照/目录/发行/领域；仅材料、不接纳或执行。真实测试及进程隔离夹具/全检由主协调收存；A批准不变，计划和后继持久服务顺序见根docs/execution/20261117-d。
 
 2026-11-17 A确认材料D完成：内部ticket真实Prepared抽取及多次权威复验、互斥/singleflight/cancel-close drain，专项7PASS；944项940PASS/0FAIL/4SKIP、type/全lint/build通过。仅材料，不接纳/任务/文件执行；下一持久确认与执行服务见根docs/execution/20261117-d/NEXT-SERVICE.md，A授权不变。
+
+2026-11-17 A旧回执E：新增只绑定已有root/digest匹配record的request alias恢复原语，不创建admission/outbox/task或授执行；945项941PASS/0FAIL/4SKIP、type/全lint/build通过。primary92%已用/8%剩余触发保存，仅收齐已启动checks，后继持久确认/执行backend仍未完成。A批准持续有效，恢复后按根docs/execution/20261117-e/CHECKPOINT.md继续，无需重复问批准。

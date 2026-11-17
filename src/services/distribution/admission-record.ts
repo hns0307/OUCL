@@ -16,6 +16,7 @@ interface AdmissionData {
 export interface AdmissionRecord extends AdmissionData { phase: 'accepted' | 'projected'; revision: 1 | 2 }
 export interface AdmissionRepository {
   admit(intent: AdmissionIntent): Promise<AdmissionRecord>;
+  bindReceiptAlias(expectedRootId: string, confirmRequestId: string, proposalId: string, inputDigest: string): Promise<AdmissionRecord>;
   readByRequest(confirmRequestId: string): Promise<AdmissionRecord | undefined>;
   readByProposal(proposalId: string): Promise<AdmissionRecord | undefined>;
   listPending(limit?: number): Promise<AdmissionRecord[]>;
@@ -201,6 +202,23 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
         const count = this.database.prepare('SELECT COUNT(*) AS n FROM admission_aliases').get()?.n;
         if (typeof count !== 'number' || count >= MAX_ALIASES) reject('REVISION_CONFLICT');
         this.database.prepare('INSERT INTO admission_aliases VALUES(?,?)').run(value.confirmRequestId, value.proposalId);
+      }
+      return record;
+    });
+  }
+
+  /** Binds an existing receipt only. It never accepts a new plan, creates an outbox, or grants execution. */
+  async bindReceiptAlias(expectedRootId: string, requestId: string, proposalId: string, inputDigest: string): Promise<AdmissionRecord> {
+    uuid(expectedRootId); uuid(requestId); uuid(proposalId); hash(inputDigest); await this.verify();
+    return this.transaction(() => {
+      const record = this.record(proposalId);
+      if (!record || record.plan.rootId !== expectedRootId || record.inputDigest !== inputDigest) reject('REVISION_CONFLICT');
+      const alias = this.database.prepare('SELECT proposal_id FROM admission_aliases WHERE request_id=?').get(requestId);
+      if (alias && alias.proposal_id !== proposalId) reject('REVISION_CONFLICT');
+      if (!alias) {
+        const count = this.database.prepare('SELECT COUNT(*) AS n FROM admission_aliases').get()?.n;
+        if (typeof count !== 'number' || count >= MAX_ALIASES) reject('REVISION_CONFLICT');
+        this.database.prepare('INSERT INTO admission_aliases VALUES(?,?)').run(requestId, proposalId);
       }
       return record;
     });

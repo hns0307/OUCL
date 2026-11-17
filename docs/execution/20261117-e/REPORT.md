@@ -1,0 +1,9 @@
+# A旧回执别名恢复原语
+
+沿既有A批准从958aa363推进极小元数据增量：AdmissionRepository.bindReceiptAlias(expectedRootId,confirmRequestId,proposalId,inputDigest)。它只读取已接纳record，精确核root/digest并在原SQL事务绑定request alias；幂等/4096上限保持，别proposal占用、错误root/hash均拒绝。不创建admission/outbox/task，不改phase或journal/receipt，不重新授予旧发行执行权，原admit的新确认authority规则不变。
+
+新增真实SQLite代表用例验证highwater前进后仍恢复同task、原ID/新alias幂等、错root/digest及alias冲突、无journal/receipt。独立只读有限审查认可。最新全945项941PASS/0FAIL/4既有SKIP，typecheck/全lint/build全部exit0，原始日志/结构化status/source SHA在final-evidence。未新增schema/public接口或重新打包。
+
+本方法未来仅main-owned确认服务使用；renderer不提供inputDigest或expectedRoot权限。后继executor仍必须重新核验当前authority/pins/time/domain/native及原确认snapshot，alias成功不许可重跑文件。真实来源/publickey/许可政策仍空，生产执行port尚未配置，不广告能力。
+
+本轮B41120eed完成双库对账，C46197ef9完成空配置调用层及实际候选26检查，D958aa363完成ticket，E本片完成旧回执别名原语；不是技术文档全部任务完成。主协调实测primary300分钟92%已用/8%剩余后只收齐已启动checks并保存，停止新增实现，不消耗reset/不按weekly停止。

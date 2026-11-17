@@ -53,6 +53,24 @@ test('admission keeps one task/outbox across exact retries and confirmation alia
   } finally { await store.close(); }
 });
 
+test('receipt aliases recover an existing task after publisher advancement without a new execution grant', windows, async () => {
+  const store = await DistributionStore.open(await directory()); const initial = release(); const value = intent(initial);
+  try {
+    await authorize(store, initial); const first = await store.admissions.admit(value);
+    const newer = release(2); await authorize(store, newer); const alias = randomUUID();
+    const bind = () => store.admissions.bindReceiptAlias(value.plan.rootId, alias, value.proposalId, first.inputDigest);
+    assert.deepEqual(await bind(), first); assert.deepEqual(await bind(), first);
+    assert.deepEqual(await store.admissions.readByRequest(alias), first);
+    await assert.rejects(store.admissions.bindReceiptAlias(randomUUID(), randomUUID(), value.proposalId, first.inputDigest), { code: 'REVISION_CONFLICT' });
+    await assert.rejects(store.admissions.bindReceiptAlias(value.plan.rootId, randomUUID(), value.proposalId, '0'.repeat(64)), { code: 'REVISION_CONFLICT' });
+    const other = intent(newer); const second = await store.admissions.admit(other);
+    await assert.rejects(store.admissions.bindReceiptAlias(other.plan.rootId, alias, other.proposalId, second.inputDigest), { code: 'REVISION_CONFLICT' });
+    assert.deepEqual(await store.admissions.readByRequest(alias), first);
+    assert.equal((await store.admissions.listAll()).length, 2);
+    assert.equal(await store.journals.read(value.proposalId), undefined); assert.equal(await store.receipts.read(value.plan.instanceId), undefined);
+  } finally { await store.close(); }
+});
+
 test('immutable binding rejects same request/proposal with changed snapshot, inode, plan or identity', windows, async () => {
   const store = await DistributionStore.open(await directory()); const accepted = release(); const value = intent(accepted);
   try {
