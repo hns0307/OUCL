@@ -111,6 +111,7 @@ let distributionObservation: DistributionObservationOwner | undefined;
 async function observeDistribution<T>(read: () => Promise<T>): Promise<T> {
   try { return await read(); }
   catch (error) {
+    if (error instanceof InstanceContractError) throw error;
     if (error instanceof DistributionTaskViewError && (error.code === 'NEEDS_RECOVERY' || error.code === 'ROOT_UNAVAILABLE')) {
       throw new InstanceContractError(error.code);
     }
@@ -260,7 +261,9 @@ else void app.whenReady().then(async () => {
         catch (error) { throw new InstanceContractError(error instanceof ModContractError && error.code === 'CANCEL_TOO_LATE' ? 'CANCEL_TOO_LATE'
           : error instanceof ModContractError && error.code === 'NEEDS_RECOVERY' ? 'NEEDS_RECOVERY' : 'INVALID_TASK_STATE'); }
       }
-        else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
+        else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id);
+        else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id);
+        else if (!await observeDistribution(() => observation.cancelQueued(root, id))) await games.cancel(root, id); },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls, distributionObservation);

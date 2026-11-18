@@ -10,12 +10,15 @@ import { DistributionExecutionLifecycleError } from './execution.js';
 import type { DistributionExecutionCoordinator } from './execution.js';
 import type { DistributionTaskSettlementService } from './settlement.js';
 import { DistributionTransactionError, transactionDigest } from './transaction-record.js';
+import { parseDistributionJournal } from './transaction-record.js';
+import type { JournalRepository } from './transaction-record.js';
 
 export interface DistributionRunnerPorts {
   admissions: Pick<AdmissionRepository, 'readByProposal'>;
   readProjections(expectedRootId: string): Promise<DistributionTaskProjection[]>;
   coordinator: Pick<DistributionExecutionCoordinator, 'executeAdmitted' | 'cancel'>;
   settlement: Pick<DistributionTaskSettlementService, 'settle'>;
+  recovery?: { journals: Pick<JournalRepository, 'read'>; coordinator: Pick<DistributionExecutionCoordinator, 'recoverProtected'> };
 }
 export class DistributionRunnerError extends Error {
   constructor(readonly code: 'INVALID_ARGUMENT' | 'NEEDS_RECOVERY' | 'INSTANCE_BUSY' | 'CAPACITY_EXCEEDED'
@@ -37,7 +40,8 @@ function trusted(error: unknown): error is DistributionTransactionError | Releas
   return error instanceof DistributionTransactionError || error instanceof ReleaseError || error instanceof DistributionExecutionLifecycleError;
 }
 interface Job {
-  proposalId: string; taskId: string; phase: 'reading' | 'executing' | 'settling'; cancelled: boolean; result: Promise<StoredTask>;
+  proposalId: string; taskId: string; mode: 'run' | 'recover';
+  phase: 'reading' | 'executing' | 'recovering' | 'settling'; cancelled: boolean; result: Promise<StoredTask>;
 }
 
 /** One root-owned job spans execution and settlement. All execution writers for the root must use this owner;
@@ -89,6 +93,25 @@ export class DistributionExecutionRunner {
     if (transactionDigest(await this.readBound(record)) !== transactionDigest(result)) fail();
     return result;
   }
+  private async recoverJob(job: Job, record: AdmissionRecord, task: StoredTask): Promise<StoredTask> {
+    const recovery = this.ports.recovery;
+    if (!recovery) throw new DistributionRunnerError('UNAVAILABLE');
+    if (task.execution.state === 'completed' || task.execution.state === 'failed') return this.settle(job, record);
+    if (task.execution.state !== 'needsRecovery' || task.execution.attempt !== 1 || task.execution.revision < 3) fail();
+    const raw = await recovery.journals.read(record.proposalId);
+    if (!raw) fail();
+    const envelope = snapshot(raw, MAX_RECORD_BYTES + 128);
+    if (!exactObject(envelope, ['revision', 'data']) || !Number.isSafeInteger(envelope.revision) || envelope.revision < 1) fail();
+    const journal = parseDistributionJournal(envelope.data);
+    if (journal.planDigest !== transactionDigest(record.plan)
+      || transactionDigest(journal.gameIdentity) !== transactionDigest(record.gameIdentity)) fail();
+    if (transactionDigest(await this.readBound(record)) !== transactionDigest(task)) fail();
+    this.beforeExecution(job);
+    job.phase = 'recovering';
+    // The transaction checks predecessor ownership, the original lease and the receipt direction.
+    await recovery.coordinator.recoverProtected(record.proposalId);
+    return this.settle(job, record);
+  }
   private async work(job: Job): Promise<StoredTask> {
     try {
       this.beforeExecution(job);
@@ -97,6 +120,7 @@ export class DistributionExecutionRunner {
       if (!this.seen.has(job.proposalId)) {
         if (this.seen.size >= 1024) throw new DistributionRunnerError('CAPACITY_EXCEEDED'); this.seen.add(job.proposalId);
       }
+      if (job.mode === 'recover') return await this.recoverJob(job, record, task);
       // Persisted attempts are never restarted. K alone may prove a historical terminal outcome.
       if (['completed', 'failed', 'running', 'needsRecovery'].includes(task.execution.state)) return await this.settle(job, record);
       if (!pristine(task)) fail();
@@ -124,14 +148,21 @@ export class DistributionExecutionRunner {
   }
   /** Returns a real durable terminal task, never a thin execution acknowledgement. */
   run(proposalId: string, taskId: string): Promise<StoredTask> {
+    return this.start(proposalId, taskId, 'run');
+  }
+  /** Explicitly recovers a predecessor's journal through the same root slot as new work. */
+  recover(proposalId: string, taskId: string): Promise<StoredTask> {
+    return this.start(proposalId, taskId, 'recover');
+  }
+  private start(proposalId: string, taskId: string, mode: Job['mode']): Promise<StoredTask> {
     if (this.closed) return Promise.reject(new DistributionRunnerError('UNAVAILABLE'));
     if (!uuid(proposalId) || !uuid(taskId)) return Promise.reject(new DistributionRunnerError('INVALID_ARGUMENT'));
     const old = this.active;
     if (old) {
-      if (old.proposalId === proposalId && old.taskId === taskId) return old.result.then(value => structuredClone(value));
+      if (old.proposalId === proposalId && old.taskId === taskId && old.mode === mode) return old.result.then(value => structuredClone(value));
       return Promise.reject(new DistributionRunnerError(old.proposalId === proposalId ? 'REQUEST_CONFLICT' : 'INSTANCE_BUSY'));
     }
-    const job: Job = { proposalId, taskId, phase: 'reading', cancelled: false,
+    const job: Job = { proposalId, taskId, mode, phase: 'reading', cancelled: false,
       result: Promise.resolve().then(() => this.work(job)).finally(() => { this.active = undefined; }) };
     this.active = job;
     return job.result.then(value => structuredClone(value));
@@ -141,7 +172,7 @@ export class DistributionExecutionRunner {
     if (!uuid(proposalId)) throw new DistributionRunnerError('INVALID_ARGUMENT');
     const job = this.active;
     if (!job || job.proposalId !== proposalId) fail();
-    if (job.phase === 'settling') throw new DistributionRunnerError('CANCEL_TOO_LATE');
+    if (job.phase === 'settling' || job.phase === 'recovering') throw new DistributionRunnerError('CANCEL_TOO_LATE');
     if (job.phase === 'reading') { job.cancelled = true; return; }
     try { await this.ports.coordinator.cancel(proposalId); }
     catch (error) { if (trusted(error)) throw error; throw new DistributionRunnerError('NEEDS_RECOVERY'); }

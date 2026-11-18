@@ -44,6 +44,27 @@ test('the application owner reconciles persisted admissions before exposing task
     const projected = targets.data.items.find(row => row.task.taskId === pending.taskId);
     assert.deepEqual(projected?.task, view?.snapshot);
     assert.equal((await owner.list(rootId)).length, 2);
+    const update = fixture.client.update.bind(fixture.client);
+    let writes = 0;
+    fixture.client.update = async (...args) => {
+      writes++;
+      await update(...args);
+      throw new Error('lost cancellation acknowledgement');
+    };
+    assert.equal(await owner.cancelQueued(rootId, pending.taskId), true);
+    assert.equal(await owner.cancelQueued(rootId, pending.taskId), true);
+    assert.equal(writes, 1);
+    assert.equal((await owner.get(rootId, pending.taskId))?.snapshot.state, 'cancelled');
+    await assert.rejects(fixture.client.claimDistributionTask(rootId, proposalId, pending.inputDigest, pending.taskId), { code: 'NEEDS_RECOVERY' });
+
+    const prior = await fixture.client.get(rootId, fixture.accepted.taskId);
+    assert.equal(prior?.execution.state, 'queued');
+    const binding = (await fixture.client.readDistributionTaskProjections(rootId)).find(row => row.task.taskId === fixture.accepted.taskId);
+    assert.ok(binding);
+    await fixture.client.claimDistributionTask(rootId, binding.proposalId, binding.payloadDigest, binding.task.taskId);
+    await assert.rejects(owner.cancelQueued(rootId, binding.task.taskId), { code: 'INVALID_TASK_STATE' });
+    assert.equal((await owner.get(rootId, binding.task.taskId))?.snapshot.state, 'running');
+    assert.equal(writes, 1);
     await assert.rejects(owner.list(randomUUID()), { code: 'ROOT_UNAVAILABLE' });
     await owner.close();
     await assert.rejects(owner.list(rootId), { code: 'UNAVAILABLE' });

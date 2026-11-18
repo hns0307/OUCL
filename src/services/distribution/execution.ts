@@ -338,6 +338,13 @@ export class DistributionExecutionCoordinator {
     this.check(); this.sweep(); if (this.activeSize() >= this.maxActive) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
     return this.track(txId, this.transactions.recover(txId));
   }
+  /** The admitted recovery route requires the protected directory-bound file factory. */
+  async recoverProtected(txId: string): Promise<DistributionJournal> {
+    this.check();
+    if (!this.admitted) throw new DistributionTransactionError('NEEDS_RECOVERY');
+    if (this.admitted.busy || this.jobs.size > 0) throw new DistributionExecutionLifecycleError('EXECUTION_ACTIVE_LIMIT');
+    return this.track(txId, this.transactions.recoverProtected(txId));
+  }
   close(): Promise<void> {
     if (this.closing) return this.closing;
     this.disposed = true;

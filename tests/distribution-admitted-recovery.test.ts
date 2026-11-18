@@ -1,0 +1,88 @@
+import assert from 'node:assert/strict';
+import { readdir } from 'node:fs/promises';
+import path from 'node:path';
+import test from 'node:test';
+import { DistributionExecutionCoordinator } from '../src/services/distribution/execution.js';
+import { loadWindowsDistributionFiles } from '../src/services/distribution/native-files.js';
+import { DistributionExecutionRunner } from '../src/services/distribution/runner.js';
+import { DistributionTaskSettlementService } from '../src/services/distribution/settlement.js';
+import { DistributionStore } from '../src/services/distribution/store.js';
+import { DistributionTransactionService } from '../src/services/distribution/transaction.js';
+import { SimulatedDistributionCrash, transactionDigest } from '../src/services/distribution/transaction-record.js';
+import { StorageClient } from '../src/services/workers/storage-client.js';
+import { admittedExecutionFixture } from './helpers/distribution-admitted-execution-fixture.js';
+import { ROOT } from './helpers/distribution-local-domain-fixture.js';
+
+test('explicit recovery binds a predecessor journal to the admitted task and settles its native rollback', {
+  skip: process.platform !== 'win32' || process.arch !== 'x64',
+}, async () => {
+  const fixture = await admittedExecutionFixture();
+  const { rootId, txId, instanceId, instanceRevision, manifest } = fixture.plan;
+  const taskId = fixture.accepted.taskId;
+  let reopened: DistributionStore | undefined;
+  let storage: StorageClient | undefined;
+  let coordinator: DistributionExecutionCoordinator | undefined;
+  let settlement: DistributionTaskSettlementService | undefined;
+  let runner: DistributionExecutionRunner | undefined;
+  try {
+    const admission = await fixture.f.store.admissions.readByTask(taskId);
+    assert.ok(admission);
+    await fixture.client.claimDistributionTask(rootId, txId, admission.inputDigest, taskId);
+    const createFiles = await loadWindowsDistributionFiles(path.join(ROOT, 'native-build', 'native'));
+    const readTarget = async () => ({ rootId, instanceId, revision: instanceRevision, gameDir: fixture.f.gameDir, environment: manifest.target });
+    const transaction = new DistributionTransactionService({
+      journals: fixture.f.store.journals,
+      receipts: fixture.f.store.receipts,
+      readTarget, isIdle: async () => true, canRecover: async () => false, createFiles,
+      authorize: async (plan, signal) => {
+        assert.equal(transactionDigest(plan), transactionDigest(admission.plan));
+        await fixture.f.domain.validate(plan, signal);
+      },
+      artifact: (plan, index, signal) => fixture.f.domain.artifact(plan, index, signal),
+      checkpoint: async point => { if (point === 'published') throw new SimulatedDistributionCrash(); },
+    });
+    await assert.rejects(transaction.commit(admission.plan), SimulatedDistributionCrash);
+    assert.deepEqual(await readdir(path.join(fixture.f.gameDir, 'mods')), ['managed.jar']);
+    await fixture.f.store.close();
+    await fixture.client.close();
+
+    const ledger = reopened = await DistributionStore.open(fixture.f.metadata);
+    const client = storage = await StorageClient.open(new URL('../src/services/workers/entry.js', import.meta.url),
+      path.join(fixture.f.base, 'task-owner'));
+    assert.equal((await client.get(rootId, taskId))?.execution.state, 'needsRecovery');
+    const readProjections = (root: string) => client.readDistributionTaskProjections(root);
+    coordinator = new DistributionExecutionCoordinator({
+      sources: [], store: ledger,
+      admitted: {
+        rootId, admissions: ledger.admissions, readProjections,
+        claimDistributionTask: async () => { throw new Error('recovery cannot claim'); },
+      },
+      readTarget,
+      isIdle: async () => true,
+      validate: async () => { throw new Error('recovery cannot authorize a new release'); },
+      artifact: async () => { throw new Error('recovery cannot fetch new bytes'); },
+      createFiles,
+    });
+    settlement = new DistributionTaskSettlementService(rootId, {
+      admissions: ledger.admissions, readProjections, journals: ledger.journals, receipts: ledger.receipts,
+      updateTask: (...args) => client.update(...args),
+    });
+    runner = new DistributionExecutionRunner(rootId, {
+      admissions: ledger.admissions, readProjections, coordinator, settlement,
+      recovery: { journals: ledger.journals, coordinator },
+    });
+    await assert.rejects(runner.run(txId, taskId), { code: 'NEEDS_RECOVERY' });
+    const rolledBack = await runner.recover(txId, taskId);
+    assert.equal(rolledBack.execution.state, 'failed');
+    assert.deepEqual(await readdir(path.join(fixture.f.gameDir, 'mods')), []);
+    assert.equal((await ledger.journals.read(txId))?.data.phase, 'rolledBack');
+    assert.deepEqual(await runner.recover(txId, taskId), rolledBack);
+  } finally {
+    await runner?.close();
+    await settlement?.close();
+    await coordinator?.close();
+    await storage?.close();
+    await reopened?.close();
+    await fixture.close();
+  }
+});

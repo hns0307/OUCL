@@ -209,7 +209,15 @@ export class DistributionTransactionService {
   }
   /** Recovery needs the original journal and a proven exclusive metadata owner; file presence alone proves nothing. */
   async recover(txId: string): Promise<DistributionJournal> {
+    return this.recoverInternal(txId, false);
+  }
+  /** Product recovery is available only with the protected directory-bound factory. */
+  async recoverProtected(txId: string): Promise<DistributionJournal> {
+    return this.recoverInternal(txId, true);
+  }
+  private async recoverInternal(txId: string, protectedOnly: boolean): Promise<DistributionJournal> {
     if (!UUID_PATTERN.test(txId) || txId !== txId.toLowerCase()) throw new DistributionTransactionError('INVALID_TRANSACTION');
+    if (protectedOnly && !this.ports.createFiles) throw new DistributionTransactionError('NEEDS_RECOVERY');
     if (this.active) throw new DistributionTransactionError('INSTANCE_BUSY');
     this.active = { txId, controller: new AbortController(), committing: false };
     try {
@@ -218,7 +226,10 @@ export class DistributionTransactionService {
       if (saved.data.plan.txId !== txId || !await this.ports.canRecover(txId, saved.data.leaseToken)) throw new DistributionTransactionError('NEEDS_RECOVERY');
       const target = await this.ports.readTarget(saved.data.plan.instanceId); await guardDirectory(target.gameDir);
       if (target.rootId !== saved.data.plan.rootId || target.instanceId !== saved.data.plan.instanceId || !await this.ports.isIdle(target)) throw new DistributionTransactionError('INSTANCE_BUSY');
-      const game = this.ports.createFiles?.(target.gameDir, txId, saved.data.gameIdentity) ?? new DistributionTransactionFiles(target.gameDir, txId, { expectedRoot: saved.data.gameIdentity });
+      const factory = this.ports.createFiles;
+      if (protectedOnly && !factory) throw new DistributionTransactionError('NEEDS_RECOVERY');
+      const game = factory ? factory(target.gameDir, txId, saved.data.gameIdentity)
+        : new DistributionTransactionFiles(target.gameDir, txId, { expectedRoot: saved.data.gameIdentity });
       await game.bindRoot();
       if (saved.data.phase === 'committed' || saved.data.phase === 'rolledBack') {
         if ((await readRegular(game.lock, 100))?.toString('utf8') === saved.data.leaseToken) {
