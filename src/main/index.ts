@@ -35,6 +35,10 @@ import { InstallerAdapter } from '../ipc/installer-adapter.js';
 import { handleInstances } from '../ipc/instances.js';
 import { TargetAdapter } from '../ipc/task-targets.js';
 import { DistributionObservationOwner } from './distribution-observation.js';
+import { configuredDistributionRuntime } from './distribution-runtime.js';
+import type { DistributionRuntime } from './distribution-runtime.js';
+import { DistributionRunnerError } from '../services/distribution/runner.js';
+import { DistributionTransactionError } from '../services/distribution/transaction-record.js';
 import { DistributionTaskViewError } from '../services/distribution/task-views.js';
 import { TARGET_CAPABILITY, TARGET_CHANNEL } from '../shared/contracts/task-targets.js';
 import { instanceFailure } from '../shared/contracts/instances.js';
@@ -95,7 +99,7 @@ import { DISTRIBUTION_CAPABILITY, DISTRIBUTION_CHANNELS, distributionFailure } f
 import { createDistributionPreviewAdapter } from './distribution-preview.js';
 import { DistributionExecutionAdapter } from '../ipc/distribution-execution.js';
 import { DistributionExecutionOwners } from '../ipc/distribution-execution-owners.js';
-import { DISTRIBUTION_EXECUTION_CHANNELS, distributionExecutionFailure } from '../shared/contracts/distribution-execution.js';
+import { DISTRIBUTION_EXECUTION_CAPABILITY, DISTRIBUTION_EXECUTION_CHANNELS, distributionExecutionFailure } from '../shared/contracts/distribution-execution.js';
 import type { DistributionPreviewAdapter } from '../ipc/distribution-preview.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
@@ -103,8 +107,8 @@ const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
 const onlineToolAdapters = new Map<number, OnlineToolsAdapter>();
 const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
-// Real sources, policy and the persistent execution service are not configured. No backend is constructed here.
-const distributionExecutionOwners = new DistributionExecutionOwners(() => new DistributionExecutionAdapter());
+let distributionRuntime: DistributionRuntime | undefined;
+const distributionExecutionOwners = new DistributionExecutionOwners(() => new DistributionExecutionAdapter(distributionRuntime?.backend.document()));
 let distributionFetch: typeof fetch | undefined;
 let distributionObservation: DistributionObservationOwner | undefined;
 
@@ -252,6 +256,15 @@ else void app.whenReady().then(async () => {
     const resourceTasks = resources; const games = gameAdapter; const modTasks = mods; const installations = modInstalls;
     const observation = new DistributionObservationOwner(app.getPath('userData'), storage);
     distributionObservation = observation;
+    const config = configuredDistributionRuntime();
+    if (config) {
+      try {
+        const root = await storage.readInstallation();
+        if (root) distributionRuntime = await observation.enableExecution(root.data.rootId.toLowerCase(), path.join(__dirname, '../native'), config);
+      } catch {
+        console.warn(JSON.stringify({ level: 'warn', event: 'distribution-execution-unavailable' }));
+      }
+    }
     installerAdapter = new InstallerAdapter(service, storage, {
       get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id) ?? await installations?.taskView(root, id)
         ?? await observeDistribution(() => observation.get(root, id)),
@@ -263,12 +276,26 @@ else void app.whenReady().then(async () => {
       }
         else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id);
         else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id);
-        else if (!await observeDistribution(() => observation.cancelQueued(root, id))) await games.cancel(root, id); },
+        else {
+          try {
+            if (!await observeDistribution(() => observation.cancelQueued(root, id))) await games.cancel(root, id);
+          } catch (error) {
+            if (!distributionRuntime || !(error instanceof InstanceContractError) || error.code !== 'INVALID_TASK_STATE'
+              || (await repository.get(root, id))?.kind !== 'distribution-install') throw error;
+            try { await distributionRuntime.cancel(id); }
+            catch (failure) {
+              if ((failure instanceof DistributionRunnerError || failure instanceof DistributionTransactionError) && failure.code === 'CANCEL_TOO_LATE') {
+                throw new InstanceContractError('CANCEL_TOO_LATE');
+              }
+              throw new InstanceContractError('NEEDS_RECOVERY');
+            }
+          }
+        } },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls, distributionObservation);
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(distributionRuntime ? [DISTRIBUTION_EXECUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
   });
   for (const channel of ONLINE_TOOLS_CHANNELS) ipcMain.handle(channel, async (event, input: unknown) => {
     const owner = BrowserWindow.fromWebContents(event.sender);
@@ -282,7 +309,7 @@ else void app.whenReady().then(async () => {
     if (!trustedSender(event)) return distributionFailure(trace, 'INVALID_SENDER', trace);
     if (!storage || !distributionFetch) return distributionFailure(trace, 'UNAVAILABLE', trace);
     let adapter = distributionAdapters.get(event.sender.id);
-    if (!adapter) { adapter = createDistributionPreviewAdapter(storage, distributionFetch); distributionAdapters.set(event.sender.id, adapter); }
+    if (!adapter) { adapter = createDistributionPreviewAdapter(storage, distributionFetch, distributionRuntime?.sources); distributionAdapters.set(event.sender.id, adapter); }
     return adapter.handle(channel, input, () => trustedSender(event), trace);
   });
   for (const channel of DISTRIBUTION_EXECUTION_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {

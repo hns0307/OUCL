@@ -27,8 +27,15 @@ async function run(window) {
       const open = await window.oucl.openOnlineTool(crypto.randomUUID(), 'missing-tool');
       const injectedUrl = await window.oucl.openOnlineTool(crypto.randomUUID(), 'https://unreviewed.example.com/');
       const id = crypto.randomUUID(); const preview = await window.oucl.previewDistribution(id, { rootId: id, instanceId: id, sourceId:'missing', packageId:'package', packageVersion:'one' });
+      const execution = await Promise.all([
+        window.oucl.prepareDistributionExecution(crypto.randomUUID(), { rootId: id, instanceId: id, sourceId:'missing', packageId:'package', packageVersion:'one' }),
+        window.oucl.getDistributionExecutionPreparation(id),
+        window.oucl.cancelDistributionExecutionPreparation(id),
+        window.oucl.confirmDistributionExecution(crypto.randomUUID(), { proposalId: id, instanceRevision: 1, sequence: 1 }),
+        window.oucl.recoverDistributionExecution(crypto.randomUUID(), id),
+      ]);
       const close = await window.oucl.closeOnlineTool(crypto.randomUUID());
-      return {handshake,tools,sources,open,injectedUrl,preview,close,nodeAbsent:typeof require==='undefined'&&typeof process==='undefined'};
+      return {handshake,tools,sources,open,injectedUrl,preview,execution,close,nodeAbsent:typeof require==='undefined'&&typeof process==='undefined'};
     })()`);
     check('real preload handshake advertises both initialized extensions', reply.handshake.ok && ['tools.isolated.v1', 'distribution.preview.v1'].every(capability => reply.handshake.data.capabilities.includes(capability)));
     check('renderer has no Node globals', reply.nodeAbsent);
@@ -36,6 +43,9 @@ async function run(window) {
     check('unknown tool is rejected without opening a view', !reply.open.ok && reply.open.error.code === 'TOOL_NOT_FOUND');
     check('preload rejects arbitrary URL tool identifiers', !reply.injectedUrl.ok && reply.injectedUrl.error.code === 'INVALID_ARGUMENT');
     check('real distribution IPC exposes empty pinned source registry', reply.sources.ok && reply.sources.data.sources.length === 0);
+    check('unconfigured execution capability stays disabled in the product handshake', !reply.handshake.data.capabilities.includes('distribution.execute.v1'));
+    check('all five unconfigured execution operations reject through real preload and IPC',
+      reply.execution.length === 5 && reply.execution.every(result => !result.ok && result.error.code === 'SOURCE_UNAVAILABLE'));
     check('unconfigured distribution source cannot inspect or install', !reply.preview.ok && reply.preview.error.code === 'SOURCE_UNAVAILABLE');
     check('real close IPC reaches closed state', reply.close.ok && reply.close.data.snapshot.phase === 'closed');
     await window.webContents.executeJavaScript(`(() => { const button=[...document.querySelectorAll('.top-nav button')].find(item=>item.textContent==='工具箱'); if(!button) throw new Error('TOOLS_NAV_MISSING'); button.click(); })()`);

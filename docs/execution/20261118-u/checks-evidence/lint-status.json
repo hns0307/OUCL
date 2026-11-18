@@ -1,0 +1,14 @@
+{
+  "name": "lint",
+  "args": [
+    "../../node_modules/eslint/bin/eslint.js",
+    "src",
+    "tests",
+    "scripts",
+    "vite.config.ts"
+  ],
+  "environment": {},
+  "started": "2026-11-18T10:41:41.851Z",
+  "ended": "2026-11-18T10:41:54.853Z",
+  "exitCode": 0
+}

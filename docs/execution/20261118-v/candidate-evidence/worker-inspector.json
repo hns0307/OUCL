@@ -1,0 +1,77 @@
+[
+  {
+    "at": 1794999023628,
+    "event": "NodeWorker.attachedToWorker",
+    "sessionId": "1",
+    "workerInfo": {
+      "workerId": "1",
+      "type": "worker",
+      "title": "[worker 1] WorkerThread",
+      "url": "file:///D:/MC_start/OUCL/tmp/20261118-v-outer/OUCL.runtime/app-55698822f6a8ac7c3feda3b8e12c9fb4d88419e985db46680a78e40d1ee1565f/dist/workers/entry.cjs"
+    },
+    "waitingForDebugger": false
+  },
+  {
+    "at": 1794999023628,
+    "event": "send",
+    "sessionId": "1",
+    "method": "Runtime.enable"
+  },
+  {
+    "at": 1794999023630,
+    "event": "send",
+    "sessionId": "1",
+    "method": "Debugger.enable"
+  },
+  {
+    "at": 1794999023642,
+    "event": "send",
+    "sessionId": "1",
+    "method": "Runtime.runIfWaitingForDebugger"
+  },
+  {
+    "at": 1794999023643,
+    "event": "reply",
+    "sessionId": "1",
+    "id": 1
+  },
+  {
+    "at": 1794999023678,
+    "event": "reply",
+    "sessionId": "1",
+    "id": 2
+  },
+  {
+    "at": 1794999023682,
+    "event": "reply",
+    "sessionId": "1",
+    "id": 3
+  },
+  {
+    "at": 1794999023717,
+    "event": "Debugger.paused",
+    "sessionId": "1",
+    "reason": "Break on start",
+    "frames": [
+      {
+        "url": "",
+        "functionName": ""
+      },
+      {
+        "url": "",
+        "functionName": ""
+      }
+    ]
+  },
+  {
+    "at": 1794999023720,
+    "event": "reply",
+    "sessionId": "1",
+    "id": 4
+  },
+  {
+    "at": 1794999026176,
+    "event": "NodeWorker.detachedFromWorker",
+    "sessionId": "1"
+  }
+]

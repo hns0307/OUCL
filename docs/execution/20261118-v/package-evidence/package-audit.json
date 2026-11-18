@@ -1,0 +1,90 @@
+{
+  "status": "PASS",
+  "executesLauncher": false,
+  "executable": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\release\\OUCL-0.3.0-execution-20261118-v.exe",
+  "buildRoot": "D:\\MC_start\\OUCL\\tmp\\20261118-v-r2-build\\dist",
+  "bytes": 492544,
+  "sha256": "735348db68783940d5826211fc1d2dae7ef6885e2789563112c774510f06308c",
+  "appHash": "55698822f6a8ac7c3feda3b8e12c9fb4d88419e985db46680a78e40d1ee1565f",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "runtimeUrl": "https://github.com/electron/electron/releases/download/v45.0.0/electron-v45.0.0-win32-x64.zip",
+  "entries": [
+    {
+      "path": "package.json",
+      "bytes": 62,
+      "sha256": "facca117bb3d2254b43e5d48c20c6c50e1ea2265028f130399e89db28e52cded",
+      "manifestMatch": true,
+      "buildMatch": false
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "bytes": 5921,
+      "sha256": "ef9e7b544bf607b769043008d4e516ff8a0e72f6cf3a119cfd49b572ca0ca549",
+      "manifestMatch": true,
+      "buildMatch": false
+    },
+    {
+      "path": "dist/main/index.cjs",
+      "bytes": 1094216,
+      "sha256": "361d0c9bab5cbe0494189e2cfab8af0dc3d9c7213af61f9e46ca674e4cc960fe",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/native/distribution-files.exe",
+      "bytes": 21504,
+      "sha256": "12a0d6ccf9b5dcc57e300e383c67ba0d5c3fc76eab96517e262ce8a844aec7c8",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/native/distribution-files.json",
+      "bytes": 158,
+      "sha256": "053ed358d3c0b511958463f00c44cdeadd5ab65af12ba041964b0329f4b113cb",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/preload/index.cjs",
+      "bytes": 164493,
+      "sha256": "c552011ca78e8ac97bbce2ad81ff5305c400dbd1f8b70df1cdd8eae99f928caf",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/index.html",
+      "bytes": 617,
+      "sha256": "45b0c236ec384a8dc52f4e2c7ff107e688831ca8a236dcb09ed0c63ab7584c16",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/assets/index-BBn04PRj.css",
+      "bytes": 31186,
+      "sha256": "a5c88d2ce8a4e5db3a2d990339c17b90bb705eaaa851026529bf84f03e8df62b",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/assets/index-Z2FO_31P.js",
+      "bytes": 375343,
+      "sha256": "2cdb0c75009fb9724cd5e804fa65bc98857457179d88caf64b80f8c85b6fd162",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/workers/entry.cjs",
+      "bytes": 262906,
+      "sha256": "6263965cd0e54fd0aee55faa06310fb804e31d6b5888db43cdcb56ed07c7d145",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/workers/fixed-pack.cjs",
+      "bytes": 17444,
+      "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8",
+      "manifestMatch": true,
+      "buildMatch": true
+    }
+  ]
+}

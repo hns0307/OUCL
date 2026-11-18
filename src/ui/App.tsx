@@ -91,9 +91,12 @@ export function App() {
         <div hidden={downloadTab === 'minecraft'}><ResourceBrowser enabled={has('resources.v1') && state.page === 'downloads' && downloadTab !== 'minecraft'}
           modPlansEnabled={has('mods.v1')} {...(instance && state.instanceLoaders[instance.instanceId]?.kind !== 'vanilla' ? { instance } : {})}
           kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
-        {state.page === 'downloads' && <TaskCenter key={state.rootId ?? 'no-root'} />}
+        {state.page === 'downloads' && <TaskCenter key={state.rootId ?? 'no-root'} distributionExecutionEnabled={has('distribution.execute.v1')} />}
       </div>
-      {state.page === 'tools' && <ToolsWorkspace onlineEnabled={has('tools.isolated.v1')} distributionEnabled={has('distribution.preview.v1')} rootId={state.rootId} instanceId={instance?.state === 'ready' ? instance.instanceId : undefined} />}
+      {state.page === 'tools' && <ToolsWorkspace onlineEnabled={has('tools.isolated.v1')} distributionEnabled={has('distribution.preview.v1')}
+        executionEnabled={has('distribution.execute.v1')} rootId={state.rootId}
+        instanceId={instance?.state === 'ready' ? instance.instanceId : undefined}
+        onTasks={() => { state.setPage('downloads'); void state.refreshGame(); }} />}
       <div hidden={state.page !== 'announcements'}><ForumPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
       <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.3.0</span></footer>
     </main></div>

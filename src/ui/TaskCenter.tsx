@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLauncher } from './launcher-state.js';
 import { activeTask } from './task-query.js';
 import { InstallTask } from './InstallPanel.js';
@@ -12,8 +12,35 @@ const KINDS: Record<TaskSnapshot['kind'], MessageKey> = {
 };
 // Mounting another page of already settled records must not replace the history cursor.
 const historicalSettled = (): void => {};
+
+function DistributionRecovery({ taskId, refresh }: { taskId: string; refresh: () => Promise<void> }) {
+  const requestId = useRef<string | undefined>(undefined);
+  const alive = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<MessageKey>();
+  useEffect(() => {
+    alive.current = true;
+    return () => { alive.current = false; };
+  }, []);
+  async function recover(): Promise<void> {
+    const bridge = window.oucl;
+    if (busy || !bridge) return;
+    setBusy(true); setMessage(undefined);
+    try {
+      const result = await bridge.recoverDistributionExecution(requestId.current ??= crypto.randomUUID(), taskId);
+      if (!alive.current) return;
+      setMessage(result.ok ? 'distributionRecoveryAccepted' : result.error.messageKey);
+      if (result.ok) await refresh();
+    } catch { if (alive.current) setMessage('unavailable'); }
+    finally { if (alive.current) setBusy(false); }
+  }
+  return <div>
+    <button disabled={busy} onClick={() => { void recover(); }}>{MESSAGES.distributionRecoverTask}</button>
+    {message && <p role="status">{MESSAGES[message]}</p>}
+  </div>;
+}
 /** Global, path-free task records. Target identity is shown only when the public contract proves it. */
-export function TaskCenter() {
+export function TaskCenter({ distributionExecutionEnabled = false }: { distributionExecutionEnabled?: boolean }) {
   const state = useLauncher(); const [shown, setShown] = useState(20);
   const active = state.tasks.filter(activeTask); const recovery = state.tasks.filter(task => task.state === 'needsRecovery');
   const history = state.tasks.filter(task => !activeTask(task) && task.state !== 'needsRecovery');
@@ -30,6 +57,8 @@ export function TaskCenter() {
     {ordered.slice(0, shown).map(task => <div key={task.taskId}>
       <p>{MESSAGES[KINDS[task.kind]]} · <code>{task.taskId}</code>{task.state === 'paused' && <> · {MESSAGES.taskPaused}</>}</p>
       <InstallTask initial={task} onSettled={activeTask(task) ? state.refreshGame : historicalSettled} />
+      {distributionExecutionEnabled && task.kind === 'distribution-install' && task.state === 'needsRecovery'
+        && <DistributionRecovery taskId={task.taskId} refresh={state.refreshGame} />}
     </div>)}
     {shown < ordered.length && <button onClick={() => { setShown(value => value + 20); }}>{MESSAGES.taskShowMore}</button>}
     {!state.tasksComplete && <button disabled={state.gameListBusy} onClick={() => { void state.loadMoreGame(); }}>{MESSAGES.taskLoadPending}</button>}

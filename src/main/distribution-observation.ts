@@ -6,12 +6,15 @@ import type { StorageClient } from '../services/workers/storage-client.js';
 import { InstanceContractError } from '../shared/contracts/instances.js';
 import { createExecution } from '../core/task/machine.js';
 import { transactionDigest } from '../services/distribution/transaction-record.js';
+import { openDistributionRuntime } from './distribution-runtime.js';
+import type { DistributionRuntime, DistributionRuntimeConfiguration } from './distribution-runtime.js';
 
 /** Application owner of the private ledger and its startup reconciliation barrier. */
 export class DistributionObservationOwner {
   private active?: { rootId: string; open: Promise<DistributionTaskViewProvider> };
   private ledger?: DistributionStore;
   private reconciler?: DistributionAdmissionReconciler;
+  private runtime?: Promise<DistributionRuntime>;
   private readonly cancellations = new Map<string, Promise<boolean>>();
   private closed = false;
   private closing?: Promise<void>;
@@ -58,6 +61,15 @@ export class DistributionObservationOwner {
   async list(rootId: string) { return (await this.provider(rootId)).list(); }
   async targets(instanceId: string, rootId: string) { return (await this.provider(rootId)).targets(instanceId); }
 
+  enableExecution(rootId: string, nativeDirectory: string, config: DistributionRuntimeConfiguration): Promise<DistributionRuntime> {
+    if (this.closed || this.active && this.active.rootId !== rootId) return Promise.reject(new DistributionTaskViewError('UNAVAILABLE'));
+    return this.runtime ??= (async () => {
+      const views = await this.provider(rootId);
+      if (this.closed || !this.ledger || !this.reconciler) throw new DistributionTaskViewError('UNAVAILABLE');
+      return openDistributionRuntime(rootId, this.storage, this.ledger, this.reconciler, views, nativeDirectory, config);
+    })();
+  }
+
   /** Cancels only a proven never-started distribution task using the task store's revision CAS. */
   cancelQueued(rootId: string, taskId: string): Promise<boolean> {
     if (this.closed) return Promise.reject(new DistributionTaskViewError('UNAVAILABLE'));
@@ -102,11 +114,15 @@ export class DistributionObservationOwner {
     this.closed = true;
     return this.closing ??= (async () => {
       await Promise.allSettled([...this.cancellations.values()]);
+      const runtime = await this.runtime?.catch(() => undefined);
       const provider = await this.active?.open.catch(() => undefined);
-      try { await provider?.close(); }
+      try { await runtime?.close(); }
       finally {
-        try { await this.reconciler?.close(); }
-        finally { await this.ledger?.close(); }
+        try { await provider?.close(); }
+        finally {
+          try { await this.reconciler?.close(); }
+          finally { await this.ledger?.close(); }
+        }
       }
     })();
   }

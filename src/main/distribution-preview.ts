@@ -2,19 +2,21 @@ import { DistributionPreviewAdapter } from '../ipc/distribution-preview.js';
 import type { DistributionSummary } from '../shared/contracts/distribution-preview.js';
 import { DistributionPreviewService, DistributionPreviewError } from '../services/distribution/preview.js';
 import { EMPTY_DISTRIBUTION_SOURCES } from '../services/distribution/source.js';
+import type { TrustedDistributionSource } from '../services/distribution/source.js';
 import { restoreInstallMetadata } from '../services/install/installer.js';
 import { instanceGameLayout } from '../services/install/instance-files.js';
 import type { StorageClient } from '../services/workers/storage-client.js';
 
 /** Bound to the registered root on both target reads. No renderer-provided path or environment is used. */
-export function createDistributionPreviewAdapter(storage: Pick<StorageClient, 'readInstallation' | 'readInstance'>, fetcher: typeof fetch): DistributionPreviewAdapter {
+export function createDistributionPreviewAdapter(storage: Pick<StorageClient, 'readInstallation' | 'readInstance'>, fetcher: typeof fetch,
+  sources: readonly TrustedDistributionSource[] = EMPTY_DISTRIBUTION_SOURCES): DistributionPreviewAdapter {
   let active = false;
   return new DistributionPreviewAdapter({
-    listSources: () => EMPTY_DISTRIBUTION_SOURCES.map(source => ({ sourceId: source.sourceId })),
+    listSources: () => sources.map(source => ({ sourceId: source.sourceId })),
     async preview(query, signal): Promise<DistributionSummary> {
       if (active) throw new DistributionPreviewError('PREVIEW_BUSY'); active = true;
       try {
-        const service = new DistributionPreviewService({ sources: EMPTY_DISTRIBUTION_SOURCES, fetcher,
+        const service = new DistributionPreviewService({ sources, fetcher,
           readTarget: async instanceId => {
             if (signal.aborted) throw new DistributionPreviewError('CANCELLED');
             const root = await storage.readInstallation(); const record = await storage.readInstance(instanceId);

@@ -3,12 +3,15 @@ import { DISTRIBUTION_ID } from '../shared/contracts/distribution-preview.js';
 import type { ContentOwnership, DistributionSummary } from '../shared/contracts/distribution-preview.js';
 import { MESSAGES } from '../shared/locales/messages.js';
 import type { MessageKey } from '../shared/locales/messages.js';
+import { DistributionExecutionControls } from './DistributionExecutionControls.js';
 
 const OWNERSHIP: Record<ContentOwnership, MessageKey> = { 'package-managed': 'ownershipPackage', 'user-added': 'ownershipUser', 'local-discovered': 'ownershipLocal', 'user-overridden': 'ownershipOverride', 'ownership-conflict': 'ownershipConflict' };
 const CHANGES = { add: 'distributionAdd', replace: 'distributionReplace', remove: 'distributionRemove' } as const;
 const CONFLICTS = { EXISTS: 'distributionConflictExists', UNMANAGED: 'distributionConflictUnmanaged', CHANGED: 'distributionConflictChanged' } as const;
-/** Reads only the chosen source/package/version. There is deliberately no install or update action. */
-export function DistributionPanel({ enabled, rootId, instanceId }: { enabled: boolean; rootId: string | undefined; instanceId: string | undefined }) {
+/** Shows the chosen release and delegates confirmed changes to the execution controls. */
+export function DistributionPanel({ enabled, executionEnabled, rootId, instanceId, onTasks }: {
+  enabled: boolean; executionEnabled?: boolean; rootId: string | undefined; instanceId: string | undefined; onTasks?: () => void;
+}) {
   const [sources, setSources] = useState<Array<{ sourceId: string }>>(); const [sourceId, setSourceId] = useState('');
   const [packageId, setPackageId] = useState(''); const [packageVersion, setPackageVersion] = useState('');
   const [preview, setPreview] = useState<DistributionSummary>(); const [error, setError] = useState<MessageKey>(); const [busy, setBusy] = useState(false);
@@ -34,7 +37,7 @@ export function DistributionPanel({ enabled, rootId, instanceId }: { enabled: bo
     try { const result = await window.oucl.cancelDistributionPreview(id); if (alive.current && request.current === id && !result.ok) setError(result.error.messageKey); }
     catch { if (alive.current && request.current === id) setError('unavailable'); }
   }
-  return <section className="panel distribution-panel"><h2>{MESSAGES.distributionTitle}</h2><p>{MESSAGES.distributionHint}</p>
+  return <section className="panel distribution-panel"><h2>{MESSAGES.distributionTitle}</h2><p>{MESSAGES[executionEnabled ? 'distributionExecutionHint' : 'distributionHint']}</p>
     {!enabled ? <p role="status">{MESSAGES.unavailable}</p> : !sources ? <p role="status">{MESSAGES.connecting}</p> : sources.length === 0 ? <p role="status">{MESSAGES.distributionUnconfigured}</p> : <>
       {!rootId || !instanceId ? <p>{MESSAGES.distributionSelectInstance}</p> : <form onSubmit={event => { event.preventDefault(); void inspect(); }}><fieldset disabled={busy}>
         <label>{MESSAGES.distributionSource}<select value={sourceId} onChange={event => { setSourceId(event.target.value); setPreview(undefined); }}>{sources.map(source => <option key={source.sourceId}>{source.sourceId}</option>)}</select></label>
@@ -43,6 +46,9 @@ export function DistributionPanel({ enabled, rootId, instanceId }: { enabled: bo
         <button disabled={!DISTRIBUTION_ID.test(packageId) || !DISTRIBUTION_ID.test(packageVersion) || !sourceId}>{MESSAGES.distributionPreview}</button>
       </fieldset></form>}
     </>}
+    {executionEnabled && enabled && rootId && instanceId && sourceId && DISTRIBUTION_ID.test(packageId) && DISTRIBUTION_ID.test(packageVersion)
+      && <DistributionExecutionControls key={JSON.stringify([rootId, instanceId, sourceId, packageId, packageVersion])}
+        binding={{ rootId, instanceId, sourceId, packageId, packageVersion }} {...(onTasks ? { onTasks } : {})} />}
     {busy && <button className="secondary" onClick={() => { void cancel(); }}>{MESSAGES.distributionCancel}</button>}
     {error && <p className="form-error" role="alert">{MESSAGES[error]}</p>}
     {preview && <div><p>{preview.packageId} · {preview.packageVersion}</p><p>{MESSAGES[preview.receiptStatus === 'missing' ? 'distributionReceiptMissing' : 'distributionReceiptLocal']}</p>

@@ -1,0 +1,5 @@
+
+Error: visible button: 任务中心
+    at until (D:\MC_start\OUCL\tmp\20261118-distribution-ui\main.cjs:21:11)
+    at async click (D:\MC_start\OUCL\tmp\20261118-distribution-ui\main.cjs:25:5)
+    at async D:\MC_start\OUCL\tmp\20261118-distribution-ui\main.cjs:37:3
