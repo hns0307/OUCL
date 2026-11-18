@@ -34,6 +34,8 @@ import { InstallerService } from '../services/install/installer.js';
 import { InstallerAdapter } from '../ipc/installer-adapter.js';
 import { handleInstances } from '../ipc/instances.js';
 import { TargetAdapter } from '../ipc/task-targets.js';
+import { DistributionObservationOwner } from './distribution-observation.js';
+import { DistributionTaskViewError } from '../services/distribution/task-views.js';
 import { TARGET_CAPABILITY, TARGET_CHANNEL } from '../shared/contracts/task-targets.js';
 import { instanceFailure } from '../shared/contracts/instances.js';
 import { exactObject, UUID_PATTERN } from '../shared/contracts/handshake.js';
@@ -104,6 +106,17 @@ const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
 // Real sources, policy and the persistent execution service are not configured. No backend is constructed here.
 const distributionExecutionOwners = new DistributionExecutionOwners(() => new DistributionExecutionAdapter());
 let distributionFetch: typeof fetch | undefined;
+let distributionObservation: DistributionObservationOwner | undefined;
+
+async function observeDistribution<T>(read: () => Promise<T>): Promise<T> {
+  try { return await read(); }
+  catch (error) {
+    if (error instanceof DistributionTaskViewError && (error.code === 'NEEDS_RECOVERY' || error.code === 'ROOT_UNAVAILABLE')) {
+      throw new InstanceContractError(error.code);
+    }
+    throw new InstanceContractError('UNAVAILABLE');
+  }
+}
 
 /** Revokes remote views and read-only previews when the owner document goes away. */
 function revokeExtensions(id: number, documentGone = true): void {
@@ -236,9 +249,12 @@ else void app.whenReady().then(async () => {
       await installations.initialize(); modInstalls = installations;
     } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
     const resourceTasks = resources; const games = gameAdapter; const modTasks = mods; const installations = modInstalls;
+    const observation = new DistributionObservationOwner(app.getPath('userData'), storage);
+    distributionObservation = observation;
     installerAdapter = new InstallerAdapter(service, storage, {
-      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id) ?? await installations?.taskView(root, id),
-      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : []), ...(installations ? await installations.list(root) : [])],
+      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id) ?? await installations?.taskView(root, id)
+        ?? await observeDistribution(() => observation.get(root, id)),
+      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : []), ...(installations ? await installations.list(root) : []), ...await observeDistribution(() => observation.list(root))],
       cancel: async (root, id) => { if (installations && await installations.taskView(root, id)) {
         try { await installations.cancel(id); }
         catch (error) { throw new InstanceContractError(error instanceof ModContractError && error.code === 'CANCEL_TOO_LATE' ? 'CANCEL_TOO_LATE'
@@ -247,7 +263,7 @@ else void app.whenReady().then(async () => {
         else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id); else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id); else await games.cancel(root, id); },
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
-  if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls);
+  if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls, distributionObservation);
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
     return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
   });
@@ -400,7 +416,7 @@ app.on('before-quit', event => {
     await distributionExecutionOwners.close();
     await Promise.all([...onlineToolAdapters.values()].map(adapter => adapter.dispose())); onlineToolAdapters.clear();
     for (const adapter of distributionAdapters.values()) await adapter.close(); distributionAdapters.clear();
-    targetAdapter?.close(); installerAdapter?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+    targetAdapter?.close(); installerAdapter?.close(); await distributionObservation?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
   })().catch(() => { app.exit(1); });
 });
 

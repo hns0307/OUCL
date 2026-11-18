@@ -11,8 +11,8 @@ import type { ModInstallTaskService } from '../services/mods/install-tasks.js';
 import { DistributionTaskViewError } from '../services/distribution/task-views.js';
 
 export interface DistributionTargetReader {
-  readonly rootId: string;
-  targets(instanceId: string): Promise<TargetRow[]>;
+  readonly rootId?: string;
+  targets(instanceId: string, expectedRootId: string): Promise<TargetRow[]>;
 }
 
 interface Snapshot { id: string; sender: number; generation: number; rootId: string; rootRevision: number; filter: string; rows: TargetRow[] }
@@ -75,8 +75,8 @@ export class TargetAdapter {
     const instanceId = query.instanceId.toLowerCase();
     const rows: TargetRow[] = [];
     if (includeDistribution && distribution) {
-      if (distribution.rootId !== root.rootId) throw new WorkerError('TARGET_ROOT_CHANGED');
-      const observed = await distribution.targets(instanceId);
+      if (distribution.rootId !== undefined && distribution.rootId !== root.rootId) throw new WorkerError('TARGET_ROOT_CHANGED');
+      const observed = await distribution.targets(instanceId, root.rootId);
       if (!Array.isArray(observed) || observed.length > 2000) throw new WorkerError('INVALID_RECORD');
       for (const row of observed) {
         if (!exactObject(row, ['instanceId', 'instanceRevision', 'task']) || row.instanceId !== instanceId
