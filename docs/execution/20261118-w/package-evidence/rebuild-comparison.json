@@ -1,0 +1,58 @@
+{
+  "differences": [
+    {
+      "file": "native/distribution-files.exe",
+      "original": "12a0d6ccf9b5dcc57e300e383c67ba0d5c3fc76eab96517e262ce8a844aec7c8",
+      "fresh": "d0e9e7293a71b9457923d6136bcfd45026719dae76c7ae0d71acd29b634b8f93",
+      "oldSize": 21504,
+      "newSize": 21504
+    },
+    {
+      "file": "native/distribution-files.json",
+      "original": "053ed358d3c0b511958463f00c44cdeadd5ab65af12ba041964b0329f4b113cb",
+      "fresh": "1746a1a0010b7f83729783684bf6c6d0720ca50372123bcd9d394b30d7c651ce",
+      "oldSize": 158,
+      "newSize": 158
+    }
+  ],
+  "comparedBuildEntries": 9,
+  "peTimestampOffset": 136,
+  "ranges": [
+    {
+      "start": 136,
+      "end": 138
+    },
+    {
+      "start": 15035,
+      "end": 15043
+    },
+    {
+      "start": 15044,
+      "end": 15048
+    },
+    {
+      "start": 15050,
+      "end": 15053
+    },
+    {
+      "start": 15055,
+      "end": 15058
+    },
+    {
+      "start": 15059,
+      "end": 15060
+    },
+    {
+      "start": 15061,
+      "end": 15066
+    },
+    {
+      "start": 15068,
+      "end": 15071
+    },
+    {
+      "start": 18256,
+      "end": 18272
+    }
+  ]
+}

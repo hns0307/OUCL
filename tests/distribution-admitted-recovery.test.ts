@@ -3,19 +3,25 @@ import { randomUUID } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
+import { DistributionExecutionAdapter } from '../src/ipc/distribution-execution.js';
+import { DistributionExecutionBackend } from '../src/services/distribution/backend.js';
 import { DistributionExecutionCoordinator } from '../src/services/distribution/execution.js';
 import { loadWindowsDistributionFiles } from '../src/services/distribution/native-files.js';
+import { DistributionPreparationService } from '../src/services/distribution/preparation.js';
+import { DistributionAdmissionReconciler } from '../src/services/distribution/reconciliation.js';
 import { DistributionExecutionRunner } from '../src/services/distribution/runner.js';
 import { DistributionTaskSettlementService } from '../src/services/distribution/settlement.js';
+import { DistributionTaskViewProvider } from '../src/services/distribution/task-views.js';
 import { DistributionStore } from '../src/services/distribution/store.js';
 import { DistributionTransactionService } from '../src/services/distribution/transaction.js';
 import { SimulatedDistributionCrash, transactionDigest } from '../src/services/distribution/transaction-record.js';
 import { StorageClient } from '../src/services/workers/storage-client.js';
+import type { StoredTask } from '../src/services/storage/tasks.js';
 import { admittedExecutionFixture } from './helpers/distribution-admitted-execution-fixture.js';
 import { ROOT } from './helpers/distribution-local-domain-fixture.js';
 
-test('explicit recovery binds a predecessor journal to the admitted task and settles its native rollback', {
-  skip: process.platform !== 'win32' || process.arch !== 'x64',
+test('configured recovery transport returns the original task across native rollback and request replay', {
+  skip: process.platform !== 'win32' || process.arch !== 'x64', timeout: 30000,
 }, async () => {
   const fixture = await admittedExecutionFixture();
   const { rootId, txId, instanceId, instanceRevision, manifest } = fixture.plan;
@@ -25,6 +31,10 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
   let coordinator: DistributionExecutionCoordinator | undefined;
   let settlement: DistributionTaskSettlementService | undefined;
   let runner: DistributionExecutionRunner | undefined;
+  let reconciler: DistributionAdmissionReconciler | undefined;
+  let views: DistributionTaskViewProvider | undefined;
+  let backend: DistributionExecutionBackend | undefined;
+  let adapter: DistributionExecutionAdapter | undefined;
   try {
     const admission = await fixture.f.store.admissions.readByTask(taskId);
     assert.ok(admission);
@@ -74,18 +84,60 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
       admissions: ledger.admissions, readProjections, journals: ledger.journals, receipts: ledger.receipts,
       updateTask: (...args) => client.update(...args),
     });
-    runner = new DistributionExecutionRunner(rootId, {
+    const execution = runner = new DistributionExecutionRunner(rootId, {
       admissions: ledger.admissions, readProjections, coordinator, settlement,
       recovery: { journals: ledger.journals, coordinator },
     });
     await assert.rejects(runner.run(txId, taskId), { code: 'NEEDS_RECOVERY' });
-    const rolledBack = await runner.recover(txId, taskId);
+    reconciler = new DistributionAdmissionReconciler(rootId, {
+      admissions: ledger.admissions, readProjections, project: (...args) => client.projectDistributionTask(...args),
+    });
+    const ready = reconciler.reconcile().then(() => {});
+    views = new DistributionTaskViewProvider(rootId, { admissions: ledger.admissions, storage: client, ready: () => ready });
+    let recoveries = 0;
+    let startRecovery!: (result: Promise<StoredTask>) => void;
+    const recovery = new Promise<StoredTask>(resolve => { startRecovery = resolve; });
+    void recovery.catch(() => {});
+    backend = new DistributionExecutionBackend(rootId, {
+      available: () => true, admissions: ledger.admissions, views,
+      preparation: new DistributionPreparationService(coordinator),
+      confirmation: { confirm: async () => { throw new Error('recovery cannot confirm a new job'); } },
+      runner: {
+        run: async () => { throw new Error('recovery cannot execute a new job'); },
+        recover: (...args) => {
+          recoveries++;
+          const result = execution.recover(...args);
+          startRecovery(result);
+          return result;
+        },
+      },
+    });
+    adapter = new DistributionExecutionAdapter(backend.document());
+    const request = { contractVersion: 1, requestId, payload: { taskId } };
+    const accepted = await adapter.handle('distribution:recoverExecution', request, () => true, randomUUID());
+    assert.ok(accepted.ok && 'recoveryRequestId' in accepted.data);
+    assert.equal(accepted.data.recoveryRequestId, requestId);
+    assert.equal(accepted.data.snapshot.taskId, taskId);
+    assert.equal(accepted.data.snapshot.state, 'needsRecovery');
+    const rolledBack = await recovery;
     assert.equal(rolledBack.execution.state, 'failed');
     assert.deepEqual(await readdir(path.join(fixture.f.gameDir, 'mods')), []);
     assert.equal((await ledger.journals.read(txId))?.data.phase, 'rolledBack');
-    assert.deepEqual(await runner.recover(txId, taskId), rolledBack);
+    const replay = new DistributionExecutionAdapter(backend.document());
+    try {
+      const receipt = await replay.handle('distribution:recoverExecution', request, () => true, randomUUID());
+      assert.ok(receipt.ok && 'recoveryRequestId' in receipt.data);
+      assert.equal(receipt.data.recoveryRequestId, requestId);
+      assert.equal(receipt.data.snapshot.state, 'failed');
+      assert.equal(receipt.data.snapshot.taskId, taskId);
+      assert.equal(recoveries, 1);
+    } finally { await replay.close(); }
     assert.deepEqual(await ledger.admissions.bindRecoveryRequest(rootId, requestId, taskId), admission);
   } finally {
+    await adapter?.close();
+    await backend?.close();
+    await views?.close();
+    await reconciler?.close();
     await runner?.close();
     await settlement?.close();
     await coordinator?.close();
