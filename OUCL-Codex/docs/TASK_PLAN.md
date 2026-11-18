@@ -719,3 +719,8 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-18额度恢复primary实测1%已用，沿A从e9d84204启动L root-owned J→K运行编排。single root slot贯穿执行/终态CAS/readback，historical bypass J，unknown claim不重演，close不提前关闭K；仅内部runner无自动startup/公共/schema变更。范围根docs/execution/20261118-l/PLAN.md，结果不预记，真实配置继续空。
 
 2026-11-18 A运行编排L完成：真实专项6PASS，完整992项988PASS/0FAIL/4SKIP、type/全lint/build0；root单job贯穿J/K/读回，historical绕J、unknown不重演、close排空不提前关K。仅内部不自动startup/公共/schema变化，下一passive任务view/目标provider见根docs/execution/20261118-l/CHECKPOINT.md，A批准持续/source-key空。
+
+
+2026-11-18 A被动任务视图M启动：L d02634b8已full通过，新增内部get/list/targets与readByTask索引映射（保持全库审计），真实双库绑定与root/instance范围、startup/inflight failclosed，绝不查询时执行或临时改状态。暂不改公共TargetKind/main/worker/schema，根docs/execution/20261118-m/PLAN.md，结果不预记，A持续批准/source-key空。
+
+2026-11-18 A被动任务视图M完成：真实专项7PASS，完整999项995PASS/0FAIL/4既有SKIP、type/全lint/build0；get/list/targets真实归属与scope、startup/在途/孤儿failclosed、总query8/target2预算和关闭排空。readByTask保留全库审计，不宣称性能优化；未改public/root路由/schema，下一N按A item1接task-target kind及观察，详根docs/execution/20261118-m/CHECKPOINT.md。source-key空/no执行广告，无push/EXE覆盖，A持续批准。

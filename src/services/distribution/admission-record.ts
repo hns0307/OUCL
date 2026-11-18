@@ -19,6 +19,7 @@ export interface AdmissionRepository {
   bindReceiptAlias(expectedRootId: string, confirmRequestId: string, proposalId: string, inputDigest: string): Promise<AdmissionRecord>;
   readByRequest(confirmRequestId: string): Promise<AdmissionRecord | undefined>;
   readByProposal(proposalId: string): Promise<AdmissionRecord | undefined>;
+  readByTask(taskId: string): Promise<AdmissionRecord | undefined>;
   listPending(limit?: number): Promise<AdmissionRecord[]>;
   listAll(): Promise<AdmissionRecord[]>;
   markProjected(proposalId: string, taskId: string): Promise<AdmissionRecord>;
@@ -238,6 +239,19 @@ export class SqliteAdmissionRepository implements AdmissionRepository {
     uuid(proposalId); await this.verify();
     try { this.validateStored(); return this.record(proposalId); }
     catch (error) { throw error instanceof StorageError ? error : new StorageError('NEEDS_RECOVERY'); }
+  }
+  /** Unique task lookup; the existing bounded full-store integrity audit is deliberately retained. */
+  async readByTask(taskId: string): Promise<AdmissionRecord | undefined> {
+    uuid(taskId); await this.verify();
+    try {
+      this.validateStored();
+      const row = this.database.prepare('SELECT proposal_id FROM admissions WHERE task_id=?').get(taskId);
+      if (!row) return;
+      if (typeof row.proposal_id !== 'string') reject('NEEDS_RECOVERY');
+      const record = this.record(row.proposal_id);
+      if (!record || record.taskId !== taskId) reject('NEEDS_RECOVERY');
+      return record;
+    } catch (error) { throw error instanceof StorageError ? error : new StorageError('NEEDS_RECOVERY'); }
   }
   async listPending(limit = 100): Promise<AdmissionRecord[]> {
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > MAX_ADMISSIONS) reject();

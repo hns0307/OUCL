@@ -1,0 +1,13 @@
+# 被动任务视图M结果
+
+新增内部DistributionTaskViewProvider get/list/targets，读取真实admission、任务与request双侧归属，Snapshot保持持久Execution原state/revision/bytes。目标在完整有界root集合审计后筛实例，真实installation/instance scope前后复核，summary revision必须匹配envelope；行revision是原admission历史目标。没有查询时执行/结算/修复或临时改state。
+
+readByTask使用既有task_id唯一索引映射，保留owner verify和全库validateStored，仍承担16MiB有界完整审计成本，未宣称点查性能优化。无admission分支另读真实任务投影验证悬空request，不伪undefined；known accepted/outbox在途UNAVAILABLE，未知孤儿/缺失projected拒绝。authority返回在下一await前立即有界快照，startup对账失败不伪空。
+
+同task get单飞、list整体单飞、targets同实例单飞，目标实例并发最多2，总query最多8；inventory仅inflight共享，不引时钟缓存，close停新/drain，不取消共享读或关store。get/list可观察已删除实例历史；targets必须真实实例存在。没有编造旧错误/许可信息。
+
+最终真实专项7PASS/0FAIL/0SKIP，5156.5104ms，最终type/test lint0；首7PASS另存before-review-guards。实际SQLite悬空request、真实任务queued→Runner completed、注册instance metadata变更与恶意端口返回变动/坏envelope分层见test-evidence/TASK-VIEWS.md。注册与策略夹具不等于真实游戏安装或许可证验收。
+
+完整999项995PASS/0FAIL/4既有SKIP，66202.2985ms，type/全lint/build均exit0；原始命令与结果见checks-evidence/run-checks.mjs。独立只读审查无剩余阻断；provider SHA724d96c2aa656ad18d6c433776d5af4b1fcfa22206766fa0636307ce4012c52e，repo40a6c6b179e0b5e181f5f4fadeeb011b5e60aee5664da627af0f0e7f1daf5c20。
+
+未改公共TargetKind/main/worker协议/schema/依赖，production仍no-port、不广告execute，source/key/站点空。未push/替换正式EXE或原WIP。

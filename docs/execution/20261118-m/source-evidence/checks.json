@@ -1,0 +1,14 @@
+{
+  "typecheckExitCode": 0,
+  "lintExitCode": 0,
+  "files": [
+    {
+      "sha256": "724d96c2aa656ad18d6c433776d5af4b1fcfa22206766fa0636307ce4012c52e",
+      "file": "src/services/distribution/task-views.ts"
+    },
+    {
+      "sha256": "40a6c6b179e0b5e181f5f4fadeeb011b5e60aee5664da627af0f0e7f1daf5c20",
+      "file": "src/services/distribution/admission-record.ts"
+    }
+  ]
+}
