@@ -744,3 +744,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 主进程配置装配补测通过：直接调用主进程工厂，合成发行经真正的适配器、两库任务和受保护文件事务完成。全量 1008 项 1004 通过、0 失败、4 项既有跳过，类型、lint、构建通过。此增量仅测试与记录，实际配置仍空置。见根 docs/execution/20261118-x/REPORT.md。
 
 2026-11-19 统一验收入口见根 docs/execution/20261119-coordination/ACCEPTANCE.md。候选、N5、N6 三组已独立复核，固定整合包原缺参数的两项另跑通过。产品代码和真实配置无变动，授权范围不变。
+
+2026-11-19 并行补验已收口：N5 CDN 真实 Chromium 隔离 6 项通过；N6 仅在隔离编译注入合成配置，真实 Electron 主进程、预加载、界面确认、任务订阅、重启回执和两库原生落盘均验证通过。类型、lint、构建通过。产品源码与候选沿用现有快照，真实配置保持空置。详见根 docs/execution/20261119-coordination/ACCEPTANCE.md。
