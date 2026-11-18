@@ -60,3 +60,5 @@ docs/execution/20261118-w/*-evidence/** -text
 docs/execution/20261118-x/checks-evidence/** -text
 
 docs/execution/20261119-coordination/*-evidence/** -text
+
+docs/execution/20261119-coordination/n5-cdn-evidence/run-*/** -text
