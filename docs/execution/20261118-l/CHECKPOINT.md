@@ -1,0 +1,9 @@
+# A持续恢复点L
+
+L内部DistributionExecutionRunner把J→K→实际任务读回纳入一个root slot，已完整992项988PASS/0FAIL/4SKIP及type/全lint/build0，真实专项6PASS；证据见REPORT.md。main仍需独占该root所有执行，不得外部直接绕共享coordinator推进receipt。当前无产品执行入口。
+
+下一M只做passive任务view/目标provider：从真实admission与任务双侧绑定投影snapshot，不执行/结算/恢复。get(taskId)新增readByTask可用现有unique task_id索引映射proposal，但现repo点读仍全库校验，不可假称已解决16MiB审计成本；先保持安全校验不做未量测优化。list/targets须完整有界双向核验，startup对账barrier失败不能降级空列表；accepted/outbox在途明确暂不可用，未知孤儿/缺失projected拒绝。instance/root/revision取真实注册metadata并复核，不接受renderer自证归属。观察不发明旧错误/许可细节、不临时篡改Execution状态。
+
+M先内部provider不改TargetKind公共契约或main路由，随后沿已批A接task-targets kinds/schema、worker/任务中心get/list/订阅与受控结果/错误、持久queued取消/显式恢复和document facade/UI。确认进入元数据链后文档关闭不应撤销unknown admission或关闭root任务；只有未确认prepare随document撤销。原sender响应失效可拒，但任务必须原ID恢复。
+
+真实source/key/locator/许可政策/站点仍空，production五通道no-port且不广告execute。C候选是C时快照，不冒称包含L。原WIP/tmp保留，不push/覆盖正式EXE。primary低于20%不启新实现，10%及以下保存；够高继续A无需重批，不用reset/购买，weekly不作停止条件。

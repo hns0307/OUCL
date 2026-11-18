@@ -1,0 +1,11 @@
+{
+  "name": "typecheck",
+  "args": [
+    "../../node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "environment": {},
+  "started": "2026-11-18T02:33:17.243Z",
+  "ended": "2026-11-18T02:33:37.066Z",
+  "exitCode": 0
+}

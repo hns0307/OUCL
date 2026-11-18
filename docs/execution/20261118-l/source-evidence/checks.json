@@ -1,0 +1,10 @@
+{
+  "lintExitCode": 0,
+  "typecheckExitCode": 0,
+  "files": [
+    {
+      "file": "src/services/distribution/runner.ts",
+      "sha256": "9165391bc5dbdd2e88fbfa4408cd14de37df0452fb70d5a940203d9d453547fb"
+    }
+  ]
+}
