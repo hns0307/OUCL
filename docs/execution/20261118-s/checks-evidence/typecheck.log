@@ -1,0 +1,18 @@
+src/services/distribution/preparation.ts(63,5): error TS2412: Type 'undefined' is not assignable to type 'Timeout' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+src/services/distribution/preparation.ts(167,7): error TS2412: Type 'undefined' is not assignable to type 'symbol' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.
+tests/distribution-preparation-service.test.ts(17,77): error TS2322: Type 'Promise<DistributionExecutionProposal>' is not assignable to type 'Promise<DistributionProposal>'.
+  Type 'DistributionExecutionProposal' is not assignable to type 'DistributionProposal'.
+    Types of property 'changes' are incompatible.
+      Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }[]' is not assignable to type 'DistributionOperation[]'.
+        Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type 'DistributionOperation'.
+          Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type '(TargetFile & { kind: "add"; artifactId: string; sha256: string; size: number; }) | (TargetFile & { kind: "replace"; artifactId: string; sha256: string; size: number; managedId: string; expectedSha256: string; }) | (TargetFile & { ...; })'.
+            Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type 'TargetFile & { kind: "remove"; managedId: string; expectedSha256: string; }'.
+              Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is missing the following properties from type '{ kind: "remove"; managedId: string; expectedSha256: string; }': managedId, expectedSha256
+tests/distribution-preparation-service.test.ts(44,28): error TS2322: Type 'Promise<DistributionExecutionProposal>' is not assignable to type 'Promise<DistributionProposal>'.
+  Type 'DistributionExecutionProposal' is not assignable to type 'DistributionProposal'.
+    Types of property 'changes' are incompatible.
+      Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }[]' is not assignable to type 'DistributionOperation[]'.
+        Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type 'DistributionOperation'.
+          Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type '(TargetFile & { kind: "add"; artifactId: string; sha256: string; size: number; }) | (TargetFile & { kind: "replace"; artifactId: string; sha256: string; size: number; managedId: string; expectedSha256: string; }) | (TargetFile & { ...; })'.
+            Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is not assignable to type 'TargetFile & { kind: "remove"; managedId: string; expectedSha256: string; }'.
+              Type '{ area: ContentArea; path: string; kind: "replace" | "add" | "remove"; }' is missing the following properties from type '{ kind: "remove"; managedId: string; expectedSha256: string; }': managedId, expectedSha256
