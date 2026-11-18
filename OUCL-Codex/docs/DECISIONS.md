@@ -508,3 +508,5 @@
 2026-11-18 A被动任务视图M启动：L d02634b8已full通过，新增内部get/list/targets与readByTask索引映射（保持全库审计），真实双库绑定与root/instance范围、startup/inflight failclosed，绝不查询时执行或临时改状态。暂不改公共TargetKind/main/worker/schema，根docs/execution/20261118-m/PLAN.md，结果不预记，A持续批准/source-key空。
 
 2026-11-18 A被动任务视图M完成：真实专项7PASS，完整999项995PASS/0FAIL/4既有SKIP、type/全lint/build0；get/list/targets真实归属与scope、startup/在途/孤儿failclosed、总query8/target2预算和关闭排空。readByTask保留全库审计，不宣称性能优化；未改public/root路由/schema，下一N按A item1接task-target kind及观察，详根docs/execution/20261118-m/CHECKPOINT.md。source-key空/no执行广告，无push/EXE覆盖，A持续批准。
+
+2026-11-18本窗口保存：L d02634b8与M 3a30d1b3均已真实full验证，最新999项995PASS/0FAIL/4SKIP及type/全lint/build0。主协调实测primary85%已用/15%剩，按低于20%不启新增量保存，无待跑检查或源码WIP，只有原tmp未跟踪保留。停止依据仅primary规则，不按weekly作停止阈值；下一N按本页继续，A持续有效，无需重批。

@@ -11,3 +11,5 @@ TargetAdapter可新增optional main-owned distribution reader，生产缺provide
 point仍全库审计16MiB，不称性能已优化或硬实时；后续若优化须保持owner/被选绑定与全局审计语义并给实测。M已settled/history只读状态，不会因查询触发文件写；任务完成仅权威metadata结果，不等于游戏菜单验收。source/key/locator/许可政策/站点仍空，production五通道no-port且不广告execute。C候选仅C时快照，不冒称包含L/M；无push/正式EXE覆盖。
 
 primary低于20%不启新实现，10%及以下保存并仅收齐已启动检查，够高继续A不重批；不使用reset/购买、不按weekly阈值停止。恢复先核真实额度和仓库现状。
+
+2026-11-18本窗口保存：L d02634b8与M 3a30d1b3均已真实full验证，最新999项995PASS/0FAIL/4SKIP及type/全lint/build0。主协调实测primary85%已用/15%剩，按低于20%不启新增量保存，无待跑检查或源码WIP，只有原tmp未跟踪保留。停止依据仅primary规则，不按weekly作停止阈值；下一N按本页继续，A持续有效，无需重批。
