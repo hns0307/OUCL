@@ -5,7 +5,8 @@ export const TARGET_CAPABILITY = 'task-targets.v1' as const;
 export const TARGET_CHANNEL = 'task-targets:listForInstance' as const;
 export const TARGET_CODES = ['INVALID_ARGUMENT', 'UNSUPPORTED_CONTRACT', 'INVALID_SENDER', 'OUT_OF_SCOPE', 'ROOT_UNAVAILABLE',
   'TASK_STORE_UNAVAILABLE', 'NEEDS_RECOVERY', 'CURSOR_EXPIRED', 'TIMEOUT', 'UNAVAILABLE'] as const;
-export type TargetKind = 'mod-check' | 'mod-install';
+export type ModTargetKind = 'mod-check' | 'mod-install';
+export type TargetKind = ModTargetKind | 'distribution-install';
 export type TargetCode = typeof TARGET_CODES[number];
 export interface TargetError extends Omit<InstanceError, 'code'> { code: TargetCode }
 export interface TargetQuery { instanceId: string; kinds: TargetKind[]; limit: number; cursor?: string }
@@ -20,8 +21,8 @@ const optional = (value: unknown, required: string[], extra: string): value is R
   && exactObject(value, [...required, ...(Object.hasOwn(value, extra) ? [extra] : [])]);
 export function isTargetQuery(value: unknown): value is TargetQuery {
   return optional(value, ['instanceId', 'kinds', 'limit'], 'cursor') && uuid(value.instanceId)
-    && Array.isArray(value.kinds) && value.kinds.length >= 1 && value.kinds.length <= 2
-    && value.kinds.every(kind => kind === 'mod-check' || kind === 'mod-install') && new Set(value.kinds).size === value.kinds.length
+    && Array.isArray(value.kinds) && value.kinds.length >= 1 && value.kinds.length <= 3
+    && value.kinds.every(kind => kind === 'mod-check' || kind === 'mod-install' || kind === 'distribution-install') && new Set(value.kinds).size === value.kinds.length
     && typeof value.limit === 'number' && Number.isSafeInteger(value.limit) && value.limit >= 1 && value.limit <= 100
     && (!Object.hasOwn(value, 'cursor') || uuid(value.cursor));
 }

@@ -726,3 +726,5 @@ ModTransactionService已实现固定worker日志、gameDir占用、私有暂存�
 2026-11-18 A被动任务视图M完成：真实专项7PASS，完整999项995PASS/0FAIL/4既有SKIP、type/全lint/build0；get/list/targets真实归属与scope、startup/在途/孤儿failclosed、总query8/target2预算和关闭排空。readByTask保留全库审计，不宣称性能优化；未改public/root路由/schema，下一N按A item1接task-target kind及观察，详根docs/execution/20261118-m/CHECKPOINT.md。source-key空/no执行广告，无push/EXE覆盖，A持续批准。
 
 2026-11-18本窗口保存：L d02634b8与M 3a30d1b3均已真实full验证，最新999项995PASS/0FAIL/4SKIP及type/全lint/build0。主协调实测primary85%已用/15%剩，按低于20%不启新增量保存，无待跑检查或源码WIP，只有原tmp未跟踪保留。停止依据仅primary规则，不按weekly作停止阈值；下一N按本页继续，A持续有效，无需重批。
+
+2026-11-18 方案 A 分发任务目标查询已通过完整检查。1002 项中 998 通过、0 失败、4 项既有跳过，类型检查、lint 和构建通过。新增三类适配器测试用受控端口。下一步装配真实账本和只读任务观察，真实来源/公钥继续空置。见根 docs/execution/20261118-n/REPORT.md。

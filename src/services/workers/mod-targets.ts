@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { TargetKind } from '../../shared/contracts/task-targets.js';
+import type { ModTargetKind } from '../../shared/contracts/task-targets.js';
 import type { StoredTask } from '../storage/tasks.js';
 import type { RecordStore } from '../storage/records.js';
 import { parseInstallation } from '../storage/installation.js';
@@ -9,7 +9,7 @@ import { modPlanRecordId, parseStoredModPlan } from '../storage/mod-plans.js';
 import { modConfirmationDigest } from '../mods/plan-identity.js';
 import { WorkerError } from './protocol.js';
 
-export interface ModTargetsInput { rootId: string; rootRevision: number; instanceId: string; kinds: TargetKind[] }
+export interface ModTargetsInput { rootId: string; rootRevision: number; instanceId: string; kinds: ModTargetKind[] }
 export interface ModTargets { rootId: string; rootRevision: number; items: Array<{ instanceId: string; instanceRevision: number; task: StoredTask }> }
 
 /** Proves all requested-domain admissions before returning the selected instance's immutable targets. */

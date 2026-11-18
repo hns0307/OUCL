@@ -1,7 +1,7 @@
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import type { Execution } from '../../core/task/machine.js';
 import type { ModTargets } from './mod-targets.js';
-import type { TargetKind } from '../../shared/contracts/task-targets.js';
+import type { ModTargetKind } from '../../shared/contracts/task-targets.js';
 import type { StoredTask, TaskKind, ModConfirmation } from '../storage/tasks.js';
 import { parseExecution, TASK_KINDS } from '../storage/tasks.js';
 import { parseModJobs, parseStoredModReport } from '../storage/mod-jobs.js';
@@ -85,7 +85,7 @@ export type StorageCommand = { kind: 'accept'; ownerId: string; requestId: strin
   | { kind: 'mod-plan:get'; requestId: string }
   | { kind: 'mod-confirm:accept'; planRequestId: string; planId: string; confirmed: true }
   | { kind: 'mod-confirm:list' }
-  | { kind: 'mod-targets:read'; rootId: string; rootRevision: number; instanceId: string; kinds: TargetKind[] }
+  | { kind: 'mod-targets:read'; rootId: string; rootRevision: number; instanceId: string; kinds: ModTargetKind[] }
   | { kind: 'mod-plan:set'; requestId: string; expectedRevision: number; data: StoredModPlan }
   | { kind: 'mod-txn:get'; taskId: string }
   | { kind: 'mod-result:get'; taskId: string }
