@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
@@ -27,6 +28,8 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
   try {
     const admission = await fixture.f.store.admissions.readByTask(taskId);
     assert.ok(admission);
+    const requestId = randomUUID();
+    await assert.rejects(fixture.f.store.admissions.bindRecoveryRequest(rootId, requestId, taskId), { code: 'NEEDS_RECOVERY' });
     await fixture.client.claimDistributionTask(rootId, txId, admission.inputDigest, taskId);
     const createFiles = await loadWindowsDistributionFiles(path.join(ROOT, 'native-build', 'native'));
     const readTarget = async () => ({ rootId, instanceId, revision: instanceRevision, gameDir: fixture.f.gameDir, environment: manifest.target });
@@ -43,6 +46,8 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
     });
     await assert.rejects(transaction.commit(admission.plan), SimulatedDistributionCrash);
     assert.deepEqual(await readdir(path.join(fixture.f.gameDir, 'mods')), ['managed.jar']);
+    assert.deepEqual(await fixture.f.store.admissions.bindRecoveryRequest(rootId, requestId, taskId), admission);
+    await assert.rejects(fixture.f.store.admissions.bindReceiptAlias(rootId, requestId, txId, admission.inputDigest), { code: 'REVISION_CONFLICT' });
     await fixture.f.store.close();
     await fixture.client.close();
 
@@ -50,6 +55,8 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
     const client = storage = await StorageClient.open(new URL('../src/services/workers/entry.js', import.meta.url),
       path.join(fixture.f.base, 'task-owner'));
     assert.equal((await client.get(rootId, taskId))?.execution.state, 'needsRecovery');
+    assert.deepEqual(await ledger.admissions.bindRecoveryRequest(rootId, requestId, taskId), admission);
+    await assert.rejects(ledger.admissions.bindRecoveryRequest(rootId, requestId, randomUUID()), { code: 'REVISION_CONFLICT' });
     const readProjections = (root: string) => client.readDistributionTaskProjections(root);
     coordinator = new DistributionExecutionCoordinator({
       sources: [], store: ledger,
@@ -77,6 +84,7 @@ test('explicit recovery binds a predecessor journal to the admitted task and set
     assert.deepEqual(await readdir(path.join(fixture.f.gameDir, 'mods')), []);
     assert.equal((await ledger.journals.read(txId))?.data.phase, 'rolledBack');
     assert.deepEqual(await runner.recover(txId, taskId), rolledBack);
+    assert.deepEqual(await ledger.admissions.bindRecoveryRequest(rootId, requestId, taskId), admission);
   } finally {
     await runner?.close();
     await settlement?.close();

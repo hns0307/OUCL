@@ -127,7 +127,7 @@ test('schema v1 migrates atomically while preserving legacy release, journal and
   await authorize(store, accepted); await store.journals.write(value.proposalId, 0, journal); await store.close();
   const db = new DatabaseSync(path.join(root, 'distribution.sqlite'));
   db.prepare('INSERT INTO receipts VALUES(?,1,?)').run(receipt.instanceId, JSON.stringify(receipt));
-  db.exec('DROP TABLE admission_aliases; DROP TABLE admission_outbox; DROP TABLE admissions; PRAGMA user_version=1;');
+  db.exec('DROP TABLE recovery_requests; DROP TABLE admission_aliases; DROP TABLE admission_outbox; DROP TABLE admissions; PRAGMA user_version=1;');
   const before = ['release_states', 'accepted_releases', 'journals', 'receipts'].map(table => db.prepare(`SELECT * FROM ${table}`).all()); db.close();
   store = await DistributionStore.open(root);
   try {
@@ -136,7 +136,7 @@ test('schema v1 migrates atomically while preserving legacy release, journal and
     assert.deepEqual(await store.readAcceptedRelease({ sourceId: value.plan.sourceId, packageId: value.plan.packageId }), accepted);
     const check = new DatabaseSync(path.join(root, 'distribution.sqlite'));
     try {
-      assert.equal(check.prepare('PRAGMA user_version').get()?.user_version, 2);
+      assert.equal(check.prepare('PRAGMA user_version').get()?.user_version, 3);
       assert.deepEqual(['release_states', 'accepted_releases', 'journals', 'receipts'].map(table => check.prepare(`SELECT * FROM ${table}`).all()), before);
     } finally { check.close(); }
     assert.equal((await store.admissions.admit(value)).phase, 'accepted');
