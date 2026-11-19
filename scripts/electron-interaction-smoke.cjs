@@ -9,6 +9,8 @@ assert.ok(profile.startsWith(path.resolve('.test-build') + path.sep) && path.bas
 const pass = Number(process.env.OUCL_INTERACTION_PASS); const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/UI-20261028');
 const icon = nativeImage.createFromBitmap(Buffer.from(Array.from({ length: 16 * 16 }, () => [80, 130, 175, 255]).flat()), { width: 16, height: 16 }).toPNG();
 const fixtureFile = path.join(profile, 'fixture-icon.png');
+const invalidIconFile = path.join(profile, 'invalid-fixture-icon.png');
+let nextIconDialog;
 const fixtureRoot = profile + '-games';
 const preparationRecord = path.join(profile, 'expected-preparation.json');
 let rootChoosers = 0;
@@ -33,7 +35,9 @@ dialog.showOpenDialog = async (_window, options) => {
     return { canceled: false, filePaths: [fixtureRoot] };
   }
   nativeChoosers++;
-  return { canceled: false, filePaths: [fixtureFile] };
+  const override = nextIconDialog;
+  nextIconDialog = undefined;
+  return override ?? { canceled: false, filePaths: [fixtureFile] };
 };
 globalThis.fetch = async input => {
   const url = String(input); requests.push(url);
@@ -59,6 +63,40 @@ async function run(window) {
     await wait(`document.querySelector('.page-heading h1')?.textContent.trim() === ${JSON.stringify(caption)}`);
   };
   const input = async (selector, value) => { await evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});Object.getOwnPropertyDescriptor(e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(e,${JSON.stringify(value)});e.dispatchEvent(new Event('input',{bubbles:true}));})()`); await pause(70); };
+  async function verifyIconDialog(savedAppearance) {
+    await evaluate(`document.querySelectorAll('.palette-button')[2].click()`);
+    const previewIsRetained = `getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#b3a0df'`;
+    await wait(previewIsRetained);
+
+    const cancel = Promise.withResolvers();
+    nextIconDialog = cancel.promise;
+    await click('选择本地图标');
+    await wait(`document.querySelector('.appearance-controls').disabled`);
+    assert.ok(await evaluate(`[...document.querySelectorAll('.appearance-controls :is(button,input,select)')].every(control => control.matches(':disabled'))`));
+    assert.ok(await evaluate(previewIsRetained));
+    cancel.resolve({ canceled: true, filePaths: [] });
+    await wait(`!document.querySelector('.appearance-controls').disabled`);
+    assert.ok(await evaluate(previewIsRetained));
+    assert.equal(await evaluate(`Boolean(document.querySelector('.appearance-settings [role=alert]'))`), false);
+    assert.equal(await evaluate(`document.querySelector('.custom-brand-preview').src`), savedAppearance.icon);
+    const afterCancel = await evaluate('window.oucl.getDesktop()');
+    assert.ok(afterCancel.ok);
+    assert.deepEqual(afterCancel.data.appearance, savedAppearance);
+
+    nextIconDialog = Promise.resolve({ canceled: false, filePaths: [invalidIconFile] });
+    await click('选择本地图标');
+    await wait(`document.querySelector('.appearance-settings [role=alert]')?.textContent === '暂时无法完成请求。'`);
+    assert.ok(await evaluate(previewIsRetained));
+    assert.equal(await evaluate(`document.querySelector('.custom-brand-preview').src`), savedAppearance.icon);
+    const persisted = await evaluate('window.oucl.getDesktop()');
+    assert.ok(persisted.ok);
+    assert.deepEqual(persisted.data.appearance, savedAppearance);
+
+    await evaluate(`document.querySelector('.appearance-settings .save-row .text-button').click()`);
+    await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#407da0' && !document.querySelector('.appearance-settings [role=alert]')`);
+    assert.equal(nativeChoosers, 3);
+  }
+
   async function preparation() {
     const projection = await evaluate(`Promise.all([window.oucl.listRoots(), window.oucl.listAccounts(), window.oucl.getSettings()])`);
     for (const reply of projection) assert.ok(reply.ok, JSON.stringify(reply));
@@ -162,6 +200,7 @@ async function run(window) {
       window.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'Escape' });
       window.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Escape' });
       await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#407da0'`);
+      await verifyIconDialog(appearance);
       await page('工具箱');
       await input('.toolbox-panel > textarea', '甲👨‍👩‍👧‍👦乙');
       await click('选择输出');
@@ -187,12 +226,12 @@ async function run(window) {
       await verifyPreparation();
     }
     await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ timestamp: new Date().toISOString(), status: 'PASS', pass, externalNetwork: 0, mockedRequests: requests.length, nativeChoosers, rootChoosers, injectedAccountFailures, secureRenderer: true, persistedReopen: pass === 2,
-      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow', 'guide-account-focus-and-root-registration', 'guide-read-failure-preserves-selected-account', 'guide-retry-clears-error-and-preserves-root-account-settings'] : ['appearance-and-icon-reopen', 'forum-draft-reopen', 'guide-reopens-with-existing-root-and-offline-profiles'] }, null, 2));
+      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'icon-dialog-disables-appearance-controls-and-cancel-preserves-preview', 'invalid-icon-preserves-preview-and-persisted-appearance', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow', 'guide-account-focus-and-root-registration', 'guide-read-failure-preserves-selected-account', 'guide-retry-clears-error-and-preserves-root-account-settings'] : ['appearance-and-icon-reopen', 'forum-draft-reopen', 'guide-reopens-with-existing-root-and-offline-profiles'] }, null, 2));
     console.log(`INTERACTION_PASS_${pass}`); clearTimeout(timeout); window.close(); app.quit();
   } catch (error) { console.error(error); failed = true; clearTimeout(timeout); await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ status: 'FAIL', error: error.message }, null, 2)); window.close(); app.quit(); }
 }
 void (async () => {
-  await mkdir(evidence, { recursive: true }); await mkdir(fixtureRoot, { recursive: true }); await writeFile(fixtureFile, icon); app.setPath('userData', profile);
+  await mkdir(evidence, { recursive: true }); await mkdir(fixtureRoot, { recursive: true }); await writeFile(fixtureFile, icon); await writeFile(invalidIconFile, 'invalid image fixture'); app.setPath('userData', profile);
   app.on('ready', () => { session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (_details, callback) => callback({ cancel: true })); });
   app.on('browser-window-created', (_event, window) => { window.webContents.setBackgroundThrottling(false); window.webContents.once('did-finish-load', () => { void run(window); }); });
   require('./electron-network-fixture.cjs')(globalThis.fetch);
