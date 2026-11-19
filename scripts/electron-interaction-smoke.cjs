@@ -1,6 +1,7 @@
-const { app, session, dialog, nativeImage } = require('electron');
-const { mkdir, writeFile } = require('node:fs/promises');
+const { app, session, dialog, ipcMain, nativeImage } = require('electron');
+const { mkdir, readFile, writeFile } = require('node:fs/promises');
 const path = require('node:path');
+const { randomUUID } = require('node:crypto');
 const assert = require('node:assert/strict');
 app.disableHardwareAcceleration();
 const profile = path.resolve(process.env.OUCL_INTERACTION_PROFILE || '');
@@ -8,8 +9,32 @@ assert.ok(profile.startsWith(path.resolve('.test-build') + path.sep) && path.bas
 const pass = Number(process.env.OUCL_INTERACTION_PASS); const evidence = path.resolve(process.env.OUCL_VALIDATION_DIR ?? 'docs/validation/UI-20261028');
 const icon = nativeImage.createFromBitmap(Buffer.from(Array.from({ length: 16 * 16 }, () => [80, 130, 175, 255]).flat()), { width: 16, height: 16 }).toPNG();
 const fixtureFile = path.join(profile, 'fixture-icon.png');
+const fixtureRoot = profile + '-games';
+const preparationRecord = path.join(profile, 'expected-preparation.json');
+let rootChoosers = 0;
+let rejectNextAccountRead = false;
+let injectedAccountFailures = 0;
+const registerHandler = ipcMain.handle.bind(ipcMain);
+ipcMain.handle = (channel, handler) => {
+  if (channel !== 'accounts:list') return registerHandler(channel, handler);
+  return registerHandler(channel, async (event, input) => {
+    const reply = await handler(event, input);
+    if (!rejectNextAccountRead || !reply.ok) return reply;
+    rejectNextAccountRead = false;
+    injectedAccountFailures++;
+    return { contractVersion: reply.contractVersion, requestId: reply.requestId, ok: false,
+      error: { category: 'disk', code: 'STORAGE_UNAVAILABLE', messageKey: 'unavailable', retryable: true, traceId: randomUUID() } };
+  });
+};
 let nativeChoosers = 0; const requests = []; let started = false; let failed = false;
-dialog.showOpenDialog = async () => { nativeChoosers++; return { canceled: false, filePaths: [fixtureFile] }; };
+dialog.showOpenDialog = async (_window, options) => {
+  if (options.properties.includes('openDirectory')) {
+    rootChoosers++;
+    return { canceled: false, filePaths: [fixtureRoot] };
+  }
+  nativeChoosers++;
+  return { canceled: false, filePaths: [fixtureFile] };
+};
 globalThis.fetch = async input => {
   const url = String(input); requests.push(url);
   if (url === 'https://cdn.modrinth.com/data/abcdefgh/icon.png') return new globalThis.Response(icon, { headers: { 'content-type': 'image/png' } });
@@ -34,6 +59,57 @@ async function run(window) {
     await wait(`document.querySelector('.page-heading h1')?.textContent.trim() === ${JSON.stringify(caption)}`);
   };
   const input = async (selector, value) => { await evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});Object.getOwnPropertyDescriptor(e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(e,${JSON.stringify(value)});e.dispatchEvent(new Event('input',{bubbles:true}));})()`); await pause(70); };
+  async function preparation() {
+    const projection = await evaluate(`Promise.all([window.oucl.listRoots(), window.oucl.listAccounts(), window.oucl.getSettings()])`);
+    for (const reply of projection) assert.ok(reply.ok, JSON.stringify(reply));
+    const [roots, accounts, settings] = projection.map(reply => reply.data);
+    assert.equal(roots.items.length, 1);
+    assert.equal(roots.items[0].available, true);
+    assert.equal(settings.memoryMiB, 4096);
+    return { roots: roots.items, accounts: accounts.items, settings };
+  }
+
+  async function verifyPreparation() {
+    await page('设置');
+    await evaluate(`document.querySelector('.root-settings button').click()`);
+    await wait(`document.querySelector('.registered-root')`);
+    assert.equal(rootChoosers, 1);
+    await page('首页');
+    await click('选择离线档案');
+    assert.ok(await evaluate(`document.activeElement.matches('.accounts-focus')`));
+    for (const [nickname, gameName] of [['本地档案甲', 'LocalAlpha'], ['本地档案乙', 'LocalBravo']]) {
+      await evaluate(`document.querySelector('.account-chooser > button').click()`);
+      await input('.account-form label:first-of-type input', nickname);
+      await input('.account-form label:nth-of-type(2) input', gameName);
+      await evaluate(`document.querySelector('.account-form button[type=submit]').click()`);
+      await wait(`document.querySelector('.player-name span')?.textContent === ${JSON.stringify(gameName)} && !document.querySelector('.account-form')`);
+    }
+    const expected = await preparation();
+    assert.equal(expected.accounts.length, 2);
+    assert.ok(expected.accounts.every(account => account.ready));
+    const alternate = expected.accounts[1].accountId;
+    await evaluate(`(() => {
+      const select = document.querySelector('.account-chooser select');
+      select.value = ${JSON.stringify(alternate)};
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    rejectNextAccountRead = true;
+    await click('重新检查');
+    await wait(`document.querySelector('.first-run-guide [role="alert"]')?.textContent === '暂时无法完成请求。'`);
+    assert.equal(injectedAccountFailures, 1);
+    assert.equal(await evaluate(`document.querySelector('.account-chooser select').value`), alternate);
+    await wait(`[...document.querySelectorAll('.first-run-guide button')].some(button => !button.disabled && button.textContent === '重新检查')`);
+    await click('重新检查');
+    await wait(`!document.querySelector('.first-run-guide [role="alert"]')`);
+    await wait(`[...document.querySelectorAll('.first-run-guide button')].some(button => !button.disabled && button.textContent === '重新检查')`);
+    assert.equal(await evaluate(`document.querySelector('.account-chooser select').value`), alternate);
+    assert.deepEqual(await preparation(), expected);
+    await wait(`document.querySelector('.first-run-guide').textContent.includes('已选择游戏目录') && document.querySelector('.first-run-guide').textContent.includes('已选择可用离线档案')`);
+    await click('准备完成');
+    await wait(`document.querySelector('.first-run-reopen')`);
+    await writeFile(preparationRecord, JSON.stringify(expected));
+  }
+
   try {
     await wait(`document.querySelector('[data-status="connected"]') && !document.querySelector('.sidebar-toggle').disabled`);
     const secure = await evaluate(`(async()=>({node:typeof require==='undefined'&&typeof process==='undefined',handshake:await window.oucl.handshake()}))()`);
@@ -41,6 +117,12 @@ async function run(window) {
     if (pass === 2) {
       const current = await evaluate('window.oucl.getDesktop()'); assert.ok(current.ok); assert.equal(current.data.appearance.sidebarCollapsed, true); assert.equal(current.data.appearance.accent, '#407da0'); assert.equal(current.data.appearance.layout, 'profile-left'); assert.equal(current.data.drafts[0].title, '本地论坛验收');
       assert.ok(await evaluate(`document.querySelector('.brand-custom-icon')?.src.startsWith('data:image/png')`));
+      const expected = JSON.parse(await readFile(preparationRecord, 'utf8'));
+      assert.deepEqual(await preparation(), expected);
+      await wait(`document.querySelector('.first-run-reopen') && document.querySelector('.account-chooser select').value === ${JSON.stringify(expected.accounts[0].accountId)}`);
+      await click('打开启动准备');
+      await wait(`document.querySelector('.first-run-guide').textContent.includes('已选择游戏目录') && document.querySelector('.first-run-guide').textContent.includes('已选择可用离线档案')`);
+      assert.equal(rootChoosers, 0);
       await page('论坛'); await wait(`document.querySelector('.forum-topics').textContent.includes('本地论坛验收')`);
       await writeFile(path.join(evidence, 'restart.png'), (await window.webContents.capturePage()).toPNG());
     } else {
@@ -102,14 +184,15 @@ async function run(window) {
       window.setSize(720, 560); await pause(150);
       for (const caption of pages) { await page(caption); assert.equal(await evaluate(`document.documentElement.scrollWidth>innerWidth`), false, `SMALL_PAGE_${caption}`); }
       await writeFile(path.join(evidence, 'small.png'), (await window.webContents.capturePage()).toPNG());
+      await verifyPreparation();
     }
-    await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ timestamp: new Date().toISOString(), status: 'PASS', pass, externalNetwork: 0, mockedRequests: requests.length, nativeChoosers, secureRenderer: true, persistedReopen: pass === 2,
-      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow'] : ['appearance-and-icon-reopen', 'forum-draft-reopen'] }, null, 2));
+    await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ timestamp: new Date().toISOString(), status: 'PASS', pass, externalNetwork: 0, mockedRequests: requests.length, nativeChoosers, rootChoosers, injectedAccountFailures, secureRenderer: true, persistedReopen: pass === 2,
+      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow', 'guide-account-focus-and-root-registration', 'guide-read-failure-preserves-selected-account', 'guide-retry-clears-error-and-preserves-root-account-settings'] : ['appearance-and-icon-reopen', 'forum-draft-reopen', 'guide-reopens-with-existing-root-and-offline-profiles'] }, null, 2));
     console.log(`INTERACTION_PASS_${pass}`); clearTimeout(timeout); window.close(); app.quit();
   } catch (error) { console.error(error); failed = true; clearTimeout(timeout); await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ status: 'FAIL', error: error.message }, null, 2)); window.close(); app.quit(); }
 }
 void (async () => {
-  await mkdir(evidence, { recursive: true }); await writeFile(fixtureFile, icon); app.setPath('userData', profile);
+  await mkdir(evidence, { recursive: true }); await mkdir(fixtureRoot, { recursive: true }); await writeFile(fixtureFile, icon); app.setPath('userData', profile);
   app.on('ready', () => { session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (_details, callback) => callback({ cancel: true })); });
   app.on('browser-window-created', (_event, window) => { window.webContents.setBackgroundThrottling(false); window.webContents.once('did-finish-load', () => { void run(window); }); });
   require('./electron-network-fixture.cjs')(globalThis.fetch);
