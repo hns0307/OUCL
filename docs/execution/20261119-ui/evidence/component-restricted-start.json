@@ -1,0 +1,8 @@
+{
+  "status": "NOT_RUN",
+  "fixture": true,
+  "productionMain": false,
+  "checks": [],
+  "reason": "Electron exited before fixture result; no DOM or screenshots verified.",
+  "exitCode": 2147483651
+}

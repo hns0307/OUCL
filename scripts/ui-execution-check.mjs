@@ -5,7 +5,7 @@ import path from 'node:path';
 import electron from 'electron';
 
 const directory = path.resolve(process.env.OUCL_TEST_ROOT ?? 'tmp/execution-ui');
-const evidence = path.resolve('docs/execution/20261115/evidence');
+const evidence = path.resolve(process.env.OUCL_UI_EVIDENCE ?? path.join(directory, 'evidence'));
 await mkdir(directory, { recursive: true }); await mkdir(evidence, { recursive: true });
 await mkdir(path.join(directory, 'profile'), { recursive: true });
 await build({ entryPoints: ['scripts/ui-execution-fixture.tsx'], bundle: true, platform: 'browser', format: 'esm', target: 'es2023',
@@ -61,6 +61,17 @@ app.whenReady().then(async () => {
   await check('instance identity and session remain public facts', '(() => { const value=document.querySelector(".instance-overview").textContent; return value.includes("00000000-0000-4000-8000-000000000002") && value.includes("游戏运行中") && value.includes("Java"); })()');
   await click('.instance-overview button', '打开任务中心');
   await check('task entry invokes existing callback', 'document.querySelector("#fixture-actions").textContent.includes("tasks")');
+  await evaluate('document.querySelector("#fixture-switch-instance").click()');
+  const newTask = '.instance-overview [data-task-id="00000000-0000-4000-8000-000000000005"][data-task-state="running"]';
+  for (let attempt = 0; attempt < 50 && !await evaluate('Boolean(document.querySelector(' + JSON.stringify(newTask) + '))'); attempt++) await wait(50);
+  await check('second instance owns the visible running task', 'Boolean(document.querySelector(' + JSON.stringify(newTask) + '))');
+  await evaluate('document.querySelector("#fixture-release-overview").click()');
+  await wait(100);
+  const oldTask = '.instance-overview [data-task-id="00000000-0000-4000-8000-000000000003"]';
+  await check('late first-instance result cannot replace the second instance task', 'Boolean(document.querySelector(' + JSON.stringify(newTask) + ') && !document.querySelector(' + JSON.stringify(oldTask) + '))');
+  await click('.instance-overview button', '刷新概览');
+  for (let attempt = 0; attempt < 50 && !await evaluate('Boolean(document.querySelector(".instance-overview [role=alert]"))'); attempt++) await wait(50);
+  await check('failed query reports unavailable while preserving the observed game session', '(() => { const overview = document.querySelector(".instance-overview"); return Boolean(overview.querySelector("[data-overview-connection=unavailable]")) && overview.textContent.includes("游戏运行中") && !overview.querySelector("[data-task-state]"); })()');
   await window.webContents.executeJavaScript('document.activeElement?.blur()');
   for (const [name,width,height] of [['wide',1100,1500],['narrow',480,1900]]) {
     window.setContentSize(width,height); await wait(150);

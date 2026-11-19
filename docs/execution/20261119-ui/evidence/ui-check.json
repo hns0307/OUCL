@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "fixture": true,
+  "productionMain": false,
+  "network": false,
+  "checks": [
+    {
+      "name": "real components rendered",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "text and color controls update escaped JSON",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "select output focuses and selects full JSON",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "first-run skip closes optional guide",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "first-run guide reopens",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "retry invokes fixture callback",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "instance identity and session remain public facts",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "task entry invokes existing callback",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "second instance owns the visible running task",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "late first-instance result cannot replace the second instance task",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "failed query reports unavailable while preserving the observed game session",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "wide viewport has no horizontal overflow",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "narrow viewport has no horizontal overflow",
+      "pass": true,
+      "detail": true
+    }
+  ]
+}

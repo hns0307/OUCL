@@ -4,7 +4,7 @@
 
 | 项目 | 当前有证据的状态 | 入口 |
 | --- | --- | --- |
-| N1—N4 | 实例与任务 UI、引导、外观、渐变文字已实现 | [首轮报告](20261115/REPORT.md) |
+| N1—N4 | 实例与任务 UI、引导、外观、渐变文字已实现，组件及产品窗口补验通过 | [首轮报告](20261115/REPORT.md) · [Electron 补验](20261119-ui/REPORT.md) |
 | N5 | 隔离基础设施与空配置入口已实现；真实站点未确定 | [持续执行记录](20261115/CONTINUATION.md) |
 | N6 只读 | 签名与所有权差异预览已接线；真实来源/公钥为空 | [持续执行记录](20261115/CONTINUATION.md) |
 | N6 内部事务 | v2 发行、SQLite 权威、journal/receipt、原生文件工厂与限定恢复已实现 | [内部协议](../contracts/DISTRIBUTION_EXECUTION_INTERNAL.md)、[真实 authority 恢复](20261117/AUTHORITY.md) |

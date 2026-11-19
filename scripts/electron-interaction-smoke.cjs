@@ -28,7 +28,11 @@ async function run(window) {
   const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
   async function wait(expression) { const end = Date.now() + 12000; while (!await evaluate(`Boolean(${expression})`)) { if (Date.now() > end) throw new Error(`CONDITION:${expression}`); await pause(35); } }
   const click = text => evaluate(`[...document.querySelectorAll('button')].find(e=>e.textContent.trim()===${JSON.stringify(text)}).click()`);
-  const page = async index => { await evaluate(`document.querySelectorAll('.top-nav button')[${index}].click()`); await pause(90); };
+  const pages = ['首页', '下载', '论坛', '工具箱', '设置'];
+  const page = async caption => {
+    await evaluate(`[...document.querySelectorAll('.top-nav button')].find(button => button.textContent.trim() === ${JSON.stringify(caption)}).click()`);
+    await wait(`document.querySelector('.page-heading h1')?.textContent.trim() === ${JSON.stringify(caption)}`);
+  };
   const input = async (selector, value) => { await evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});Object.getOwnPropertyDescriptor(e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(e,${JSON.stringify(value)});e.dispatchEvent(new Event('input',{bubbles:true}));})()`); await pause(70); };
   try {
     await wait(`document.querySelector('[data-status="connected"]') && !document.querySelector('.sidebar-toggle').disabled`);
@@ -37,11 +41,17 @@ async function run(window) {
     if (pass === 2) {
       const current = await evaluate('window.oucl.getDesktop()'); assert.ok(current.ok); assert.equal(current.data.appearance.sidebarCollapsed, true); assert.equal(current.data.appearance.accent, '#407da0'); assert.equal(current.data.appearance.layout, 'profile-left'); assert.equal(current.data.drafts[0].title, '本地论坛验收');
       assert.ok(await evaluate(`document.querySelector('.brand-custom-icon')?.src.startsWith('data:image/png')`));
-      await page(2); await wait(`document.querySelector('.forum-topics').textContent.includes('本地论坛验收')`);
+      await page('论坛'); await wait(`document.querySelector('.forum-topics').textContent.includes('本地论坛验收')`);
       await writeFile(path.join(evidence, 'restart.png'), (await window.webContents.capturePage()).toPNG());
     } else {
       await evaluate(`document.querySelector('.sidebar-toggle').click()`); await wait(`document.querySelector('.app-shell').classList.contains('sidebar-collapsed') && !document.querySelector('.sidebar-toggle').disabled`);
-      await page(3);
+      await wait(`document.querySelector('.first-run-guide')`);
+      await click('暂时跳过');
+      await wait(`document.querySelector('.first-run-reopen')`);
+      await click('打开启动准备');
+      await wait(`document.querySelector('.first-run-guide')`);
+      await evaluate(`document.querySelector('.first-run-steps button').click()`);
+      await wait(`document.querySelector('.settings-launch')`);
       await input('.memory-slider-label input[type=range]', '4096'); assert.equal(await evaluate(`document.querySelector('.memory-exact input').value`), '4096');
       await evaluate(`document.querySelector('.settings-launch .save-row button').click()`); await wait(`document.querySelector('.settings-launch .success').textContent==='已保存'`);
       assert.equal((await evaluate('window.oucl.getSettings()')).data.memoryMiB, 4096);
@@ -63,24 +73,38 @@ async function run(window) {
       await writeFile(path.join(evidence, 'dark-preview.png'), (await window.webContents.capturePage()).toPNG());
       await evaluate(`document.querySelector('.sidebar-toggle').click()`); await wait(`document.querySelector('.app-shell').classList.contains('sidebar-collapsed') && !document.querySelector('.sidebar-toggle').disabled`);
       await evaluate(`document.querySelector('.appearance-settings .save-row .text-button').click()`); await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#407da0'`);
-      await page(2); assert.equal(await evaluate(`document.querySelectorAll('.top-nav button')[2].textContent`), '论坛'); await click('写帖子');
+      await click('恢复默认外观');
+      await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#50765a'`);
+      assert.equal((await evaluate('window.oucl.getDesktop()')).data.appearance.accent, '#407da0');
+      await evaluate(`document.querySelector('.appearance-settings').focus()`);
+      window.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'Escape' });
+      window.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Escape' });
+      await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#407da0'`);
+      await page('工具箱');
+      await input('.toolbox-panel > textarea', '甲👨‍👩‍👧‍👦乙');
+      await click('选择输出');
+      const output = await evaluate(`(() => { const el = document.querySelector('.toolbox-output'); return { json: JSON.parse(el.value), selected: document.activeElement === el && el.selectionStart === 0 && el.selectionEnd === el.value.length }; })()`);
+      assert.deepEqual(output.json.extra.map(item => item.text), ['甲', '👨‍👩‍👧‍👦', '乙']);
+      assert.ok(output.selected);
+      await writeFile(path.join(evidence, 'toolbox.png'), (await window.webContents.capturePage()).toPNG());
+      await page('论坛'); await click('写帖子');
       await input('.forum-reader input', '本地论坛验收'); await input('.forum-reader textarea', '这是一份实际持久化草稿。\n不会发送到后台。'); await click('保存本地草稿');
       await wait(`document.querySelector('.forum-topics').textContent.includes('本地论坛验收') && !document.querySelector('.forum-reader textarea')`);
       await input('.forum-toolbar input', '不存在的标题'); await wait(`document.querySelectorAll('.forum-topics .resource-row').length===0`); await input('.forum-toolbar input', '');
       await wait(`document.querySelectorAll('.forum-topics .resource-row').length===1`); await evaluate(`document.querySelector('.forum-topics .resource-row').click()`); await wait(`document.querySelector('.forum-body')?.textContent.includes('实际持久化草稿')`);
       await writeFile(path.join(evidence, 'forum.png'), (await window.webContents.capturePage()).toPNG());
-      await page(1); await evaluate(`document.querySelectorAll('.download-tabs button')[1].click()`); await wait(`document.querySelector('.resource-monogram img') !== null`);
+      await page('下载'); await evaluate(`document.querySelectorAll('.download-tabs button')[1].click()`); await wait(`document.querySelector('.resource-monogram img') !== null`);
       const drop = await evaluate(`(()=>{const row=document.querySelector('.resource-results .resource-row');const target=document.querySelector('.resource-detail');const data=new DataTransfer();row.dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer:data}));target.dispatchEvent(new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:data}));target.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:data}));row.dispatchEvent(new DragEvent('dragend',{bubbles:true,dataTransfer:data}));return data.getData('application/x-oucl-resource')})()`); assert.equal(drop, 'abcdefgh');
       await wait(`document.querySelector('.resource-detail h2')?.textContent==='Fixture Project'`);
       const before = await evaluate(`Number(document.querySelector('.resource-splitter').getAttribute('aria-valuenow'))`); await evaluate(`document.querySelector('.resource-splitter').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}))`); assert.equal(await evaluate(`Number(document.querySelector('.resource-splitter').getAttribute('aria-valuenow'))`), before - 5);
       await writeFile(path.join(evidence, 'downloads.png'), (await window.webContents.capturePage()).toPNG());
-      await page(0); await writeFile(path.join(evidence, 'home.png'), (await window.webContents.capturePage()).toPNG());
+      await page('首页'); await writeFile(path.join(evidence, 'home.png'), (await window.webContents.capturePage()).toPNG());
       window.setSize(720, 560); await pause(150);
-      for (let i = 0; i < 4; i++) { await page(i); assert.equal(await evaluate(`document.documentElement.scrollWidth>innerWidth`), false, `SMALL_PAGE_${i}`); }
+      for (const caption of pages) { await page(caption); assert.equal(await evaluate(`document.documentElement.scrollWidth>innerWidth`), false, `SMALL_PAGE_${caption}`); }
       await writeFile(path.join(evidence, 'small.png'), (await window.webContents.capturePage()).toPNG());
     }
     await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ timestamp: new Date().toISOString(), status: 'PASS', pass, externalNetwork: 0, mockedRequests: requests.length, nativeChoosers, secureRenderer: true, persistedReopen: pass === 2,
-      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'four-pages-small-window-no-overflow'] : ['appearance-and-icon-reopen', 'forum-draft-reopen'] }, null, 2));
+      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow'] : ['appearance-and-icon-reopen', 'forum-draft-reopen'] }, null, 2));
     console.log(`INTERACTION_PASS_${pass}`); clearTimeout(timeout); window.close(); app.quit();
   } catch (error) { console.error(error); failed = true; clearTimeout(timeout); await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ status: 'FAIL', error: error.message }, null, 2)); window.close(); app.quit(); }
 }
@@ -89,5 +113,5 @@ void (async () => {
   app.on('ready', () => { session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (_details, callback) => callback({ cancel: true })); });
   app.on('browser-window-created', (_event, window) => { window.webContents.setBackgroundThrottling(false); window.webContents.once('did-finish-load', () => { void run(window); }); });
   require('./electron-network-fixture.cjs')(globalThis.fetch);
-  require('../dist/main/index.cjs');
+  require(path.join(path.resolve(process.env.OUCL_BUILD_ROOT ?? 'dist'), 'main/index.cjs'));
 })().catch(error => { console.error(error); clearTimeout(timeout); app.exit(1); });
