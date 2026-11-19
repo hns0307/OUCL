@@ -97,6 +97,52 @@ async function run(window) {
     assert.equal(nativeChoosers, 3);
   }
 
+  async function verifyGradientTool() {
+    await page('工具箱');
+    const textSelector = '.toolbox-panel > textarea';
+    await input(textSelector, '甲👨‍👩‍👧‍👦乙');
+    await evaluate(`(() => {
+      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      const colors = document.querySelectorAll('.toolbox-colors input');
+      for (const [index, value] of [[0, '#ff0000'], [1, '#0000ff']]) {
+        const color = colors[index];
+        setValue.call(color, value);
+        color.dispatchEvent(new Event('input', { bubbles: true }));
+        color.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    })()`);
+    await click('选择输出');
+    const output = await evaluate(`(() => {
+      const el = document.querySelector('.toolbox-output');
+      return { value: el.value, selected: document.activeElement === el && el.selectionStart === 0 && el.selectionEnd === el.value.length };
+    })()`);
+    assert.deepEqual(JSON.parse(output.value).extra, [
+      { text: '甲', color: '#ff0000' }, { text: '👨‍👩‍👧‍👦', color: '#800080' }, { text: '乙', color: '#0000ff' },
+    ]);
+    assert.ok(output.selected);
+    await evaluate(`document.addEventListener('copy', event => {
+      // Verify Chromium routes the shortcut to the output while leaving the OS clipboard alone.
+      event.preventDefault();
+      const el = document.querySelector('.toolbox-output');
+      if (event.isTrusted && event.target === el) el.dataset.observedCopy = el.value.slice(el.selectionStart, el.selectionEnd);
+    }, { once: true, capture: true, passive: false })`);
+    window.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'C', modifiers: ['control'] });
+    window.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'C', modifiers: ['control'] });
+    await wait(`document.querySelector('.toolbox-output').dataset.observedCopy === ${JSON.stringify(output.value)}`);
+    await writeFile(path.join(evidence, 'toolbox.png'), (await window.webContents.capturePage()).toPNG());
+
+    const glyph = '👨‍👩‍👧‍👦';
+    await input(textSelector, glyph.repeat(256));
+    assert.equal(await evaluate(`JSON.parse(document.querySelector('.toolbox-output').value).extra.length`), 256);
+    await input(textSelector, glyph.repeat(257));
+    await wait(`document.querySelector('.toolbox-panel .form-error').textContent === '文字超过长度限制。'
+      && document.querySelector('.toolbox-output').value === '' && document.querySelector('.toolbox-panel button').disabled`);
+    await input(textSelector, '');
+    await wait(`document.querySelector('.toolbox-panel .form-error').textContent === '请输入文字。'`);
+    await input(textSelector, '恢复');
+    await wait(`!document.querySelector('.toolbox-panel .form-error') && JSON.parse(document.querySelector('.toolbox-output').value).extra.length === 2`);
+  }
+
   async function preparation() {
     const projection = await evaluate(`Promise.all([window.oucl.listRoots(), window.oucl.listAccounts(), window.oucl.getSettings()])`);
     for (const reply of projection) assert.ok(reply.ok, JSON.stringify(reply));
@@ -201,13 +247,7 @@ async function run(window) {
       window.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Escape' });
       await wait(`getComputedStyle(document.documentElement).getPropertyValue('--green').trim()==='#407da0'`);
       await verifyIconDialog(appearance);
-      await page('工具箱');
-      await input('.toolbox-panel > textarea', '甲👨‍👩‍👧‍👦乙');
-      await click('选择输出');
-      const output = await evaluate(`(() => { const el = document.querySelector('.toolbox-output'); return { json: JSON.parse(el.value), selected: document.activeElement === el && el.selectionStart === 0 && el.selectionEnd === el.value.length }; })()`);
-      assert.deepEqual(output.json.extra.map(item => item.text), ['甲', '👨‍👩‍👧‍👦', '乙']);
-      assert.ok(output.selected);
-      await writeFile(path.join(evidence, 'toolbox.png'), (await window.webContents.capturePage()).toPNG());
+      await verifyGradientTool();
       await page('论坛'); await click('写帖子');
       await input('.forum-reader input', '本地论坛验收'); await input('.forum-reader textarea', '这是一份实际持久化草稿。\n不会发送到后台。'); await click('保存本地草稿');
       await wait(`document.querySelector('.forum-topics').textContent.includes('本地论坛验收') && !document.querySelector('.forum-reader textarea')`);
@@ -226,7 +266,7 @@ async function run(window) {
       await verifyPreparation();
     }
     await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ timestamp: new Date().toISOString(), status: 'PASS', pass, externalNetwork: 0, mockedRequests: requests.length, nativeChoosers, rootChoosers, injectedAccountFailures, secureRenderer: true, persistedReopen: pass === 2,
-      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'icon-dialog-disables-appearance-controls-and-cancel-preserves-preview', 'invalid-icon-preserves-preview-and-persisted-appearance', 'toolbox-graphemes-and-output-selection', 'five-pages-small-window-no-overflow', 'guide-account-focus-and-root-registration', 'guide-read-failure-preserves-selected-account', 'guide-retry-clears-error-and-preserves-root-account-settings'] : ['appearance-and-icon-reopen', 'forum-draft-reopen', 'guide-reopens-with-existing-root-and-offline-profiles'] }, null, 2));
+      capabilities: secure.handshake.data.capabilities, bridgeMethods: await evaluate('Object.keys(window.oucl)'), verified: pass === 1 ? ['sidebar-collapse', 'memory-slider-save', 'collapsed-settings', 'palette-preview', 'native-icon-read-and-reencode-with-fixture-dialog', 'home-layout-keyboard-and-drag', 'dark-preview-preserved-during-sidebar-save', 'forum-draft-save-read-search', 'resource-own-icon-fixture', 'resource-card-drop', 'splitter-keyboard', 'first-run-skip-reopen-settings', 'default-appearance-preview-only', 'appearance-escape-cancels-preview', 'icon-dialog-disables-appearance-controls-and-cancel-preserves-preview', 'invalid-icon-preserves-preview-and-persisted-appearance', 'toolbox-graphemes-interpolation-and-output-selection', 'toolbox-keyboard-copy-routes-selected-json', 'toolbox-grapheme-limit-and-error-recovery', 'five-pages-small-window-no-overflow', 'guide-account-focus-and-root-registration', 'guide-read-failure-preserves-selected-account', 'guide-retry-clears-error-and-preserves-root-account-settings'] : ['appearance-and-icon-reopen', 'forum-draft-reopen', 'guide-reopens-with-existing-root-and-offline-profiles'] }, null, 2));
     console.log(`INTERACTION_PASS_${pass}`); clearTimeout(timeout); window.close(); app.quit();
   } catch (error) { console.error(error); failed = true; clearTimeout(timeout); await writeFile(path.join(evidence, `pass-${pass}.json`), JSON.stringify({ status: 'FAIL', error: error.message }, null, 2)); window.close(); app.quit(); }
 }
