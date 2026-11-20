@@ -120,7 +120,7 @@ export class LaunchService {
         if (!index || indexViews.length !== 1) throw new GameProcessError('NEEDS_RECOVERY');
         const indexId = indexViews[0]!.path.slice('indexes/'.length, -'.json'.length);
         const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.3.0' });
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.4.0' });
         await this.event(job, 'transferred'); this.check(job);
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,

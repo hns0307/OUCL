@@ -1,0 +1,9 @@
+{
+  "version": "0.4.0",
+  "output": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\release\\OUCL-0.4.0.exe",
+  "bytes": 492544,
+  "sha256": "191919aa6a713649e632a105e291badbf630ba75b5c2171cdb14e729d56c5c71",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "f8a373f77f54e4e388b11cafdb6bb41920247d3ac834f62796683ed21a2f080e"
+}

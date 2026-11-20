@@ -1,0 +1,124 @@
+{
+  "status": "PASS",
+  "outerExeExecuted": true,
+  "outerExit": 0,
+  "electronExit": 0,
+  "candidateSha256": "191919aa6a713649e632a105e291badbf630ba75b5c2171cdb14e729d56c5c71",
+  "appHash": "f8a373f77f54e4e388b11cafdb6bb41920247d3ac834f62796683ed21a2f080e",
+  "executable": "D:\\MC_start\\OUCL\\tmp\\release-0.4.0-smoke-5ee5f297\\OUCL-candidate.exe",
+  "profile": "D:\\MC_start\\OUCL\\tmp\\release-0.4.0-smoke-5ee5f297\\profile",
+  "application": "D:\\MC_start\\OUCL\\tmp\\release-0.4.0-smoke-5ee5f297\\OUCL.runtime\\app-f8a373f77f54e4e388b11cafdb6bb41920247d3ac834f62796683ed21a2f080e",
+  "runtimeRoot": "D:\\MC_start\\OUCL\\tmp\\release-0.4.0-smoke-5ee5f297\\OUCL.runtime",
+  "inspectorPid": 9048,
+  "applicationEntriesVerified": 11,
+  "runtimeFilesVerified": 73,
+  "externalNetwork": false,
+  "syntheticCatalog": true,
+  "visibilityHook": true,
+  "checks": [
+    {
+      "name": "actual app path is candidate bootstrap extraction",
+      "pass": true
+    },
+    {
+      "name": "isolated explicit profile used",
+      "pass": true
+    },
+    {
+      "name": "packaged window security unchanged",
+      "pass": true
+    },
+    {
+      "name": "renderer loaded from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "preload script parsed from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "packaged handshake advertises both initialized extensions",
+      "pass": true
+    },
+    {
+      "name": "packaged renderer has no Node globals",
+      "pass": true
+    },
+    {
+      "name": "packaged tools registry is empty and closed",
+      "pass": true
+    },
+    {
+      "name": "unknown tool refused",
+      "pass": true
+    },
+    {
+      "name": "arbitrary URL refused",
+      "pass": true
+    },
+    {
+      "name": "packaged pinned sources registry is empty",
+      "pass": true
+    },
+    {
+      "name": "empty source cannot scan or install",
+      "pass": true
+    },
+    {
+      "name": "close IPC confirms closed",
+      "pass": true
+    },
+    {
+      "name": "packaged preload exposes all five execution bridge methods",
+      "pass": true
+    },
+    {
+      "name": "packaged handshake does not advertise distribution execution",
+      "pass": true
+    },
+    {
+      "name": "unconfigured execution prepare fails closed",
+      "pass": true
+    },
+    {
+      "name": "unconfigured execution status fails closed",
+      "pass": true
+    },
+    {
+      "name": "unconfigured execution cancel fails closed",
+      "pass": true
+    },
+    {
+      "name": "unconfigured execution confirm fails closed",
+      "pass": true
+    },
+    {
+      "name": "unconfigured execution recover fails closed",
+      "pass": true
+    },
+    {
+      "name": "all five execution bridges reject invalid payloads",
+      "pass": true
+    },
+    {
+      "name": "packaged online tab displays unconfigured site",
+      "pass": true
+    },
+    {
+      "name": "packaged package tab displays unconfigured sources and keys",
+      "pass": true
+    },
+    {
+      "name": "wide packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "narrow packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "no additional product windows",
+      "pass": true
+    }
+  ]
+}
