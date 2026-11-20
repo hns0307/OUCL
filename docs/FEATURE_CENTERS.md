@@ -40,3 +40,5 @@ MSAL Node 7.2.1 和 skinview3d 3.4.2 使用 MIT 许可，Windows 打包附运行
 - 修正干净检出的临时目录缺失和启动恢复夹具的规划器导出。隔离临时目录下的 `pnpm check` 通过，共 1025 项，1021 通过、0 失败、4 跳过，类型检查、Lint 和 Windows 构建通过。
 - Electron 45 通过正式 IPC 匿名发现 LittleSkin 的 Yggdrasil API。可设置 `OUCL_SMOKE_SKIN_PROVIDER=https://littleskin.cn`，用当前构建运行 `scripts/electron-feature-centers.cjs` 复验。
 - 生产下载服务从官方发行页下载 Authlib-Injector 1.2.8 并通过固定 SHA-256 核验。MSAL 生成了带随机本机回环端口的 S256 PKCE 地址，取消流程通过。微软验证使用合成客户端标识且截断浏览器打开。
+- 复用既有验收缓存，在独立目录重新核验并物化 3641 个官方文件，随后启动 Minecraft 1.20.1 的真实离线 JVM。观测到方块贴图加载，正常关窗退出码为 0。Java 17 安装在中文目录，启动前探测已修复仅因其他属性的本地编码而误拒的问题。另一次实际安装在 190 秒验证时限内停在下载阶段，并已取消。
+- Java 路径修复后的最终 `pnpm check` 通过，共 1026 项，1022 通过、0 失败、4 跳过，类型检查、Lint 和 Windows 构建通过。

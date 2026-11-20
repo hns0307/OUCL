@@ -92,6 +92,24 @@ test('Java probe rejects nonzero exit, spawn errors and malformed UTF8 without e
   }
 });
 
+test('Java probe ignores local-code-page paths and strictly decodes recognized property values', async () => {
+  const pathProbe = new FakeJava();
+  const valid = mocked(pathProbe).probe(executable);
+  await turn();
+  pathProbe.stderr.write(Buffer.concat([Buffer.from(properties() + '    java.home = D:/'), Buffer.from([0xd6, 0xd0]), Buffer.from('/jdk\n')]));
+  pathProbe.finish();
+  assert.equal((await valid).major, 17);
+
+  const vendorProbe = new FakeJava();
+  const invalid = mocked(vendorProbe).probe(executable);
+  const rejection = assert.rejects(invalid, { code: 'INVALID_JAVA' });
+  await turn();
+  const [before, after] = properties().split('Oracle Corporation');
+  vendorProbe.stderr.write(Buffer.concat([Buffer.from(before!), Buffer.from([0xff]), Buffer.from(after!)]));
+  vendorProbe.finish();
+  await rejection;
+});
+
 test('Java probe rejects unselected paths and cancelled/invalid inspections before spawning', async () => {
   let starts = 0; const probe = new JavaProbe({ inspect: async () => { throw new Error('private-directory'); }, start: () => { starts++; return new FakeJava(); } });
   for (const file of ['java.exe', path.resolve('java.cmd'), executable + '\0']) await assert.rejects(probe.probe(file), { code: 'INVALID_JAVA' });

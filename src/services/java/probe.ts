@@ -29,6 +29,7 @@ export interface JavaProbeDependencies {
   start?: (file: string, args: readonly string[], options: JavaStartOptions) => JavaProbeProcess;
 }
 const MAX_OUTPUT = 64 * 1024;
+const PROPERTY = /^\s*([A-Za-z0-9_.]+)\s*=\s*(.*?)\s*$/;
 const PROPERTIES = new Set(['java.version', 'java.specification.version', 'java.vendor', 'os.arch', 'os.name', 'sun.arch.data.model']);
 
 /** Parses only explicit properties; banner words such as "64-Bit" cannot substitute for runtime architecture. */
@@ -36,7 +37,7 @@ export function parseJavaProperties(output: string): JavaProperties {
   if (typeof output !== 'string' || Buffer.byteLength(output) > MAX_OUTPUT) throw new JavaProbeError('OUTPUT_LIMIT');
   const values = new Map<string, string>();
   for (const line of output.split(/\r?\n/)) {
-    const match = /^\s*([A-Za-z0-9_.]+)\s*=\s*(.*?)\s*$/.exec(line);
+    const match = PROPERTY.exec(line);
     if (!match || !PROPERTIES.has(match[1]!)) continue;
     if (values.has(match[1]!)) throw new JavaProbeError('INVALID_JAVA');
     values.set(match[1]!, match[2]!);
@@ -107,7 +108,11 @@ export class JavaProbe {
         if (failure) { reject(failure); return; }
         if (code !== 0 || signal !== null) { reject(new JavaProbeError('PROBE_FAILED')); return; }
         try {
-          const output = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks));
+          // Java 8/17 on Windows can emit unrelated paths in the host code page. Select byte-preserving
+          // property lines first, then decode only the values that participate in the runtime check.
+          const lines = Buffer.concat(chunks).toString('latin1').split(/\r?\n/);
+          const selected = lines.filter(line => PROPERTIES.has(PROPERTY.exec(line)?.[1] ?? ''));
+          const output = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(selected.join('\n'), 'latin1'));
           resolve({ ...parseJavaProperties(output), executable });
         } catch (error) { reject(error instanceof JavaProbeError ? error : new JavaProbeError('INVALID_JAVA')); }
       });
