@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { planOfflineLaunch } from '../src/core/launch/plan.js';
+import { planLaunch, planOfflineLaunch } from '../src/core/launch/plan.js';
 import type { LaunchInput } from '../src/core/launch/plan.js';
 import { planGameLayout } from '../src/core/path/layout.js';
 import { resolveClientVersion } from '../src/core/version/resolve.js';
@@ -30,6 +30,23 @@ test('modern launch retains one argument per value, absolute Windows paths and i
   assert.equal(preview.includes('Game Folder'), false); assert.equal(preview.includes('Player One'), false); assert.equal(preview.includes(id), false);
   assert.equal(preview.includes('<redacted>'), true);
 });
+test('online launch separates Microsoft and Yggdrasil parameters and protects preview secrets', () => {
+  const input = sample();
+  input.version.gameArguments.push('--userType', '${user_type}');
+  const microsoft = planLaunch({ ...input, account: { ...input.account, kind: 'microsoft', clientId: id, accessToken: 'private-access', xuid: '12345' } });
+  assert.ok(microsoft.args.includes('msa') && microsoft.args.includes('private-access'));
+  assert.ok(!microsoft.redactedPreview.join(' ').includes('private-access'));
+  assert.equal(microsoft.args.filter(value => value.startsWith('-javaagent:')).length, 0);
+  const yggdrasil = { ...input.account, kind: 'yggdrasil' as const, accessToken: 'private-provider', agentPath: 'D:\\OUCL identity\\agent.jar',
+    apiRoot: 'https://skin.example.org/api/yggdrasil', prefetchedMetadata: 'e30=' };
+  const thirdParty = planLaunch({ ...input, account: yggdrasil });
+  assert.ok(thirdParty.args.includes('mojang'));
+  assert.deepEqual(thirdParty.args.filter(value => value.startsWith('-javaagent:')), ['-javaagent:' + yggdrasil.agentPath + '=' + yggdrasil.apiRoot]);
+  assert.ok(!thirdParty.redactedPreview.join(' ').includes(yggdrasil.apiRoot));
+  assert.ok(!thirdParty.redactedPreview.join(' ').includes(yggdrasil.accessToken));
+  assert.throws(() => planLaunch({ ...input, account: { ...yggdrasil, apiRoot: 'http://skin.example.org' } }), { code: 'INVALID_ACCOUNT' });
+});
+
 test('legacy JVM fallback and virtual assets use the supplied actual game directory', () => {
   const input = sample(); input.version.jvmArguments = []; input.java.major = 8; input.version.javaMajor = 8;
   input.version.gameArguments = ['--session', '${auth_session}', '--gameDir', '${game_directory}', '--assetsDir', '${game_assets}', '--userProperties', '${user_properties}'];

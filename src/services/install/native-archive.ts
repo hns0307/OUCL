@@ -305,3 +305,58 @@ export function inspectModArchiveBytes(bytes: Buffer, documents: readonly string
   }
   return { bytes: total, selected };
 }
+
+/** Inspects every entry in an imported web archive without extracting files. */
+export function inspectWebArchiveBytes(bytes: Buffer): {
+  names: string[]; packMetadata: Buffer | undefined; modrinthMetadata: Buffer | undefined;
+} {
+  const entries = parse(bytes, [], 4096);
+  checkPaths(entries);
+  let expanded = 0;
+  const names: string[] = [];
+  let packMetadata: Buffer | undefined;
+  let modrinthMetadata: Buffer | undefined;
+  for (const entry of entries) {
+    if (entry.directory) continue;
+    expanded += entry.size;
+    if (expanded > 256 * 1024 ** 2) limit();
+    const metadata = entry.name === 'pack.mcmeta' || entry.name === 'modrinth.index.json';
+    if (metadata && entry.size > 1024 ** 2) limit();
+    const body = unpack(entry);
+    names.push(entry.name);
+    if (entry.name === 'pack.mcmeta') packMetadata = body;
+    if (entry.name === 'modrinth.index.json') modrinthMetadata = body;
+  }
+  if (!names.length) bad();
+  return { names, packMetadata, modrinthMetadata };
+}
+
+/** Withdraws only the selected bounded documents from one strictly verified ZIP. */
+export async function readVerifiedArchiveEntries(archive: SelectedArchiveInput,
+  select: (name: string, size: number) => boolean, maximumBytes: number): Promise<Array<{ name: string; body: Buffer }>> {
+  try {
+    if (!path.isAbsolute(archive.file) || !/^[a-f0-9]{64}$/.test(archive.sha256)
+      || !Number.isSafeInteger(archive.size) || archive.size < 1 || archive.size > MAX_ARCHIVE
+      || !Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > MAX_ARCHIVE) bad();
+    await guardDirectory(path.dirname(archive.file));
+    const bytes = await readRegular(archive.file, MAX_ARCHIVE);
+    if (!bytes || bytes.length !== archive.size || createHash('sha256').update(bytes).digest('hex') !== archive.sha256)
+      throw new NativeArchiveError('HASH_MISMATCH');
+    const entries = parse(bytes, []); checkPaths(entries);
+    let expanded = 0; let selectedBytes = 0;
+    const chosen: Entry[] = [];
+    for (const entry of entries) {
+      expanded += entry.size;
+      if (expanded > MAX_TOTAL) limit();
+      if (entry.directory || entry.excluded || !select(entry.name, entry.size)) continue;
+      selectedBytes += entry.size;
+      if (selectedBytes > maximumBytes || chosen.length >= 257) limit();
+      chosen.push(entry);
+    }
+    return chosen.map(entry => ({ name: entry.name, body: unpack(entry) }));
+  } catch (error) {
+    if (error instanceof NativeArchiveError) throw error;
+    if (hasCode(error, 'UNSAFE_PATH')) unsafe();
+    throw error;
+  }
+}

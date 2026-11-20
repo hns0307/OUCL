@@ -11,7 +11,7 @@ import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../
 import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
 import { handleResources } from '../ipc/resources.js';
 import { ensureChildDirectory } from '../services/install/instance-files.js';
-import { app, BrowserWindow, dialog, ipcMain, session, shell, net } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session, shell, net, safeStorage } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -49,7 +49,26 @@ import { ProfileService } from '../services/launch/profiles.js';
 import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '../shared/contracts/profiles.js';
 import { handleProfiles } from '../ipc/profiles.js';
 import { profileDispatcher } from '../ipc/profiles-adapter.js';
-import { LaunchService } from '../services/launch/service.js';
+import { LaunchService, LaunchServiceError } from '../services/launch/service.js';
+import type { LaunchIdentityResolver } from '../services/launch/service.js';
+import { GameProcessService } from '../services/launch/process.js';
+import { MicrosoftAccounts } from '../services/auth/microsoft-accounts.js';
+import { MicrosoftOAuth } from '../services/auth/microsoft-oauth.js';
+import { MicrosoftError, MicrosoftMinecraftApi } from '../services/auth/microsoft-api.js';
+import type { SecretAdapter } from '../services/auth/secret-adapter.js';
+import { ONLINE_ACCOUNTS_CAPABILITY } from '../shared/contracts/online-accounts.js';
+import { registerOnlineAccounts } from './online-accounts.js';
+import { SkinService } from '../services/skin/service.js';
+import { SKIN_CAPABILITY, SKIN_CHANNELS, SkinContractError } from '../shared/contracts/skin.js';
+import { handleSkin } from '../ipc/skin.js';
+import { registerElectronWebExtensions } from './web-extensions.js';
+import type { WebExtensionRuntime } from './web-extensions.js';
+import { WEB_EXTENSIONS_CAPABILITY } from '../shared/contracts/web-extensions.js';
+import { prepareMrpackImport } from '../services/packs/mrpack-import.js';
+import { WebError } from '../services/web/errors.js';
+import { createMultiplayerService, registerMultiplayerIpc } from './multiplayer.js';
+import type { MultiplayerService } from '../services/multiplayer/service.js';
+import { MULTIPLAYER_CAPABILITY } from '../shared/contracts/multiplayer.js';
 import { JavaRuntimeService, isJavaMetadataUrl } from '../services/java/runtime.js';
 import { GameAdapter } from '../ipc/game-adapter.js';
 import { handleGame } from '../ipc/game.js';
@@ -105,6 +124,59 @@ import type { DistributionPreviewAdapter } from '../ipc/distribution-preview.js'
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
+let microsoftAccounts: MicrosoftAccounts | undefined;
+let skinCenter: SkinService | undefined;
+let accountsFetch: typeof fetch | undefined;
+let webExtensions: WebExtensionRuntime | undefined;
+let multiplayer: MultiplayerService | undefined;
+
+const accountSecrets: SecretAdapter = {
+  async encrypt(text) {
+    if (!await safeStorage.isAsyncEncryptionAvailable()
+      || process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text') throw new MicrosoftError('STORAGE');
+    return safeStorage.encryptStringAsync(text);
+  },
+  async decrypt(bytes) {
+    if (!await safeStorage.isAsyncEncryptionAvailable()
+      || process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text') throw new MicrosoftError('STORAGE');
+    return (await safeStorage.decryptStringAsync(bytes)).result;
+  },
+};
+
+const resolveOnlineLaunch: LaunchIdentityResolver = async (accountId, signal) => {
+  try {
+    // A registry read failure for one provider does not disable the other providers.
+    const microsoft = microsoftAccounts;
+    const skin = skinCenter;
+    const microsoftEntry = microsoft && (await microsoft.list().catch(() => [])).some(item => item.accountId === accountId);
+    if (microsoft && microsoftEntry) {
+      const resolved = await microsoft.resolveLaunch(accountId, signal);
+      if (!resolved) throw new LaunchServiceError('AUTH_REAUTH');
+      const { epoch, ...identity } = resolved;
+      return { identity: { ...identity, kind: 'microsoft' }, verify: async () => epoch === await microsoft.epoch(accountId) };
+    }
+    if (skin) {
+      const resolved = await skin.resolveLaunch(accountId, signal);
+      if (resolved) {
+        const { revision, ...identity } = resolved;
+        return { identity: { ...identity, kind: 'yggdrasil' }, verify: async () => {
+          if (!await skin.verifyLaunchAgent(identity.agentPath)) throw new LaunchServiceError('AUTH_PROVIDER_UNAVAILABLE');
+          return revision === await skin.accountRevision(accountId);
+        } };
+      }
+    }
+  } catch (error) {
+    if (signal.aborted) throw new LaunchServiceError('CANCELLED');
+    if (error instanceof LaunchServiceError) throw error;
+    if (error instanceof MicrosoftError) {
+      if (error.code === 'NO_LICENSE') throw new LaunchServiceError('AUTH_NO_LICENSE');
+      if (error.code === 'NO_PROFILE') throw new LaunchServiceError('AUTH_NO_PROFILE');
+      if (error.code === 'REAUTH' || error.code === 'ACCESS_DENIED') throw new LaunchServiceError('AUTH_REAUTH');
+    }
+    if (error instanceof SkinContractError && ['AUTH_EXPIRED', 'AUTH_FAILED'].includes(error.code)) throw new LaunchServiceError('AUTH_REAUTH');
+    throw new LaunchServiceError('AUTH_PROVIDER_UNAVAILABLE');
+  }
+};
 const onlineToolAdapters = new Map<number, OnlineToolsAdapter>();
 const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
 let distributionRuntime: DistributionRuntime | undefined;
@@ -128,10 +200,15 @@ function revokeExtensions(id: number, documentGone = true): void {
   const tools = onlineToolAdapters.get(id); onlineToolAdapters.delete(id);
   void tools?.dispose().catch(() => { console.warn(JSON.stringify({ level: 'warn', event: 'tool-cleanup-failed' })); });
   distributionAdapters.get(id)?.dispose(); distributionAdapters.delete(id);
-  if (documentGone) distributionExecutionOwners.revoke(id);
+  if (documentGone) {
+    void webExtensions?.closeOwner(id).catch(() => {});
+    microsoftAccounts?.cancelSignIn();
+    distributionExecutionOwners.revoke(id);
+  } else { webExtensions?.hideOwner(id); }
 }
 /** Native dialogs never appear beneath an attached remote view. */
 async function closeOnlineView(id: number): Promise<void> {
+  webExtensions?.hideOwner(id);
   const tools = onlineToolAdapters.get(id); if (tools) await tools.handle('tools:close', { contractVersion: 1, requestId: randomUUID(), payload: {} }, () => sessions.has(id), randomUUID());
 }
 let desktop: DesktopService | undefined; let desktopImages: DesktopImages | undefined;
@@ -182,7 +259,7 @@ function createWindow(): BrowserWindow {
   window.webContents.once('destroyed', () => { revokeExtensions(id); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) revokeExtensions(id); });
   window.webContents.on('render-process-gone', () => { revokeExtensions(id); });
-  window.on('hide', () => { revokeExtensions(id, false); });
+  window.on('hide', () => { revokeExtensions(id, false); void multiplayer?.leave().catch(() => {}); });
   window.webContents.once('destroyed', () => { sessions.delete(id); fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
   window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
   window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
@@ -207,6 +284,13 @@ else void app.whenReady().then(async () => {
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
     const networkFetch = createDesktopFetch(options => net.request(options));
     distributionFetch = networkFetch;
+    accountsFetch = networkFetch;
+    const identityDirectory = path.join(app.getPath('userData'), 'identity');
+    const clientId = process.env.OUCL_MICROSOFT_CLIENT_ID?.trim();
+    delete process.env.OUCL_MICROSOFT_CLIENT_ID;
+    microsoftAccounts = new MicrosoftAccounts(path.join(identityDirectory, 'microsoft'), accountSecrets,
+      new MicrosoftOAuth(clientId, url => shell.openExternal(url)), new MicrosoftMinecraftApi(networkFetch));
+    skinCenter = new SkinService({ directory: path.join(identityDirectory, 'skin'), secrets: accountSecrets, openExternal: url => shell.openExternal(url) });
     profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient(networkFetch));
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
     if (portableGameDirectory) {
@@ -227,11 +311,37 @@ else void app.whenReady().then(async () => {
     await service.initialize(); installer = service;
     instanceFolders = new InstanceFolderService(storage);
     loaders = new LoaderService(loaderClient, service);
-    launches = new LaunchService(storage, profiles, service, undefined, undefined, processorJava); await launches.initialize();
+    const gameProcesses = new GameProcessService();
+    launches = new LaunchService(storage, profiles, service, gameProcesses, undefined, processorJava, resolveOnlineLaunch);
+    await launches.initialize();
+    if (process.platform === 'win32' && process.arch === 'x64') multiplayer = createMultiplayerService({
+      dataDirectory: path.join(app.getPath('userData'), 'multiplayer'), games: gameProcesses,
+      roomProcessPath: path.join(__dirname, 'oucl-room-process.exe'), archiveWorkerPath: path.join(__dirname, 'multiplayer-archive.cjs'),
+    });
     launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
     const repository = storage;
     gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
     const resourceService = new ResourceService(storage, service, new ModrinthClient(networkFetch)); await resourceService.initialize(); resources = resourceService;
+    try {
+      webExtensions = await registerElectronWebExtensions({
+        metadataDirectory: metadata, archiveWorker: path.join(__dirname, '../workers/web-archive.cjs'),
+        trustedSender, storage, resources: resourceService, transport: networkFetch,
+        installPack: async (source, displayName, authorize) => {
+          const destination = await storage?.readInstallation();
+          if (!destination) throw new WebError('INSTANCE_CHANGED');
+          const pack = await prepareMrpackImport(source, {
+            dataDirectory: destination.data.dataDirectory, transferResource: service.transferResource.bind(service), transport: networkFetch,
+          });
+          const current = await storage?.readInstallation();
+          if (!current || current.revision !== destination.revision || current.data.rootId !== destination.data.rootId) throw new WebError('INSTANCE_CHANGED');
+          if (!authorize()) throw new WebError('INVALID_SENDER');
+          return service.createFromPack(randomUUID(), {
+            rootId: destination.data.rootId, mcVersionId: pack.mcVersionId, displayName, isolation: 'on',
+            ...(pack.loader ? { loader: pack.loader } : {}),
+          }, pack);
+        },
+      });
+    } catch { console.warn(JSON.stringify({ level: 'warn', event: 'web-extensions-unavailable' })); }
     // A damaged or newer Mod record must not disable existing launch/install capabilities.
     try {
       const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
@@ -294,8 +404,14 @@ else void app.whenReady().then(async () => {
     });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
   if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls, distributionObservation);
+  registerMultiplayerIpc(() => multiplayer, trustedSender);
+  registerOnlineAccounts(trustedSender, () => microsoftAccounts, async () => (await skinCenter?.listAccounts() ?? []).map(item => ({
+    accountId: item.accountId, kind: 'yggdrasil', gameName: item.gameName, displayName: item.providerName + ' · ' + item.gameName,
+    uuid: item.uuid, ready: item.ready,
+  })), () => accountsFetch);
+  for (const channel of SKIN_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleSkin(channel, input, trustedSender(event), randomUUID(), skinCenter));
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(distributionRuntime ? [DISTRIBUTION_EXECUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(distributionRuntime ? [DISTRIBUTION_EXECUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(microsoftAccounts ? [ONLINE_ACCOUNTS_CAPABILITY] : []), ...(skinCenter ? [SKIN_CAPABILITY] : []), ...(webExtensions ? [WEB_EXTENSIONS_CAPABILITY] : []), ...(multiplayer ? [MULTIPLAYER_CAPABILITY] : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
   });
   for (const channel of ONLINE_TOOLS_CHANNELS) ipcMain.handle(channel, async (event, input: unknown) => {
     const owner = BrowserWindow.fromWebContents(event.sender);
@@ -442,7 +558,10 @@ app.on('before-quit', event => {
   if (exiting) return;
   event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
   void (async () => {
+    await multiplayer?.leave();
     if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
+    microsoftAccounts?.close();
+    await Promise.all([skinCenter?.close(), webExtensions?.close(), multiplayer?.close()]);
     await distributionExecutionOwners.close();
     await Promise.all([...onlineToolAdapters.values()].map(adapter => adapter.dispose())); onlineToolAdapters.clear();
     for (const adapter of distributionAdapters.values()) await adapter.close(); distributionAdapters.clear();

@@ -530,3 +530,7 @@
 2026-11-19 统一验收入口见根 docs/execution/20261119-coordination/ACCEPTANCE.md。候选、N5、N6 三组已独立复核，固定整合包原缺参数的两项另跑通过。产品代码和真实配置无变动，授权范围不变。
 
 2026-11-19 并行补验已收口：N5 CDN 真实 Chromium 隔离 6 项通过；N6 仅在隔离编译注入合成配置，真实 Electron 主进程、预加载、界面确认、任务订阅、重启回执和两库原生落盘均验证通过。类型、lint、构建通过。产品源码与候选沿用现有快照，真实配置保持空置。详见根 docs/execution/20261119-coordination/ACCEPTANCE.md。
+
+## 2026-11-20 四系统增量明确启动
+
+用户在《OUCL 综合功能开发｜最终执行指令》授权四个功能域、必要依赖、IPC、非破坏性存储及内部架构调整，随后明确回复“Please implement the plan.”。本次以 G2 实施系统浏览器 PKCE 与加密账号、Yggdrasil 皮肤站与固定摘要的 Agent、独立沙箱 WebContentsView 与经确认导入、EasyTier 无 TUN 的 Minecraft 单端口房间。依赖与配置见[四系统说明](../../docs/FEATURE_CENTERS.md)。外部账号访问、费用、公网部署、发布、校方授权继续按原约束。

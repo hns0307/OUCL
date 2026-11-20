@@ -21,12 +21,22 @@ import { InstanceOverview } from './InstanceOverview.js';
 import { InstanceFolders } from './InstanceFolders.js';
 import { FirstRunGuide } from './FirstRunGuide.js';
 import { ToolsWorkspace } from './ToolsWorkspace.js';
+import { SkinCenter } from './SkinCenter.js';
+import { WebExtensions } from './WebExtensions.js';
+import { MultiplayerCenter } from './MultiplayerCenter.js';
+import { OnlineAccountsPanel } from './OnlineAccountsPanel.js';
 import { overviewSession } from './instance-overview.js';
 
 const NAV: { id: Page; label: keyof typeof MESSAGES }[] = [{ id: 'home', label: 'uiHome' }, { id: 'downloads', label: 'uiDownloads' }, { id: 'announcements', label: 'uiForum' }, { id: 'tools', label: 'uiToolbox' }, { id: 'settings', label: 'uiSettings' }];
 type DownloadTab = 'minecraft' | 'mod' | 'resourcepack' | 'shader' | 'library';
+const TOOLS_NAV = [
+  ['workspace', 'uiToolbox'], ['skin', 'uiSkinCenter'], ['web', 'uiWebCenter'], ['accounts', 'uiAccountCenter'], ['multiplayer', 'uiMultiplayerCenter'],
+] as const;
+type ToolPage = typeof TOOLS_NAV[number][0];
 /** Desktop shell, sharing real profiles, instances and task state across persistent pages. */
 export function App() {
+  const [toolPage, setToolPage] = useState<ToolPage>('workspace');
+  const [skinDraft, setSkinDraft] = useState<Uint8Array>();
   const { status, setStatus } = useConnection(); const state = useLauncher(); const desktop = useDesktop();
   const appearance = desktop.preview ?? desktop.snapshot.appearance;
   useEffect(() => { void desktop.load(); }, [desktop.load]);
@@ -51,6 +61,7 @@ export function App() {
     return () => { clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
   }, [state.rootId, state.refreshGame]);
   const accountsFocus = useRef<HTMLDivElement>(null);
+  const openCenter = (center: ToolPage): void => { setToolPage(center); state.setPage('tools'); };
   const sessions = useGameSessions(has('game.v1'), state.rootId);
   const account = state.accounts.find(a => a.accountId === state.accountId); const instance = state.instances.find(i => i.instanceId === state.instanceId);
   const loaderName = (id: string): string => { const value = state.instanceLoaders[id]; return !value || value.kind === 'vanilla' ? MESSAGES.uiVanilla : `${value.kind === 'fabric' ? 'Fabric' : value.kind === 'quilt' ? 'Quilt' : value.kind === 'forge' ? 'Forge' : 'NeoForge'} ${value.version}`; };
@@ -81,8 +92,8 @@ export function App() {
             {instance.state === 'ready' && has('instance-folders.v1') && <InstanceFolders key={`${state.rootId}:${instance.instanceId}`} instanceId={instance.instanceId} />}
           </> : !has('instances.v1') ? <p role="status">{status === 'connecting' ? MESSAGES.connecting : MESSAGES.rootsUnavailable}</p> : <div className="empty-state"><h3>{MESSAGES.uiStartHere}</h3><p>{MESSAGES.uiFirstInstall}</p><button onClick={() => { state.setPage(state.rootId ? 'downloads' : 'settings'); }}>{state.rootId ? MESSAGES.uiInstallGame : MESSAGES.chooseStorage}</button></div>}
         </section><button className="announcement-shortcut panel" style={{ order: appearance.homeOrder.indexOf('community') }} hidden={appearance.homeHidden.includes('community')} onClick={() => { state.setPage('announcements'); }}><span className="notice-icon">◇</span><span><strong>{MESSAGES.uiForum}</strong><small>{MESSAGES.uiForumLocal}</small></span><span>↗</span></button>
-      </section><aside className="panel character-card"><div className="character-top"><span className="eyebrow">PLAYER PROFILE</span><span className="tag">{MESSAGES.uiOffline}</span></div><div className="avatar-stage"><Avatar /><div className="avatar-grid" /></div>
-        <div className="player-name"><h2>{account?.displayName ?? MESSAGES.uiGuest}</h2><span>{account?.gameName ?? MESSAGES.uiChooseProfile}</span></div><div ref={accountsFocus} tabIndex={-1} className="accounts-focus"><AccountsPanel enabled={has('accounts.v1')} /></div>
+      </section><aside className="panel character-card"><div className="character-top"><span className="eyebrow">PLAYER PROFILE</span><span className="tag">{account?.kind === 'microsoft' ? MESSAGES.uiMicrosoft : account?.kind === 'yggdrasil' ? MESSAGES.uiYggdrasil : MESSAGES.uiOffline}</span></div><div className="avatar-stage"><Avatar /><div className="avatar-grid" /></div>
+        <div className="player-name"><h2>{account?.displayName ?? MESSAGES.uiGuest}</h2><span>{account?.gameName ?? MESSAGES.uiChooseProfile}</span></div><div ref={accountsFocus} tabIndex={-1} className="accounts-focus"><AccountsPanel enabled={has('accounts.v1')} onManage={() => { openCenter('accounts'); }} /></div>
         {instance?.state === 'ready' ? <LaunchControls key={`${state.rootId}:${instance.instanceId}`} instance={instance} accountId={state.accountId} current={overviewSession(instance.instanceId, sessions)} /> : <button className="primary" disabled>{MESSAGES.launchGame}</button>}
       </aside></div>{instance && <ModPanel key={`${state.rootId}:${instance.instanceId}`} instance={instance} enabled={has('mods.v1')} targetsEnabled={has('task-targets.v1')}
         rootId={state.rootId} maintenanceEnabled={has('mods-maintenance-preview.v1')} />}</div>
@@ -93,10 +104,25 @@ export function App() {
           kind={downloadTab === 'resourcepack' ? 'resourcepack' : downloadTab === 'shader' ? 'shader' : 'mod'} libraryOnly={downloadTab === 'library'} /></div>
         {state.page === 'downloads' && <TaskCenter key={state.rootId ?? 'no-root'} distributionExecutionEnabled={has('distribution.execute.v1')} />}
       </div>
-      {state.page === 'tools' && <ToolsWorkspace onlineEnabled={has('tools.isolated.v1')} distributionEnabled={has('distribution.preview.v1')}
-        executionEnabled={has('distribution.execute.v1')} rootId={state.rootId}
-        instanceId={instance?.state === 'ready' ? instance.instanceId : undefined}
-        onTasks={() => { state.setPage('downloads'); void state.refreshGame(); }} />}
+      {state.page === 'tools' && <>
+        <nav className="tabs feature-center-tabs" aria-label={MESSAGES.uiToolbox}>
+          {TOOLS_NAV.map(([id, label]) => <button type="button" key={id} aria-pressed={toolPage === id}
+            onClick={() => { setToolPage(id); }}>{MESSAGES[label]}</button>)}
+        </nav>
+        {toolPage === 'workspace' && <ToolsWorkspace onlineEnabled={has('tools.isolated.v1')} distributionEnabled={has('distribution.preview.v1')}
+          executionEnabled={has('distribution.execute.v1')} rootId={state.rootId}
+          instanceId={instance?.state === 'ready' ? instance.instanceId : undefined}
+          onTasks={() => { state.setPage('downloads'); void state.refreshGame(); }} />}
+        {toolPage === 'accounts' && <OnlineAccountsPanel enabled={has('accounts.online.v1')}
+          onOpenSkin={() => { setToolPage('skin'); }} onUseAccount={() => { state.setPage('home'); }} />}
+        {toolPage === 'skin' && (has('skin.v1') && window.oucl ? <SkinCenter bridge={window.oucl}
+          {...(skinDraft ? { draftPng: skinDraft } : {})} onAccountsChanged={state.refreshProfiles} />
+          : <p className="panel muted">{MESSAGES.unavailable}</p>)}
+        {toolPage === 'web' && <WebExtensions enabled={has('web-extensions.v1')} instances={state.instances}
+          onSkinDraft={png => { setSkinDraft(png); setToolPage('skin'); }} />}
+        {toolPage === 'multiplayer' && <MultiplayerCenter enabled={has('multiplayer.v1')}
+          instanceNames={Object.fromEntries(state.instances.map(item => [item.instanceId, item.displayName]))} />}
+      </>}
       <div hidden={state.page !== 'announcements'}><ForumPage /></div><div hidden={state.page !== 'settings'}><SettingsPage enabled={has('settings.v1')} rootsEnabled={has('roots.v1')} downloadsEnabled={has('downloads.v1')} /></div>
       <footer className="page-footer"><span>OUCL</span><span>{MESSAGES.uiFooter}</span><span>0.4.0</span></footer>
     </main></div>

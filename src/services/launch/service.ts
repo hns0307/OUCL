@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { totalmem } from 'node:os';
 import { controlTask, applyWorkerEvent } from '../../core/task/machine.js';
 import type { Execution, WorkerEvent } from '../../core/task/machine.js';
-import { planOfflineLaunch, LaunchPlanError } from '../../core/launch/plan.js';
+import { planLaunch, LaunchPlanError } from '../../core/launch/plan.js';
+import type { LaunchIdentity } from '../../core/launch/plan.js';
 import type { StorageClient } from '../workers/storage-client.js';
 import type { StoredTask } from '../storage/tasks.js';
 import type { InstallerService } from '../install/installer.js';
@@ -14,6 +15,9 @@ import type { GameSessions, LaunchFailure, SavedSession } from '../storage/game-
 import type { RecordEnvelope } from '../storage/records.js';
 import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import type { JavaRuntimeService } from '../java/runtime.js';
+
+export interface PreparedOnlineIdentity { identity: LaunchIdentity; verify(): Promise<boolean> }
+export type LaunchIdentityResolver = (accountId: string, signal: AbortSignal) => Promise<PreparedOnlineIdentity | undefined>;
 
 export interface LaunchRequest { instanceId: string; accountId: string; expectedRevision: number }
 interface Job { task: StoredTask; controller: AbortController; changes: Promise<void>; done: Promise<void>; commitUncertain?: boolean }
@@ -38,7 +42,7 @@ export class LaunchService {
   private idleListener?: () => void;
   constructor(private readonly storage: StorageClient, private readonly profiles: Pick<ProfileService, 'list'>,
     private readonly installer: Pick<InstallerService, 'prepareLaunch' | 'verifyPreparedLaunch' | 'inspectLaunchMods'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem,
-    private readonly javaRuntime?: Pick<JavaRuntimeService, 'ensure'>) {}
+    private readonly javaRuntime?: Pick<JavaRuntimeService, 'ensure'>, private readonly resolveOnline?: LaunchIdentityResolver) {}
 
   /** Normal restart preserves exited history. A previous running record cannot become an owned process by PID guesswork. */
   async initialize(): Promise<void> {
@@ -85,7 +89,7 @@ export class LaunchService {
       this.start(task, async job => {
         const accountData = await this.profiles.list(); const account = accountData.accounts.find(item => item.accountId === canonical.accountId);
         const rootSnapshot = await this.storage.readInstallation();
-        if (!account) throw new LaunchServiceError('AUTH_REQUIRED');
+        if (!account && !this.resolveOnline) throw new LaunchServiceError('AUTH_REQUIRED');
         if (2048 * 1024 ** 2 > this.physicalMemory() * 0.75) throw new LaunchPlanError('MEMORY_OUT_OF_RANGE');
         const record = await this.storage.readInstance(canonical.instanceId);
         if (!record || record.data.summary.rootId !== rootId || record.data.phase !== 'ready') throw new GameProcessError('LAUNCH_FAILED');
@@ -119,12 +123,20 @@ export class LaunchService {
         const indexViews = verified.prepared.plan.views.filter(view => view.area === 'assets' && view.artifactId === `sha1-${index?.sha1.toLowerCase()}` && /^indexes\/[^/]+\.json$/.test(view.path));
         if (!index || indexViews.length !== 1) throw new GameProcessError('NEEDS_RECOVERY');
         const indexId = indexViews[0]!.path.slice('indexes/'.length, -'.json'.length);
-        const plan = planOfflineLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.4.0' });
+        const online = account ? undefined : await this.resolveOnline?.(canonical.accountId, job.controller.signal);
+        const identity: LaunchIdentity | undefined = account ? { kind: 'offline', gameName: account.gameName, uuid: account.uuid } : online?.identity;
+        if (!identity) throw new LaunchServiceError('AUTH_REQUIRED');
+        this.check(job);
+        const verifyIdentity = async (): Promise<void> => {
+          await verify();
+          if (online && !await online.verify()) throw new LaunchServiceError('AUTH_REAUTH');
+        };
+        const plan = planLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account: identity, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.4.0' });
         await this.event(job, 'transferred'); this.check(job);
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,
-            finalize: async () => { await verify(); return plan; }, commitPermit: () => this.commitPermit(job), recheck: verify });
+            finalize: async () => { await verifyIdentity(); return plan; }, commitPermit: () => this.commitPermit(job), recheck: verifyIdentity });
         this.owned.add(session.sessionId); this.observe(session.sessionId);
         await this.save(task.taskId, current => ({ ...current!, spawned: true, snapshot: current!.snapshot.revision > session.revision ? current!.snapshot : session }));
         await this.event(job, 'committed');

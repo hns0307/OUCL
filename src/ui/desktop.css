@@ -311,3 +311,14 @@ h1{font-size:25px}
 .download-settings{scroll-margin-top:90px}
 .download-settings .setting-row>strong{flex:1;min-width:90px}
 .download-settings .setting-row select{width:min(55%,280px);margin-top:0}
+
+.feature-center-tabs { flex-wrap: wrap; margin-bottom: 18px; }
+.online-account-list { list-style: none; padding: 0; margin: 12px 0; }
+.online-account-list > li {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 12px; padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.online-account-list p { margin: 4px 0; }
+.online-account-list small { overflow-wrap: anywhere; }
+.online-account-textures { display: flex; align-items: center; gap: 16px; }
+.online-account-textures img { width: 120px; height: auto; image-rendering: pixelated; }

@@ -26,7 +26,8 @@ export interface LaunchFinalization {
   recheck(): Promise<void>;
   signal?: AbortSignal; sessionId?: string; initialRevision?: number;
 }
-interface LiveSession { snapshot: GameSession; child: ChildProcessWithoutNullStreams; ended: Promise<void>; lines: string[] }
+export interface OwnedLanSession { sessionId: string; instanceId: string; pid: number; detectedPort?: number }
+interface LiveSession { snapshot: GameSession; child: ChildProcessWithoutNullStreams; ended: Promise<void>; lines: string[]; lanPort?: number }
 interface Dependencies {
   probe?: Pick<JavaProbe, 'probe'>;
   start?: (executable: string, args: string[], options: { cwd: string; env: NodeJS.ProcessEnv; shell: false; windowsHide: true; stdio: 'pipe' }) => ChildProcessWithoutNullStreams;
@@ -91,6 +92,9 @@ export class GameProcessService {
     const capture = (stream: NodeJS.ReadableStream): void => {
       let pending = ''; let dropping = false; const decoder = new TextDecoder();
       const append = (line: string): void => {
+        const lan = /(?:^|\]: )(?:\[System\] \[CHAT\] )?(?:Local game hosted on port|Started serving on port|Started serving on) (\d{1,5})$/.exec(line);
+        const port = Number(lan?.[1]);
+        if (port >= 1 && port <= 65535) live.lanPort = port;
         // Keep only fixed milestones, never user names, tokens, device names, paths or arbitrary game text.
         const marker = /Setting user:/.test(line) ? 'game:identity-bound' : /Backend library:|LWJGL Version:/.test(line) ? 'game:renderer-initializing'
           : /Sound engine started/.test(line) ? 'game:sound-ready' : /Created:.*textures\/atlas\/blocks/.test(line) ? 'game:blocks-atlas-ready'
@@ -117,6 +121,22 @@ export class GameProcessService {
     } catch { await ended; throw new GameProcessError(live.snapshot.state === 'unknown' ? 'NEEDS_RECOVERY' : 'LAUNCH_FAILED'); }
     // Spawn is the commit boundary. Subsequent cancellation must use an explicit session stop.
     return { ...live.snapshot };
+  }
+
+  /** Main-process view for binding a LAN room to the particular owned JVM and its listener. */
+  getOwnedLanSession(sessionId: string): OwnedLanSession | undefined {
+    const live = this.live.get(sessionId);
+    const pid = live?.child.pid;
+    if (!live || live.snapshot.state !== 'running' || live.child.exitCode !== null || live.child.signalCode !== null || !pid) return;
+    return { sessionId, instanceId: live.snapshot.instanceId, pid, ...(live.lanPort ? { detectedPort: live.lanPort } : {}) };
+  }
+
+  /** Returns LAN candidates from active JVMs only, without enumerating other local processes. */
+  listOwnedLanSessions(): OwnedLanSession[] {
+    return Array.from(this.live.keys()).flatMap(sessionId => {
+      const live = this.getOwnedLanSession(sessionId);
+      return live ? [live] : [];
+    });
   }
 
   /** Returns only the service-owned session; no OS PID/path is exposed. */

@@ -2,6 +2,8 @@
 
 Minecraft Java版桌面启动器。本地最终交付见[交付说明](docs/delivery/20261115/DELIVERY.md)，文件目录见[项目目录索引](docs/PROJECT_LAYOUT.md)，提交历史见[提交整合索引](docs/delivery/20261115/COMMITS.md)。
 
+开发检出的新增功能与配置见[四系统说明](docs/FEATURE_CENTERS.md)。
+
 当前已接纳范围包括原版/Fabric/Quilt、Java与离线档案、实例隔离、可信下载/资源库、任务观察、Mod只读影响预览及固定整合包样本只读预览。固定样本入口不代表通用整合包导入安装。功能和已知限制以批准记录及最新交付说明为准。
 
 ## 使用

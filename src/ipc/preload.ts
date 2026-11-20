@@ -16,6 +16,10 @@ import { createOnlineToolsBridge } from './preload-online-tools.js';
 import { createDistributionBridge } from './preload-distribution.js';
 import { createDistributionExecutionBridge } from './preload-distribution-execution.js';
 import { createProfilesBridge } from './preload-profiles.js';
+import { createOnlineAccountsBridge } from './preload-online-accounts.js';
+import { createSkinBridge } from './preload-skin.js';
+import { createWebExtensionsBridge } from './preload-web-extensions.js';
+import { createMultiplayerBridge } from './preload-multiplayer.js';
 import { createGameBridge } from './preload-game.js';
 import { createLoadersBridge } from './preload-loaders.js';
 import { createInstancesV2Bridge } from './preload-instances-v2.js';
@@ -42,6 +46,10 @@ const bridge: LauncherBridge = Object.freeze({
   ...createInstanceBridge(),
   ...createTargetBridge(),
   ...createProfilesBridge(),
+  ...createOnlineAccountsBridge(),
+  ...createSkinBridge(),
+  ...createWebExtensionsBridge(ipcRenderer),
+  ...createMultiplayerBridge(),
   ...createGameBridge(),
   ...createResourcesBridge(),
   ...createDesktopBridge(),

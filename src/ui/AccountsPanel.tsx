@@ -4,7 +4,7 @@ import type { MessageKey } from '../shared/locales/messages.js';
 import { useLauncher } from './launcher-state.js';
 
 /** Account selection and creation share the real offline profile projection. */
-export function AccountsPanel({ enabled }: { enabled: boolean }) {
+export function AccountsPanel({ enabled, onManage }: { enabled: boolean; onManage?: () => void }) {
   const { accounts, accountId, selectAccount, refreshProfiles } = useLauncher();
   const [expanded, setExpanded] = useState(false); const [nickname, setNickname] = useState(''); const [gameName, setGameName] = useState('');
   const [saving, setSaving] = useState(false); const [error, setError] = useState<MessageKey>(); const request = useRef<string | undefined>(undefined);
@@ -17,8 +17,9 @@ export function AccountsPanel({ enabled }: { enabled: boolean }) {
     } catch { setError('unavailable'); } finally { setSaving(false); }
   }
   return <div className="account-chooser"><label className="field-label">{MESSAGES.accountSelect}<select disabled={!enabled} aria-label={MESSAGES.accountSelect} value={accountId ?? ''} onChange={e => { selectAccount(e.target.value || undefined); }}>
-    {!accounts.length && <option value="">{MESSAGES.accountEmpty}</option>}{accounts.map(a => <option key={a.accountId} value={a.accountId}>{a.displayName} · {a.gameName}</option>)}
+    {!accounts.length && <option value="">{MESSAGES.accountEmpty}</option>}{accounts.map(a => <option key={a.accountId} value={a.accountId} disabled={!a.ready}>{a.displayName} · {a.gameName || MESSAGES.uiMicrosoft}</option>)}
     </select></label><button className="text-button" disabled={!enabled} aria-expanded={expanded} onClick={() => { setExpanded(!expanded); }}>{MESSAGES.uiAddAccount}</button>
+    {onManage && <button className="text-button" onClick={onManage}>{MESSAGES.uiAccountCenter}</button>}
     {expanded && <form className="account-form" onSubmit={e => { e.preventDefault(); void create(); }}>
       <label>{MESSAGES.accountNickname}<input maxLength={80} value={nickname} onChange={e => { setNickname(e.target.value); request.current = undefined; }} /></label>
       <label>{MESSAGES.accountGameName}<input maxLength={16} value={gameName} onChange={e => { setGameName(e.target.value); request.current = undefined; }} /></label>

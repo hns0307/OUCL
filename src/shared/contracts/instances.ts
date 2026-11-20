@@ -19,7 +19,7 @@ export type InstanceChannel = typeof INSTANCE_CHANNELS[number];
 export type InstanceCode = AppError['code'] | 'OUT_OF_SCOPE' | 'ROOT_UNAVAILABLE' | 'VERSION_UNSUPPORTED' | 'NAME_CONFLICT'
   | 'DISK_FULL' | 'PERMISSION_DENIED' | 'TASK_STORE_UNAVAILABLE' | 'TASK_NOT_FOUND' | 'TASK_NOT_OWNED' | 'INVALID_TASK_STATE'
   | 'CANCEL_TOO_LATE' | 'CURSOR_EXPIRED' | 'SUBSCRIPTION_NOT_OWNED' | 'NEEDS_RECOVERY' | 'INSTALL_FAILED'
-  | 'LAUNCH_FAILED' | 'JAVA_INCOMPATIBLE' | 'AUTH_REQUIRED' | 'DEPENDENCY_MISSING' | 'MEMORY_OUT_OF_RANGE' | 'INSTANCE_BUSY' | 'REVISION_CONFLICT' | 'STOP_UNSUPPORTED' | 'CONFIRMATION_REQUIRED' | 'SESSION_NOT_FOUND' | 'SESSION_NOT_OWNED';
+  | 'LAUNCH_FAILED' | 'JAVA_INCOMPATIBLE' | 'AUTH_REQUIRED' | 'AUTH_REAUTH' | 'AUTH_NO_LICENSE' | 'AUTH_NO_PROFILE' | 'AUTH_PROVIDER_UNAVAILABLE' | 'DEPENDENCY_MISSING' | 'MEMORY_OUT_OF_RANGE' | 'INSTANCE_BUSY' | 'REVISION_CONFLICT' | 'STOP_UNSUPPORTED' | 'CONFIRMATION_REQUIRED' | 'SESSION_NOT_FOUND' | 'SESSION_NOT_OWNED';
 export interface InstanceError extends Omit<AppError, 'code'> { code: InstanceCode }
 export interface Page<T> { items: T[]; nextCursor?: string }
 export interface InstanceSummary {
@@ -92,6 +92,10 @@ const ERRORS: Record<InstanceCode, { category: AppError['category']; key: Messag
   LAUNCH_FAILED: { category: 'minecraft', key: 'launchFailed', retryable: true },
   JAVA_INCOMPATIBLE: { category: 'validation', key: 'javaIncompatible', retryable: false },
   AUTH_REQUIRED: { category: 'auth', key: 'chooseAccountFirst', retryable: false },
+  AUTH_REAUTH: { category: 'auth', key: 'onlineAccountReauth', retryable: false },
+  AUTH_NO_LICENSE: { category: 'auth', key: 'onlineAccountNoLicense', retryable: false },
+  AUTH_NO_PROFILE: { category: 'auth', key: 'onlineAccountNoProfile', retryable: false },
+  AUTH_PROVIDER_UNAVAILABLE: { category: 'auth', key: 'onlineAccountUnavailable', retryable: true },
   DEPENDENCY_MISSING: { category: 'minecraft', key: 'dependencyMissing', retryable: true },
   MEMORY_OUT_OF_RANGE: { category: 'validation', key: 'memoryInvalid', retryable: false },
   INSTANCE_BUSY: { category: 'biz', key: 'instanceBusy', retryable: true },

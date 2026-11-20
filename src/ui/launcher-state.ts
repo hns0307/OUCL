@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import type { AccountSummary, SettingsSummary } from '../shared/contracts/profiles.js';
+import type { OnlineAccountSummary } from '../shared/contracts/online-accounts.js';
+
+export type LauncherAccount = AccountSummary | OnlineAccountSummary;
 import type { InstanceSummary, TaskSnapshot } from '../shared/contracts/instances.js';
 import type { InstanceLoaderIdentity } from '../shared/contracts/instances-v2.js';
 import type { MessageKey } from '../shared/locales/messages.js';
@@ -8,7 +11,7 @@ import { rendererTaskReads, TaskQuerySession } from './task-query.js';
 export type Page = 'home' | 'downloads' | 'announcements' | 'settings' | 'tools';
 interface LauncherState {
   page: Page; setPage(page: Page): void; rootId: string | undefined; setRoot(rootId: string | undefined): void;
-  accounts: AccountSummary[]; accountId: string | undefined; selectAccount(id: string | undefined): void;
+  accounts: LauncherAccount[]; accountId: string | undefined; selectAccount(id: string | undefined): void;
   instances: InstanceSummary[]; instanceId: string | undefined; selectInstance(id: string): void;
   instanceLoaders: Record<string, InstanceLoaderIdentity>;
   tasks: TaskSnapshot[]; settings: SettingsSummary | undefined; error: MessageKey | undefined;
@@ -18,6 +21,7 @@ interface LauncherState {
   refreshProfiles(): Promise<void>; refreshGame(): Promise<void>; refreshSettings(): Promise<void>;
 }
 let generation = 0;
+let profileGeneration = 0;
 const pendingTaskReads = new Set<string>();
 let current: { rootId: string; session: TaskQuerySession; busy: boolean; generation: number } | undefined;
 /** Shared renderer projections survive navigation. IO remains behind the narrow preload bridge. */
@@ -32,8 +36,15 @@ export const useLauncher = create<LauncherState>((set, get) => ({
   instances: [], instanceLoaders: {}, instanceId: undefined, selectInstance: instanceId => { set({ instanceId }); }, tasks: [], settings: undefined, error: undefined,
   tasksComplete: false, instancesComplete: false, historyComplete: false, historyRestarted: false, historyBrowsing: false, gameListBusy: false, gameListError: undefined, taskQueryErrors: {},
   refreshProfiles: async () => {
-    if (!window.oucl) return; const result = await window.oucl.listAccounts();
-    if (result.ok) set({ accounts: result.data.items, accountId: result.data.items.some(a => a.accountId === get().accountId) ? get().accountId : result.data.items[0]?.accountId }); else set({ error: result.error.messageKey });
+    const bridge = window.oucl;
+    if (!bridge) return;
+    const revision = ++profileGeneration;
+    const [result, online] = await Promise.all([bridge.listAccounts(), bridge.onlineAccounts?.({ kind: 'list' }).catch(() => undefined)]);
+    if (revision !== profileGeneration) return;
+    if (!result.ok) { set({ error: result.error.messageKey }); return; }
+    const accounts: LauncherAccount[] = [...result.data.items, ...(online?.ok && online.data.kind === 'accounts' ? online.data.items : [])];
+    set({ accounts, accountId: accounts.some(account => account.ready && account.accountId === get().accountId)
+      ? get().accountId : accounts.find(account => account.ready)?.accountId });
   },
   refreshSettings: async () => { if (!window.oucl) return; const result = await window.oucl.getSettings(); if (result.ok) set({ settings: result.data }); else set({ error: result.error.messageKey }); },
   refreshGame: async () => {

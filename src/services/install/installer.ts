@@ -60,7 +60,13 @@ export class InstallerError extends Error {
 }
 export interface CreateInstanceInput { rootId: string; mcVersionId: string; displayName: string; isolation: InstanceSummary['isolation'] }
 export interface CreateLoaderInstanceInput extends CreateInstanceInput { loader: { kind: 'fabric' | 'quilt' | 'forge' | 'neoforge'; version: string } }
-type CreateInput = CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader'] };
+type CreateInput = CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader']; packSha256?: string };
+export interface AttachedPackFiles {
+  sha256: string;
+  stage?(signal: AbortSignal): Promise<void>;
+  publish(gameDirectory: string, signal: AbortSignal): Promise<void>;
+  dispose?(): Promise<void>;
+}
 function canonicalLoaderInput(input: CreateLoaderInstanceInput): CreateInput {
   return { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
     isolation: input.isolation, loader: { ...input.loader } };
@@ -251,6 +257,16 @@ export class InstallerService {
     const canonical: CreateInput = { rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName, isolation: input.isolation };
     return this.enqueue(requestId, canonical);
   }
+  /** Creates a new isolated instance with verified pack files committed before it can be launched. */
+  createFromPack(requestId: string, input: CreateInstanceInput & { loader?: CreateLoaderInstanceInput['loader'] },
+    pack: AttachedPackFiles): Promise<{ taskId: string }> {
+    if (input.isolation !== 'on' || !/^[a-f0-9]{64}$/.test(pack.sha256)) return Promise.reject(new InstallerError('INSTALL_FAILED'));
+    const canonical: CreateInput = {
+      rootId: input.rootId.toLowerCase(), mcVersionId: input.mcVersionId, displayName: input.displayName,
+      isolation: 'on', ...(input.loader ? { loader: { ...input.loader } } : {}), packSha256: pack.sha256,
+    };
+    return this.enqueue(requestId, canonical, pack);
+  }
   /** Admits fixed identities selected through the strict loader contract. */
   createLoader(requestId: string, input: CreateLoaderInstanceInput): Promise<{ taskId: string }> {
     if (input.isolation !== 'on') return Promise.reject(new InstallerError('INSTALL_FAILED'));
@@ -266,13 +282,13 @@ export class InstallerService {
     const task = await this.storage.findAccepted(canonical.rootId, requestId.toLowerCase(), 'install', digest);
     return task ? { taskId: task.taskId } : undefined;
   }
-  private enqueue(requestId: string, canonical: CreateInput): Promise<{ taskId: string }> {
+  private enqueue(requestId: string, canonical: CreateInput, pack?: AttachedPackFiles): Promise<{ taskId: string }> {
     const key = `${canonical.rootId}:${requestId.toLowerCase()}:${JSON.stringify(canonical)}`; const pending = this.admissions.get(key); if (pending) return pending;
-    const admitted = this.admissionTail.then(() => this.admit(requestId.toLowerCase(), canonical));
+    const admitted = this.admissionTail.then(() => this.admit(requestId.toLowerCase(), canonical, pack));
     this.admissionTail = admitted.then(() => {}, () => {}); this.admissions.set(key, admitted);
     void admitted.finally(() => { this.admissions.delete(key); }).catch(() => {}); return admitted;
   }
-  private async admit(requestId: string, input: CreateInput): Promise<{ taskId: string }> {
+  private async admit(requestId: string, input: CreateInput, pack?: AttachedPackFiles): Promise<{ taskId: string }> {
     if (this.closed) throw new InstallerError('INSTALL_FAILED');
     const runtime = await this.resources(); if (runtime.rootId !== input.rootId) throw new InstallerError('ROOT_UNAVAILABLE');
     // Validation happens before task acceptance; display names never enter directory paths.
@@ -305,7 +321,7 @@ export class InstallerService {
     await this.storage.writeInstance(instanceId, 0, record); await this.index(record.summary);
     const live: LiveInstall = { task, stage: 'metadata', controller: new AbortController(), done: Promise.resolve(), changes: Promise.resolve() };
     this.live.set(task.taskId, live);
-    live.done = this.perform(record, live, runtime).finally(() => { this.live.delete(task.taskId); });
+    live.done = this.perform(record, live, runtime, pack).finally(() => { this.live.delete(task.taskId); });
     void live.done.catch(() => {}); return { taskId: task.taskId };
   }
   private change(live: LiveInstall, transform: (current: Execution) => Execution): Promise<void> {
@@ -365,7 +381,7 @@ export class InstallerService {
       return transition.execution;
     }); live.controller.abort();
   }
-  private async perform(initial: InstanceRecord, live: LiveInstall, runtime: Runtime): Promise<void> {
+  private async perform(initial: InstanceRecord, live: LiveInstall, runtime: Runtime, pack?: AttachedPackFiles): Promise<void> {
     let record = initial;
     const check = (): void => { if (live.failure) throw live.failure; if (live.controller.signal.aborted) throw new InstallerError('CANCELLED'); };
     try {
@@ -414,6 +430,7 @@ export class InstallerService {
         record = await this.save(record, 'downloaded', { metadata: { ...metadata, loader: { ...prepared.loader, processors } } });
       }
       await this.event(live, { kind: 'progress', bytesDone: prepared.plan.totalBytes, bytesTotal: prepared.plan.totalBytes } as WorkerEvent);
+      if (pack?.stage) { await pack.stage(live.controller.signal); check(); }
       await this.event(live, { kind: 'transferred' }); live.stage = 'materializing';
       const work = this.fileTail.then(async () => {
         check(); const directories = await prepareInstanceDirectories(runtime.dataDirectory, record.summary, prepared);
@@ -469,6 +486,7 @@ export class InstallerService {
               metadataSha1: prepared.metadataSha1ByVersion[version.jarVersionId], document: JSON.parse(prepared.versionDocuments[version.jarVersionId]!) as unknown }
           });
         }
+        if (pack) { await pack.publish(directories.layout.gameDirectory, live.controller.signal); check(); }
         await this.event(live, { kind: 'verified' }); live.stage = 'committing';
         const ready: InstanceRecord = { ...record, phase: 'ready', summary: { ...record.summary, state: 'ready', revision: record.summary.revision + 1 } };
         await writeDerivedJson(directories.layout.instanceJson, { schemaVersion: 1, revision: ready.summary.revision, data: ready });
@@ -500,7 +518,7 @@ export class InstallerService {
       }
       if (record.phase === 'needsRecovery') { live.stage = 'needsRecovery'; throw new InstallerError('NEEDS_RECOVERY'); }
       live.stage = cancelled ? 'cancelled' : 'failed'; throw new InstallerError(cancelled ? 'CANCELLED' : 'INSTALL_FAILED');
-    }
+    } finally { await pack?.dispose?.().catch(() => {}); }
   }
   /** Cancels unfinished work, joins effects, then releases all object/hash/native owners before app shutdown. */
   close(): Promise<void> { this.closing ??= this.finishClose(); return this.closing; }

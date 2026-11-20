@@ -2,7 +2,7 @@ import { exactObject, UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { StorageError } from './files.js';
 import type { GameSession } from '../launch/process.js';
 
-export const LAUNCH_ERRORS = ['LAUNCH_FAILED', 'JAVA_INCOMPATIBLE', 'AUTH_REQUIRED', 'DEPENDENCY_MISSING', 'MEMORY_OUT_OF_RANGE', 'INSTANCE_BUSY', 'REVISION_CONFLICT', 'NEEDS_RECOVERY', 'CANCELLED', 'STOP_UNSUPPORTED', 'CONFIRMATION_REQUIRED'] as const;
+export const LAUNCH_ERRORS = ['LAUNCH_FAILED', 'JAVA_INCOMPATIBLE', 'AUTH_REQUIRED', 'AUTH_REAUTH', 'AUTH_NO_LICENSE', 'AUTH_NO_PROFILE', 'AUTH_PROVIDER_UNAVAILABLE', 'DEPENDENCY_MISSING', 'MEMORY_OUT_OF_RANGE', 'INSTANCE_BUSY', 'REVISION_CONFLICT', 'NEEDS_RECOVERY', 'CANCELLED', 'STOP_UNSUPPORTED', 'CONFIRMATION_REQUIRED'] as const;
 export type LaunchFailure = typeof LAUNCH_ERRORS[number];
 export interface SavedSession { rootId: string; taskId: string; snapshot: GameSession; spawned: boolean; stopTaskIds: string[]; errors?: { taskId: string; code: LaunchFailure }[] }
 export interface GameSessions { items: SavedSession[] }

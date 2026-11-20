@@ -1,9 +1,10 @@
-import type { AccountSummary, SettingsSummary } from '../shared/contracts/profiles.js';
+import type { SettingsSummary } from '../shared/contracts/profiles.js';
+import type { LauncherAccount } from './launcher-state.js';
 
 export interface FirstRunInput {
   settings: SettingsSummary | undefined;
   rootId: string | undefined;
-  accounts: readonly AccountSummary[];
+  accounts: readonly LauncherAccount[];
   accountId: string | undefined;
 }
 export interface FirstRunStatus {
