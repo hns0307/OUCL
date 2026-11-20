@@ -42,6 +42,7 @@ function planFor(instanceId: string, requestId: string): StoredModPlan {
     plan: { ...body, planId: modPlanDigest(body) }, status: 'preview' };
 }
 async function fixture() {
+  await mkdir(path.resolve('tmp'), { recursive: true });
   const base = await mkdtemp(path.resolve('tmp', 'acceptance-targets-')); const metadata = path.join(base, 'metadata');
   const games = path.join(base, 'games'); await mkdir(metadata); await mkdir(games);
   const client = await StorageClient.open(entry, metadata);

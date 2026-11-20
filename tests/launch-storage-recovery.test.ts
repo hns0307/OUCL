@@ -21,7 +21,7 @@ test('launch recovery preserves errors and bounds restart reconciliation', async
       plugins: [{ name: 'pure-launch-plan-double', setup(builder) {
         builder.onResolve({ filter: /core\/launch\/plan\.js$/ }, () => ({ path: 'plan', namespace: 'fixture' }));
         builder.onLoad({ filter: /.*/, namespace: 'fixture' }, () => ({
-          contents: 'export class LaunchPlanError extends Error {} ; export function planOfflineLaunch(){return {args:[],cwd:"fixture",executableRef:"fixture",redactedPreview:[]}}',
+          contents: 'export class LaunchPlanError extends Error {} ; export function planLaunch(){return {args:[],cwd:"fixture",executableRef:"fixture",redactedPreview:[]}}',
           loader: 'js',
         }));
       } }],

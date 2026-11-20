@@ -10,7 +10,8 @@ app.setPath('userData', mkdtempSync(path.join(testOutput, 'userdata-')));
 app.disableHardwareAcceleration();
 delete process.env.OUCL_MICROSOFT_CLIENT_ID;
 delete process.env.OUCL_PORTABLE_ROOT;
-const timeout = setTimeout(() => { console.error('FEATURE_CENTERS_TIMEOUT'); app.exit(1); }, 30_000);
+const skinProviderUrl = process.env.OUCL_SMOKE_SKIN_PROVIDER;
+const timeout = setTimeout(() => { console.error('FEATURE_CENTERS_TIMEOUT'); app.exit(1); }, 60_000);
 
 app.once('browser-window-created', (_event, window) => {
   window.webContents.once('did-finish-load', () => { void verify(window); });
@@ -60,6 +61,12 @@ async function verify(window) {
     const encrypted = await safeStorage.encryptStringAsync('OUCL secure fixture');
     assert.notEqual(encrypted.toString(), 'OUCL secure fixture');
     assert.equal((await safeStorage.decryptStringAsync(encrypted)).result, 'OUCL secure fixture');
+    if (skinProviderUrl) {
+      const skin = await window.webContents.executeJavaScript('window.oucl.skinDiscover(' + JSON.stringify(skinProviderUrl) + ')');
+      assert.equal(skin.ok, true, skin.ok ? undefined : skin.error.code);
+      assert.equal(new URL(skin.data.provider.apiRoot).protocol, 'https:');
+      console.log('FEATURE_CENTERS_SKIN_DISCOVERY_PASS', skin.data.provider.adapter);
+    }
     console.log('FEATURE_CENTERS_ELECTRON_PASS', process.versions.electron);
     clearTimeout(timeout);
     app.quit();

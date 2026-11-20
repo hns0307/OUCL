@@ -34,3 +34,9 @@ MSAL Node 7.2.1 和 skinview3d 3.4.2 使用 MIT 许可，Windows 打包附运行
 - 官方 EasyTier 2.6.4 Windows 二进制完成本机双进程加密会话，合成 Minecraft 状态请求成功往返。跨网 P2P、私有中继和双机实际进世界仍待实测。
 - 完整回归首轮在沙箱内报告 Windows worker 和分发原生用例失败。完整回归未通过，定向测试使用有权访问本机回环及硬链接的隔离环境。
 - Microsoft 真实账号登录和真实皮肤站登录、换肤及第三方账号游戏启动等待外部验收条件。
+
+## 2026-11-21 补验
+
+- 修正干净检出的临时目录缺失和启动恢复夹具的规划器导出。隔离临时目录下的 `pnpm check` 通过，共 1025 项，1021 通过、0 失败、4 跳过，类型检查、Lint 和 Windows 构建通过。
+- Electron 45 通过正式 IPC 匿名发现 LittleSkin 的 Yggdrasil API。可设置 `OUCL_SMOKE_SKIN_PROVIDER=https://littleskin.cn`，用当前构建运行 `scripts/electron-feature-centers.cjs` 复验。
+- 生产下载服务从官方发行页下载 Authlib-Injector 1.2.8 并通过固定 SHA-256 核验。MSAL 生成了带随机本机回环端口的 S256 PKCE 地址，取消流程通过。微软验证使用合成客户端标识且截断浏览器打开。
