@@ -132,7 +132,7 @@ export class LaunchService {
           if (online && !await online.verify()) throw new LaunchServiceError('AUTH_REAUTH');
         };
         const plan = planLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
-          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account: identity, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.4.0' });
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account: identity, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.5.0' });
         await this.event(job, 'transferred'); this.check(job);
         const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
           { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,

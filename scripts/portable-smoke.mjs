@@ -73,7 +73,7 @@ async function run(f, blocked = false) {
       }
     }
     assert.ok(value.handshake.ok && value.noNode && value.roots.ok);
-    for (const capability of ['roots.v1', 'catalog.v1', 'instances.v2', 'mods.v1']) assert.ok(value.handshake.data.capabilities.includes(capability));
+    for (const capability of ['roots.v1', 'catalog.v1', 'instances.v2', 'mods.v1', 'skin.v1', 'web-extensions.v1', 'accounts.online.v1', 'multiplayer.v1']) assert.ok(value.handshake.data.capabilities.includes(capability));
     if (blocked) {
       assert.deepEqual(value.roots.data.items, []);
       const refused = await evaluate('window.oucl.chooseRoot(crypto.randomUUID())');

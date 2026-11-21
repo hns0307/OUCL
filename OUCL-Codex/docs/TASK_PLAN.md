@@ -756,3 +756,5 @@ N5/N6 真实接入维持搁置。当前无其他已批准且未完成的独立�
 ## 2026-11-20 四系统综合开发
 
 用户明确要求实施已呈交计划。以本地 main 的 OUCL 0.4.0 提交 7e27469e 为基线，在独立检出按领域并行实施 Skin Center、Web Extensions、Microsoft Authentication 和 Multiplayer Connect。主协调统一账号、启动、浏览器/下载、联机生命周期和 UI 接入。真实外部验证条件与使用方式见[四系统说明](../../docs/FEATURE_CENTERS.md)。
+
+2026-11-21 交付 OUCL 0.5.0 本地 Windows EXE，四系统接口见[IPC 说明](../../docs/contracts/FEATURE_CENTERS_IPC.md)，构建摘要见[打包记录](../../docs/validation/BOOTSTRAP-0.5.0/package.json)。
