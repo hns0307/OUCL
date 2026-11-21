@@ -1,0 +1,27 @@
+# Preserve archived evidence bytes so SHA256 manifests remain valid after checkout.
+20261112-v4/evidence/** -text
+20261112-v5/evidence/** -text
+20261112-v6/evidence/** -text
+20261112-v7/evidence/** -text
+20261112-v8/evidence/** -text
+20261112-v9/evidence/** -text
+20261113-v10/evidence/** -text
+20261113-v11/evidence/** -text
+20261113-v12/evidence/** -text
+20261113-v13/evidence/** -text
+20261113-v14/evidence/** -text
+20261113-v15/evidence/** -text
+20261113-v16/evidence/** -text
+20261113-v17/evidence/** -text
+20261113-v18/evidence/** -text
+
+20261114-v19/evidence/** -text
+20261114-v20/evidence/** -text
+20261114-v21/evidence/** -text
+20261114-v22/evidence/** -text
+20261114-v23/evidence/** -text
+20261114-v24/evidence/** -text
+20261114-v25/evidence/** -text
+20261114-v26/evidence/** -text
+20261114-v28/evidence/** -text
+20261114-v30/evidence/** -text

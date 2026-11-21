@@ -1,0 +1,25 @@
+{
+  "lint": {
+    "command": "node ../../node_modules/eslint/bin/eslint.js tests/distribution-native-files.test.ts",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "typecheck": {
+    "command": "node ../../node_modules/typescript/bin/tsc --noEmit",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "nativeWrapper": {
+    "exitCode": 0,
+    "tests": 12,
+    "pass": 12,
+    "fail": 0,
+    "skip": 0,
+    "durationMs": 3168.0891,
+    "log": "native-wrapper-relative-v4-tests.log",
+    "sourceAndBinaryStatus": "status-relative-v4.json",
+    "scope": "Node wrapper, native factory, two transaction recovery checkpoints and packaged metadata loader; synthetic private metadata ports"
+  }
+}

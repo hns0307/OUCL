@@ -1,0 +1,60 @@
+{
+  "status": "LIMITED_RECEIPT_TIMING_PASS",
+  "previewId": "4019a8f4-18e5-4daa-9878-6a435a510440",
+  "cancelHeld": "2026-11-13T17:50:03.226Z",
+  "earlyB": "2026-11-13T17:50:04.373Z",
+  "delivered": "2026-11-13T17:50:05.726Z",
+  "postReleaseBDom": 0,
+  "exit": {
+    "time": "2026-11-13T17:50:27.192Z",
+    "monoMs": 81454.8653,
+    "kind": "exit",
+    "code": 0
+  },
+  "productsChecked": 7,
+  "sixJarsFiveTasksUnchanged": true,
+  "beforeScope": "snapshot taken after initial preview started; only cancellation stage protected",
+  "ownerMarkerAbsentAtAudit": true,
+  "screenshot": {
+    "file": "b-after-late.png",
+    "sha256": "cbf912bc4acfc8642384ae3f9a89f89df3810b4a8ff59793dddba8d389040988",
+    "visualReview": "coordinator supplied; not reinterpreted here"
+  },
+  "priorR5": [
+    {
+      "name": "c-r5-admission-v20",
+      "status": "TIMING_PASS_UI_CONSUMPTION_SEPARATE",
+      "held": "2026-11-13T17:40:16.756Z",
+      "delivered": "2026-11-13T17:40:19.267Z",
+      "earlyB": "2026-11-13T17:40:18.276Z",
+      "postReleaseBDom": 0,
+      "exit0": true,
+      "postReleaseDomVerdict": "PENDING_INDEPENDENT_DOM: deduplicated log has no new B snapshot after delivery; coordinator screenshot review is separate"
+    },
+    {
+      "name": "c-r5-status-v20",
+      "status": "PENDING_SWITCH_TOO_LATE",
+      "held": "2026-11-13T17:42:02.287Z",
+      "delivered": "2026-11-13T17:42:04.789Z",
+      "earlyB": null,
+      "postReleaseBDom": 0,
+      "exit0": true,
+      "postReleaseDomVerdict": "PENDING_INDEPENDENT_DOM: deduplicated log has no new B snapshot after delivery; coordinator screenshot review is separate"
+    },
+    {
+      "name": "c-r5-status-v20-r2",
+      "status": "TIMING_PASS_UI_CONSUMPTION_SEPARATE",
+      "held": "2026-11-13T17:44:06.223Z",
+      "delivered": "2026-11-13T17:44:08.729Z",
+      "earlyB": "2026-11-13T17:44:07.670Z",
+      "postReleaseBDom": 0,
+      "exit0": true,
+      "postReleaseDomVerdict": "PENDING_INDEPENDENT_DOM: deduplicated log has no new B snapshot after delivery; coordinator screenshot review is separate"
+    }
+  ],
+  "toolGap": "verify.cjs did not exist; prior MODULE_NOT_FOUND was an audit-tool gap, not product failure; empty verification.log retained",
+  "limits": [
+    "Deduplicated DOM may have no new B snapshot after release; coordinator screenshot consumption separate",
+    "Three finite R5 receipt cases only; not all cancellation or cross-instance timings"
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "command": "node ../../node_modules/eslint/bin/eslint.js tests/distribution-local-mod-domain.test.ts tests/helpers/distribution-local-domain-fixture.ts",
+  "exitCode": 0
+}

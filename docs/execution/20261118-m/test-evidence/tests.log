@@ -1,0 +1,15 @@
+✔ real registered root/instance queued views become completed after actual runner/native settlement (2063.9761ms)
+✔ real orphan task and malicious accepted-request binding cannot pass point lookup (461.917ms)
+✔ list/targets audit the full inventory before selected-instance filtering (442.7404ms)
+✔ genuinely accepted but not projected admission is unavailable rather than empty (643.0679ms)
+✔ startup barrier blocks metadata reads and failure remains unavailable (430.037ms)
+✔ real instance revision change and injected root revision drift invalidate target scope (484.0101ms)
+✔ concurrent point and inventory readers share work; close drains held actual read (477.1973ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5156.5104

@@ -1,30 +1,30 @@
-# OUCL
+# OUCL 0.5.0
 
-面向高校社团的 Minecraft Java 版桌面启动器项目。当前为**阶段1A原版下载与启动闭环开发**，已获用户明确批准持续实施。已交付版本/路径/任务策略、存储/对象/worker基础、目录选择和真实官方版本浏览；游戏文件下载及实际启动仍未完成。源码界面可登记固定游戏数据位置并浏览已校验目录，旧便携目录仍为此前空骨架。阶段0技术缺项与后续支持声明按实测保留。
+Minecraft Java版桌面启动器。本地最终交付见[交付说明](docs/delivery/20261115/DELIVERY.md)，文件目录见[项目目录索引](docs/PROJECT_LAYOUT.md)，提交历史见[提交整合索引](docs/delivery/20261115/COMMITS.md)。
 
-## 开始工作
+0.5.0 新增皮肤中心、网站中心、Microsoft 认证和联机中心。见[功能与配置](docs/FEATURE_CENTERS.md)和[接口说明](docs/contracts/FEATURE_CENTERS_IPC.md)。
 
-每次开发首先读取 [任务计划与阶段验收表](OUCL-Codex/docs/TASK_PLAN.md)，核对 [批准及待决记录](OUCL-Codex/docs/DECISIONS.md)，只执行当前获批阶段内的具体增量。接着阅读根级 [AGENTS.md](AGENTS.md) 和 [开发规范与交付流程](OUCL-Codex/docs/DEVELOPMENT.md)。
+当前已接纳范围包括原版/Fabric/Quilt、Java与离线档案、实例隔离、可信下载/资源库、任务观察、Mod只读影响预览及固定整合包样本只读预览。固定样本入口不代表通用整合包导入安装。功能和已知限制以批准记录及最新交付说明为准。
 
-## 安装、检查与运行
+## 使用
 
-使用Node 24.21+（24.x）与固定pnpm 12.3.4：
+运行交付文件 `OUCL-0.5.0.exe`。首次启动需联网准备并校验Electron运行时；Minecraft和Java按需另行准备。保留EXE旁生成的OUCL.runtime/OUCL.games。本地文件未签名、未发布。
+
+## 开发
+
+先读[任务计划](OUCL-Codex/docs/TASK_PLAN.md)、[真实批准](OUCL-Codex/docs/DECISIONS.md)、[协作规则](AGENTS.md)，再读[开发流程](OUCL-Codex/docs/DEVELOPMENT.md)。Node24.21+（24.x）、固定pnpm12.3.4：
 
 ```powershell
 pnpm install --frozen-lockfile
-pnpm exec install-electron
 pnpm check
 pnpm start
+pnpm package:exe
 ```
 
-本地风险实验：`pnpm test:spikes`；当前源码窗口验收：`pnpm smoke`；正式worker验证：`pnpm test:workers-runtime`；依赖检查：`pnpm audit --audit-level=high`、`pnpm audit:licenses`。受限工具环境可能阻止临时文件rename/junction或网络，实际结果与解决方式见报告，不关闭应用sandbox来让测试通过。
+## 资料导航
 
-`pnpm package:dir`生成新的`release/OUCL-0.0.0-win32-x64/OUCL.exe`便携目录，已存在同名目录则拒绝覆盖。`pnpm smoke:package`验证真实包默认入口。它是未签名工程预览，无安装器及游戏功能。
-
-证据：[骨架验证报告](docs/validation/P0-08/REPORT.md)、[工程ADR](docs/adr/ADR-003-engineering-baseline.md)、[阶段0实验报告](spikes/phase0-local/REPORT.md)、[依赖评估](docs/DEPENDENCIES.md)。
-
-## 项目资料
-
-完整导航见 [资料包说明](OUCL-Codex/README.md)。设计入口为 [阶段0提案](OUCL-Codex/docs/PROPOSAL_PHASE0.md)，存储细节见 [共享目录方案](OUCL-Codex/docs/STORAGE_LAYOUT.md)，审查理由见 [设计审查](OUCL-Codex/docs/DESIGN_REVIEW.md)。推荐方向已批准，历史草案与旧PENDING保留追溯；最新授权以DECISIONS末尾为准，未验证能力仍保持候选。
-
-现有资料保留在`OUCL-Codex/`，根`docs/`维护工程ADR、契约和验证证据；spikes不被src引用。原始文本与压缩包保留，不解压覆盖资料。
+- 工程契约：docs/contracts
+- 版本化验收：[索引](docs/acceptance/README.md)
+- 本地交付及完整提交记录：docs/delivery/20261115
+- 原始需求/决策/计划：OUCL-Codex/docs
+- 历史README与全部改动保留在Git历史，不复制平行计划。

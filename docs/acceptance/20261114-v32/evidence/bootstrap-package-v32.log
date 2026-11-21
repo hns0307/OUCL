@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0",
+  "output": "D:\\MC_start\\OUCL-remediation-20261114-r1\\release\\OUCL-0.3.0-acceptance-20261114-v32.exe",
+  "bytes": 410112,
+  "sha256": "ba24713708030ba8b96a65858305fb4593d6e3fb0b2afc0ef83e6a4258904be7",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "272cc737f3bade0a6b197f7907b21b2dce2acce854f1d4cc8347155fb3f62291"
+}

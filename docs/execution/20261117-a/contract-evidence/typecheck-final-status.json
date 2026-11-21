@@ -1,0 +1,4 @@
+{
+  "command": "node D:/MC_start/OUCL/node_modules/typescript/bin/tsc --noEmit",
+  "exitCode": 0
+}

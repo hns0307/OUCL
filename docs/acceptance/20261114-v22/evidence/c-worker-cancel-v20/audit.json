@@ -1,0 +1,54 @@
+{
+  "status": "PASS_SCOPED_WORKER_LIFECYCLE_INJECTION",
+  "readOnlyAudit": true,
+  "threadId": 2,
+  "oldRequestId": "40ec5ae3-074f-460f-9aac-d6d5e0c5ca8c",
+  "oldPreviewId": "63179957-2f58-4793-be8e-26c409162898",
+  "newRequestId": "fbcb4927-37a8-4f61-bc25-cd95d42f3c57",
+  "newPreviewId": "09e0d5c5-7f24-4102-8736-d29b02ea7a2a",
+  "evidence": {
+    "childLoadedUTC": "2026-11-13T17:46:10.910Z",
+    "workerSelectedLine": 8,
+    "originalModArchiveResultLine": 10,
+    "cancelReceivedLine": 60,
+    "readerTerminateLine": 61,
+    "workerExitLine": 62,
+    "terminatedWorkerExitCode": 1,
+    "cancelledReplyLine": 63,
+    "cancelledStatusLine": 65,
+    "cancelledDOMLine": 66,
+    "newAdmissionLine": 68,
+    "newCompletedStatusLine": 73,
+    "newCompletedDOMLine": 74,
+    "normalAppExitLine": 77,
+    "normalAppExitCode": 0
+  },
+  "timing": {
+    "workerSelectedMonoMs": 26618.9033,
+    "cancelReceivedMonoMs": 50934.1954,
+    "readerTerminateMonoMs": 50934.8396,
+    "workerExitMonoMs": 50937.2838,
+    "cancelledReplyMonoMs": 50938.0251,
+    "cancelSinceSelectedMs": 24315.2921,
+    "readerTimeoutMsUnchanged": 30000,
+    "exitBeforeCancelledReply": true
+  },
+  "checks": {
+    "privateChildLoaded": true,
+    "oneInjectedWorker": true,
+    "originalResultObservedBeforeCancel": true,
+    "cancelBeforeReaderTimeout": true,
+    "cancelThenTerminateThenExitThenCancelled": true,
+    "distinctNewRequestAndPreview": true,
+    "cancelledAndCompletedDOMObserved": true,
+    "allDOMNodeAbsent": true,
+    "sevenProductHashesMatch": true,
+    "sixJarsFiveTaskSnapshotsEqual": true
+  },
+  "ownerReleased": "Coordinator reported; no additional process or lock probing by auditor",
+  "limitations": [
+    "Worker exit1 follows deliberate original Reader termination, not natural scan success.",
+    "The genuine scan result was observed but thread exit was intentionally prevented by test keepalive.",
+    "Does not establish unmodified natural cancellation timing, network cancellation or R4 in-flight shutdown/restart."
+  ]
+}

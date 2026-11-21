@@ -1,0 +1,9 @@
+{
+  "version": "0.5.0",
+  "output": "release/OUCL-0.5.0.exe",
+  "bytes": 825344,
+  "sha256": "1ccc73d1d02ba6e88c5ef013ecf0e21f36d821489bfe88a9235947b60e6b095e",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "f6f0264e1704491bbdc5f2466d26da07b78ff30e71f51926aa9e454d665eb951"
+}

@@ -1,0 +1,119 @@
+▶ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain
+  ✖ missing (437.0957ms)
+  ✖ changed (404.0529ms)
+✖ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain (842.7805ms)
+▶ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed
+  ✖ future-envelope (399.1059ms)
+  ✖ future-plan (410.5454ms)
+  ✖ cross-root (404.4592ms)
+  ✖ request-mismatch (396.9553ms)
+  ✖ digest-mismatch (401.1656ms)
+  ✖ foreign-instance (406.2092ms)
+✖ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed (2420.2062ms)
+✔ acceptance real worker: controlled target-clock crossing 2000ms returns TIMEOUT and keeps worker alive (378.752ms)
+ℹ Real worker + SQLite; deterministic injected target-reader Date.now, not wall-clock performance evidence.
+✔ acceptance main adapter: real 2500ms deadline retains global pending slots and late replies do not publish snapshots (2505.8455ms)
+ℹ main real-timer deadline observed 2502ms; storage/projection are controlled doubles
+✖ acceptance main adapter: at most 16 bounded snapshots / 16MiB serialized payload and 256 cursor references (172.3232ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 2
+ℹ fail 11
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6472.5664
+
+✖ failing tests:
+
+test at .test-build\tests\acceptance-task-targets.test.js:92:54
+✖ missing (437.0957ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:99:34)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:92:46)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at .test-build\tests\acceptance-task-targets.test.js:92:54
+✖ changed (404.0529ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:99:34)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:92:46)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ future-envelope (399.1059ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at Worker.receive (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/src/services/workers/storage-client.js:75:27)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ future-plan (410.5454ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:135:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:107:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ cross-root (404.4592ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:135:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:107:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ request-mismatch (396.9553ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:135:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:107:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ digest-mismatch (401.1656ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:135:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:107:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\acceptance-task-targets.test.js:107:37
+✖ foreign-instance (406.2092ms)
+  TypeError: client.listTasks is not a function
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:135:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:107:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\acceptance-task-targets.test.js:227:1
+✖ acceptance main adapter: at most 16 bounded snapshots / 16MiB serialized payload and 256 cursor references (172.3232ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok((await adapter.handle(request(latestCursor), true, 16, randomUUID())).ok)
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v3-20261112/acceptance-results/b-targets/.test-build/tests/acceptance-task-targets.test.js:249:42)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

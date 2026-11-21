@@ -1,0 +1,127 @@
+[
+  {
+    "sha256": "a7b807209c050f4cd4512a08920f43afe56e1e57067e3069527dad6dc17db8f4",
+    "path": "c-r7-shell/harness.cjs",
+    "bytes": 8335
+  },
+  {
+    "sha256": "23fa193e2a53ae0662510a4e6429c1c94d1f44e1aa3658cb18c5b6cc65754086",
+    "path": "c-r7-shell/preparation.json",
+    "bytes": 2060
+  },
+  {
+    "sha256": "584c77245d5db2b4d7f09fac75ebbdb79ea9f06d14f210499a06d4721dc4b6a1",
+    "path": "c-r7-shell/prepare.log",
+    "bytes": 89
+  },
+  {
+    "sha256": "12f5634209652b993b1696e913650485c5fc14c0ce03aa9036941ced93abc8ae",
+    "path": "c-r7-shell/prepare.mjs",
+    "bytes": 1902
+  },
+  {
+    "sha256": "784672858325fdb4a7d1ae1ef25eb0a766a5f678e75cd01e08262c9a8fd67123",
+    "path": "c-r7-shell/README.md",
+    "bytes": 4362
+  },
+  {
+    "sha256": "c487ecd752c49f10ec00f9c701a6f64111e8facc3bfa64c264b41d5a80cff328",
+    "path": "c-r7-shell/test-preload.cjs",
+    "bytes": 1702
+  },
+  {
+    "sha256": "d04db03017e65bbf5a49c89a4b5cb706e637a90ab02493aa771f70b2571c4c2c",
+    "path": "c-r7-shell/untrusted.html",
+    "bytes": 331
+  },
+  {
+    "sha256": "a0805eaea5f55b2e50b52a754be196252f9bba494d7eba4091c1b36859000c0a",
+    "path": "c-r7-shell/harness-app/package.json",
+    "bytes": 93
+  },
+  {
+    "sha256": "7cd0e07bceff8b6a2b9505a4abd9b98f834f50863284c9feee4a777eb8e3bf56",
+    "path": "c-r7-shell/runtime/events.jsonl",
+    "bytes": 4828
+  },
+  {
+    "sha256": "08335c5d5ff7ec7efa81101f706e818f60618df9b0a87afc828dbc9581e19619",
+    "path": "c-r7-shell/runtime/process-exit.json",
+    "bytes": 81
+  },
+  {
+    "sha256": "7b88e338ac2aaccc4e7596d102e105451a4b937827572521a8811c886e6cb0ae",
+    "path": "c-r7-shell-r2/harness.cjs",
+    "bytes": 9306
+  },
+  {
+    "sha256": "a95c186a1d19564c4e167d49a1890a922bb69b0343b0cae3ea839193ba9a1960",
+    "path": "c-r7-shell-r2/preparation.json",
+    "bytes": 2060
+  },
+  {
+    "sha256": "584c77245d5db2b4d7f09fac75ebbdb79ea9f06d14f210499a06d4721dc4b6a1",
+    "path": "c-r7-shell-r2/prepare.log",
+    "bytes": 89
+  },
+  {
+    "sha256": "c4197128a16af3723b67c0bf8453432215d830309d569d08ec72e76f48263153",
+    "path": "c-r7-shell-r2/prepare.mjs",
+    "bytes": 1905
+  },
+  {
+    "sha256": "54a97fcdf1d251458e4c875fa9981a881af26b585a7e72a21df66ae0f0c971a2",
+    "path": "c-r7-shell-r2/README.md",
+    "bytes": 5356
+  },
+  {
+    "sha256": "c487ecd752c49f10ec00f9c701a6f64111e8facc3bfa64c264b41d5a80cff328",
+    "path": "c-r7-shell-r2/test-preload.cjs",
+    "bytes": 1702
+  },
+  {
+    "sha256": "d04db03017e65bbf5a49c89a4b5cb706e637a90ab02493aa771f70b2571c4c2c",
+    "path": "c-r7-shell-r2/untrusted.html",
+    "bytes": 331
+  },
+  {
+    "sha256": "237a66df573b181b97aa97b7a644b694b9d4afd3e36f5c190aef815f68140fb7",
+    "path": "c-r7-shell-r2/verification.json",
+    "bytes": 650
+  },
+  {
+    "sha256": "68bc11674bc9add1fb61103990cbc3baf7157421b4009529fbbae600e84cef65",
+    "path": "c-r7-shell-r2/verify.mjs",
+    "bytes": 3439
+  },
+  {
+    "sha256": "a0805eaea5f55b2e50b52a754be196252f9bba494d7eba4091c1b36859000c0a",
+    "path": "c-r7-shell-r2/harness-app/package.json",
+    "bytes": 93
+  },
+  {
+    "sha256": "00f6c09b0ad0ae5546873654ad6c45188946f3c738bf4cf7bad09dd4447a8b08",
+    "path": "c-r7-shell-r2/runtime/events.jsonl",
+    "bytes": 13450
+  },
+  {
+    "sha256": "ba7d4dd9ea2359d417bb7d0e3d8c60172f7a0959bff10b78251b0763ff03cb04",
+    "path": "c-r7-shell-r2/runtime/primary-window.png",
+    "bytes": 316533
+  },
+  {
+    "sha256": "4b97c1a972bca84f77159e62faca2445a5ba0bdc60e95c0a7089a82c4e503485",
+    "path": "c-r7-shell-r2/runtime/process-exit.json",
+    "bytes": 81
+  },
+  {
+    "sha256": "2265d815162072b665ef32f2e08dc8ce5ec48010fb55b18f84e41cae22519328",
+    "path": "c-r7-shell-r2/runtime/snapshot.json",
+    "bytes": 13391
+  },
+  {
+    "sha256": "3b6ab8118d7687f4d553a13b210df488d083b65908ca1872bae13c2acbdcf959",
+    "path": "c-r7-shell-r2/runtime/untrusted-window.png",
+    "bytes": 18955
+  }
+]

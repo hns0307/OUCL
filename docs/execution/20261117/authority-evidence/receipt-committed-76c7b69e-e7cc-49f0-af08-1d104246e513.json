@@ -1,0 +1,450 @@
+{
+  "synthetic": true,
+  "actualSQLite": true,
+  "actualOwnerGuard": true,
+  "actualNativeFactory": true,
+  "binary": {
+    "formatVersion": 1,
+    "file": "distribution-files.exe",
+    "sha256": "926d119d16ce203000f395dba01db92edd4d1e7187ce471703840c40f6bef559",
+    "bytes": 21504
+  },
+  "base": "D:\\MC_start\\OUCL\\tmp\\native-authority-20261117\\native-authority\\case-IfnERz",
+  "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+  "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+  "factoryBindings": [
+    {
+      "gameDir": "D:\\MC_start\\OUCL\\tmp\\native-authority-20261117\\native-authority\\case-IfnERz\\game",
+      "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+      "expectedRoot": null
+    },
+    {
+      "gameDir": "D:\\MC_start\\OUCL\\tmp\\native-authority-20261117\\native-authority\\case-IfnERz\\game",
+      "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+      "expectedRoot": {
+        "dev": "2162252404",
+        "ino": "1125899908394623"
+      }
+    },
+    {
+      "gameDir": "D:\\MC_start\\OUCL\\tmp\\native-authority-20261117\\native-authority\\case-IfnERz\\game",
+      "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+      "expectedRoot": {
+        "dev": "2162252404",
+        "ino": "1125899908394623"
+      }
+    }
+  ],
+  "facts": {
+    "before": {
+      "journal": {
+        "revision": 4,
+        "data": {
+          "formatVersion": 2,
+          "plan": {
+            "formatVersion": 1,
+            "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+            "rootId": "76d288a6-7755-43d4-bd80-c54d489ef891",
+            "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+            "instanceRevision": 1,
+            "sourceId": "authority-fixture-source",
+            "packageId": "authority-fixture-pack",
+            "packageVersion": "1",
+            "sequence": 1,
+            "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405",
+            "manifest": {
+              "formatVersion": 1,
+              "packageId": "authority-fixture-pack",
+              "packageVersion": "1",
+              "target": {
+                "minecraft": "1.20.1",
+                "javaMajor": 17,
+                "loader": "vanilla",
+                "loaderVersion": null
+              },
+              "operations": [
+                {
+                  "kind": "add",
+                  "area": "mods",
+                  "path": "authority.jar",
+                  "artifactId": "synthetic-artifact",
+                  "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1",
+                  "size": 34
+                }
+              ]
+            }
+          },
+          "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+          "leaseToken": "fe79f0ec-b23e-48ca-93f8-3273288ff46f",
+          "gameIdentity": {
+            "dev": "2162252404",
+            "ino": "1125899908394623"
+          },
+          "phase": "applying",
+          "beforeReceiptRevision": 0,
+          "beforeReceipt": null,
+          "afterReceipt": {
+            "formatVersion": 1,
+            "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+            "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+            "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+            "entries": [
+              {
+                "sourceId": "authority-fixture-source",
+                "packageId": "authority-fixture-pack",
+                "packageVersion": "1",
+                "area": "mods",
+                "path": "authority.jar",
+                "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+                "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+              }
+            ],
+            "releases": [
+              {
+                "sourceId": "authority-fixture-source",
+                "packageId": "authority-fixture-pack",
+                "sequence": 1,
+                "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+              }
+            ]
+          },
+          "files": [
+            {
+              "operationIndex": 0,
+              "old": null,
+              "fresh": {
+                "dev": "2162252404",
+                "ino": "281474978262666",
+                "size": 34,
+                "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+              },
+              "stage": "published"
+            }
+          ],
+          "pending": null
+        }
+      },
+      "receipt": {
+        "revision": 1,
+        "data": {
+          "formatVersion": 1,
+          "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+          "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+          "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+          "entries": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "packageVersion": "1",
+              "area": "mods",
+              "path": "authority.jar",
+              "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+              "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+            }
+          ],
+          "releases": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "sequence": 1,
+              "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+            }
+          ]
+        }
+      },
+      "highWater": {
+        "sequence": 1,
+        "releaseSha256": "2d771f48064863a6afd7e2b9fbd4f9fe4664a464c47eeb8469e23dbda9d96437"
+      },
+      "rootIdentity": {
+        "dev": "2162252404",
+        "ino": "1125899908394623"
+      },
+      "target": {
+        "dev": "2162252404",
+        "ino": "281474978262666",
+        "links": "2",
+        "bytes": 34,
+        "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+      },
+      "player": {
+        "dev": "2162252404",
+        "ino": "281474978262658",
+        "links": "1",
+        "bytes": 20,
+        "sha256": "0ab56ccabe21aa173b5db1da17a312502ebfaabbb2cbeb94d8b6843d5279276a"
+      },
+      "lease": "fe79f0ec-b23e-48ca-93f8-3273288ff46f"
+    },
+    "afterReopen": {
+      "journal": {
+        "revision": 4,
+        "data": {
+          "formatVersion": 2,
+          "plan": {
+            "formatVersion": 1,
+            "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+            "rootId": "76d288a6-7755-43d4-bd80-c54d489ef891",
+            "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+            "instanceRevision": 1,
+            "sourceId": "authority-fixture-source",
+            "packageId": "authority-fixture-pack",
+            "packageVersion": "1",
+            "sequence": 1,
+            "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405",
+            "manifest": {
+              "formatVersion": 1,
+              "packageId": "authority-fixture-pack",
+              "packageVersion": "1",
+              "target": {
+                "minecraft": "1.20.1",
+                "javaMajor": 17,
+                "loader": "vanilla",
+                "loaderVersion": null
+              },
+              "operations": [
+                {
+                  "kind": "add",
+                  "area": "mods",
+                  "path": "authority.jar",
+                  "artifactId": "synthetic-artifact",
+                  "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1",
+                  "size": 34
+                }
+              ]
+            }
+          },
+          "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+          "leaseToken": "fe79f0ec-b23e-48ca-93f8-3273288ff46f",
+          "gameIdentity": {
+            "dev": "2162252404",
+            "ino": "1125899908394623"
+          },
+          "phase": "applying",
+          "beforeReceiptRevision": 0,
+          "beforeReceipt": null,
+          "afterReceipt": {
+            "formatVersion": 1,
+            "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+            "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+            "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+            "entries": [
+              {
+                "sourceId": "authority-fixture-source",
+                "packageId": "authority-fixture-pack",
+                "packageVersion": "1",
+                "area": "mods",
+                "path": "authority.jar",
+                "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+                "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+              }
+            ],
+            "releases": [
+              {
+                "sourceId": "authority-fixture-source",
+                "packageId": "authority-fixture-pack",
+                "sequence": 1,
+                "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+              }
+            ]
+          },
+          "files": [
+            {
+              "operationIndex": 0,
+              "old": null,
+              "fresh": {
+                "dev": "2162252404",
+                "ino": "281474978262666",
+                "size": 34,
+                "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+              },
+              "stage": "published"
+            }
+          ],
+          "pending": null
+        }
+      },
+      "receipt": {
+        "revision": 1,
+        "data": {
+          "formatVersion": 1,
+          "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+          "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+          "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+          "entries": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "packageVersion": "1",
+              "area": "mods",
+              "path": "authority.jar",
+              "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+              "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+            }
+          ],
+          "releases": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "sequence": 1,
+              "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+            }
+          ]
+        }
+      },
+      "highWater": {
+        "sequence": 1,
+        "releaseSha256": "2d771f48064863a6afd7e2b9fbd4f9fe4664a464c47eeb8469e23dbda9d96437"
+      },
+      "rootIdentity": {
+        "dev": "2162252404",
+        "ino": "1125899908394623"
+      },
+      "target": {
+        "dev": "2162252404",
+        "ino": "281474978262666",
+        "links": "2",
+        "bytes": 34,
+        "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+      },
+      "player": {
+        "dev": "2162252404",
+        "ino": "281474978262658",
+        "links": "1",
+        "bytes": 20,
+        "sha256": "0ab56ccabe21aa173b5db1da17a312502ebfaabbb2cbeb94d8b6843d5279276a"
+      },
+      "lease": "fe79f0ec-b23e-48ca-93f8-3273288ff46f"
+    },
+    "terminal": {
+      "revision": 5,
+      "data": {
+        "formatVersion": 2,
+        "plan": {
+          "formatVersion": 1,
+          "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+          "rootId": "76d288a6-7755-43d4-bd80-c54d489ef891",
+          "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+          "instanceRevision": 1,
+          "sourceId": "authority-fixture-source",
+          "packageId": "authority-fixture-pack",
+          "packageVersion": "1",
+          "sequence": 1,
+          "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405",
+          "manifest": {
+            "formatVersion": 1,
+            "packageId": "authority-fixture-pack",
+            "packageVersion": "1",
+            "target": {
+              "minecraft": "1.20.1",
+              "javaMajor": 17,
+              "loader": "vanilla",
+              "loaderVersion": null
+            },
+            "operations": [
+              {
+                "kind": "add",
+                "area": "mods",
+                "path": "authority.jar",
+                "artifactId": "synthetic-artifact",
+                "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1",
+                "size": 34
+              }
+            ]
+          }
+        },
+        "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+        "leaseToken": "fe79f0ec-b23e-48ca-93f8-3273288ff46f",
+        "gameIdentity": {
+          "dev": "2162252404",
+          "ino": "1125899908394623"
+        },
+        "phase": "committed",
+        "beforeReceiptRevision": 0,
+        "beforeReceipt": null,
+        "afterReceipt": {
+          "formatVersion": 1,
+          "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+          "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+          "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+          "entries": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "packageVersion": "1",
+              "area": "mods",
+              "path": "authority.jar",
+              "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+              "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+            }
+          ],
+          "releases": [
+            {
+              "sourceId": "authority-fixture-source",
+              "packageId": "authority-fixture-pack",
+              "sequence": 1,
+              "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+            }
+          ]
+        },
+        "files": [
+          {
+            "operationIndex": 0,
+            "old": null,
+            "fresh": {
+              "dev": "2162252404",
+              "ino": "281474978262666",
+              "size": 34,
+              "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+            },
+            "stage": "published"
+          }
+        ],
+        "pending": null
+      }
+    },
+    "receipt": {
+      "revision": 1,
+      "data": {
+        "formatVersion": 1,
+        "instanceId": "35b4cc9f-4985-4fd1-b031-d0f4f944c7fd",
+        "txId": "76c7b69e-e7cc-49f0-af08-1d104246e513",
+        "planDigest": "ab1ceffaeaa1da6047dfec4a7d7dd8507fe099093a898570a8e25e8064277e41",
+        "entries": [
+          {
+            "sourceId": "authority-fixture-source",
+            "packageId": "authority-fixture-pack",
+            "packageVersion": "1",
+            "area": "mods",
+            "path": "authority.jar",
+            "managedId": "149fba80-ff56-435d-88df-ace3040bfb59",
+            "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+          }
+        ],
+        "releases": [
+          {
+            "sourceId": "authority-fixture-source",
+            "packageId": "authority-fixture-pack",
+            "sequence": 1,
+            "manifestSha256": "62053e332dd9172ed04c259c7d266a6ad79945403c8b864a155901ffd7edb405"
+          }
+        ]
+      }
+    },
+    "player": {
+      "dev": "2162252404",
+      "ino": "281474978262658",
+      "links": "1",
+      "bytes": 20,
+      "sha256": "0ab56ccabe21aa173b5db1da17a312502ebfaabbb2cbeb94d8b6843d5279276a"
+    },
+    "target": {
+      "dev": "2162252404",
+      "ino": "281474978262666",
+      "links": "1",
+      "bytes": 34,
+      "sha256": "24b045745a24c1c645519b2e70bb7337cc117c4f6e2e1e9af3123925fe1f27b1"
+    },
+    "leaseReleased": true
+  }
+}

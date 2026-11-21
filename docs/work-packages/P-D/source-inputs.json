@@ -1,0 +1,54 @@
+[
+  {
+    "path": "src/services/mods/java-facts.ts",
+    "sha256": "d0f425fcda79905422e6c86524ad52108294b7d87a433e32b300f4d4a32fccb6"
+  },
+  {
+    "path": "src/services/java/runtime.ts",
+    "sha256": "06a078796e8719e1a798fc2e3a2b061b548ff971d89d0f45f2c98557b4db2045"
+  },
+  {
+    "path": "src/services/java/probe.ts",
+    "sha256": "f391fab051eb592bd0a02ef158c241bab8580b40981d02c03f9a8497db7fb8d9"
+  },
+  {
+    "path": "src/services/launch/service.ts",
+    "sha256": "71796713a57b2591aa424ca3edf45728c9ce0b0791dfab9cb8b4a8b5204e4ff0"
+  },
+  {
+    "path": "src/services/launch/process.ts",
+    "sha256": "705d058b1cac1bebc6489cbf76be21ed918a30940d7827c1d8e2fe3173d1f03d"
+  },
+  {
+    "path": "src/services/mods/context.ts",
+    "sha256": "a2a5d4e8d4764b611b05c35d813d5970664850962794c99f0fe8724385d68778"
+  },
+  {
+    "path": "src/services/mods/inventory.ts",
+    "sha256": "2999b7b44cdf574faab4f428f165fdb8248dacf996eeb4098072d9ad339e7cc1"
+  },
+  {
+    "path": "src/services/mods/transaction.ts",
+    "sha256": "3d07051c3967875a44b5352afcbda369914650e7fb1513e41445331898b71b0c"
+  },
+  {
+    "path": "src/services/install/installer.ts",
+    "sha256": "a36ceeb981b03ac8e8ec4cc90439c7a02dca38d100c0f9ea43a11b03f5848e1b"
+  },
+  {
+    "path": "src/services/launch/profiles.ts",
+    "sha256": "6168f23afc0e7d255569b980198f4522f80693425b4596d5e6003aa88c916823"
+  },
+  {
+    "path": "docs/validation/RESEARCH-OBSERVATION-20261029/REPORT.md",
+    "sha256": "faebdeebde01e9462b177118b4960833d0dfdd7ef89df5f350539c2f1a00eedc"
+  },
+  {
+    "path": "docs/validation/RESEARCH-OBSERVATION-20261029/java-selection-result.json",
+    "sha256": "c3afb05684fb5542fb8b20375fe17a27906501a52987e9d8c21011145051d236"
+  },
+  {
+    "path": "docs/validation/RESEARCH-OBSERVATION-20261029/launch-revision-result.json",
+    "sha256": "43f98c9abf79a14e56dd02a381fc5e6b6f8a23196daa363b0403d6ed9830234e"
+  }
+]

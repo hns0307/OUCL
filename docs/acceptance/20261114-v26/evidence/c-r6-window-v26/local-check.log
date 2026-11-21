@@ -1,0 +1,1 @@
+{"status":"PASS","matchedRequests":2,"rejectedRequests":2,"formalGlobalReopen":"4 completed tasks (prepare assertions)","scope":"Production desktop-fetch/client with approved synthetic request factory; no Electron/public network"}

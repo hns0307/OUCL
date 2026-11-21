@@ -1,0 +1,7 @@
+{
+  "status": "FAIL",
+  "outerExeExecuted": true,
+  "error": "Expected values to be strictly equal:\n\n'FAIL' !== 'PASS'\n",
+  "inspectorPid": 21900,
+  "root": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261116\\run-3"
+}

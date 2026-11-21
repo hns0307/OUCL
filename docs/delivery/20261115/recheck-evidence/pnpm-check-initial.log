@@ -1,0 +1,5 @@
+Error: ERR_PNPM_PACKAGE_MANAGER_REMOVE_MODULES_DIR
+
+  × installing dependencies
+  ╰─▶ Failed to remove modules directory contents: 拒绝访问。 (os error 5)
+

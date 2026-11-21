@@ -1,0 +1,13 @@
+{
+  "base": "958aa363",
+  "sources": [
+    {
+      "file": "src/services/distribution/admission-record.ts",
+      "sha256": "34a2daf223c36612daa78c28beb69e3c5144bfb432b98592c25548e0dae4554e"
+    },
+    {
+      "file": "tests/distribution-admission.test.ts",
+      "sha256": "b69eac1a72adf81a7f0f4d2ec0ffcc168cc456ed0a54cfaf559e5a5d6c917c6a"
+    }
+  ]
+}

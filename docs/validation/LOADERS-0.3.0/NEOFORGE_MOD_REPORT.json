@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "instanceId": "44b298d7-9351-5f8e-b68f-3112437e1d23",
+  "instanceRevision": 69,
+  "fingerprint": "367df3fd9fcef0c7602fd6c4edaedc18ba81ce88f25f50a8413ce37887cb2c10",
+  "checkedAt": "2026-10-26T08:53:51.323Z",
+  "mode": "check",
+  "localState": "satisfied",
+  "state": "satisfied",
+  "files": [
+    {
+      "fileId": "3b3807248b742ee6734bc5c1736ff097c87e5518e60b361d26bfe3be48bf4877",
+      "filename": "ferritecore-7.0.3-neoforge.jar",
+      "enabled": true,
+      "size": 121559,
+      "sha1": "9563692efb708b6b568df27a01ec52f6311928ef",
+      "sha256": "d87ea28262715ebff45b8a82d493e6b468e7a4521bc021df5d88302196d030a8",
+      "sha512": "19af89a2075bb10a63884fa853ebf84b02c79dc3242430ecdad056fd764fdcde367a7303276b329df01b0736e2ef264c5d80c7dc92c6aebd244f556a230bb417",
+      "mods": [
+        {
+          "format": "neoforge",
+          "id": "ferritecore",
+          "version": "7.0.3",
+          "name": "Ferrite Core"
+        }
+      ],
+      "issues": [],
+      "sourceStatus": "matched",
+      "source": {
+        "projectId": "uXXizFIs",
+        "versionId": "x7kQWVju",
+        "versionName": "ferritecore-7.0.3-neoforge"
+      }
+    }
+  ],
+  "issues": []
+}

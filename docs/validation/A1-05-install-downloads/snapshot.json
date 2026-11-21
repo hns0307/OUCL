@@ -1,0 +1,22 @@
+[
+  {
+    "path": "src/services/install/downloads.ts",
+    "sha256": "1721f3b60f0dab75a05d89165fc89e6ec53694c1db8f7c6448bbedee08e36372"
+  },
+  {
+    "path": "src/services/install/metadata-object.ts",
+    "sha256": "58f8bca124ac5efd9887369279c8a584688c35ccdee86fdb84160493bcd8bf1e"
+  },
+  {
+    "path": "tests/install-downloads.test.ts",
+    "sha256": "6c968400f33631452f3b4596059b3324eab2f69483d28cfb81ed8203a8783aba"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "141a92368a633d85cad288a1780431f65068f8e97647da79daadf360aa93be84"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "616c2737bcb9f428c86e3ff425eef4db70e35c12a5251d9c2626fb5ab35264bb"
+  }
+]

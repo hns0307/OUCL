@@ -1,0 +1,36 @@
+{
+  "executable": "D:\\nodejs\\node.exe",
+  "node": "v24.21.0",
+  "args": [
+    "--test",
+    "--test-reporter=spec",
+    "--test-name-pattern=^(real worker accepts fixed bytes and rejects a different archive|worker exit, duplicate messages, cancellation and deadlines are enforced)$",
+    "D:\\MC_start\\OUCL\\tmp\\20261118-x-final-tests\\.test-build\\tests\\fixed-pack-preview.test.js"
+  ],
+  "testRoot": "D:\\MC_start\\OUCL\\tmp\\fixed-pack-20261119-lMJbda",
+  "environment": {
+    "OUCL_SOURCE_ROOT": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main",
+    "OUCL_FIXED_PACK_WORKER": "D:\\MC_start\\OUCL\\tmp\\20261118-x-final-build\\dist\\workers\\fixed-pack.cjs",
+    "OUCL_FIXED_PACK_TMP": "D:\\MC_start\\OUCL\\tmp\\fixed-pack-20261119-lMJbda"
+  },
+  "inputs": {
+    "worker": {
+      "file": "D:\\MC_start\\OUCL\\tmp\\20261118-x-final-build\\dist\\workers\\fixed-pack.cjs",
+      "bytes": 17444,
+      "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+    },
+    "suite": {
+      "file": "D:\\MC_start\\OUCL\\tmp\\20261118-x-final-tests\\.test-build\\tests\\fixed-pack-preview.test.js",
+      "bytes": 4052,
+      "sha256": "330e4858f630824709a6d233e37fe6f36ff8d4ba8bcd8bbcef8881d804ef3a84"
+    },
+    "sample": {
+      "file": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\docs\\work-packages\\P-E\\sample\\OUCL-PE-Forge-Smoke-1.0.0.mrpack",
+      "bytes": 1355,
+      "sha256": "e4cf7d5607a70582cfcec200a381892a83c75e122f5be6bad926de23ff7278f2"
+    }
+  },
+  "started": "2026-11-18T16:06:06.890Z",
+  "ended": "2026-11-18T16:06:07.390Z",
+  "exitCode": 0
+}

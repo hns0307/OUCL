@@ -1,0 +1,41 @@
+{
+  "base": "D:\\MC_start\\OUCL\\tmp\\file-guard-r2-20261116\\junction-probe-29B70m",
+  "before": {
+    "files": [
+      "sentinel.txt"
+    ],
+    "sha256": "d75b46340710a66e80e4b44bc940e8a0679f31c2b480e8dd6f45d1f6b91d825b"
+  },
+  "nativeGuardSha256": "ab94aac345ee923ff8a00e14cc04483793e0d98208f1e9c5a5655fb7fc0f4165",
+  "junction": {
+    "isSymbolicLink": true,
+    "resolvedLink": "D:\\MC_start\\OUCL\\tmp\\file-guard-r2-20261116\\junction-probe-29B70m\\external-target"
+  },
+  "compiler": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/r:System.Web.Extensions.dll",
+    "/out:junction-probe.exe",
+    "JunctionNativeGuard.cs",
+    "JunctionProbe.cs"
+  ],
+  "compileExitCode": 0,
+  "exitCode": 0,
+  "native": {
+    "probe": "independent-junction-reparse-rejection",
+    "pass": true,
+    "rejected": true,
+    "attributes": 1040,
+    "error": "UNSAFE_REPARSE_TYPE_OR_LINKS"
+  },
+  "after": {
+    "files": [
+      "sentinel.txt"
+    ],
+    "sha256": "d75b46340710a66e80e4b44bc940e8a0679f31c2b480e8dd6f45d1f6b91d825b"
+  },
+  "targetUnchanged": true,
+  "executableSha256": "fb4cbf3cfc14fecf8ab84f6a9eded30790e64b5ec1f3f8a3fc9c5180e41d2d8d",
+  "probeSha256": "d23c22cea24b929011d52a37caa360f22ce7bb6f5ba5db0d26504dbac18bcd77"
+}

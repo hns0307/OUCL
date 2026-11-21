@@ -1,0 +1,115 @@
+✖ native helper accepts Node dev/ino/SHA proof and publishes exactly one protected hardlink (448.0629ms)
+✖ native helper accepts valid v7 transaction and lease UUIDs used by the shared contract (78.2792ms)
+✖ native no-replace rename and link preserve a preoccupied destination (74.6913ms)
+✖ native same-handle rename preserves Node inode and hash (79.9409ms)
+✖ native delete removes one proven alias without deleting its live published pair (73.8779ms)
+✔ native lease release reuses its protected source handle and rejects a wrong token (131.2876ms)
+✔ native helper refuses a replaced source or wrong proof without deleting replacement bytes (84.2951ms)
+✔ native root identity and lease gates precede mutation (138.2032ms)
+✔ native helper refuses unknown third hardlinks (74.8347ms)
+✔ native schema rejects extra/duplicate fields, unbounded input, invalid UTF8 and future versions (485.848ms)
+✔ native paths reject foreign transaction staging, traversal, ADS, cross-volume and unrelated files (285.268ms)
+✔ native helper rejects a real junction ancestor before touching its sentinel (79.2067ms)
+✔ production guard source blocks source edits and ancestor renames from an independent process (383.5201ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 8
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2499.5075
+
+✖ failing tests:
+
+test at ..\..\tmp\native-helper-20261116-r2-tests\native-helper.test.mjs:83:1
+✖ native helper accepts Node dev/ino/SHA proof and publishes exactly one protected hardlink (448.0629ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs:86:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-helper-20261116-r2-tests\native-helper.test.mjs:92:1
+✖ native helper accepts valid v7 transaction and lease UUIDs used by the shared contract (78.2792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs:100:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-helper-20261116-r2-tests\native-helper.test.mjs:103:1
+✖ native no-replace rename and link preserve a preoccupied destination (74.6913ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'FILE_BUSY'
+  - 'DESTINATION_EXISTS'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs:109:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'FILE_BUSY',
+    expected: 'DESTINATION_EXISTS',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-helper-20261116-r2-tests\native-helper.test.mjs:114:1
+✖ native same-handle rename preserves Node inode and hash (79.9409ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs:117:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-helper-20261116-r2-tests\native-helper.test.mjs:121:1
+✖ native delete removes one proven alias without deleting its live published pair (73.8779ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs:123:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,9 @@
+# 已接纳终态只读核验H结果
+
+新增readAdmittedTerminal内部只读checker，输入有界projected admission/root，严格J/R/J/R快照及planDigest/原目录proof，committed精确after receipt与beforeRevision+1、rolledBack精确before方向。输出薄历史证据；稳定无journal仅undefined，不是执行许可。
+
+专注真实7PASS/0FAIL/0SKIP，10954.7479ms；真实native提交、回滚及真实后续receipt推进与恶意port注入层级见test-evidence/TERMINAL.md。独立只读审查无确定阻断。完整965项961PASS/0FAIL/4既有SKIP、type/全lint/build均exit0，原始命令/日志见checks-evidence及run-checks.mjs。
+
+journal没有taskId：合法任务ID仅来自调用方admission并回显，未来上层必须读取真实durable admission及projection核绑定。本片不证明当前文件/发行有效期/许可、不执行或恢复文件。单一receipt较新时保守拒旧终态，没有新增历史schema。
+
+真实source/key/站点仍空，产品no-port不广告。正式EXE摘要仍6d4f7f25d29a06b4d3730fd79ad64a160dbcdb28f747e20eda1ce05f98cc690e，未push/替换或打新候选。

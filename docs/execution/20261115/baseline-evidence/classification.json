@@ -1,0 +1,39 @@
+{
+  "node": "v24.21.0",
+  "platform": "win32",
+  "arch": "x64",
+  "selectedTests": 24,
+  "pass": 0,
+  "fail": 24,
+  "cancelled": 0,
+  "skipped": 0,
+  "durationMs": 19504.0172,
+  "fetchFailures": [
+    {
+      "name": "TypeError",
+      "message": "fetch failed",
+      "cause": {
+        "code": "EACCES",
+        "message": "connect EACCES 127.0.0.1:64023",
+        "syscall": "connect",
+        "address": "127.0.0.1",
+        "port": 64023
+      }
+    },
+    {
+      "name": "TypeError",
+      "message": "fetch failed",
+      "cause": {
+        "code": "EACCES",
+        "message": "connect EACCES 127.0.0.1:64025",
+        "syscall": "connect",
+        "address": "127.0.0.1",
+        "port": 64025
+      }
+    }
+  ],
+  "nativeFailureCount": 22,
+  "modPublicationLinkFailures": 14,
+  "otherLinkFailures": 8,
+  "unrerunHistoricalFailure": "real process termination recovers owned transactions at three commit boundaries"
+}

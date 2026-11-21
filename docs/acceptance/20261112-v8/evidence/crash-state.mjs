@@ -1,0 +1,14 @@
+import {readFile,readdir,lstat,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';import {DatabaseSync} from 'node:sqlite';import assert from 'node:assert/strict';
+import path from 'node:path';
+const base=path.resolve('acceptance-results/v6-package'),metadata=path.join(base,'crash-case/OUCL.runtime/profile/metadata');
+const label=process.argv[2];assert.match(label,/^[a-z0-9-]+$/);
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');const json=[];
+for(const name of (await readdir(metadata)).filter(n=>n.endsWith('.json')).sort())json.push({file:name,sha256:hash(await readFile(path.join(metadata,name)))});
+const owner=await readFile(path.join(metadata,'owner.lock'),'utf8').catch(error=>{if(error.code!=='ENOENT')throw error;return null;});
+const guard=await lstat(path.join(metadata,'owner.guard.sqlite'));
+const db=new DatabaseSync(path.join(metadata,'tasks.sqlite'),{readOnly:true}); const tables={};
+for(const table of ['tasks','requests','operations']){const rows=db.prepare(`SELECT * FROM ${table}`).all();tables[table]={rows:rows.length,sha256:hash(JSON.stringify(rows))};}db.close();
+const gameEntries=await readdir(path.join(base,'crash-case/OUCL.games'));
+const result={label,time:new Date().toISOString(),json,owner,guard:{dev:guard.dev,ino:guard.ino},tables,gameEntries};
+await writeFile(path.join(base,`crash-${label}.json`),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

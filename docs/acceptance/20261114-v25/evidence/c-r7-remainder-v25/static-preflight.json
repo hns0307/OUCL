@@ -1,0 +1,11 @@
+{
+  "status": "PREPARED_NOT_RUN",
+  "checks": {
+    "reportIdentifiesBeforeOwnership": true,
+    "accurateAutomaticStartFlag": true,
+    "preloadReportsOnDom": true,
+    "originalHandlerStillCalled": true,
+    "noRuntime": true
+  },
+  "chain": "DOMContentLoaded -> report -> observePrimary(actual event) -> frameIdentity ownership -> original bridge requests -> original handler"
+}

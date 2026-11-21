@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-26",
+  "kind": "forge",
+  "minecraftVersion": "1.20.1",
+  "loaderVersion": "47.4.28",
+  "javaMajor": 17,
+  "instanceId": "07ee75a2-fa9f-5969-86bd-01bcdb478dfb",
+  "instanceRevision": 64,
+  "installerSha1": "585dd6071897becaed3b09bff4c3d9559e0cbc75",
+  "installerSize": 8859760,
+  "installerSidecarSha256": "49cfd3211f7e8e2282688bf4f0ea210ef650af9e51f44a063eeff6e056095738",
+  "plannedDownloadBytes": 751348666,
+  "processing": "passed",
+  "publishedInstance": "ready",
+  "prepareLaunchReverification": "passed",
+  "offlineReopenReverification": "passed",
+  "menu": "passed",
+  "normalExit": "passed; exitCode=0",
+  "relaunchMenu": "passed",
+  "relaunchNormalExit": "passed; exitCode=0",
+  "testMod": "passed; FerriteCore 6.0.1; two actual Mods-menu observations and normal exits 0",
+  "testModVersionId": "DG5Fn9Sz",
+  "testModSha256": "9c2c9396a49e796d88497758caa4637d2bcbb433c318e2dd9cebcffbaf0f6c54",
+  "outputs": [
+    { "role": "extract-mappings", "size": 5653149, "sha256": "19ae000175bfb58e5b26406c31a0e501bfb40000b078fee2f00ea60a8c7ed453" },
+    { "role": "download-mojang-mappings", "size": 8001795, "sha1": "6c48521eed01fe2e8ecdadbd5ae348415f3c47da", "sha256": "67bfc33ef0c7103f002d6ac134f8eddd3d67e2ce45d266e83816d1a2e2c9b01d" },
+    { "role": "merge-mappings", "size": 4558114, "sha256": "43660881d0a5fff41cbde7a818726a8c950c39b1380b65cbc3b2d3290963bff1" },
+    { "role": "split-client-slim", "size": 12592249, "upstreamSha1": "de86b035d2da0f78940796bb95c39a932ed84834", "sha256": "b554e0780b332f4269b4f05586b19987a62cb3bd7917a8ef9c4c0bc92b642a8e" },
+    { "role": "split-client-extra", "size": 10436626, "upstreamSha1": "8c5a95cbce940cfdb304376ae9fea47968d02587", "sha256": "f43d1ac034a8907edab190a17501fd4ca2b0af107d4231da364eeca8ab5ee317" },
+    { "role": "rename-client", "size": 18842082, "sha256": "e2e940fe7ca0a9fba5a5c11ad2cf3e2f7df91bbf51d12af22cdde7af18adc344" },
+    { "role": "apply-client-patches", "size": 4848997, "upstreamSha1": "6b7afd53defb7b518a53a39f4ac8bffe6545fa0b", "sha256": "fcf268af27185c20922944615131a60bb31d5dc4dd08db31e5c19f75d8c81c83" }
+  ]
+}

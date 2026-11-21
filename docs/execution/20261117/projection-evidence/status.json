@@ -1,0 +1,10 @@
+{
+  "exitCode": 0,
+  "node": "v24.21.0",
+  "root": "D:/MC_start/OUCL/tmp/distribution-projection-20261117",
+  "args": [
+    "--test",
+    "D:/MC_start/OUCL/tmp/distribution-projection-20261117/projection.test.mjs"
+  ],
+  "environment": "sandbox; pure facts only, no production IO or network"
+}

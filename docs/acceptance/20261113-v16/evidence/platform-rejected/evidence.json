@@ -1,0 +1,258 @@
+{
+  "kind": "synthetic HTTP Response; real worker/inventory/inspection/client/preview/presentation",
+  "scans": 2,
+  "workerReads": 2,
+  "requests": 1,
+  "manifest": {
+    "provider.jar": {
+      "size": 388,
+      "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+      "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+    }
+  },
+  "initial": {
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "revision": 4,
+    "fingerprint": "2ef8d3c954a6a39b11893c20bb87ac5df3317ec40c8c94d9a4d2aa0c8fffaa45",
+    "items": [
+      {
+        "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "filename": "provider.jar",
+        "enabled": true,
+        "size": 388,
+        "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+        "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+        "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2",
+        "archives": [
+          {
+            "entries": [],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "parent_mod",
+                    "version": "1.0.0",
+                    "name": "parent_mod",
+                    "client": "yes",
+                    "provides": [
+                      {
+                        "id": "parent_alias",
+                        "version": "1.0.0"
+                      }
+                    ],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              },
+              {
+                "format": "quilt",
+                "mods": [
+                  {
+                    "id": "quilt_parent",
+                    "version": "1.0.0",
+                    "name": "quilt_parent",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          }
+        ],
+        "issues": []
+      }
+    ],
+    "local": {
+      "state": "satisfied",
+      "issues": [],
+      "providers": [
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        }
+      ]
+    }
+  },
+  "preview": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "2ef8d3c954a6a39b11893c20bb87ac5df3317ec40c8c94d9a4d2aa0c8fffaa45",
+    "filename": "provider.jar",
+    "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+    "impact": {
+      "action": "disable",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "state": "unknown",
+      "before": {
+        "local": {
+          "state": "satisfied",
+          "issues": [],
+          "providers": [
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_mod",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_alias",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            }
+          ]
+        },
+        "platform": {
+          "state": "unknown",
+          "files": [
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "status": "unknown",
+              "version": null
+            }
+          ],
+          "issues": [
+            {
+              "severity": "unknown",
+              "code": "PLATFORM_SOURCE_UNKNOWN",
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "projectId": null,
+              "versionId": null,
+              "dependencyProjectId": null,
+              "dependencyVersionId": null
+            }
+          ]
+        }
+      },
+      "after": {
+        "local": {
+          "state": "satisfied",
+          "issues": [],
+          "providers": []
+        },
+        "platform": {
+          "state": "satisfied",
+          "files": [
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "status": "unknown",
+              "version": null
+            }
+          ],
+          "issues": []
+        }
+      },
+      "introducedIssues": [],
+      "resolvedIssues": [
+        {
+          "scope": "platform",
+          "issue": {
+            "severity": "unknown",
+            "code": "PLATFORM_SOURCE_UNKNOWN",
+            "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+            "projectId": null,
+            "versionId": null,
+            "dependencyProjectId": null,
+            "dependencyVersionId": null
+          }
+        }
+      ],
+      "affectedProviders": [
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        }
+      ],
+      "directRequiredBy": [],
+      "transitiveRequiredBy": [],
+      "relations": [],
+      "truncated": false
+    },
+    "platformFailures": [
+      "RETRY_LATER"
+    ]
+  },
+  "display": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "2ef8d3c954a6a39b11893c20bb87ac5df3317ec40c8c94d9a4d2aa0c8fffaa45",
+    "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+    "filename": "provider.jar",
+    "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+    "action": "disable",
+    "state": "unknown",
+    "providers": [
+      {
+        "id": "parent_mod",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      },
+      {
+        "id": "parent_alias",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      }
+    ],
+    "directRequiredBy": [],
+    "transitiveRequiredBy": [],
+    "issues": [
+      {
+        "moment": "before",
+        "scope": "platform",
+        "severity": "unknown",
+        "code": "PLATFORM_SOURCE_UNKNOWN",
+        "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      }
+    ],
+    "relations": [],
+    "platformFailures": [
+      "RETRY_LATER"
+    ],
+    "incomplete": false
+  }
+}

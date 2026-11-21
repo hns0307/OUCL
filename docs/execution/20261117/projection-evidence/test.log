@@ -1,0 +1,17 @@
+✔ replacement removes the exact old item once and creates the complete expected fingerprint without aliasing (5.3737ms)
+✔ remove leaves remaining dependency declarations intact for a separate complete compatibility check (1.3197ms)
+✔ keep, disabled and omitted inventory items are preserved without adopting new facts (0.52ms)
+✔ occupied case-folded filenames, duplicate baseline names and unknown hashes are rejected (1.0185ms)
+✔ replace and remove require the exact baseline hash, while projection never grants managed ownership (0.5562ms)
+✔ missing, repeated, extra and cross-index scan facts fail without changing the baseline (0.7113ms)
+✔ unsafe paths, nested target paths and non-Mod operations are not treated as supported (0.5925ms)
+✔ scan size, hashes and strict worker fact shapes must match the selected operation (0.5115ms)
+✔ the full final inventory is limited to 256 files and all supplied facts to 8MiB (18.733ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.668

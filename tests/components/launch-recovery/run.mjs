@@ -1,0 +1,17 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { mkdir } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+const here = path.dirname(fileURLToPath(import.meta.url));
+const source = path.resolve(process.env.OUCL_SOURCE_ROOT || process.cwd());
+if (!process.env.OUCL_TEST_ROOT) throw new Error('Set OUCL_TEST_ROOT to a disposable output directory');
+const output = path.join(path.resolve(process.env.OUCL_TEST_ROOT), 'd02-portable-built');
+const toolchain = path.resolve(process.env.OUCL_TOOLCHAIN_ROOT || source);
+const require = createRequire(path.join(toolchain, 'package.json'));
+const { build } = require('esbuild');
+await mkdir(output, { recursive: true });
+await build({ absWorkingDir: source, entryPoints: { adapter: 'src/ipc/game-adapter.ts', control: 'src/ui/LaunchControls.tsx' }, outdir: output, outExtension: { '.js': '.mjs' }, bundle: true, platform: 'node', format: 'esm', target: 'node18', nodePaths: [path.join(toolchain, 'node_modules')], plugins: [{ name: 'fixture-react', setup(b) { for (const [name, file] of [['react','react-shim.mjs'], ['react/jsx-runtime','jsx-shim.mjs']]) b.onResolve({filter: name === 'react' ? /^react$/ : /^react\/jsx-runtime$/}, () => ({path: pathToFileURL(path.join(here,file)).href, external:true})); } }] });
+const result = spawnSync(process.execPath, [path.join(here, 'probe.mjs')], { stdio: 'inherit', env: {...process.env, OUCL_D02_BUILT_ROOT: output} });
+if (result.error) throw result.error;
+process.exitCode = result.status ?? 1;

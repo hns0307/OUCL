@@ -1,0 +1,71 @@
+✔ real RecordStore projects the exact admitted task identity idempotently without executing it (26.4747ms)
+✔ SQL projection rejects either orphan side and foreign kind instead of adopting existing rows (1.3803ms)
+✖ real worker bridge derives owner and rejects a stale expected root without projection (74.1315ms)
+✖ private projection command rejects caller owner fields and malformed bindings (0.5365ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 2
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 188.4708
+
+✖ failing tests:
+
+test at ..\..\tmp\distribution-projection-20261117-a\build\tests\distribution-task-projection.test.js:3361:1
+✖ real worker bridge derives owner and rejects a stale expected root without projection (74.1315ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'INVALID_MESSAGE'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3375:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: WorkerError: INVALID_MESSAGE
+        at requireMessage (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:2664:25)
+        at parseStorageRequest (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:2731:5)
+        at _StorageClient.request (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3066:21)
+        at _StorageClient.projectDistributionTask (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3103:32)
+        at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3375:33)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\distribution-projection-20261117-a\build\tests\distribution-task-projection.test.js:3387:1
+✖ private projection command rejects caller owner fields and malformed bindings (0.5365ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "INVALID_MESSAGE"
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3389:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: WorkerError: INVALID_MESSAGE
+        at requireMessage (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:2664:25)
+        at parseStorageRequest (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:2731:5)
+        at file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3389:29
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/distribution-projection-20261117-a/build/tests/distribution-task-projection.test.js:3389:10)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+        at Test.postRun (node:internal/test_runner/test:1542:19),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }

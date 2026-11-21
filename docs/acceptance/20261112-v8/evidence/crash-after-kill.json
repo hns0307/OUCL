@@ -1,0 +1,38 @@
+{
+  "label": "after-kill",
+  "time": "2026-11-12T10:14:16.964Z",
+  "json": [
+    {
+      "file": "catalog.json",
+      "sha256": "6c5a6a3e081b82a1d868ff4b13df0156b3b03c72d6780971f561103e31719d56"
+    },
+    {
+      "file": "installation.json",
+      "sha256": "224079da6ecff758415308c29451ca5fdf5d9f77665ded9b4e28b43e4cba5b9e"
+    },
+    {
+      "file": "launch-profiles.json",
+      "sha256": "2822737dcbe564a846fa0af00d51c451a858ecdbc11236db242ef93bbb06efa1"
+    }
+  ],
+  "owner": "oucl-owner-v2:cdd26a13-9566-4899-8cb3-91b9eb92a27c:2162252404:281474978144511",
+  "guard": {
+    "dev": 2162252404,
+    "ino": 281474978144511
+  },
+  "tables": {
+    "tasks": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "requests": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "operations": {
+      "rows": 3,
+      "sha256": "fe6ef9d309d9fa338f00ff497f2937ab4511c66771bd4cb293030ca1b00f3bce"
+    }
+  },
+  "gameEntries": []
+}

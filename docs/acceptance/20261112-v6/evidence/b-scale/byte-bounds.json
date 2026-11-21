@@ -1,0 +1,36 @@
+{
+  "status": "BOUNDED_UNREACHABLE_BYTE_THRESHOLDS",
+  "domainCounts": {
+    "checks": 1000,
+    "installs": 1000
+  },
+  "publicSnapshot": {
+    "upperBytes": 936063,
+    "limitBytes": 1048576,
+    "remainingBytes": 112513
+  },
+  "publicPage": {
+    "schemaValid": true,
+    "bytes": 46963,
+    "note": "100 rows is public result max; adapter whole-snapshot check uses 2000 rows"
+  },
+  "privateResult": {
+    "schemaValid": true,
+    "upperBytes": 800091,
+    "limitBytes": 2097152,
+    "remainingBytes": 1297061
+  },
+  "maximumError": {
+    "code": "UNSUPPORTED_CONTRACT",
+    "bytes": 157,
+    "enumeratedFixedCodes": 31
+  },
+  "proof": [
+    "Canonical ordinary DTO JSON.stringify: keys exact; UUID ASCII fixed36; kind max11; state/stage max13 (needsRecovery); nonnegative safe integers max16 decimal digits.",
+    "Public optional bytesTotal/error are both present, numbers maximal-width, fixed error catalog exhaustively sized with trace UUID; arrays limited2000 whole-snapshot/100 returned page.",
+    "Private execution six fields include all optional fields, numbers maximal-width, task owner UUID fixed36; no arbitrary strings or private error object.",
+    "1000 rows each kind matches per-domain inventory limits; mod-install has 2 more ASCII characters than mod-check. The generic schema maxima overestimate actual check-service bytesDone=0 and failure-code projections.",
+    "As both maximal-width valid-schema constructions fall below their size guards, exact limit or limit+1 cannot be reached by canonical valid domain DTOs under current cardinality/schema constraints.",
+    "These are defensive guards, not supported payload-size promises. Whitespace, extra fields, oversized UUIDs, toJSON methods, duplicate IDs or >2000 rows are not canonical product-generated valid DTOs and cannot demonstrate a legal-domain byte boundary."
+  ]
+}

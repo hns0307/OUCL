@@ -1,0 +1,1218 @@
+▶ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain
+  ✔ missing (1521.6159ms)
+  ✔ changed (1116.8405ms)
+✔ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain (2641.8716ms)
+▶ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed
+  ✔ future-envelope (1258.7042ms)
+  ✔ future-plan (1043.4063ms)
+  ✔ cross-root (1012.7369ms)
+  ✔ request-mismatch (1486.538ms)
+  ✔ digest-mismatch (1511.144ms)
+  ✔ foreign-instance (1410.7235ms)
+✔ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed (7736.4641ms)
+✔ acceptance real worker: controlled target-clock crossing 2000ms returns TIMEOUT and keeps worker alive (2244.334ms)
+ℹ Real worker + SQLite; deterministic injected target-reader Date.now, not wall-clock performance evidence.
+✔ acceptance main adapter: real 2500ms deadline retains global pending slots and late replies do not publish snapshots (2512.5902ms)
+ℹ main real-timer deadline observed 2504ms; storage/projection are controlled doubles
+✔ acceptance main adapter: at most 16 bounded snapshots / 16MiB serialized payload and 256 cursor references (495.0715ms)
+ℹ 14113008 serialized bytes across 16 x 2000-row snapshots; bound check, not JS heap measurement
+✔ processor archive validation protocol admits only bounded verified files and results (4.9425ms)
+✔ official manifest parser bounds entries, identities, hashes, timestamps and origins (22.2482ms)
+✔ metadata HTTPS reader refuses origins, status, oversized bodies and wrong SHA1 (1599.1389ms)
+✔ catalog paginates by source revision and does not claim runtime compatibility (8.8979ms)
+✔ stale verified cache works offline with its original timestamp and bounded refresh retries (769.1175ms)
+✔ invalid cache and corrupt fresh metadata never acquire trust through fallback (2.8563ms)
+✔ descriptor resolution verifies official metadata before returning the client plan and provenance (17.1356ms)
+✔ catalog IPC rejects paths/URLs and invalid senders before network access, and validates output (1.2951ms)
+✔ official catalog cache persists through real SQLite/JSON worker restart (1404.0732ms)
+✔ desktop HTTPS adapter streams native bytes and retains request policy without ambient cookies (93.103ms)
+✔ desktop redirects are either returned as one manual hop or refused; never followed implicitly (1.3145ms)
+✔ desktop cancellation before headers and during streaming aborts the owned native request (9.8392ms)
+✔ desktop adapter forwards explicit JSON POST and returns no body for HEAD, without retaining auth or raw errors (1.9335ms)
+✔ appearance schema forbids CSS/remote paths, malformed icons and inconsistent layout identities (4.065ms)
+✔ desktop sender/envelope validation precedes native/image side effects, exact outputs remain correlated (3.6724ms)
+✔ desktop worker persists themes, exact icons, layout and local drafts without mutating launch defaults (1406.0255ms)
+✔ official icon resolution rejects alternate origins, unrelated projects and SVG without renderer networking (54.3547ms)
+✔ distribution manifest is bounded, exact and rejects protected areas, aliases and path escape (18.273ms)
+✔ distribution changes require ownership and exact observed old hash, preserving omitted and unknown files (1.8082ms)
+✔ in-memory distribution adapter requires configured Ed25519 key and rejects tampering, substitution and cancellation (15.6741ms)
+✔ physical transfer persists before writing and commits only verified bytes, then reuses the object (2810.3205ms)
+✔ interrupted HTTP bytes survive a normal worker/store restart and resume with validators (3547.6142ms)
+✔ wrong digest never commits and a retry restarts rather than trusting the bad prefix (2663.1618ms)
+✔ object commit with a lost final journal acknowledgement is reconciled without a second download (2683.549ms)
+✔ one physical engine rejects a concurrent same-identity writer rather than racing its staging file (2377.7557ms)
+✔ lost acknowledgement after a successful final commit does not rewrite terminal state (1654.9376ms)
+✔ cancellation during a verified-cache lookup wins before returning the object (1126.6625ms)
+✔ verified cache cannot hide a contradictory authoritative committed object identity (1007.9073ms)
+✔ a mirror hash mismatch retries the official bytes once without publishing bad content (1267.1186ms)
+✔ one cancelled installer cannot interrupt another, including independent source evidence (7.3667ms)
+✔ paused consumers hold completion and revalidate their object when resuming (3.6246ms)
+✔ all-paused transport joins before resume starts a new attempt (1.3946ms)
+✔ last cancellation waits for physical cleanup and a new consumer waits for that old attempt (2.6519ms)
+✔ bounded admission and per-consumer callback failures do not kill other demand (0.9204ms)
+✔ global concurrency stays bounded and failure evidence is redacted for every consumer (0.5918ms)
+✔ physical cleanup failure takes precedence over a cancellation request (0.8397ms)
+✔ close joins failed source-proof work and reports its failure rather than fake cancellation (3.9932ms)
+✔ close joins in-flight source-proof writes and never delivers to a cancelled consumer (28.4405ms)
+✔ real HTTP/object pipeline shares one transfer and writes both independently verified source proofs (1573.1044ms)
+✔ full transfer streams real bytes and commits progress only after the file is visible (65.5467ms)
+✔ 206 resumes a durable prefix and truncates an uncommitted disk tail before requesting (51.3365ms)
+✔ a server ignoring Range replaces the old prefix with a full verified-size response (118.3366ms)
+✔ reset sync failure cannot restore a durable prefix after its file was truncated (51.0475ms)
+✔ changed ETag and invalid range response reset once, then reject repeated protocol failure (34.4914ms)
+✔ 416 accepts exactly complete durable bytes and otherwise performs one clean restart (86.956ms)
+✔ weak or missing validator causes a full restart; Last-Modified can safely resume (89.2508ms)
+✔ network interruption preserves and checkpoints the received prefix for the next attempt (44.5029ms)
+✔ cancellation waits for the durable prefix and closes the staging handle (27.2356ms)
+✔ overlong body, encoding, length and retry responses cannot produce complete state (120.1123ms)
+✔ header and idle timers are bounded and redact the original network exception (93.1763ms)
+✔ missing durable bytes and checkpoint failures stop without false completion (54.0413ms)
+﹣ linked staging files are refused when file symlink privilege is available (21.353ms) # File symlink privilege unavailable; no system policy changed.
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (90.5506ms)
+✔ durable transfer checkpoint is created with its marker and reopens without losing validators (130.798ms)
+✔ transfer revisions reject stale callbacks and roll back a locked write cleanly (98.5085ms)
+✔ invalid identity, metadata, progress and validators cannot replace a checkpoint (77.3061ms)
+✔ only a zero-byte reset may change source or retreat; committed state cannot be rewritten (81.4474ms)
+✔ losing the authoritative ledger never creates an empty replacement or removes accepted tasks (83.5936ms)
+✔ the empty initialization crash window may finish the marker but populated unmarked ledgers stop (129.3526ms)
+✔ unknown ledger version, identity or schema stays on disk without being reset (438.3881ms)
+✔ malformed checkpoint records and unknown states block opening instead of disappearing (282.6794ms)
+✔ cached SQLite handles reject missing, changed or nonregular backing identity before reads and writes (56.8345ms)
+﹣ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (72.678ms) # Windows refused rename of an open SQLite database; deterministic identity-adapter coverage remains active.
+✔ transport source changes require a validator-free zero checkpoint (59.9839ms)
+✖ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (90.1643ms)
+✔ unsupported ranges fall back to one stream, while mirror failure clears source validators (160.9906ms)
+✔ a failed parallel checkpoint has recovery precedence and never reports complete (15.1174ms)
+✔ global and per-host request budgets apply through body completion and queued cancellation (1.1939ms)
+✔ mirror redirects remain fixed HTTPS routes and cannot reach arbitrary hosts or credentials (0.6964ms)
+✔ parallel cancellation joins stalled bodies and leaves only the contiguous prefix for resume (195.776ms)
+✔ changed entity in a parallel lane aborts all lanes then restarts through the serial validator (184.0176ms)
+✔ parallel idle timeout cancels a stalled body even when a mock transport ignores abort (54.6977ms)
+✔ switching away from a mirror truncates its prefix and never sends its validators to the official host (95.8194ms)
+✔ weak or missing ETags and malformed range lengths never enable parallel writes (207.9259ms)
+✔ download settings reject arbitrary sources, unsafe concurrency and unknown versions (4.5818ms)
+✔ real settings worker preserves old fields, CAS conflicts and download preferences across restart (1047.7558ms)
+✔ verified copy views preserve shared objects, validate receipts and reject unknown existing entries (3094.2873ms)
+✔ file-link privilege failure explicitly returns a checked copy without changing system policy (1942.6746ms)
+✖ unknown linked parents and target entries are rejected without touching their external target (1046.5287ms)
+✔ cancellation and invalid source facts create no new file and missing recorded projections require recovery (1142.3575ms)
+✔ real preferred file projection reports actual link capability and deletion preserves the object (2838.2516ms)
+✖ a recorded copy replaced by a hard link never acquires copy ownership (1538.2658ms)
+✔ concurrent same-target creation serializes and refuses silent overwrite (1943.5913ms)
+✔ sender, envelope and exact payload checked before selection (1.862ms)
+✔ result validates only exact fixed facts and maps redacted failures (0.7758ms)
+✔ same request joins chooser; another request cannot open a second chooser (1.9166ms)
+✔ sender destruction waits for chooser and discards late selected path (0.3645ms)
+✔ worker concurrency is global and destruction drains the active worker (0.3735ms)
+✔ fixed preview is unknown and does not grant install permission (7.0961ms)
+✔ protocol rejects paths and forged worker replies (0.9179ms)
+﹣ real worker accepts fixed bytes and rejects a different archive (0.4829ms) # dedicated worker bundle not provided
+﹣ worker exit, duplicate messages, cancellation and deadlines are enforced (0.3402ms) # dedicated worker bundle not provided
+✔ game/session payloads and public outputs exclude executable, path, credentials and PID capabilities (3.518ms)
+✔ game handler never starts effects for an invalid request id/sender/envelope and validates output (0.9088ms)
+✔ launch/stop task results are discriminated from install results and require completed state (0.5534ms)
+✔ private session records enforce task/session ownership associations and reject ambiguous process facts (1.2592ms)
+✔ spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease (63.7052ms)
+✔ gameDir lease excludes another instance and foreign marker is never removed (81.8092ms)
+✔ spawn exception and asynchronous start failure leave no falsely running session or lease (139.2505ms)
+✔ only explicit confirmed force stop kills; graceful rejection preserves the live JVM (35.4997ms)
+✔ changed lease after process exit remains unknown and blocks future launches (52.3611ms)
+✔ Java mismatch, failed probe and pre-spawn cancellation cannot create game effects (9.2239ms)
+✔ finalization holds the sole lease, blocks same-major patch substitution and releases on rejection (106.5568ms)
+✔ cancel during finalization drains the callback before lease release and never permits spawn (39.0747ms)
+✔ failure after commit permission still releases owned lease without invoking start (111.3349ms)
+✔ handshake only accepts strict request DTO and safe version integers (2.491ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.5433ms)
+✔ handshake validates implemented capabilities including loaders and still rejects duplicates or unknown APIs (0.2469ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.3076ms)
+✔ sender requires exact URL, same contents and main frame (0.1864ms)
+✔ response rejects mismatched request identity and injected capabilities (0.2406ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.1935ms)
+✔ sequential small-file hashes reuse one real worker and release each file before success (2005.8411ms)
+✔ cancelled active session exits before rejection and a queued hash uses a fresh worker (1115.4004ms)
+✔ queue budget remains concurrency plus 32 waiting jobs and close joins all sessions (53.3219ms)
+✔ strict session schemas require correlated UUIDs and retain legacy single-file replies (2.7146ms)
+✔ well-formed stale replies from a previous job cannot complete or update the next job (233.0567ms)
+✔ batch imports exact metadata, bounds work, commits all independent proofs and reuses cached bytes (9189.8952ms)
+✔ bad metadata and already aborted batches do not start a single network consumer (83.1024ms)
+✔ one batch cancellation joins its work while another installation finishes shared downloads (5974.3729ms)
+✔ callback failures abort siblings and are redacted after all owned transfers finish (3383.7282ms)
+✔ an in-flight commit error takes precedence over concurrent user cancellation (134.7727ms)
+✔ index import maps operating-system and cleanup exceptions to fixed errors (249.5602ms)
+✔ cancellation during metadata commit joins the commit and retains verified shared content (235.2809ms)
+✔ caller changes to the prepared plan or body cannot alter the admitted private plan (823.9334ms)
+✔ first-release install metadata refuses unsupported OS or architecture before network access (3.9917ms)
+✔ install metadata keeps each descriptor origin and exact validated asset-index bytes (7.252ms)
+✔ wrong returned hashes and forged same-size bodies are rejected before planning (0.8196ms)
+✔ asset-index declared size is checked as UTF8 bytes and cannot be trusted from a reader claim (0.8434ms)
+✔ missing asset metadata or its actual declaring origin never starts an index request (0.6792ms)
+✔ malformed asset JSON and absent source proofs are redacted rather than becoming an install plan (1.0347ms)
+✔ known catalog/network errors retain their fixed code and unknown dependency errors never leak (1.0493ms)
+✔ asset index projections distinguish the same upstream ID with different trusted hashes (5.6959ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (1.4318ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (1.8545ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (2.3597ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (192.6001ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (1.663ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (2.4729ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (1.2932ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (1.3854ms)
+✔ library views reject case, file-directory and differing-content collisions (1.4593ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (2.3488ms)
+✔ installed language versions are admitted only after the actual object matches upstream SHA1 and recorded SHA256 (5.9622ms)
+✔ Quilt exposes Fabric Loader only from its verified and exact loader declaration (2.9942ms)
+✔ installer adapter enforces registered root scope and exposes only public summary/task fields (5.9944ms)
+✔ installer adapter pagination tokens are opaque, bounded to sender/channel/filter, and hold stable snapshots (1.8021ms)
+✔ installer task lists enforce owner/kind and completed results contain only the corresponding instance ID (1.1805ms)
+✔ installer controls call only durable cancel and return actual persisted state (1.2718ms)
+✔ installer adapter maps known failures and rejects raw exception text at its boundary (1.0922ms)
+✔ installer subscriptions provide atomic seq-zero snapshots and strictly ordered bounded full updates (443.6632ms)
+✔ installer subscription ownership, repeated unsubscribe and sender removal never cancel installation (6.7261ms)
+✔ installer send callback failure removes only its subscription even if it throws a recognized service error (102.0589ms)
+✔ installer poll iterations never overlap and close suppresses an already pending response (500.1898ms)
+✔ installer admission counts pending subscriptions and enforces per-sender and global budgets (10.2797ms)
+✔ installer pending subscription is discarded if its window disappears during snapshot acquisition (19.7737ms)
+✔ verified installer extraction writes only the fixed selected entries (169.5931ms)
+✔ installer extraction refuses wrong hashes, missing entries and nonempty destinations (35.49ms)
+✔ installer worker protocol accepts no arbitrary entries, commands or reply shapes (0.9956ms)
+✔ Forge installer proof is bound to an exact official catalog choice and Maven path (75.311ms)
+✔ NeoForge installer uses the releases path and rejects catalog or matrix substitution (2.2483ms)
+✔ installer composition adds processor libraries without polluting launch classpath (10.4596ms)
+✔ installer composition refuses a non-policy processor chain and duplicate loader version (1.2491ms)
+✔ assembler binds extracted documents and every library to the verified installer choice (293.873ms)
+✔ reopen revalidates shared object bytes and re-extracts exact documents into a fresh private tree (1035.7641ms)
+✔ reopen refuses changed object identity and cancellation before extraction (311.0389ms)
+✔ concurrent preparations serialize the shared one-shot extractor (569.8082ms)
+✔ forge extraction cancellation joins owned work and preserves private recovery material (615.9322ms)
+✔ neoforge extraction cancellation joins owned work and preserves private recovery material (544.354ms)
+✔ executes with a clean environment and records upstream and local proof separately (9.285ms)
+✔ cancellation terminates and waits for child close before rejecting (38.5525ms)
+✔ forge processor cancellation escalates but still waits for the owned process close (26.0162ms)
+✔ neoforge processor cancellation escalates but still waits for the owned process close (31.2731ms)
+✔ refuses existing outputs, wrong hashes and excessive child output (6.4298ms)
+✔ Mojang mappings must use the trusted preparation callback and never spawn a networking tool (1.6875ms)
+✔ expands controlled commands into a private workspace and retains upstream proofs (7.1766ms)
+✔ rejects manifest entry substitution, missing libraries and workspace escape (5.4354ms)
+✔ accepts only the frozen Forge and NeoForge six-step client chains (5.4969ms)
+✔ rejects task injection, reordering, unknown tools and invented upstream output proof (1.1988ms)
+✔ requires the mapping input to be one of the profile verified libraries (0.642ms)
+✔ Forge installer profile becomes inert client processor facts with trusted artifacts (14.5946ms)
+✔ NeoForge identities and its official Maven origin remain distinct (1.5223ms)
+✔ installer profiles reject substituted identities, unsafe proof sources and unknown placeholders (2.081ms)
+✔ server-only steps, duplicate libraries, unsafe embedded paths and partial artifacts are refused (0.9662ms)
+{"observation":"after-owner-normal-close","firstErrors":["STORE_BUSY","STORE_BUSY"],"retryError":"INSTANCE_NOT_FOUND","registrations":2}
+{"observation":"fixed-runtime-closed","registrations":2,"externalOwnerUntouched":true,"successorOwnerClosedNormally":true}
+✔ failed shared initialization drains, retries once after real owner closes, reuses one runtime and closes normally (2463.5136ms)
+{"observation":"cleanup-before-retry","reads":2,"bothConsumersSharedFailure":true}
+✔ failed initialization remains shared until delayed cleanup actually settles (873.1964ms)
+{"observation":"concurrent-successful-retry","reads":2,"returned":2,"successorOwnerClosedNormally":true}
+✔ simultaneous retries after a failed owner claim share one successful runtime (547.2014ms)
+{"observation":"failed-cleanup-stays-closed","attempted":["native","installer","hash"],"reads":1}
+✔ cleanup failure drains other resources and keeps the failed cache closed to retries (170.1685ms)
+{"observation":"close-joins-cleanup","reads":1,"ownerPreserved":true}
+✔ service close joins in-flight failure cleanup and prevents later initialization (181.9864ms)
+✔ actual installer commits a complete private instance and reuses shared files across a second instance (13432.2975ms)
+✔ Fabric installation uses the same transaction and reopens with its pinned loader plan (4148.6977ms)
+✔ fabric reference target installs privately and reopens without metadata or transfer access (5431.1299ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ fabric cancellation stays unlaunchable and a new request can install the same display name (2785.266ms)
+✔ quilt reference target installs privately and reopens without metadata or transfer access (5410.7526ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ quilt cancellation stays unlaunchable and a new request can install the same display name (2804.0233ms)
+✔ request idempotency rejects changed payload and same-name admission never overwrites an instance (1983.3419ms)
+{"level":"warn","event":"instance-install-failed","stage":"metadata","code":"CANCELLED"}
+✔ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (2255.5956ms)
+{"level":"warn","event":"instance-install-failed","stage":"materializing","code":"NEEDS_RECOVERY"}
+✔ unknown existing shared entries are preserved and leave a recovery state rather than ready (1294.9223ms)
+✔ installed objects stay owned once while launch tasks, subscriptions, natural exit and session history persist (3184.1917ms)
+✔ explicit stop is durable, cannot act without confirmation and waits for the actual owned process close (2452.2711ms)
+✔ new inherited isolation captures the saved default and remains stable after settings change and retry (1588.7172ms)
+✔ launch rejects changed revisions, inventories, native trees, profiles and unknown constraints under the real lease (13958.627ms)
+✔ accepted cancellation drains locked verification and a lost commit-permit acknowledgement never spawns (5334.4493ms)
+✔ prepared launch final verification succeeds with every materialization and extraction capability disabled (3136.8724ms)
+✔ new inherited layouts distinguish metadata for the same client while old receipts retain the original location (24.452ms)
+✔ instance folder contract accepts only opaque identity and fixed folder keys (0.7196ms)
+✔ folder resolver uses the actual isolated game directory (69.5384ms)
+✔ folder resolver uses the actual shared game directory (64.5424ms)
+✖ folder resolver rejects a linked allowlisted directory that escapes the instance (5.6055ms)
+✔ instance summaries and indexes have exact bounded fields, canonical IDs and independent revisions (14.2604ms)
+✔ instance phases cannot claim ready without all materialization checkpoints (18.4594ms)
+✔ instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry (1.3256ms)
+✔ instance object refs and receipts reject paths, unknown fields, conflicts and absent content identities (4.9864ms)
+✔ instance body and metadata budgets are checked before accepting persistent JSON (35.7452ms)
+✔ instance metadata persists the exact bounded Windows rule environment instead of guessing it on reopen (17.3086ms)
+✔ loader metadata is revalidated from original profile bytes and per-library source proofs (24.5ms)
+✔ installer loader metadata preserves its upstream chain and validates processor evidence (30.7602ms)
+✔ private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions (17.8903ms)
+✔ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (1541.6499ms)
+✔ instance record and index commit separately so a half-completed index is never promoted to ready (957.445ms)
+✔ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (199.2561ms)
+✔ instance storage does not create or accept arbitrary caller-selected parent directories (417.5599ms)
+✔ instance/task requests enforce each exact candidate payload and v1 envelope (3.3201ms)
+✔ pagination, names, MC identities, UUIDs and actions remain bounded (0.4649ms)
+✔ public instance summaries exclude storage identity and paths (0.6544ms)
+✔ task snapshots validate progress, enumerations and exact error mapping (3.9654ms)
+✔ task results and events reject leaked fields, wrong identities and nonterminal result (0.8862ms)
+✔ every domain error has fixed controlled public data (0.6788ms)
+✔ handler checks sender before dispatch and returns correlated safe failures (2.7398ms)
+✔ handler validates adapter outputs and task correlation without leaking private results (0.6166ms)
+✔ handler maps declared adapter failures and redacts arbitrary thrown values (0.6383ms)
+✔ Java properties parse supported 8/17/21 versions and explicit Windows x64 metadata (6.1094ms)
+✔ Java properties refuse incompatible majors, architecture, OS and inconsistent specification (2.3629ms)
+✔ Java properties cannot use banners, duplicate properties, malformed versions or private text as runtime evidence (0.862ms)
+✔ Java probe uses exact non-shell argv, hidden child and removes ambient agent injection settings (17.5211ms)
+✔ Java cancellation kills and joins close rather than reporting termination immediately (3.8341ms)
+✔ Java timeout and combined output budget terminate and await child close (31.7433ms)
+✔ Java probe rejects nonzero exit, spawn errors and malformed UTF8 without exposing diagnostics (4.5336ms)
+✔ Java probe rejects unselected paths and cancelled/invalid inspections before spawning (1.4971ms)
+✔ Java default inspection requires an actual nonempty regular executable path (61.1887ms)
+✔ Java default inspection refuses a directory even when named java.exe (24.5131ms)
+✔ Java metadata accepts only fixed official index and content-addressed manifests (1.6892ms)
+✔ Java package refuses traversal, links, aliases, collisions, missing executable and untrusted downloads (1.6221ms)
+✔ compatible measured registered Java is reused without contacting the network (1.0132ms)
+✔ missing Java follows pinned official manifest, prepares files then measures before registration (1.6873ms)
+✔ cancelled or unsupported Java never downloads or registers (1.0868ms)
+✔ inspection and runtime share selected-candidate priority and measurement budget; registration cannot substitute a patch (76.4065ms)
+✔ modern launch retains one argument per value, absolute Windows paths and inherited client jar (6.7569ms)
+✔ legacy JVM fallback and virtual assets use the supplied actual game directory (3.3048ms)
+✔ Forge module exclusion follows the inherited physical client JAR without changing version identity (0.556ms)
+✔ JNA writes temporary DLLs outside the verified native directory (0.5172ms)
+✔ Java mismatch, invalid identities, memory and launcher version fail before execution (3.0338ms)
+✔ conflicting JVM settings, unknown placeholders and oversized argv cannot silently launch (5.7229ms)
+✔ assetIndex id overrides legacy name and additional official argument bindings are literal (0.6199ms)
+✔ launch uses only the trusted index alias and matches the virtual resource directory (1.2488ms)
+✔ native runtime caches stay private and outside the verified immutable natives (0.6521ms)
+✔ offline UUID v3 matches Java nameUUIDFromBytes compatibility vectors and preserves case (34.0725ms)
+✔ profile parser refuses unknown fields, invalid relationships and path/identity spoofing (5.7372ms)
+✔ actual worker persists Java selection and independent offline identity across restart and unknown outcome retry (1238.6848ms)
+✔ private worker profile messages remain exact and cannot become arbitrary record IO (3.2939ms)
+✔ profile shutdown joins an admitted Java probe and commit and refuses new mutations (6.3376ms)
+✔ launch recovery preserves errors and bounds restart reconciliation (1021.767ms)
+✔ renderer store exposes complete active and instance collections without losing selection (15.918ms)
+✔ root B can refresh while root A is in flight; late A cannot refill B (4.6852ms)
+✔ A to B to A generation does not accept an old same-root response (3.565ms)
+✔ original-task query is deduplicated and never treats a failed read as safe business retry (1.6625ms)
+✔ concurrent task confirmation cannot be overwritten by an older list snapshot (2.1739ms)
+✔ explicit history browsing is retained until a deliberate list refresh (15.06ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (13.2791ms)
+✔ isolation priority is pack, explicit override, then global default (1.9752ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (1.2244ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.3668ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.3563ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.3518ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.3696ms)
+✔ pure path imports remain allowed while actual Node and UI capabilities stay prohibited (3052.8258ms)
+✔ loader composition inherits vanilla content while pinning entry, arguments and trusted libraries (9.3733ms)
+✔ loader composition refuses mismatched library facts and duplicate version identities (1.0559ms)
+✔ loader metadata orchestration produces one complete pinned plan without side effects (5.369ms)
+✔ loader metadata orchestration rejects cancellation, corrupt stored bytes and unknown failures (1.1449ms)
+✔ provider facts distinguish Forge major from the independent NeoForge FML artifact version (5.4103ms)
+✔ loader Maven libraries use inline profile proof or the exact official sidecar (62.3444ms)
+✔ official Maven proof retries network failures three times, never malformed proof or cancellation (1042.9975ms)
+✔ artifact policy admits only exact official Maven hosts without query or credentials (0.5615ms)
+✔ loader Maven resolver rejects malformed proof, unsafe size, bad evidence and cancellation (3.0864ms)
+✔ Maven size retries do not refetch a successful checksum and cancellation interrupts its backoff (798.9373ms)
+✔ loader catalogs retain official identities and reject duplicate or mismatched entries (3.7769ms)
+✔ official profiles produce deterministic Maven paths and require missing proof sidecars (1.9294ms)
+✔ profiles reject identity substitution, unsafe repositories and partial checksums (0.844ms)
+✔ Forge promotions preserve Recommended priority without turning Latest into stable (0.4849ms)
+✔ NeoForge release catalog filters the exact 1.21.1 series and sorts deterministically (0.5114ms)
+✔ read-only worker receipt lookup does not admit work, change state or cross request ownership (1084.5159ms)
+✔ all four loader receipts survive restart and offline catalog without new task or metadata effects (1559.5025ms)
+✔ receipt worker protocol rejects arbitrary fields and invalid hashes before SQL access (4.1146ms)
+✔ four loader targets preserve approved Minecraft and Java identities without claiming runtime support (2.5757ms)
+✔ stable representative wins over an earlier returned newer loader only for its own Minecraft target (1.1082ms)
+✔ missing or no-longer-stable target is never invented or selected over another stable version (0.2582ms)
+✔ same in-flight loader request shares catalog work and pending admission is bounded (6.1171ms)
+✔ loader service rechecks official catalog identity before transactional admission (2.2617ms)
+✔ loader service rejects unimplemented Minecraft series before network access (0.5967ms)
+✔ both processor families expose unverified candidates and preserve exact isolated identities (1.1859ms)
+✔ loader source allowlist accepts only fixed official endpoint shapes (7.4759ms)
+✔ metadata client binds Forge and NeoForge catalogs to their fixed official endpoints (3.1657ms)
+✔ metadata client binds validated facts to the exact official response digest (2.3206ms)
+✔ metadata client redacts malformed documents and refuses unsafe identifiers (1.019ms)
+✔ background loader profiles retry only bounded transport unavailability (1.4927ms)
+✔ untrusted responses and invalid profiles are never retried (0.7166ms)
+✔ loader profile transport retry budget is exactly three (1.1684ms)
+✔ cancelled loader profile cannot start another retry (1.6523ms)
+✔ loaders.v1 accepts controlled identities and rejects paths, URLs and extra fields (7.9081ms)
+✔ loaders.v1 validates bounded unique version output and fixed safe errors (2.1547ms)
+✔ instances.v2 distinguishes vanilla and pinned loader identities without leaking storage facts (5.5535ms)
+✔ instances.v2 handler enforces its versioned envelope and validates private projections (2.0217ms)
+✔ loader handler validates sender, envelope and adapter output without leaking failures (14.8985ms)
+✔ accepts a lower local ZIP version while rejecting a higher unsupported minimum (98.7943ms)
+✔ local JAR worker returns real hashes, exact four declarations and nested evidence without writes (296.6126ms)
+✔ declaration interpretation runs inside the worker and its private facts are independently validated (485.7462ms)
+✔ scanner refuses corrupt class CRCs, unsafe identities, malformed ZIPs and invalid UTF8 (407.657ms)
+✔ scanner enforces entry, nesting, node and shared decompression budgets (106.1026ms)
+✔ internal Mod worker protocol rejects executable selectors, forged trees and unbounded output (43.4714ms)
+✔ Mod scan cancellation, timeout, concurrency and malformed workers join exit before reuse (648.5883ms)
+✔ pinned closure recursively fetches exact versions and deduplicates shared projects (20.4689ms)
+✔ project-only dependencies return explicit choices and never silently select a preferred release (1.0189ms)
+✔ installed versions are reused without querying an upgrade and pins never replace them (0.8701ms)
+✔ a fixed-version identity substitution is rejected before becoming a candidate (1.8659ms)
+✔ cancellation joins metadata reads, prevents expansion, and one active collection is bounded (0.7638ms)
+✔ cycles and depth are bounded while input snapshots and fetched metadata stay unchanged (10.5511ms)
+✔ fixed version conflicts remain visible, option truncation is explicit, and false project candidates are refused (3.0769ms)
+✔ a later exact pin removes a previously offered project choice (0.5072ms)
+✔ local checks distinguish runtime dependencies, aliases, disabled files and exact requirements (5.3939ms)
+✔ duplicate identities, alias collisions and conflicts are explicit; optional present versions still validate (0.7836ms)
+✔ only declared client nested JARs satisfy dependencies, with paths preserved as evidence (1.9871ms)
+✔ unknown versions, formats, unreadable files and unsupported expressions cannot pass (0.6465ms)
+✔ Forge multi-Mod and separate FML/NeoForge versions retain side and JarJar unknowns (2.4292ms)
+✔ Quilt prefers its own declaration, supports Fabric fallback and preserves unresolved conditions (0.4499ms)
+✔ instance and nested limits report unknown rather than silently truncating into success (34.3668ms)
+✔ known jarVersion substitution uses only the actual main-section manifest with continuations (18.4605ms)
+✔ Fabric declarations preserve real IDs, aliases, exact constraints, nested JARs and client applicability (1.8417ms)
+✔ Quilt declarations retain aliases, optional requirements and unknown unless/alternative/plugin conditions (0.7191ms)
+✔ malformed, unknown, variable and invalid JSON metadata remains explicitly unresolved (1.0726ms)
+✔ standard TOML parses multi-Mod and preserves Forge language, Java, server-only and optional dependencies (1.3096ms)
+✔ NeoForge type defaults and incompatible/discouraged requirements remain distinct (0.4724ms)
+✔ TOML unknown conditions, duplicate fields and malformed structures never produce a clean report (3.2457ms)
+✔ shared metadata limits bound recursion, tree size and unsafe nested paths (0.7768ms)
+✔ dependency closure deduplicates diamond projects and preserves every requiring parent (35.4313ms)
+✔ all incoming fixed-version constraints are checked even after a project was visited (11.7701ms)
+✔ installed projects are reused exactly and never upgraded to satisfy a different selected version (0.6708ms)
+✔ missing exact candidates, file-only identities, unknown installed files and ambiguous files remain unknown (0.6085ms)
+✔ cycles and 32-level/256-project limits stop traversal without pretending resolution (5.0667ms)
+✔ target conflicts, incompatible installed projects, duplicate projects and forged version identities are conflicts (0.3438ms)
+✔ optional and embedded declarations do not silently add external projects and input snapshots stay unchanged (0.3057ms)
+✔ a previously visited shared tail is rechecked when a deeper path would exceed the limit (0.5466ms)
+✔ double check associates actual bytes and preserves platform/local version identities independently (3.0016ms)
+✔ wrong file proof, Minecraft, loader and client declarations surface evidence conflicts (1.0102ms)
+✔ fixed version prerequisites never degrade to any installed version of the same project (2.043ms)
+✔ optional, incompatible, embedded and identity-less platform relationships remain distinct (1.266ms)
+✔ duplicate project versions and unresolved nested content block automatic resolution (0.7659ms)
+✔ inspection binds real hash requests to two stable local observations and reports progress (4.8602ms)
+✔ platform outage remains explicit unknown and does not erase the local report (2.0742ms)
+✔ network-time file changes or environment revisions invalidate the check (1.3462ms)
+✔ inspection cancellation joins platform calls and prevents concurrent scans (1.0809ms)
+✔ instance inventory reads local hashes and disabled files without creating directories or changing JARs (2095.6364ms)
+✔ scan preserves controlled unreadable/corrupt/unsafe entries as unknown evidence (576.7448ms)
+✔ file content, directory inventory and instance revision changes invalidate the observation (2086.5158ms)
+✔ inventory admission, cancellation and entry count are bounded (114.158ms)
+✔ Mod IPC rejects untrusted envelopes before touching a service (8.7094ms)
+✔ Mod IPC preserves idempotency identities and report/task channel shapes (10.2308ms)
+✔ confirmation IPC requires explicit exact consent and returns only stable task references (3.3607ms)
+✔ Mod plan contract rejects paths, arbitrary selections and malformed plan evidence (1.2308ms)
+✔ Mod IPC rejects malformed service output and redacts unexpected failures (3.5327ms)
+✔ Java facts measure selected compatible registered JVM and never trust persisted version text (5.4722ms)
+✔ missing, failed or changed-major JVM leaves unknown and does not discover a runtime (0.6378ms)
+✔ Java facts cancel by joining probe close, reject overlapping work and detect profile changes (1.4494ms)
+✔ Mod context requests the real metadata Java major and propagates measured facts without inference (23.8871ms)
+✔ metadata reconstruction preserves the original official index path and input record (2.4442ms)
+✔ ready restoration accepts only one trusted legacy or alias index receipt and never rewrites evidence (5.459ms)
+✔ Mod requests and responses admit only controlled instance/task identities and validated reports (11.0787ms)
+✔ real worker durably saves Mod jobs and immutable reports, preserving task identity across restart (1183.9889ms)
+✔ unknown future Mod formats stop typed IO and remain byte-for-byte intact (732.7194ms)
+✔ private Mod storage schemas reject arbitrary domains, overwrites and forged record associations (2.1082ms)
+✔ library reader rehashes a real JAR, keeps its actual declared version and never changes its bytes (1201.305ms)
+✔ corrupt cached bytes and conflicting SHA512 platform evidence cannot authorize a root (1483.0912ms)
+✔ changed library records and files invalidate an observation after the platform read (1191.4308ms)
+✔ unready resources, wrong source ownership and project substitutions stay controlled (957.9054ms)
+✔ cancellation waits for the in-flight source read and a reader refuses concurrent admissions (1102.0717ms)
+✔ single JAR disable/enable predicts both checks without mutating or aliasing inputs (9.3637ms)
+✔ required reverse closure includes aliases and cycles; optional edges remain informational (33.9123ms)
+✔ all declarations and declared nested providers move with their physical root; stray nested archives do not (1.5704ms)
+✔ platform exact version reverse links stay separate from local Mod IDs (1.0863ms)
+✔ enabling detects conflicts, aliases, runtime mismatch and missing platform source (1.9375ms)
+✔ pre-existing broken or unknown inventory remains blocking even when the action removes the finding (0.7845ms)
+✔ rejects missing/ambiguous targets, mismatched activation snapshots and over-budget inventory (1.6458ms)
+✔ relation overflow is explicit and cannot produce a ready preview (21.554ms)
+✔ server-only declarations cannot borrow a same-ID client provider to create reverse edges (0.9598ms)
+✔ runtime requirements never bind to spoofed JAR provider identities (0.7468ms)
+✔ admission is idempotent across key ordering and completed results are independently copied (15.0306ms)
+✔ running cancellation joins scanner exit, queued cancellation never starts and capacity is bounded (5.1172ms)
+✔ expiry is monotonic and late acceptance retry cannot start a second scan (1.52ms)
+✔ a restarted registry never silently restores old ephemeral observations (2.3984ms)
+✔ sender and exact input validation run before service access, and status is correlated (4.1144ms)
+✔ presentation removes private URLs and archive entry paths, preserves identities and alias ownership (23.0354ms)
+✔ unsupported evidence is discarded and cannot yield a ready result (0.6393ms)
+✔ pre-existing and prospective issues remain distinguishable and preserve safe requirements (1.5574ms)
+✔ a shared 512-entry budget bounds the complete impact presentation (2.5061ms)
+✔ invalid file identifiers, digests and path-like filenames are rejected (2.8597ms)
+✔ private preview binds the requested root, instance and exact inventory and returns no filesystem path (34.2117ms)
+✔ root drift, wrong instance and stale revisions stop before a preview can be returned (3.0265ms)
+✔ same filename fileId is not sufficient after content changes, including inconsistent internal fingerprints (8.0919ms)
+✔ a platform transport failure cannot become ready by disabling the last JAR (1.6397ms)
+✔ admission and cancellation join the ongoing scan boundary and release the private lane afterwards (3.7425ms)
+✔ invalid selectors cause no context or inspection side effects (1.3497ms)
+✔ real two-scan inventory and JAR worker preview never rename or rewrite a local JAR (2607.045ms)
+✔ planner binds a downloaded root, resolved dependency bytes and the current instance fingerprint without paths or URLs (4.8807ms)
+✔ unknown installed identities remain a non-confirmable plan with their dependency evidence (0.8519ms)
+✔ platform substitution or downloaded-root hash mismatch cannot produce a plan (1.4121ms)
+✔ planner accepts unchanged version facts when independent response evidence changes (0.4735ms)
+✔ planner cancellation joins an in-flight library read and rejects concurrent previews (0.5055ms)
+✔ durable confirmation wins cancellation, joins retries and is discoverable after worker restart (959.1283ms)
+✔ cancel wins confirmation and rejected admission never creates an orphan task (415.6357ms)
+✔ admission rejects stale, foreign, unknown and substituted previews before allocating tasks (449.8823ms)
+✔ confirmation bridge rejects false confirmation, extra fields and generic acceptance bypass (1.3296ms)
+✔ saved plan schema binds request, target and content digests, and rejects mutable evidence (1.8856ms)
+✔ private plan bridge rejects paths, mismatched request identities and forged status revisions (2.2203ms)
+✔ real plan worker persists immutable previews, enforces CAS, and retains cancelled records across restart (1055.1364ms)
+✔ unknown saved plan formats stop writes and preserve original JSON byte for byte (1074.5616ms)
+✔ plan retries and a real storage restart return the same saved evidence without repeating metadata work (1093.7863ms)
+✔ same in-flight plan joins with independent outputs; other requests are bounded and inputs are snapshotted (1278.5334ms)
+✔ cancellation is durable, checks exact plan identity and never reactivates the same request (1924.9629ms)
+✔ lost write acknowledgement reconciles only exactly committed plan evidence (1053.8972ms)
+✔ closing joins a cancellation already being persisted and rejects later operations (431.9833ms)
+✔ closing an active metadata preview aborts and joins it without publishing a plan (394.4898ms)
+✔ public saved-plan operations validate correlation, redact private records and refuse untrusted cancellation (464.8545ms)
+✔ SHA512 association sends only bounded hashes and preserves exact project/version prerequisites and evidence (75.558ms)
+✔ candidates sort release first then publication and ID, while pinned lookups remain exact (5.3035ms)
+✔ platform adapter rejects unsafe selectors, forged hash associations, project drift and invalid file proof (15.5048ms)
+✔ platform transport bounds status, rate-limit cooldown, malformed text, cancellation and concurrency (268.5503ms)
+✔ transient platform failures retry once and cancellation stops the retry (544.1685ms)
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (5497.0612ms)
+✔ confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files (4350.2435ms)
+✔ unconfirmed, cancelled, stale or occupied plans cannot start dependency downloads (1237.4716ms)
+✔ enabled exact dependency reuse preserves a renamed JAR without downloading or upgrading it (3089.489ms)
+✔ a disabled dependency is not reused; unknown embedded project relationships stop before duplicate downloads (3285.0716ms)
+✔ prospective declarations reject unsatisfied actual ranges, duplicate modIds and unknown requirements (5746.6985ms)
+✔ case-insensitive filename collisions and refreshed source changes stop without overwriting an existing Mod (1292.585ms)
+✔ fixed candidate metadata and post-download SHA512 mismatch cannot prepare untrusted bytes (1771.3756ms)
+✔ cancelled preparation joins in-flight transfer cleanup and refuses concurrent admissions (1253.0977ms)
+✔ plan refusal, external file changes and unknown sessions during transfer invalidate the preparation (4559.4469ms)
+✔ Maven intervals preserve each endpoint, unbounded sides and unions (2.6778ms)
+✔ Fabric predicates, prereleases, opaque versions and Quilt any/all retain dialect (2.1495ms)
+✔ loader shorthand bounds exclude the next series prereleases and preserve unsupported syntax (0.5375ms)
+✔ three-valued aggregation never loses unresolved constraints (0.2756ms)
+✔ public Mod reports retain evidence while omitting raw declarations and private machine data (6.3809ms)
+✔ strict report schemas reject paths, extra execution data, inconsistent source/hash facts and false success (4.7474ms)
+✔ report projection preserves unknown reasons and enforces finite issue/metadata budgets (55.1645ms)
+✔ resolver proposes stable releases then newest date and exact ID without interpreting platform version numbers (30.0558ms)
+✔ later incompatible pins backtrack to a satisfying older project candidate with cached exact evidence (6.5317ms)
+✔ explicit root pins and installed versions remain fixed while optional dependencies stay unselected (3.0554ms)
+✔ explicit player choices are never silently replaced and empty choices cannot claim success (1.8716ms)
+✔ all conflicting alternatives are reported without treating a failed read as unsatisfiability (3.2836ms)
+✔ solver considers a viable candidate beyond the 32-entry display preview (14.5575ms)
+✔ search budget and unknown installed evidence stay explicit unknowns instead of false conflicts (2.9734ms)
+✔ cancellation joins an in-flight read, prevents expansion and bounds concurrent resolution (3.4875ms)
+✔ valid project identities cannot accidentally read inherited object properties (2.7609ms)
+✔ cyclic candidates can be rejected in favor of an acyclic alternative (3.0855ms)
+✔ cached version identities cannot be substituted by a project candidate response (5.4275ms)
+✔ public Mod admission shares task listing, reconnect snapshots and joined cancellation (703.6096ms)
+✔ Mod tasks are durable/idempotent, immutable reports reconnect and completed work is not repeated (1232.8909ms)
+✔ Mod task cancellation joins the active read, enforces one scan and survives restart without replay (1060.7975ms)
+✔ validation and read failures stay controlled and never publish a report (1049.4841ms)
+✔ a lost report acknowledgement recovers the actual JSON commit without rescanning or overwriting it (1919.7037ms)
+✔ failed task state waits for the durable reason instead of racing its report reader (1031.4287ms)
+✔ a lost final task acknowledgement reconciles completed SQL and JSON without false recovery or duplicate reports (1079.3381ms)
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (5699.2859ms)
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (3817.1902ms)
+✔ failed preparation persists bounded assessment and immutable task/plan association (1272.9118ms)
+✔ lost result acknowledgement resolves only exact durable content and restarts without replay (1543.6529ms)
+✔ executor cancellation waits for preparation cleanup and leaves no transaction or instance change (1086.5342ms)
+✔ executor classifies a proven rollback as failed and never replays it after restart (1998.6424ms)
+✔ orphan confirmation without a transaction becomes needsRecovery without running preparation (1018.6921ms)
+✖ executor restores completion from a real committed transaction after the final task update was absent (1500.4785ms)
+✖ commit boundary rejects cancellation and close joins the actual transaction (1578.9303ms)
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1516.6135ms)
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1507.938ms)
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1499.1822ms)
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (1539.3647ms)
+✔ pre-existing player files and session owners are never overwritten or cleared (1681.9796ms)
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (3043.8251ms)
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (1582.1116ms)
+✔ cancellation during source verification joins the worker boundary and does not start a staged copy (841.9369ms)
+✖ recovery finishes a published instance after index failure using its unique commit ID (1483.706ms)
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (1528.0677ms)
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1485.1802ms)
+✖ real process termination recovers owned transactions at three commit boundaries (14264.9432ms)
+✔ processor JAR validation permits class counts above native limits while retaining ZIP checks (386.0517ms)
+✖ actual linked source parents and destination directories never redirect native extraction (75.7637ms)
+✔ native archives extract stored/deflated files, UTF8, descriptors and empty directories with exclusions (406.5231ms)
+✔ native archive original SHA256 and size are mandatory before creating any output (48.4886ms)
+✔ native archives reject traversal, Windows aliases and noncanonical names before writing (662.5913ms)
+✔ native archives reject unknown filename encoding and malformed UTF8 (152.1204ms)
+✔ native archives reject symlink, special file, reparse and Unix hardlink metadata (516.3933ms)
+✔ native archives reject duplicates, case collisions and file/directory conflicts across all archives before writes (344.835ms)
+✔ native archive CRC, declared output and fully consumed deflate bytes are verified (717.3019ms)
+✔ native archive limits reject excessive per-entry, aggregate and entry-count budgets before writes (348.9503ms)
+✔ native archive header disagreement, unsupported flags, ZIP64 and overlapping local records are refused (230.6509ms)
+✔ native extraction requires an empty destination and never overwrites player files (35.6327ms)
+✔ native extraction errors are fixed codes without filesystem paths (52.2763ms)
+✔ native worker schemas reject scripts, unknown keys, unsafe limits and unbounded replies (3.443ms)
+✔ real one-shot worker releases its directory and rejects occupied output without leaking paths (574.342ms)
+✔ native extraction admission is bounded and active cancellation joins before staging removal (367.2116ms)
+✔ close joins a running extraction and prevents admission, timeout and malformed archives stay fixed (605.5112ms)
+✔ transient connection failures and 502 responses retry within a three-attempt budget (1180.5942ms)
+✔ a body disconnect resumes the latest fsynced prefix using Range and If-Range (515.1333ms)
+✔ permanent HTTP errors, long Retry-After and lost journal acknowledgements are not retried (368.6619ms)
+✔ cancellation during backoff starts no next request; permanent outages stop after three attempts (987.037ms)
+✔ metadata retries fresh responses for transient failure but not invalid trust or permanent HTTP status (788.2573ms)
+✔ an acknowledged mirror prefix retains its validator when re-entering the same source (82.572ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-Xu2qFu"}
+{"child":6136,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:8e586960-6d0e-4a85-80b3-58f8a913328a:2162252404:844424931539650:2162252404:562949954828902"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ object-root guard recovers after controlled process exit and excludes a different profile (1319.6189ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-hzQQNV"}
+✔ object lease preserves refused marker 1a04ed60-7925-4ed2-9446-0e174104edc5 (33.3264ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-rU9iXI"}
+✔ object lease preserves refused marker unknown-owner-format (44.2552ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-VvAlYy"}
+✔ object lease preserves refused marker oucl-object-owner-v1:truncated (37.1123ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-FEKYTD"}
+{"child":23176,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:357e7809-db78-42f2-ad45-5637e80bf23d:2162252404:3096224745224678:2162252404:1407374884961136"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-MGUZ5L"}
+✔ valid new marker without its guard and incomplete empty guard both fail closed (1036.2947ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-EXjDor"}
+{"child":36312,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:f4f970cc-3243-4fa4-b1be-1b7a2054f520:2162252404:3940649675355621:2162252404:1407374884445048"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects replace of guard (847.2823ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-7HKGl4"}
+{"child":21168,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:39a667b9-d5d1-45a9-86f7-26695ecf4712:2162252404:562949954829868:2162252404:1970324838383084"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects corrupt of guard (1305.8438ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-xdnkeq"}
+{"child":24840,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:fe3f5913-8809-4b70-be51-91cc84802ec4:2162252404:844424931540656:2162252404:3377699721933720"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✖ preserved new marker rejects hardlink of guard (827.2937ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-JK6taL"}
+{"child":27072,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:03a4d61a-963c-4ebd-830b-15fd4e008934:2162252404:5629499535621007:2162252404:562949954830147"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-OKKFq5"}
+✔ copied guard and marker cannot authorize a different root identity (938.3496ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-zNbocX"}
+{"child":19428,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:bc904ec7-f984-40e7-8995-5fa9c89e8da7:2162252404:4503599628776697:2162252404:562949954830326"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-G61z7w"}
+✔ the same guard inode cannot be transplanted to a different root identity (833.9682ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-4lRSFY"}
+✔ orphaned object guard -journal remains evidence (12.3294ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-9yrvQR"}
+✔ orphaned object guard -wal remains evidence (9.0835ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-8aZyn5"}
+✔ orphaned object guard -shm remains evidence (9.2154ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-m8oJM2"}
+✔ guard sidecars appearing during operations or before reopen are preserved and block work (91.5463ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-rly2MN"}
+✖ live guard hardlink invalidates subsequent operations and close preserves the marker (72.4973ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-er6ecc"}
+✔ marker delete during actual hash stops before publishing an object (539.355ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-LUIXmc"}
+✔ marker replace during actual hash stops before publishing an object (388.4982ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-Zeo8rl"}
+✔ close drains a real commit before releasing ownership and rejects new admissions (748.339ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-gtgO89"}
+{"child":40352,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:9f9d199b-622f-4658-a8af-c65a7a662a90:2162252404:844424931541140:2162252404:2251799815093874"},{"kind":"checkpoint","point":"object-committed"}],"stderr":""}
+✔ reacquisition after object-committed process exit never promotes orphan bytes (1547.0777ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-lgbnC0"}
+{"child":31988,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:3d58532c-87d6-436d-b8d7-175419f0aa56:2162252404:562949954830967:2162252404:1407374884962164"},{"kind":"checkpoint","point":"proof-committed"}],"stderr":""}
+✔ reacquisition after proof-committed process exit never promotes orphan bytes (2006.1654ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-mwbM8b"}
+✔ object guard remains a separate domain from metadata guard (72.1788ms)
+✔ real object commits deduplicate bytes but preserve independent source evidence (3468.0197ms)
+✔ same-sized wrong bytes never enter objects and malformed artifact facts reject early (1258.1224ms)
+✔ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (3131.5642ms)
+✔ interrupted append-only commits preserve orphan bytes and recover only proven sources (2649.9868ms)
+✔ corrupt existing object is never overwritten by a new commit or reused through an index (1164.584ms)
+✔ broken provenance cannot acquire trust from a valid object or index hint (901.3731ms)
+✔ unknown cache schema blocks object search while durable tasks stay readable (971.5507ms)
+✔ guard retains compatibility marker and rejects a competing writer (144.18ms)
+✔ legacy marker is never taken over or modified (8.6484ms)
+✔ damaged guard cannot authorize takeover of a preserved marker (56.57ms)
+✔ orphaned guard sidecars are preserved and block initialization (16.7757ms)
+✔ new-format guard can be reacquired after real owner termination (337.2913ms)
+✔ manifest parser reads one main-section class and continuation lines (3.0178ms)
+✔ loader and role freeze the expected processor entry point (0.3959ms)
+✔ processor manifest worker protocol rejects paths, extra fields and malformed replies (1.274ms)
+✔ derived outputs publish once, verify on reuse and preserve foreign conflicting files (411.2798ms)
+✔ profile schemas reject paths, unknown channels/fields, unsafe names and invalid settings (3.2311ms)
+✔ trusted handler rejects invalid envelope/sender before side effects and validates returned DTO (0.8426ms)
+✔ adapter exposes public profiles/settings and only registers a chosen measured Java (6.0643ms)
+✔ profile error mapping/correlation and full implemented capability list remain exact (0.6469ms)
+✔ Modrinth search/version/file projection retains compatibility and re-fetches trusted source hashes (81.6133ms)
+✔ resource API rejects unsafe origins, mismatched ownership, filenames, invalid metadata and rate limits (6.4328ms)
+✔ resource IPC validates sender, correlation, bounded filters and strict DTOs before effects (2.3551ms)
+✔ download acceptance deduplicates, tasks publish only verified resources and survive worker reopen (1823.5715ms)
+{"level":"warn","event":"resource-download-failed","code":"HASH_MISMATCH"}
+✔ hash failures never publish resources and an explicit retry can complete from shared bytes (1399.0786ms)
+{"level":"warn","event":"resource-download-failed","code":"CANCELLED"}
+✔ resource cancellation waits for transfer cleanup, and interrupted ownership remains visible (817.8543ms)
+✔ root request schema accepts only an empty payload and valid correlated envelope (3.6465ms)
+✔ root results enforce labels, exact keys, channel schema and fixed error mapping (0.9812ms)
+✔ directory cancellation changes no registration and leaks no selected local path (376.5909ms)
+✔ native-adapter selection persists once and survives a storage-worker restart (666.9542ms)
+✔ portable default is created only for a fresh installation and never replaces an existing selection (378.4422ms)
+✔ a blocked portable directory can be retried without replacing any files or registration (790.927ms)
+✖ application directories, their ancestors and linked selections are rejected (590.503ms)
+✔ concurrent directory requests share one native selection and one stable record (466.8041ms)
+✔ disconnected directory is retained and shown unavailable rather than silently replaced (586.7836ms)
+✔ settings reject unknown fields, non-integers and capacity overflow before writing (4.0824ms)
+✔ settings CAS persists values, merges defaults, rejects stale revisions and maps concurrent conflicts (12.1458ms)
+✔ journal larger than the 128MiB worker heap reopens without retaining historical JSON snapshots (9638.6265ms)
+✔ versioned JSON commits real files, reopens and preserves strict revisions (187.9297ms)
+✔ all five commit boundaries recover old or new JSON and replay idempotently (610.5831ms)
+✔ first-create interruption rolls back absence or completes committed JSON (268.4174ms)
+✔ same-process revisions serialize and another repository cannot acquire the owner lease (97.0347ms)
+✔ invalid data and identifiers never create an operation or change JSON (142.8519ms)
+✔ changed JSON or missing authoritative database never silently becomes an empty store (98.4666ms)
+✔ unknown operation state, broken history and future schema all stop recovery (323.5798ms)
+✔ unknown staging content and unjournaled records are preserved for recovery (321.9974ms)
+✖ linked repository paths are refused without touching the target (7.9982ms)
+✔ an existing stale/foreign lease is never removed automatically (18.9723ms)
+✔ corrupt staging is kept intact and never promoted or silently discarded (53.5576ms)
+✔ SQLite atomically accepts tasks and identical request retries return the same task (159.2433ms)
+✔ persisted task CAS rejects stale updates and restart protects uncertain effects (108.3537ms)
+✔ missing acceptance evidence and corrupt task state fail recovery instead of replaying (194.9208ms)
+✔ silent but healthy subscription is confirmed by a bounded original-task read (9.6726ms)
+✔ U07 missing backend task stops observation without changing the last business state (8.6538ms)
+✔ subscription error result uses bounded read fallback (0.7926ms)
+✔ subscription reject uses bounded read fallback (0.8856ms)
+✔ four consecutive failures stop automatic polling; explicit reconnect reads the original task (13.9351ms)
+✔ recovery of observation clears only connection errors and preserves a terminal business error (5.6508ms)
+✔ late health read never overwrites newer subscription revision (1.7703ms)
+✔ multiple cards share one observer; last disposal blocks late reads and removes the subscription (1.564ms)
+✔ 100 cards admit at most eight details with no more than two starts per second (5.0986ms)
+✔ hidden page admits no work; old-root closure blocks late subscription and disposes it (3.3407ms)
+✔ closing during subscribe disposes its late receipt without callback delivery (1.0886ms)
+✔ explicit query promotes a waiting detail without exceeding the subscription budget (2.8428ms)
+✔ slow subscriptions never exceed two concurrent bridge calls (8.036ms)
+✔ wrong task in a health response is never delivered as this task (1.239ms)
+✔ confirmed terminal task stays confirmed across hiding and can still be explicitly queried (0.9625ms)
+✔ explicit terminal query is not starved by eight active details (2.6861ms)
+✔ nine persistent active tasks each receive automatic bounded confirmation (1.1614ms)
+✔ nine active tasks keep receiving health confirmations without subscription churn (9.2813ms)
+✔ one hundred continuously active tasks all get a first confirmation under the shared budget (18.0151ms)
+✔ adding a ninth task releases one subscription and confirms it without subscription churn (4.8718ms)
+✔ delayed disposal plus explicit reconnect does not exceed eight remote subscriptions (6.1799ms)
+✔ late rotating read cannot cross a hide and later foreground generation (2.0412ms)
+✔ U04 all active states beyond 100 completed installs are found with existing state filters (13.0087ms)
+✔ instance 101 remains selectable after following its own cursor (3.4219ms)
+✔ 40 calls bound a large two-state query; explicit continuation follows cursors without replaying writes (93.0773ms)
+✔ ten second elapsed budget stops before another query and keeps an incomplete marker (1.0968ms)
+✔ cursor expiry discards its old snapshot, restarts once, and does not spin on repeated expiry (2.4199ms)
+✔ known active task absent from filters is read by original ID and may become terminal (2.8363ms)
+✔ missing known task keeps last facts and marks the collection incomplete (1.1626ms)
+✔ state migration merges by task identity and retains the highest revision (0.5419ms)
+✔ same revision contradictions require original task confirmation (0.6835ms)
+✔ history has an explicit continuation independent of completed active scans (2.0524ms)
+✔ invalidated root session stops admitting further queries (0.6092ms)
+✔ shared list/detail budget admits at most two concurrent calls and two starts per second (5.1201ms)
+✔ queued read from an old root is abandoned before invocation (0.7948ms)
+✔ long history fallback queries every active state and recovery before a second filtered page (11.1984ms)
+✔ small complete snapshot confirms known active identities without another per-task scan (0.4958ms)
+✔ expired history cursor restarts within the same explicit batch and exposes a restart hint (5.6015ms)
+✔ target pages bind sender, filter and root generation while allowing limit changes (6.2805ms)
+✔ destroying sender invalidates cursor without cancelling a task (1.5551ms)
+✔ older snapshots are evicted together with their cursors (6.4037ms)
+✔ snapshot count limit rejects overflow instead of truncating (8.6488ms)
+✔ a cursor that expires while its root is being checked stays expired (1.5703ms)
+✔ timed-out or destroyed observations cannot create late cursors or release the pending budget early (2519.9456ms)
+✔ target reads serialize and a rejected read releases the admission queue (5.0644ms)
+✔ target contract requires exact bounded inputs and normalizes filter identity (5.1725ms)
+✔ target response validates request correlation, ownership, uniqueness and fixed errors (1.3476ms)
+✔ worker stops inventory between records at deadline, preserves bytes and remains usable (900.6125ms)
+ℹ same worker thread=1; SQL rows sha256=3363515524d5b5e98c6a1f81e5b3c4725ff010e83ae3e7f9a3360a7140f4dfa0; raw file sha256=97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda,245e17b55b0d64816adc210f3e4dd79e7f3231a366860f914fef8f7ee7defa29,724f6839aa1bc8042f416df7d97f0eb1cc2956c3e1880bc5d80a8e0442dd1f3a
+✔ RecordStore preserves the exact budget error and unrelated storage errors (57.018ms)
+✔ budget callback preserves both 1000-item domains and refuses either 1001st item (273.1153ms)
+✔ real SQLite target inventory retains both complete 1000-row domains and rejects either overflow (400.4439ms)
+✔ target inventory checks both sides and isolates unrequested kinds (5.972ms)
+✔ target inventory rejects duplicate task references and unsupported filters (0.9575ms)
+✔ target inventory rejects request UUIDs duplicated with different case (0.7664ms)
+✔ target inventory accepts 1000 rows and refuses 1001 without truncation (57.584ms)
+✔ ready feature is optional and strict; target requests are bounded (13.7655ms)
+✔ worker proves per-instance Mod targets after reopening and fails closed on orphaned admission (930.046ms)
+✔ worker derives Mod installation targets from each immutable confirmed plan after restart (1000.9204ms)
+✔ target read waits through the actual SQL admission to Mod index commit gap (566.6793ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (7.6307ms)
+✔ execution verifies before commit and never repeats terminal effects (1.32ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.6184ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.4575ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.6798ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.4769ms)
+✔ shared transfers obey demand from all installers independently (2.7292ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (3.9315ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (5.7795ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (1.4898ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (1.8345ms)
+✔ server-only input cannot provide a client or main class (0.6098ms)
+✔ library and asset-index provenance follows each actual declaration independently of the selected leaf (1.3102ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (3.767ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.8754ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (1.1986ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (3.2604ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (2.0006ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (1.037ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (1.4147ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (32.4205ms)
+✔ private worker messages reject extra keys, scripts, paths, unknown errors and versions (5.3476ms)
+✔ real storage worker persists idempotent acceptance and protects interrupted task state (742.3295ms)
+✔ storage request queue is bounded and reserves a draining close slot (469.5135ms)
+✔ storage caller timeout retains its queue slot and does not pretend mutation was cancelled (1668.1843ms)
+✔ worker crash keeps the owner lock until its process exits (433.4985ms)
+✔ real streamed hashes match known bytes and the parent event loop stays responsive (608.6963ms)
+✔ hash cancellation waits for worker exit and leaves input bytes untouched (353.9177ms)
+✔ hash queue has a fixed budget and queued cancellation starts no worker (16.9457ms)
+✔ failed worker startup preserves corrupt metadata rather than replacing it (440.0523ms)
+ℹ tests 691
+ℹ suites 0
+ℹ pass 662
+ℹ fail 25
+ℹ cancelled 0
+ℹ skipped 4
+ℹ todo 0
+ℹ duration_ms 71710.6135
+ℹ start of coverage report
+ℹ --------------------------------------------------------------------------
+ℹ file                      | line % | branch % | funcs % | uncovered lines
+ℹ --------------------------------------------------------------------------
+ℹ .test-build               |        |          |         | 
+ℹ  src                      |        |          |         | 
+ℹ   core                    |        |          |         | 
+ℹ    distribution           |        |          |         | 
+ℹ     manifest.js           | 100.00 |    90.48 |  100.00 | 
+ℹ    download               |        |          |         | 
+ℹ     integrity.js          | 100.00 |   100.00 |  100.00 | 
+ℹ     sources.js            |  90.48 |    85.00 |  100.00 | 15-16
+ℹ    install                |        |          |         | 
+ℹ     assets.js             | 100.00 |   100.00 |  100.00 | 
+ℹ     plan.js               |  98.87 |    94.83 |  100.00 | 73-74
+ℹ    launch                 |        |          |         | 
+ℹ     plan.js               | 100.00 |   100.00 |  100.00 | 
+ℹ    loaders                |        |          |         | 
+ℹ     installer-profile.js  |  98.37 |    92.19 |   96.30 | 39-40
+ℹ     languages.js          | 100.00 |   100.00 |  100.00 | 
+ℹ     metadata.js           |  98.55 |    81.25 |  100.00 | 89-90
+ℹ     processor-manifest.js |  96.08 |    92.31 |  100.00 | 26-27
+ℹ     processor-policy.js   | 100.00 |   100.00 |  100.00 | 
+ℹ    mods                   |        |          |         | 
+ℹ     check.js              |  95.74 |    95.24 |  100.00 | 38-40 60-62
+ℹ     declarations.js       | 100.00 |   100.00 |  100.00 | 
+ℹ     dependency-graph.js   |  97.22 |    96.91 |  100.00 | 53-55
+ℹ     json-declarations.js  | 100.00 |    99.10 |  100.00 | 
+ℹ     maintenance-impact.js | 100.00 |    94.68 |   96.43 | 
+ℹ     manifest.js           | 100.00 |   100.00 |  100.00 | 
+ℹ     platform.js           |  97.06 |    97.80 |  100.00 | 7-9
+ℹ     ranges.js             |  98.33 |    94.48 |  100.00 | 24 69
+ℹ     toml-declarations.js  | 100.00 |    97.73 |  100.00 | 
+ℹ    packs                  |        |          |         | 
+ℹ     fixed-preview.js      | 100.00 |   100.00 |  100.00 | 
+ℹ    path                   |        |          |         | 
+ℹ     layout.js             | 100.00 |    94.92 |  100.00 | 
+ℹ    task                   |        |          |         | 
+ℹ     machine.js            | 100.00 |   100.00 |  100.00 | 
+ℹ     scheduling.js         | 100.00 |   100.00 |  100.00 | 
+ℹ    version                |        |          |         | 
+ℹ     arguments.js          | 100.00 |    97.10 |  100.00 | 
+ℹ     manifest.js           | 100.00 |   100.00 |  100.00 | 
+ℹ     resolve.js            | 100.00 |   100.00 |  100.00 | 
+ℹ     validation.js         | 100.00 |   100.00 |  100.00 | 
+ℹ --------------------------------------------------------------------------
+ℹ all files                 |  98.97 |    96.33 |   99.27 | 
+ℹ --------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at .test-build\tests\download-http.test.js:250:1
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (90.5506ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at HttpTransfer.run (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/download/http.js:242:58)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/download-http.test.js:270:5
+      at async fixture (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/download-http.test.js:35:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\download-parallel.test.js:46:1
+✖ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (90.1643ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/download/parallel-http.js:47:115
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async RequestBudget.run (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/download/request-budget.js:17:14)
+      at async ParallelHttpTransfer.run (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/download/parallel-http.js:29:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/download-parallel.test.js:71:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\file-views.test.js:84:1
+✖ unknown linked parents and target entries are rejected without touching their external target (1046.5287ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-file-view-p8tYbp\outside' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-file-view-p8tYbp\view\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/file-views.test.js:90:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-file-view-p8tYbp\\outside',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-file-view-p8tYbp\\view\\alias'
+  }
+
+test at .test-build\tests\file-views.test.js:127:1
+✖ a recorded copy replaced by a hard link never acquires copy ownership (1538.2658ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-file-view-mhFnV3\store\objects\sha256\d5\d5822bde9fb168e17ef2a3e6c4bbf01cd540f8520815416ded7fad27906b1d70' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-file-view-mhFnV3\view\copy.jar'
+      at async link (node:internal/fs/promises:1767:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/file-views.test.js:131:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-file-view-mhFnV3\\store\\objects\\sha256\\d5\\d5822bde9fb168e17ef2a3e6c4bbf01cd540f8520815416ded7fad27906b1d70',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-file-view-mhFnV3\\view\\copy.jar'
+  }
+
+test at .test-build\tests\instance-folders.test.js:80:1
+✖ folder resolver rejects a linked allowlisted directory that escapes the instance (5.6055ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-instance-folder-outside-nkExWs' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-instance-folder-link-GoJPvr\roots\00000000-0000-4000-8000-000000000001\.minecraft\versions\00000000-0000-4000-8000-000000000002\mods'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/instance-folders.test.js:86:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-instance-folder-outside-nkExWs',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-instance-folder-link-GoJPvr\\roots\\00000000-0000-4000-8000-000000000001\\.minecraft\\versions\\00000000-0000-4000-8000-000000000002\\mods'
+  }
+
+test at .test-build\tests\mod-preparation.test.js:217:1
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (5497.0612ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-preparation.test.js:236:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:178:1
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (5699.2859ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:226:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:241:1
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (3817.1902ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:254:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:435:1
+✖ executor restores completion from a real committed transaction after the final task update was absent (1500.4785ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:440:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:458:1
+✖ commit boundary rejects cancellation and close joins the actual transaction (1578.9303ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:487:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:494:1
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1516.6135ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:498:21)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:516:1
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1507.938ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(retained.includes("root.jar") && retained.includes("library.jar") && retained.some((name) => name.startsWith("rollback-")))
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:529:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:534:1
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1499.1822ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:543:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:543:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:554:1
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (1539.3647ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'FILES_CHANGED'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:563:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:563:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'FILES_CHANGED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:593:1
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (3043.8251ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'CANCELLED'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:608:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:608:9)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'CANCELLED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:618:1
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (1582.1116ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:631:19)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:670:1
+✖ recovery finishes a published instance after index failure using its unique commit ID (1483.706ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:673:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:673:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:686:1
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (1528.0677ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'SCAN_FAILED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:696:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ModContractError: SCAN_FAILED
+        at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:696:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:709:1
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1485.1802ms)
+  Error [ModContractError]: SCAN_FAILED
+      at ModTransactionService.commit (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/src/services/mods/transaction.js:296:13)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:712:21)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'SCAN_FAILED'
+  }
+
+test at .test-build\tests\mod-transaction.test.js:757:3
+✖ real process termination recovers owned transactions at three commit boundaries (14264.9432ms)
+  AssertionError [ERR_ASSERTION]: linked: child checkpoint missing
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/mod-transaction.test.js:778:16)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\native-archive.test.js:16:1
+✖ actual linked source parents and destination directories never redirect native extraction (75.7637ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-native-YfsBuj\output' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-native-YfsBuj\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/native-archive.test.js:19:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/native-archive.test.js:99:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-native-YfsBuj\\output',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-native-YfsBuj\\alias'
+  }
+
+test at .test-build\tests\object-owner-lease.test.js:141:56
+✖ preserved new marker rejects hardlink of guard (827.2937ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-object-owner-xdnkeq\store\objects.owner.guard.sqlite' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-object-owner-xdnkeq\store\objects.owner.guard.sqlite.hardlink'
+      at async link (node:internal/fs/promises:1767:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/object-owner-lease.test.js:152:28)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-xdnkeq\\store\\objects.owner.guard.sqlite',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-xdnkeq\\store\\objects.owner.guard.sqlite.hardlink'
+  }
+
+test at .test-build\tests\object-owner-lease.test.js:204:1
+✖ live guard hardlink invalidates subsequent operations and close preserves the marker (72.4973ms)
+  Error: EPERM: operation not permitted, link 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-object-owner-rly2MN\objects.owner.guard.sqlite' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-object-owner-rly2MN\objects.owner.guard.sqlite.hardlink'
+      at async link (node:internal/fs/promises:1767:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/object-owner-lease.test.js:208:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'link',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-rly2MN\\objects.owner.guard.sqlite',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-object-owner-rly2MN\\objects.owner.guard.sqlite.hardlink'
+  }
+
+test at .test-build\tests\roots.test.js:105:1
+✖ application directories, their ancestors and linked selections are rejected (590.503ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-roots-z6cce4\游戏 数据' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-roots-z6cce4\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/roots.test.js:108:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/roots.test.js:25:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-roots-z6cce4\\游戏 数据',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-roots-z6cce4\\alias'
+  }
+
+test at .test-build\tests\storage.test.js:151:1
+✖ linked repository paths are refused without touching the target (7.9982ms)
+  Error: EPERM: operation not permitted, symlink 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-storage-FBA9W3\target' -> 'D:\MC_start\OUCL\tmp\reaccept-20261115-171810\source\tmp\oucl-storage-FBA9W3\alias'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/storage.test.js:156:3
+      at async fixture (file:///D:/MC_start/OUCL/tmp/reaccept-20261115-171810/source/.test-build/tests/storage.test.js:17:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-storage-FBA9W3\\target',
+    dest: 'D:\\MC_start\\OUCL\\tmp\\reaccept-20261115-171810\\source\\tmp\\oucl-storage-FBA9W3\\alias'
+  }

@@ -1,0 +1,21 @@
+{
+  "files": [],
+  "tables": {
+    "tasks": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "requests": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "operations": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "samples": {
+    "OUCL-PE-Forge-Smoke-1.0.0.mrpack": "e4cf7d5607a70582cfcec200a381892a83c75e122f5be6bad926de23ff7278f2",
+    "different.mrpack": "7f81fd6f3a5bd8344d030e15c144bba0ed80e8ab8b1eb8f0025eb196458b092b"
+  }
+}

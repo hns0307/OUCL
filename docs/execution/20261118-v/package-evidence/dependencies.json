@@ -1,0 +1,10 @@
+{
+  "node": "v24.21.0",
+  "packages": [
+    {
+      "name": "electron",
+      "root": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\electron@45.0.0\\node_modules\\electron",
+      "version": "45.0.0"
+    }
+  ]
+}

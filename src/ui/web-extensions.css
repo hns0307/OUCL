@@ -1,0 +1,16 @@
+.web-extensions{display:grid;gap:.6rem;min-width:0}
+.web-tabs,.web-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem;min-width:0}
+.web-tab{display:inline-flex;min-width:0;max-width:13rem}
+.web-tab>button:first-child{min-width:0;display:flex;align-items:center;gap:.35rem}
+.web-tab>button:first-child>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.web-tab>button[aria-pressed=true]{border-color:var(--green);color:var(--ink)}
+.web-tab-icon{height:1rem;width:1rem;text-align:center;flex:none;border-radius:3px;color:var(--green);background:var(--surface)}
+.web-tab .web-tab-close{padding-inline:.4rem}
+.web-address{display:grid;grid-template-columns:auto auto auto minmax(5rem,1fr) auto;gap:.4rem;align-items:center}
+.web-address>input,.web-controls>select{color:var(--ink);border:1px solid var(--line);background:var(--surface);border-radius:.45rem;padding:.55rem;min-width:0}
+.web-library>summary{cursor:pointer}
+.web-library ul{list-style:none;padding:0;max-height:12rem;overflow:auto;display:grid;gap:.6rem}
+.web-library li{min-width:0;border:1px solid var(--line);padding:.55rem;border-radius:.45rem;overflow-wrap:anywhere}
+.web-library li>button{margin-right:.4rem;max-width:100%;overflow-wrap:anywhere}
+.web-viewport{min-height:280px;height:min(54vh,700px);border-radius:.65rem;border:1px solid var(--line);color:var(--ink);background:var(--surface)}
+.web-viewport>p{padding:1.15rem}

@@ -20,3 +20,5 @@ label仅允许本地化“游戏目录 <编号>”，不回传用户名称/盘�
 main每次校验当前webContents、mainFrame和完整应用file URL；preload只暴露handshake/listRoots/chooseRoot三个方法，无通用invoke。主进程显式装配StorageClient/RootService，正常退出先关闭worker释放本人lease。单实例锁保护同一应用profile；异常进程遗留owner仍按既有安全停写策略，不自动清除。
 
 验证见A1-04d报告。Native dialog实际用户操作尚未自动化，服务测试用注入的选择回调，不将它冒充真实系统选择器操作成功。游戏下载与启动能力未声明。
+
+2026-10-28便携修订：小EXE默认向Electron传入同级`OUCL.runtime/profile`作为userData，显式隔离测试参数仍优先。引导同时提供EXE目录，主进程无既有登记时自动创建同级`OUCL.games`。在便携模式下`roots:choose`成为该固定位置的重试入口，无须原生选择；开发/直接Electron入口继续兼容原生选择。默认创建失败返回固定根错误且允许重试，不中止目录、设置、实例等其他服务初始化。旧全局profile与其中占用标记不自动接管或删除；同一profile已有根仍保持原登记。公开schema不变。真实EXE自动建立、重开及失败重试证据见`../validation/PORTABLE-ROOTS-20261028/REPORT.md`。

@@ -1,0 +1,42 @@
+{
+  "status": "PREPARED",
+  "profile": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-r6-window-v26\\profile",
+  "instances": [
+    {
+      "instanceId": "44ba3306-fa96-52be-bff2-f3ad43e96e75",
+      "displayName": "R6-A Synthetic Fabric",
+      "installTaskId": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+      "modTaskId": "b3fa2c23-423a-4a45-853c-aeeb2f004818"
+    },
+    {
+      "instanceId": "4b3c676a-ca84-5767-afa5-e5a402819b0a",
+      "displayName": "R6-B Synthetic Fabric",
+      "installTaskId": "18947942-d074-4fc5-abe0-d73310bd6cee",
+      "modTaskId": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7"
+    }
+  ],
+  "globalBefore": [
+    {
+      "taskId": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+      "kind": "install",
+      "state": "completed"
+    },
+    {
+      "taskId": "18947942-d074-4fc5-abe0-d73310bd6cee",
+      "kind": "install",
+      "state": "completed"
+    },
+    {
+      "taskId": "b3fa2c23-423a-4a45-853c-aeeb2f004818",
+      "kind": "mod-check",
+      "state": "completed"
+    },
+    {
+      "taskId": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7",
+      "kind": "mod-check",
+      "state": "completed"
+    }
+  ],
+  "reopen": "PASS",
+  "productHashes": "7 MATCH"
+}

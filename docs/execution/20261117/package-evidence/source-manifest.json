@@ -1,0 +1,1061 @@
+{
+  "head": "38c441b7",
+  "files": [
+    {
+      "path": "bootstrap/ColdStart.cs",
+      "sha256": "91d7f77645481fdacdd8f608034ace4a1da833b5b4d24c91c72c31e7cba2d922"
+    },
+    {
+      "path": "bootstrap/Launcher.cs",
+      "sha256": "7807e858c64dc7ae48f9587d7f1146b33ee95428f418239b9173baa72dddb82b"
+    },
+    {
+      "path": "bootstrap/Preview.cs",
+      "sha256": "a631a940da445ec3a3938439461628af10eb34018871d320bf9f7ae739699395"
+    },
+    {
+      "path": "bootstrap/Tests.cs",
+      "sha256": "e2e44ca0059e89baa89dbe407dda223cb069dbdd4f66d406f090483ea8170c2e"
+    },
+    {
+      "path": "bootstrap/package.ps1",
+      "sha256": "c31b764ceb9721ba602e7ce8fabd7c269a494b8b6a79819a3d42f6a03e11f386"
+    },
+    {
+      "path": "native/distribution-files/NativeGuard.cs",
+      "sha256": "547143af5a6d24469208c5808fd4b0bdcbf828ccf401911557e6e4de8379657f"
+    },
+    {
+      "path": "native/distribution-files/Program.cs",
+      "sha256": "aba0b8632d4de64d548e358c7f8eabc103d241c2e668ffcf1f5d918aa651705d"
+    },
+    {
+      "path": "scripts/build-distribution-files.mjs",
+      "sha256": "31cfff28287f8bf73d571c98f826dd1fe612aa9ecaae3cc1a2edd2bd4f97776a"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "sha256": "66c0a3d848081fe550b9989fe47aa125710ee1693cd59d9494c011fe98296ae6"
+    },
+    {
+      "path": "src/core/README.md",
+      "sha256": "0e08ef0bb6ed4830213194a6bde4f3e30678f6f2dc83f3507be253bd0954be71"
+    },
+    {
+      "path": "src/core/distribution/manifest.ts",
+      "sha256": "0a7c530d7ebbf1534a4b98996fd7b08e45f8af56e088d8996abc1e607f69ee64"
+    },
+    {
+      "path": "src/core/distribution/ownership.ts",
+      "sha256": "8e4adeec341bcb741836a09871c47c0184099f53cfad79ceb7e24a7c180ee99e"
+    },
+    {
+      "path": "src/core/distribution/release.ts",
+      "sha256": "e7e08a19ceffe47f6db064fc47f5b5d4ea4d0b260d21e53596f9fa4951eb72e1"
+    },
+    {
+      "path": "src/core/download/integrity.ts",
+      "sha256": "bb2f4893f436b81b818af289680b88352554a91a8a464ce296cf17054ccac225"
+    },
+    {
+      "path": "src/core/download/sources.ts",
+      "sha256": "ee3d7cf2d98137e71d5d167e04be2572989df75c7431afea497a173e8bde5bf8"
+    },
+    {
+      "path": "src/core/install/assets.ts",
+      "sha256": "6e47ae23f7d628e7e6257494f82a973b512dc01ad41ce42b4ad7f35df2a0d033"
+    },
+    {
+      "path": "src/core/install/plan.ts",
+      "sha256": "6c3de9be7933ce270abf49a085d0ad984a9aa39be29ac6dbc2afc56b2dd3498f"
+    },
+    {
+      "path": "src/core/launch/plan.ts",
+      "sha256": "bf5aee6d782d262f6ea51ffbc4666de1bb6c7b874726e0547ba93b6d9ca328bd"
+    },
+    {
+      "path": "src/core/loaders/installer-profile.ts",
+      "sha256": "4447c2e15bfb9b2fea240a75cb6c194d7a498f50b3e5411e2d457697100639b6"
+    },
+    {
+      "path": "src/core/loaders/languages.ts",
+      "sha256": "11bfb9a8df85eb061c6d67f8af059964c412edfe025eeaa88024b9ac3ee6f258"
+    },
+    {
+      "path": "src/core/loaders/metadata.ts",
+      "sha256": "2fcf9b5a5b55f323dded8ee6e0d5c66f87172f2638a68012edf3e122d87c647c"
+    },
+    {
+      "path": "src/core/loaders/processor-manifest.ts",
+      "sha256": "df68eab55ca3603e914e8d4e91acb0c9382da241aeb0e55836ce49016b850129"
+    },
+    {
+      "path": "src/core/loaders/processor-policy.ts",
+      "sha256": "06a9eb3d5b0247b48db4ca921abc0ab2d181b07c356d961cc87a717f8b4fab35"
+    },
+    {
+      "path": "src/core/loaders/types.ts",
+      "sha256": "d0966ac3665d156378f6e965289071e97635a88497a299c0d9262254de00540c"
+    },
+    {
+      "path": "src/core/mods/check.ts",
+      "sha256": "02064eb346a83cda679f3da2d8107e21758267c2e3b5deb48ddca740609466b8"
+    },
+    {
+      "path": "src/core/mods/declarations.ts",
+      "sha256": "d6e76951d105c106c766cb114a2eeb889b82c787632cff37f14ecb363538d845"
+    },
+    {
+      "path": "src/core/mods/dependency-graph.ts",
+      "sha256": "b4810f7248ec60b4f70430dcadadbe160234051ea8f0fc7cded6341f70cc13d2"
+    },
+    {
+      "path": "src/core/mods/json-declarations.ts",
+      "sha256": "78abf602b18de5039beb6abce9a0f9e812edb1fbc78358d89e7ad402aaf564db"
+    },
+    {
+      "path": "src/core/mods/maintenance-impact.ts",
+      "sha256": "ec02ab20c20e3645b7cf95b5186d82fd27c1a616b908e011a0e1eb060acf2fa4"
+    },
+    {
+      "path": "src/core/mods/manifest.ts",
+      "sha256": "22cddbdeb9319846fb4dfa9e273501e8bca85bffbd57e3010cf3666622701ba2"
+    },
+    {
+      "path": "src/core/mods/platform.ts",
+      "sha256": "191e420094d6289eed91494a185510cdee3cd48b02fd691ad7278f21f03bad95"
+    },
+    {
+      "path": "src/core/mods/ranges.ts",
+      "sha256": "70535360e3a0c0f1260c79d6462695557b059b2ce4b28150e6826acb9ecea27c"
+    },
+    {
+      "path": "src/core/mods/toml-declarations.ts",
+      "sha256": "47c8b895ebd5c5d2e5fcf870d4ddf0c4ca43d5936fc6e9ad6ef3ab4ad52deab1"
+    },
+    {
+      "path": "src/core/packs/fixed-preview.ts",
+      "sha256": "d6b8840f244b8901fbc63e4720c1916213f02c51b5c66c49450a8056385828ae"
+    },
+    {
+      "path": "src/core/path/layout.ts",
+      "sha256": "b2a801a4f7edac7ce486144432d4b00f75e77e87bf1d0a1ec0e735435a5ef622"
+    },
+    {
+      "path": "src/core/task/machine.ts",
+      "sha256": "654a01dfbb30b4ef531e2d6664a8be220fad8101da885f36ca1ff764065f9ef0"
+    },
+    {
+      "path": "src/core/task/scheduling.ts",
+      "sha256": "4dad9ea59a545b58a91c3299599e32d22f7a12900aeee1860a90818d17a4841d"
+    },
+    {
+      "path": "src/core/tools/online-policy.ts",
+      "sha256": "c8549fec9f920ca3084b0dfb254dcd5334b0c4f6b648b49755538eccf1e8acb1"
+    },
+    {
+      "path": "src/core/version/arguments.ts",
+      "sha256": "54b3ad09c00069138fa2dc6c8544cb7e783ac4b5f87d5080050cd815779d595f"
+    },
+    {
+      "path": "src/core/version/manifest.ts",
+      "sha256": "d550d79eb82cb455cda7a9696ad2eef919e57adcbfedaf248ece59b5542647df"
+    },
+    {
+      "path": "src/core/version/resolve.ts",
+      "sha256": "5030390fe36e37a8eeb2f4a3891e1ab6e16831de11ac3f88e56b23092c7b08c6"
+    },
+    {
+      "path": "src/core/version/types.ts",
+      "sha256": "dd033b096cf397c02947e105e096f35160f6df1e030a9cc8506c214a41f1790a"
+    },
+    {
+      "path": "src/core/version/validation.ts",
+      "sha256": "7a754dc81094abdec401db3e07e7cdd19ea0310d11266453297fc64153adab60"
+    },
+    {
+      "path": "src/ipc/catalog.ts",
+      "sha256": "0771e7d549512ec01570815e37e38da8830bd46eab6a2e3d36a7769e4aa9ffec"
+    },
+    {
+      "path": "src/ipc/desktop.ts",
+      "sha256": "67c27459454c039cc8e78f5d75f9940977a6e27347b390456ce8485af807a124"
+    },
+    {
+      "path": "src/ipc/distribution-preview.ts",
+      "sha256": "d7cdcbf2c35271f6aab3b1354b8fc502facd68a0e91ada77f99080275bf5968a"
+    },
+    {
+      "path": "src/ipc/game-adapter.ts",
+      "sha256": "a3fd46048fe5d39374ce6f767c3e49a5201680c66b5cf4f80648a9f952d6e9f7"
+    },
+    {
+      "path": "src/ipc/game.ts",
+      "sha256": "251cb927b28204aba8eb56131b9bddf6df67de623cc28d60d2e4ec5263004fdf"
+    },
+    {
+      "path": "src/ipc/handshake.ts",
+      "sha256": "dc104797c851b9e565da24a48e9d7d6570f06b222d6131efb73f3562e72e9a54"
+    },
+    {
+      "path": "src/ipc/installer-adapter.ts",
+      "sha256": "12ba677ecdbf3b1bc0a8f4c2475a8123a87e1476e51784f2b2bb0847a9e0774a"
+    },
+    {
+      "path": "src/ipc/instances-v2.ts",
+      "sha256": "0449c1367404c771d3d83bcd5b09fb3fd242dedf819bc13f46735a82ea39a55c"
+    },
+    {
+      "path": "src/ipc/instances.ts",
+      "sha256": "fdf4e58f2a8472e773117677b46a48df3bcdd5823200d35449fafac3effebaca"
+    },
+    {
+      "path": "src/ipc/loaders.ts",
+      "sha256": "ffb9059d8d6dd83a6ca303ea13dc3b4d623d458d74d383c743173fa7ca2b2ab2"
+    },
+    {
+      "path": "src/ipc/maintenance-preview.ts",
+      "sha256": "8a36d3359e8eab33327e73096e103d317723564bca76c125fe9547e18df7774c"
+    },
+    {
+      "path": "src/ipc/mods.ts",
+      "sha256": "1d7ec3a5fc97e51b33f5dd4ffb56ee17bc400c2eed341944eb01a41bcc8c4c76"
+    },
+    {
+      "path": "src/ipc/online-tools.ts",
+      "sha256": "805076d6a6717487ec1c5834b2f59524f8d6877357c5a592e5fc513fed354524"
+    },
+    {
+      "path": "src/ipc/packs.ts",
+      "sha256": "d1a7178c0d79b935dba5a2eeb9cfc79ed24ece9a628f28124e30c8359fd2677d"
+    },
+    {
+      "path": "src/ipc/preload-desktop.ts",
+      "sha256": "3135fcd77f1b8056a935f434f575db58335bba0d7984847ea0684189d0201d38"
+    },
+    {
+      "path": "src/ipc/preload-distribution.ts",
+      "sha256": "28724f7fee1204a4e9dfa21f7d62991fcbdf50c54bc5cc7be3a609fc2fd10b6d"
+    },
+    {
+      "path": "src/ipc/preload-game.ts",
+      "sha256": "06cbc4525626ab7e7b48dd8bd5ee0cd93781c7d868c2bca9bbfe838aac65efd8"
+    },
+    {
+      "path": "src/ipc/preload-instance-folders.ts",
+      "sha256": "4145eefb79612adee7353cb06eee0d71e8b05f5b4efd0e34666e26e5dd0ddc5e"
+    },
+    {
+      "path": "src/ipc/preload-instances-v2.ts",
+      "sha256": "21e532c375d2a1b2feddcd06af85b6283279e4e1e49dc76d4ae2a17ee3f9591c"
+    },
+    {
+      "path": "src/ipc/preload-instances.ts",
+      "sha256": "1040573b3d10c1c090c05c895bc250fa8e46d6dce4a255da2354fab87c0511a3"
+    },
+    {
+      "path": "src/ipc/preload-loaders.ts",
+      "sha256": "49ffbd8ca12694f18984ad6fc60661bc2adb04a1a078ee35f91c989db6b3ac25"
+    },
+    {
+      "path": "src/ipc/preload-maintenance-preview.ts",
+      "sha256": "9ed1af7b5fec67062c8182c79a7ba2b49c9b79b942c4807fa8ac6702321b66e7"
+    },
+    {
+      "path": "src/ipc/preload-mods.ts",
+      "sha256": "ad2f189b1d1dbdc338514ab885ed624922e1952032307c8227511677e56c7887"
+    },
+    {
+      "path": "src/ipc/preload-online-tools.ts",
+      "sha256": "e39e5a48134183352c7221fc50f13045771b64b7e8f38e51d99fe5178a31d85f"
+    },
+    {
+      "path": "src/ipc/preload-packs.ts",
+      "sha256": "91cc2426f752c778278346eb1edeefe7a2356816c0cd7be386e9933e192921aa"
+    },
+    {
+      "path": "src/ipc/preload-profiles.ts",
+      "sha256": "1befab440108e138dede6c86fef157a442e0db6567aa08ab3f454dc6da4de6e1"
+    },
+    {
+      "path": "src/ipc/preload-resources.ts",
+      "sha256": "8254915de9391fc9e7e9fd37a31e38bd4909679c1d0601dac8576d28e712f75b"
+    },
+    {
+      "path": "src/ipc/preload-task-targets.ts",
+      "sha256": "03a081c7490f7acdde888bc3d1eee2300626122fe03881294b696e1723eba58a"
+    },
+    {
+      "path": "src/ipc/preload.ts",
+      "sha256": "a80387e2f968482a71eed9197299b2478219dbe46784d421017b88b64049cb39"
+    },
+    {
+      "path": "src/ipc/profiles-adapter.ts",
+      "sha256": "4a6d6d9c7f612ca9f554d79097db15452a54fe396f012765a7e8ca0c4434f48e"
+    },
+    {
+      "path": "src/ipc/profiles.ts",
+      "sha256": "83a18fb70d078bf8d2419bf4a8ce218b4c80b76fbbd8f1dfae19e6421f436de3"
+    },
+    {
+      "path": "src/ipc/resources.ts",
+      "sha256": "6dbd252045d40e107c444b2a0191ec11b1b09370f13287eda4346f98d71e63bc"
+    },
+    {
+      "path": "src/ipc/roots.ts",
+      "sha256": "044ce717d592483bd9fd89979b2838cb61191395bfa9f7d380de109a14ca0568"
+    },
+    {
+      "path": "src/ipc/task-targets.ts",
+      "sha256": "9379f58ebc646fb38075a23b5519f33c81469217a019a63f4837db3c17d4c683"
+    },
+    {
+      "path": "src/main/desktop-images.ts",
+      "sha256": "4ec677b609f8873423fec5bc9ee91bcb631d83b026cb88304c29d07f4a85fdd0"
+    },
+    {
+      "path": "src/main/distribution-preview.ts",
+      "sha256": "f7f15c208c4c1c9c6cf61cf7ae63d7de8ff589dca3528b781f9e6c9ee7db2d20"
+    },
+    {
+      "path": "src/main/index.ts",
+      "sha256": "037cfc8252370a612cb9c08b6c0473c9567b6b79c443eafc0a443f8b1bb027a8"
+    },
+    {
+      "path": "src/main/network.ts",
+      "sha256": "36c77661a83aaf09749d73e16b354152956a39c8508583ebd99c3f6a6c9cba93"
+    },
+    {
+      "path": "src/main/online-tools.ts",
+      "sha256": "de2e8957ff6e73932b4439090e2e2e6e48ca1f80641ecf057847ed1ec5ae5891"
+    },
+    {
+      "path": "src/services/README.md",
+      "sha256": "608ce71fccd463bd2eaeff6933d2192b532f9596a19bc4d50f43ee025795e9df"
+    },
+    {
+      "path": "src/services/catalog/install-metadata.ts",
+      "sha256": "fa8cfe75714925eade72485815e7287f98ea3ebcd8844702e7b28e33231de6b0"
+    },
+    {
+      "path": "src/services/catalog/service.ts",
+      "sha256": "4c12daf6e05195ed53a74a47eb8da0f8be54b00bd553bae3b0ebea4194b1ae1d"
+    },
+    {
+      "path": "src/services/catalog/transport.ts",
+      "sha256": "9d0a6fa6dc1e3bb011a899cf89e0be0de37d236ee7833643b130201c897f50bc"
+    },
+    {
+      "path": "src/services/desktop/service.ts",
+      "sha256": "cea8d8110d1b580c44b478dff32c03137675d96ec67ca6ebcc3c557d784011c0"
+    },
+    {
+      "path": "src/services/distribution/execution.ts",
+      "sha256": "d1512f2898c8ba2838bf8b6ebf4e652fbbba48992a8a5dc45ff50a4621e0baab"
+    },
+    {
+      "path": "src/services/distribution/native-files.ts",
+      "sha256": "bf8838f5744bec18d404bc1aa10c0ca7c0dd13fcc74fb880168c1a6e897c81b2"
+    },
+    {
+      "path": "src/services/distribution/preview.ts",
+      "sha256": "100ec36455cfb01ada68ebc3684a2022e1033999833f1967fc24ca740fcac1f0"
+    },
+    {
+      "path": "src/services/distribution/release-source.ts",
+      "sha256": "4fefa3bca67a74a11fe755b0ffd79cba5c6acea677e33a45f58893212b1344bf"
+    },
+    {
+      "path": "src/services/distribution/source.ts",
+      "sha256": "c67843c6578c7767a58ba32c16544abe55c1b40b69034499349c523e0fccf64d"
+    },
+    {
+      "path": "src/services/distribution/store.ts",
+      "sha256": "d84a71443428cd12c6dcf315488352071b2586c45aa05ccc9a48d659e58ce105"
+    },
+    {
+      "path": "src/services/distribution/transaction-files.ts",
+      "sha256": "caf7e765aeb9ad956026a0fac92ecd3146200a403697ad5b36a451ecc4ff2809"
+    },
+    {
+      "path": "src/services/distribution/transaction-record.ts",
+      "sha256": "5d7ba023d04f47d2d3c1c26b7547f82e8de36fdd26842fd46005c5f4d5c280b4"
+    },
+    {
+      "path": "src/services/distribution/transaction.ts",
+      "sha256": "cd33941525df7c6ab0fa9d3d609a472918aaf103809f6e6d2ba326533f584703"
+    },
+    {
+      "path": "src/services/download/artifact-transfer.ts",
+      "sha256": "42fa8682470ab47377e96410c84717c3124f2140313da94bea22f8a5da3fb124"
+    },
+    {
+      "path": "src/services/download/coordinator.ts",
+      "sha256": "ec692c2967bfa7253533e175a3d9231363a2f48b19386fd06d2f20bbbc7d02c2"
+    },
+    {
+      "path": "src/services/download/http.ts",
+      "sha256": "082eedf8a7b5fdfe4e6ac9d0a2683681aa7f74d407c6256846522d6e864207c7"
+    },
+    {
+      "path": "src/services/download/parallel-http.ts",
+      "sha256": "a8c0bf15aafac33408d040df2edc36e5d15abd1a163a0197bafb708b19b6e5a5"
+    },
+    {
+      "path": "src/services/download/request-budget.ts",
+      "sha256": "f12080dc665e91dce4ab2500e3f8e8e0d3148807ffd22f0897fdbbbf6f6f29cd"
+    },
+    {
+      "path": "src/services/download/source-transfer.ts",
+      "sha256": "9511036f373c3acd475ceff96d68e835747c4e1436d7e554bcd76933d25ba4ac"
+    },
+    {
+      "path": "src/services/download/types.ts",
+      "sha256": "dc4ef4e841adfcd0a167c0cebb61df9a08b728687d75c88665e9a2238b9a6520"
+    },
+    {
+      "path": "src/services/install/downloads.ts",
+      "sha256": "25cc5cdd41181156bed4c17cadefd7dc2fae07fc9a59a3e6ba4cd9057c616c3c"
+    },
+    {
+      "path": "src/services/install/file-views.ts",
+      "sha256": "65b5282918a309b6b6a67160388deabbbe0ae60c939ff6e1625b726b536c120b"
+    },
+    {
+      "path": "src/services/install/installer.ts",
+      "sha256": "210def46d85fce870c2e47ea3fc34fc882612a55fedb00bbc1b3f5af96301ac6"
+    },
+    {
+      "path": "src/services/install/instance-files.ts",
+      "sha256": "dad4146247011dbeaced34311388a30a23f7b5697e60f69a2ed88a2758c66b36"
+    },
+    {
+      "path": "src/services/install/instance-folders.ts",
+      "sha256": "31e150bbe029a86637f3b96a6717b9b129b58a2ec1163d343532e993d06dcea5"
+    },
+    {
+      "path": "src/services/install/launch-inputs.ts",
+      "sha256": "acf5c52d9a125a27a2e6fe4d148469a875e6ab8af63b6ac2a46bb33c8e6684f3"
+    },
+    {
+      "path": "src/services/install/launch-snapshot.ts",
+      "sha256": "1cf7c8f83ad7eb8d5de8d686ef5dedb9ddb08173a05cbedcb7684123dd173958"
+    },
+    {
+      "path": "src/services/install/metadata-object.ts",
+      "sha256": "afcba56d96f2f3040ba8922be0ad4a3abe3b184877fdc2eab372ab0fa3a362d0"
+    },
+    {
+      "path": "src/services/install/native-archive.ts",
+      "sha256": "187ec61d26697c5bce56f48399f000573d7b43e90dcf17c74fb0d0f8f1ae9b18"
+    },
+    {
+      "path": "src/services/java/probe.ts",
+      "sha256": "f391fab051eb592bd0a02ef158c241bab8580b40981d02c03f9a8497db7fb8d9"
+    },
+    {
+      "path": "src/services/java/runtime.ts",
+      "sha256": "c51dd118e29eeea87c0f75036336a19050416560ff63807d5b413b7e5c852ef8"
+    },
+    {
+      "path": "src/services/java/selection.ts",
+      "sha256": "8229c6a519a455e86d46c86af649089756e0c0e5225a40db0bc7b3c215ae77f2"
+    },
+    {
+      "path": "src/services/launch/process.ts",
+      "sha256": "f82c3a18adcda73a2305df08782f5a4e70a6943c9c0310c38fd8ef37ad15d2bd"
+    },
+    {
+      "path": "src/services/launch/profiles.ts",
+      "sha256": "84df5ddc4ae1091bda28385a7fe19a7f259321b9178c608aa68f5f47c308e169"
+    },
+    {
+      "path": "src/services/launch/service.ts",
+      "sha256": "59f5e6da8f6e49f0296b6b733414bad9302a28c38d38ae31989ed20f5a281492"
+    },
+    {
+      "path": "src/services/launch/settings.ts",
+      "sha256": "2a9d054726b5ad09e82176c8d6bbda922b9752b39ffcc227a71b6faa8b6d0d24"
+    },
+    {
+      "path": "src/services/loaders/compose.ts",
+      "sha256": "1b241debe139fe134bba0997488836b2ec57522ff8403053f0bdccfd94d41a29"
+    },
+    {
+      "path": "src/services/loaders/install-metadata.ts",
+      "sha256": "0544a84839104cb9a8189632d5bf3e30062ee13396f8ff525831db134d9e3311"
+    },
+    {
+      "path": "src/services/loaders/installer-artifact.ts",
+      "sha256": "362b8b0907a79bc4ce622ba4dc27270a107106b791e0d927606ecaaf5f60fe7d"
+    },
+    {
+      "path": "src/services/loaders/installer-compose.ts",
+      "sha256": "170478c2809b4467a71db2acd023775f078eb4dac062e7400f1b49468a4be0a6"
+    },
+    {
+      "path": "src/services/loaders/installer-install-metadata.ts",
+      "sha256": "bde8a09ea3a0c9d87f311e0aa5958ce159f60daa4b9f5f6fe03b123246a57d16"
+    },
+    {
+      "path": "src/services/loaders/installer-preparation.ts",
+      "sha256": "05ca190352e423e7763440e2d4020cd1c2e0b0218da9385a314dd084bfa2817c"
+    },
+    {
+      "path": "src/services/loaders/installer-processing.ts",
+      "sha256": "9b49009ee3da99555b3a18bc31f16d5aded5c10a34a25e11b08b90ce646a64ae"
+    },
+    {
+      "path": "src/services/loaders/maven.ts",
+      "sha256": "2c2bd0b01704614952d5a42b44c16b44bdf87076c60498a090bc38d550580367"
+    },
+    {
+      "path": "src/services/loaders/metadata.ts",
+      "sha256": "f178e3c5da0abb2f8952cf8a514068cfa79df5d0ba44624d3f7f476a22f9b6ae"
+    },
+    {
+      "path": "src/services/loaders/processor-executor.ts",
+      "sha256": "fde7f2d74972d2f5783dfe148e45f65cddad142602320d26e756dd5a83dc0fd3"
+    },
+    {
+      "path": "src/services/loaders/processor-outputs.ts",
+      "sha256": "40b0b7065a03de143a0acbcb3d50c35d9c03889c6ac07dcf363d30f654c6a5fa"
+    },
+    {
+      "path": "src/services/loaders/processor-plan.ts",
+      "sha256": "a92593d2f794d12118ed0cbd1e09e92c43ef3090b70d8b7176b57f2f041666c4"
+    },
+    {
+      "path": "src/services/loaders/processor-workspace.ts",
+      "sha256": "4adb54de0a2cbd34acba67f9a79c5b6ae5100d57be1c6df1faf896dc819fb52a"
+    },
+    {
+      "path": "src/services/loaders/service.ts",
+      "sha256": "8a11e02b2d4f6bf7667d4a69c7a39de28076c6db7642d9d2e757c058131cdde0"
+    },
+    {
+      "path": "src/services/mods/archive.ts",
+      "sha256": "4edae5b6dedb0c1dc5ebd6fc2956889b635f5dea8af45828a481aa468829e718"
+    },
+    {
+      "path": "src/services/mods/candidates.ts",
+      "sha256": "8e546490e8f35de492a85de09f4fa497aaa24914832c052075246b0371118051"
+    },
+    {
+      "path": "src/services/mods/context.ts",
+      "sha256": "772924d987c749c59a4bd4a000bb4119afc73ceee7a1b4d44bf6f2a258cec8c0"
+    },
+    {
+      "path": "src/services/mods/facts.ts",
+      "sha256": "58d282f4ec07d6d1088bf4d1538c810d7c813b287f62ff62b2da22cf4ac4be11"
+    },
+    {
+      "path": "src/services/mods/inspection.ts",
+      "sha256": "92afc4fc8360e28fa3b606a032305df2b79aba251286f20865219d7e4b8c9648"
+    },
+    {
+      "path": "src/services/mods/install-tasks.ts",
+      "sha256": "19f0b3e3214dc69359fb38af8dd6097e67d00d935e2fcba6a9e617594ad948be"
+    },
+    {
+      "path": "src/services/mods/inventory.ts",
+      "sha256": "2999b7b44cdf574faab4f428f165fdb8248dacf996eeb4098072d9ad339e7cc1"
+    },
+    {
+      "path": "src/services/mods/java-facts.ts",
+      "sha256": "cbba7fe22234e2a1650fba8ac7db7cd6a9b8b092f7b1f1bc1ab25a964921697d"
+    },
+    {
+      "path": "src/services/mods/languages.ts",
+      "sha256": "2f5a8f30718a54eed1453d034c8c27bce26f57dfc029508d2d79c6efbb26f4bb"
+    },
+    {
+      "path": "src/services/mods/library.ts",
+      "sha256": "8b730ac18878b6637b10fefe24a8cd2e473f43262d721f9c712a43d91ddb3227"
+    },
+    {
+      "path": "src/services/mods/maintenance-jobs.ts",
+      "sha256": "5db69978552922cbe48ebd4562e967d1d10cd6bbc937bf976eef08af38d4de45"
+    },
+    {
+      "path": "src/services/mods/maintenance-presentation.ts",
+      "sha256": "39c09cdd15a921b73d3e74a328b66b6c2d03f75ee4942579f213daeaff055945"
+    },
+    {
+      "path": "src/services/mods/maintenance-preview.ts",
+      "sha256": "9f269946b571dbe29b4e509e17a5a3bb629e4f128c0c174e04ad12145353113d"
+    },
+    {
+      "path": "src/services/mods/modrinth.ts",
+      "sha256": "f369f894c5ac09a2899e72f03077005038d12347486bda4fde45dbc0ccfa19ee"
+    },
+    {
+      "path": "src/services/mods/plan-identity.ts",
+      "sha256": "14d634bf741bb761cdeb5f7daab86938bc8b0f48f695dbc44b62f9608c16f8cc"
+    },
+    {
+      "path": "src/services/mods/planner.ts",
+      "sha256": "31715e61fa5f1f537961733f5d4ce8a5b18e75d9582ca0ff15884c6139d1e4ab"
+    },
+    {
+      "path": "src/services/mods/plans.ts",
+      "sha256": "ec3e40620636b28587fe8a63e4699d5070ba4b4d6d133fa07fbab09fb9513eb8"
+    },
+    {
+      "path": "src/services/mods/preparation.ts",
+      "sha256": "824b969303146efe50be131a3e1ba3775df83450c3304a80ca0e839d74ccaa12"
+    },
+    {
+      "path": "src/services/mods/report.ts",
+      "sha256": "6c44a5cdbb84efe906bf0fe28cdc95211d0daa276fe13f2a83dfc0698e9b37e3"
+    },
+    {
+      "path": "src/services/mods/resolver.ts",
+      "sha256": "a5504e13c3c35e2190882d470b82a9971026c197e94ad12cb6363b0f461a3562"
+    },
+    {
+      "path": "src/services/mods/tasks.ts",
+      "sha256": "f349368e25cb56d8abf495c6c1be1db7a100209a0f2cdc6e7642ce1d6ef4efde"
+    },
+    {
+      "path": "src/services/mods/transaction.ts",
+      "sha256": "3d07051c3967875a44b5352afcbda369914650e7fb1513e41445331898b71b0c"
+    },
+    {
+      "path": "src/services/network/backoff.ts",
+      "sha256": "c22a0767a36fb5eebc2d154967dfbcd1ee400a6ef8dbb9446a1fe8cbf697cdb2"
+    },
+    {
+      "path": "src/services/objects/owner-lease.ts",
+      "sha256": "96ce29c44f86717dcebaf3f1da0019c9f376e790f689c671b06047e9060410b5"
+    },
+    {
+      "path": "src/services/objects/provenance.ts",
+      "sha256": "13e5a0634b057ce417d264df179d1419b9dd91bba391b8c806e738b88bea6e0b"
+    },
+    {
+      "path": "src/services/objects/store.ts",
+      "sha256": "974c00c1fc27257da68c8aa29661a5dd0c26d104c742a35644500e9f88f1160c"
+    },
+    {
+      "path": "src/services/packs/coordinator.ts",
+      "sha256": "3ebe5312873eed7e4acd529d626932fee2e6bbdfd6ddb24212de7a38c7537459"
+    },
+    {
+      "path": "src/services/packs/fixed-protocol.ts",
+      "sha256": "71d3d23a1cb47f5bf80621fcc277c802cd544e5f3cc3862eb274e49b9da6df48"
+    },
+    {
+      "path": "src/services/packs/fixed-reader.ts",
+      "sha256": "8c5cb8700b7641bc4a0388d829b87beb68b8752768273585a9c98f474c60ccad"
+    },
+    {
+      "path": "src/services/packs/fixed-worker.ts",
+      "sha256": "a8558e318d7988f1499f9af42e04dd381bec4c0145ca8a57444e55759e05112f"
+    },
+    {
+      "path": "src/services/resources/modrinth.ts",
+      "sha256": "89b1a3cee9f322258a575a9c83208c9e68dd8325f328ddb4c4eeede2c51728b3"
+    },
+    {
+      "path": "src/services/resources/service.ts",
+      "sha256": "526ea4cd2cf6369c2ab0a7ccd95728872d1744a7e14c3702f6dbd40b98a4259a"
+    },
+    {
+      "path": "src/services/roots/service.ts",
+      "sha256": "9e4736916af9d2174cefa8ac5b631364cc67313ab49c71d0300dc6224825cb93"
+    },
+    {
+      "path": "src/services/storage/catalog-cache.ts",
+      "sha256": "9f17c1ac9b4a4eb32adb2acbf513d2da575da45a821caee99761bdcb62d78290"
+    },
+    {
+      "path": "src/services/storage/desktop.ts",
+      "sha256": "940e269eb8dbb1db3cde4b9b5609eec2954b26cabdd910ba36452a47bc89c426"
+    },
+    {
+      "path": "src/services/storage/files.ts",
+      "sha256": "f665a93efba82a5fd5bbaad58d50bfc9719339dc5264bc7f3c61effd114c4a17"
+    },
+    {
+      "path": "src/services/storage/game-sessions.ts",
+      "sha256": "0440fedefd693af5ba85faeae18cadb89b0dece7413aeed8ec9850f9a75259fd"
+    },
+    {
+      "path": "src/services/storage/installation.ts",
+      "sha256": "9db0bc864dbdcd73986c747da71932bdba03ac7b353ea038d2b955e6ad48b471"
+    },
+    {
+      "path": "src/services/storage/instance-records.ts",
+      "sha256": "60ce0fa95fa5b97ba001825075ece5c3c39faeeb92b7b15534ee3e2e246cef46"
+    },
+    {
+      "path": "src/services/storage/launch-profiles.ts",
+      "sha256": "492e8f57e4283d2c988d302b9176f4f09e8a6e2c3c4d1a36f0b0e9d40cc0b795"
+    },
+    {
+      "path": "src/services/storage/mod-jobs.ts",
+      "sha256": "271def951d9b817af1468d09c1dd555e3843370540e9e8fd5b40faecb1f0fdc4"
+    },
+    {
+      "path": "src/services/storage/mod-plans.ts",
+      "sha256": "fefa53d5a751b5e29da5971494a465f7d4b65ebadb0fb6a7a435ac07ec8c6abd"
+    },
+    {
+      "path": "src/services/storage/mod-results.ts",
+      "sha256": "fd0847f93f2a0dd5c3179ff63c0a6846325e034e583678c820be9e0f20e45914"
+    },
+    {
+      "path": "src/services/storage/mod-transactions.ts",
+      "sha256": "71a081704913d0542c46911bc15c91137d97de58c0b01d5b34712ea251b9bc5e"
+    },
+    {
+      "path": "src/services/storage/object-index.ts",
+      "sha256": "2bf164e134018e154d9a7bdee70d45c21b426a66e701260c51a9e30ed6a95dc4"
+    },
+    {
+      "path": "src/services/storage/owner-guard.ts",
+      "sha256": "511447036a83470c08fb7e7f409f3869d1d615ea4e99089d605713e34a87f85c"
+    },
+    {
+      "path": "src/services/storage/records.ts",
+      "sha256": "571ab94bd1850967bbc01b5ec344a99e5cb62296b65e0034ee2d73da75ecfe34"
+    },
+    {
+      "path": "src/services/storage/resources.ts",
+      "sha256": "6d19f5cd929b786e2e50de31ce2395a8a2e27048220db045370893bbb1684521"
+    },
+    {
+      "path": "src/services/storage/settings.ts",
+      "sha256": "b37c10e76e0b693567297daca9186cb88ca3c7bb94ed01324392da784da97b26"
+    },
+    {
+      "path": "src/services/storage/tasks.ts",
+      "sha256": "c21e7a016e253ea1adda0b384271a81b2761b534495140d4a569db1311a00a6e"
+    },
+    {
+      "path": "src/services/storage/transfer-db.ts",
+      "sha256": "e4113eb0d13928ea301f0b4f95bbe310e0552a6e7575feed7d6482138a30bd6f"
+    },
+    {
+      "path": "src/services/tools/service.ts",
+      "sha256": "a3ddbd9a217e42203e6d92e97fee06e6aa5bd3fd5462d1bc66c9c908ec3915af"
+    },
+    {
+      "path": "src/services/workers/archive-validation-protocol.ts",
+      "sha256": "7aea0b46a9aeebeabbc2434ba14e7cb1570a5cfbe85a5bc1280966f74e2293c8"
+    },
+    {
+      "path": "src/services/workers/archive-validator.ts",
+      "sha256": "01b84fc606fdca449f13a8f8c17bde330a3b4b4b13363c3a286153ebadb7d0a7"
+    },
+    {
+      "path": "src/services/workers/entry.ts",
+      "sha256": "e681f49bb626578eec7415c6f1f6b4170083906e750c9b6e5c6181a527a976e0"
+    },
+    {
+      "path": "src/services/workers/hash-pool.ts",
+      "sha256": "69f356304539f71cf57b85d69db36d6bd6dcda5dca07f30928552fce721b9a44"
+    },
+    {
+      "path": "src/services/workers/hash-session.ts",
+      "sha256": "e1370d5d359fe244bdb0777d56afbc02d934c947c77dc1fd54e483393046e7c1"
+    },
+    {
+      "path": "src/services/workers/installer-archive-extractor.ts",
+      "sha256": "eabb11a6d0f33930187124f31352d5e3a3cceaf664491b75f502b87616d2a585"
+    },
+    {
+      "path": "src/services/workers/installer-archive-protocol.ts",
+      "sha256": "89d9d995dcd975fc886f52357899a1bed3259dbb6bb50e0e034183a54bcf6a98"
+    },
+    {
+      "path": "src/services/workers/mod-archive-protocol.ts",
+      "sha256": "039239e67e59ee20944b2374f5a4caffc8f3cc49da6c229df27237459e7903b8"
+    },
+    {
+      "path": "src/services/workers/mod-archive-reader.ts",
+      "sha256": "2ad04963b786f4bdb593d4d95642d990a16bbf4fda990ee3fe005a1592c9055d"
+    },
+    {
+      "path": "src/services/workers/mod-declarations-protocol.ts",
+      "sha256": "530a0273ceb795865debf35859a27667b50f07fbe28109b40f8e889692b760d7"
+    },
+    {
+      "path": "src/services/workers/mod-targets.ts",
+      "sha256": "acc02b9254b20532b2f29f70c5e83f86928cd0e797bd01d2d54f5de5add2df7d"
+    },
+    {
+      "path": "src/services/workers/native-extractor.ts",
+      "sha256": "946bb261ae5c42393680cddeca1491210e281466be5a4f698cb2ac5aa8814307"
+    },
+    {
+      "path": "src/services/workers/native-protocol.ts",
+      "sha256": "bf225b3caa1a1ee1fad3c2734ac9a0a35d295bf2b1481d7d3aacd725ac2ba4d0"
+    },
+    {
+      "path": "src/services/workers/processor-manifest-protocol.ts",
+      "sha256": "a1cda7690fb29266d307b9d0c2700a2adadaf2bf6598027db15c1644d112c94c"
+    },
+    {
+      "path": "src/services/workers/processor-manifest-reader.ts",
+      "sha256": "f16f794731a25059024109c04397c37989f28c4c1a0c1398b52386922ae2bf7f"
+    },
+    {
+      "path": "src/services/workers/protocol.ts",
+      "sha256": "a1783692daf070b6da4b12288077ec3aa7d4a5c35da2278c16f1d51239b4e1fd"
+    },
+    {
+      "path": "src/services/workers/storage-client.ts",
+      "sha256": "ad4d4f2d18a1009c12485c1301d3c2549e2f672782983408d206d60ff76e553c"
+    },
+    {
+      "path": "src/shared/contracts/catalog.ts",
+      "sha256": "cb69d6237f0e5209e117d973284f3fa8cdac97f2f7235dbb332322d47bcd6b70"
+    },
+    {
+      "path": "src/shared/contracts/desktop.ts",
+      "sha256": "e0815d89a60429ab4394ce4e4533e752da5e5fe09f09f5bbfd669145206a8620"
+    },
+    {
+      "path": "src/shared/contracts/distribution-preview.ts",
+      "sha256": "991ebbfef2d8174ba5fdd38e953e105cdeb50dd2c2e1d38c370e6986b8d8f303"
+    },
+    {
+      "path": "src/shared/contracts/download-preferences.ts",
+      "sha256": "c903a418ade27cd4d483e17706fa2080e8f38ae8d7447853235554e1ed536524"
+    },
+    {
+      "path": "src/shared/contracts/game.ts",
+      "sha256": "d9e6172f97259219923f9dc80a7089520ee69762fadff3e5b6b899611df643fa"
+    },
+    {
+      "path": "src/shared/contracts/handshake.ts",
+      "sha256": "30e77932ba05e8401e2123a4cd0c864bb83028cc81937752cec5e22f08372921"
+    },
+    {
+      "path": "src/shared/contracts/instance-folders.ts",
+      "sha256": "19fb07c439888f0d5b2d1b52645d2787581d6663cb5bf2b4658e4e0d39db6543"
+    },
+    {
+      "path": "src/shared/contracts/instances-v2.ts",
+      "sha256": "960b279faec250d76c2af386e20efbf0b58df69d64636649da7add2139abc170"
+    },
+    {
+      "path": "src/shared/contracts/instances.ts",
+      "sha256": "81ddd4b70949d0757f5f53105177aa395bf7d4c07e2173612c320d3eab80049d"
+    },
+    {
+      "path": "src/shared/contracts/loader-targets.ts",
+      "sha256": "1909c25f878eea58571e04486af5aa1e2fb55810c64cfbdb34cc0a45c561b1a1"
+    },
+    {
+      "path": "src/shared/contracts/loaders.ts",
+      "sha256": "66c78d5ed58eabc2367f9911fd9ea037f90fa02fc51f2824ad16c1b35ee0e1cb"
+    },
+    {
+      "path": "src/shared/contracts/mod-maintenance-preview.ts",
+      "sha256": "34590008eb10d865ded26c4b143e8c6b84b1bca3438495c2f623bcd584f4e8cd"
+    },
+    {
+      "path": "src/shared/contracts/mods-report.ts",
+      "sha256": "2b87bed92d98d17a54ea46877027a288d2d1888a732e2ba2fa3bdb1fc904840e"
+    },
+    {
+      "path": "src/shared/contracts/mods.ts",
+      "sha256": "7ddae4dbfde1536b54c9d62aaea0f71332eb69447dadd7b8a2dd145a77f64621"
+    },
+    {
+      "path": "src/shared/contracts/online-tools.ts",
+      "sha256": "43c85b8508ec2b5c9d913759c1e452c5d4c5588c7130221efc450a84d73a9a76"
+    },
+    {
+      "path": "src/shared/contracts/packs.ts",
+      "sha256": "9e853b6bb3140834fcc98254f8fbf7e741bee1a4b8836305fc653474644a4606"
+    },
+    {
+      "path": "src/shared/contracts/profiles.ts",
+      "sha256": "0d99845e13d2bba968dc0a13d323a9400b9616fe9588ba3afd47586d832737e3"
+    },
+    {
+      "path": "src/shared/contracts/resources.ts",
+      "sha256": "70f6d6b0dcecfc5a76c1c52af171357d080e6d6a9ae79337149b394f3a45118e"
+    },
+    {
+      "path": "src/shared/contracts/roots.ts",
+      "sha256": "03545cf4e24ec70b6aefcff451fb865cf387139f5caf41e596a3019557437665"
+    },
+    {
+      "path": "src/shared/contracts/task-targets.ts",
+      "sha256": "e7be442b065aa0d886a2285c861d676716bf193c234d2ffaa4854dc7645d78b7"
+    },
+    {
+      "path": "src/shared/locales/messages.ts",
+      "sha256": "014d338850962bd54bd1f02293ebb54fa8e542aae9d4e457055e4dfc8f7775cf"
+    },
+    {
+      "path": "src/shared/tools/gradient.ts",
+      "sha256": "5708cb42727a870aeb1a23064e29b72dbc9e48f1e437fd0793d36ab6e30918a4"
+    },
+    {
+      "path": "src/ui/AccountsPanel.tsx",
+      "sha256": "e33f9611d4f596161f803dc5f4d1c1920b928edb89911249d438158934fc3c19"
+    },
+    {
+      "path": "src/ui/App.tsx",
+      "sha256": "96916c51b35ca87f606c9ad97c75eb32505a3805ca2a4f27a9f9508bc87a36b0"
+    },
+    {
+      "path": "src/ui/AppearanceSettings.tsx",
+      "sha256": "a0ad56efa5d965636ce44f576adcc49fb7997d1a3fe1e5b22dedcdceca7f014c"
+    },
+    {
+      "path": "src/ui/Avatar.tsx",
+      "sha256": "b2c7791adb234414f6781f3c363779fd8f6801fcfa5b7a8bd311cb2d02a919c7"
+    },
+    {
+      "path": "src/ui/DistributionPanel.tsx",
+      "sha256": "b25f423c375af45a2ff99265ffd7f92134626648de6bba44fcde1829e2ddc7ca"
+    },
+    {
+      "path": "src/ui/DownloadSettings.tsx",
+      "sha256": "93be95396d250d0d71910237df4df7f6e9da48d6519c8e630819b1fb44057dd6"
+    },
+    {
+      "path": "src/ui/FirstRunGuide.tsx",
+      "sha256": "bfd219608ebeeb30e79ad42f3376508399687c7d8ced9ca546d199f1fdb485b6"
+    },
+    {
+      "path": "src/ui/FixedPackPreview.tsx",
+      "sha256": "7c66f64017a2cafdcd2033958a7240351d2a3b7df33beb1684fd9b9d8c4694f1"
+    },
+    {
+      "path": "src/ui/ForumPage.tsx",
+      "sha256": "9a1e802ce02b8acba56ff78b00c668a6ba5765fe46fe2538eb78a0aac2fd6665"
+    },
+    {
+      "path": "src/ui/InstallPanel.tsx",
+      "sha256": "8402fe921538fb27f3e432b01435505699a8c2f47cb4668d9f2c3e4ea4b9a4af"
+    },
+    {
+      "path": "src/ui/InstanceFolders.tsx",
+      "sha256": "d42f15a1da2a56bbc9ff3ea0dc3ab6bb076d7f62341a80e87e682d52fbe40a05"
+    },
+    {
+      "path": "src/ui/InstanceOverview.tsx",
+      "sha256": "fa33279e5c0cf3977495d50b0fb131ed84f966614bae660d11c0b255ab2af14f"
+    },
+    {
+      "path": "src/ui/LaunchControls.tsx",
+      "sha256": "2066985c5473489a59251884db68b80a6f5e4460c22b95b9f465c9d950bb5d96"
+    },
+    {
+      "path": "src/ui/MaintenancePreviewPanel.tsx",
+      "sha256": "1361ad25a2c1366147dd6e2d92cc989137710c468bb8c2db9d8bc7f979df2fcb"
+    },
+    {
+      "path": "src/ui/MemoryControl.tsx",
+      "sha256": "dc31079e0a3ccceb4357cd4bc1ed8dbb001bd7ed772de7a6efc6e5e009817e6a"
+    },
+    {
+      "path": "src/ui/ModInstallConfirmation.tsx",
+      "sha256": "ed188ce478719c6e6838e710cba2cbc5bed28c6727c1cc5651296d1bbaf88244"
+    },
+    {
+      "path": "src/ui/ModPanel.tsx",
+      "sha256": "bf82747e1fb81e87211b2013e539d863e0ef8744e86772ba233957390d6cb51d"
+    },
+    {
+      "path": "src/ui/OnlineToolsPanel.tsx",
+      "sha256": "0890d749c05e38f79c86b704cea15adefd3e9d050a15e78af58128ce2f0763df"
+    },
+    {
+      "path": "src/ui/ResourceBrowser.tsx",
+      "sha256": "393e575aec425ae0cfe3316d595b217817299bc7b19d6618b1745c3d20c6a426"
+    },
+    {
+      "path": "src/ui/ResourceIcon.tsx",
+      "sha256": "3c9db8db2603acb30d9d73dcd7334b8f6befcaa4cc9953e30a2f04e87a426793"
+    },
+    {
+      "path": "src/ui/RootSettings.tsx",
+      "sha256": "2d10f6dbd07500e4776bbc89de1cc5db7c3384e1debb859372ef988aa7562874"
+    },
+    {
+      "path": "src/ui/SettingsPage.tsx",
+      "sha256": "577be012f7563a318bdc5692067ccb274ab092d7fcc1338c25b02800a0722b5b"
+    },
+    {
+      "path": "src/ui/TaskCenter.tsx",
+      "sha256": "5ccf3aa67cf43d51b718dfeda65124d633461d42b5c4077bccbdd2817498f0b1"
+    },
+    {
+      "path": "src/ui/Toolbox.tsx",
+      "sha256": "21f2a71665037e22655a67ca300c42daa0e307cb1d429757ed4c9945745958bc"
+    },
+    {
+      "path": "src/ui/ToolsWorkspace.tsx",
+      "sha256": "c02274f720454b09663207c8a271bce049630d225686c749501f8281e758cb3d"
+    },
+    {
+      "path": "src/ui/VersionCatalog.tsx",
+      "sha256": "13e02e9ac98cd69ef2e2c89daf2bbd312cf5b97a92310250b85a5ec9ec097613"
+    },
+    {
+      "path": "src/ui/desktop-state.ts",
+      "sha256": "340fab482e025e0014faf1eaaafd99959b0667a45588acc6bdc64c965d7487c1"
+    },
+    {
+      "path": "src/ui/desktop.css",
+      "sha256": "73d6b36344669044a3c0864fd9a14c5983b819024351511dee04901c11e7dbb4"
+    },
+    {
+      "path": "src/ui/first-run.ts",
+      "sha256": "aac47bb724f0e62b8fd76fc1196740d682f21863960425c1f7f22e51afbf52e8"
+    },
+    {
+      "path": "src/ui/forum-source.ts",
+      "sha256": "0c9ed528341aa0c07efea9701d579beb9bce599486e892e63e2db3f551d34c99"
+    },
+    {
+      "path": "src/ui/global.d.ts",
+      "sha256": "88c40bf1c21f780aa33a065657b4795263beaa10c124bd03a7d58612b615678d"
+    },
+    {
+      "path": "src/ui/index.html",
+      "sha256": "8107eae0efbb817eabd4a715e9672226ba71657abe3b5c82450fdc7dc26c114e"
+    },
+    {
+      "path": "src/ui/instance-overview.ts",
+      "sha256": "26eed95ec6a8ba2bb6af858607ee0377b569f4bb2c27bc3256a915c801814ce6"
+    },
+    {
+      "path": "src/ui/interaction.css",
+      "sha256": "addf133a8509b2807f29983bb2980268524b8445c7dd80513614740502ba191e"
+    },
+    {
+      "path": "src/ui/launcher-state.ts",
+      "sha256": "b3d1a71bba05726a8913686302bc5848148d63d40f3d3a1f3cd14a7a329ceef8"
+    },
+    {
+      "path": "src/ui/main.tsx",
+      "sha256": "ccadff6a4c91e96e5bff46585bd1d067f4f95acc2344cdedc9a5c44f9ddff4ad"
+    },
+    {
+      "path": "src/ui/state.ts",
+      "sha256": "d700114b1f6a10088dc062146c1414213ff782f84021ab044af51e919e1b7b21"
+    },
+    {
+      "path": "src/ui/task-controls.ts",
+      "sha256": "7c10be5d5eb3417a3faf6f9b53092c78d95fc93f5515337c83ce8a002e12a34b"
+    },
+    {
+      "path": "src/ui/task-observer.ts",
+      "sha256": "6389279f1129064ea988bf2b75f38cbc6b2cf7c985580bc33418d948374ab05b"
+    },
+    {
+      "path": "src/ui/task-query.ts",
+      "sha256": "361965601a20a3af4601188d263778c6dd8ead9e0b6e90a75eae656efb9c8a96"
+    }
+  ]
+}

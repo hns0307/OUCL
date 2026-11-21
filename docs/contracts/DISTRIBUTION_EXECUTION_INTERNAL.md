@@ -1,0 +1,24 @@
+# N6内部发布/事务协议
+
+2026-11-16实现记录，非已启用产品IPC。纯schema和内部方法分别位于core/distribution/release.ts、services/distribution/{release-source,store,execution,transaction-record,transaction-files,transaction}.ts。
+
+- v2发布payload：releaseFormatVersion=2、sourceId/packageId/packageVersion、sequence、issuedAt/expiresAt（UTC毫秒）、manifestSha256、既有v1 manifest；外层Ed25519 signature。固定规范键序列化，精确目标/签名/hash/时间验证后才CAS接受；同序同摘要重做CAS线性化，降序/同序异摘要拒绝。15秒预算覆盖fetch/read/authority，超时CAS结果未知时不回滚高水位。
+- 私有仓库：Windows OwnerGuard独占的distribution.sqlite，application_id 0x4f554450/user_version1。release_states记录最高序号与规范发布摘要；accepted_releases归档必须匹配高水位；journals/receipts是带revision的JSON CAS行，未知schema/identity/SQL故障停写。只接受open前已有journal作为前任恢复候选，含终态未释放本人lease。
+- 计划：formatVersion1、txId/rootId/instanceId/instanceRevision、source/package/version、sequence、manifestSha256与manifest。journal记录不可变planDigest/leaseToken、beforeReceiptRevision/beforeReceipt/afterReceipt、每文件dev/ino/hash/size、phase和write-ahead pending。prepared/applying/committed/rolledBack/needsRecovery转移严格解析，原始proof不可改、终态不可复活。
+- commit点是私有receipt原子CAS，不是文件存在或游戏目录裸收据。receipt写入同一SQLite事务再次比较journal after证据和已接受最高发行/归档，失败走提交前回滚；回执丢失从精确txId/planDigest/receipt方向恢复。进入commit许可或已存在after证据时取消拒绝。未知外部改动保留现场needsRecovery；不处理saves、不隐式迁移或收编。
+- 内部prepare/confirm最多16身份；同ID异输入拒绝，确认重读快照及当前信任/环境。要求真实产品注入JAR/依赖/许可证验证和可信制品适配，空配置不能执行。
+
+Node path-based mutation adapter尚有外部写入竞争窗口；同handle平台适配、热撤销代次与常驻请求回收未闭合前不开放产品执行。详见执行报告的准入缺项，不能把内部单测成功理解为全产品远程更新已交付。
+
+2026-11-16 r2后继：内部journal升级为formatVersion2，新增不可变gameIdentity:{dev,ino}；恢复先核对当前gameDir实际inode，旧v1 journal按未知格式停写，不自动迁移。coordinator快照同样纳入根目录inode。请求上限改为16个active作业与1024个seen身份的轻量tombstone；TTL为5分钟，过期或失败身份不重新执行，完成确认从权威journal只读恢复；达到seen上限需新document生命周期，绝不LRU驱逐旧ID。createFiles仅为内部平台factory端口，cooperative默认适配器不是产品准入；native helper仍有独立阻断，不能由本条视为已启用。
+
+
+2026-11-17 native准入后继（保留上文历史状态）：相对NtCreateFile目录图与NtSetInformationFile leaf mutation、固定NTFS检查、同handle proof/lease/delete已完成限定本机验证；14项helper及12项wrapper/factory通过，生产独立审查未发现该边界新增阻断问题。产品调用必须显式使用loadWindowsDistributionFiles/createWindowsDistributionFiles，默认cooperative只限内部测试。候选已包含摘要保护的helper及metadata，11文件审计/外层18检查通过。公共执行仍未开放，真实JAR/依赖/许可适配、持久任务与确认接线未完成。真实SQLite/OwnerGuard×native联合恢复正在补证，不把此前分离测试当作该完整链路证明。固定信任快照选择不承诺热撤销，变更需close/drain旧coordinator。见execution/20261117。
+
+2026-11-17联合恢复后继：真实SQLite/OwnerGuard与native factory的published、receipt-committed注入中断及活owner/root替换/foreign lease拒绝，共4项通过；同一Node进程实际close/reopen，不是强杀/跨进程重启证明。内部恢复准入证据见execution/20261117/AUTHORITY.md。
+
+2026-11-17取消后继：内部authorize/validate/artifact接受可选AbortSignal；prepare/confirm传原请求signal，事务两次授权及artifact传组合signal。artifact迟到返回先check后copy；receipt.commit/finish/rollback/recover不接取消，提交开始后仍CANCEL_TOO_LATE且drain实际settlement。局部48通过，完整844项840PASS/0FAIL/4既有SKIP及type/lint/build通过，见execution/20261117/CANCELLATION.md和final-evidence。公共执行未接线，domain实现仍待后继。
+
+2026-11-17本地规则后继：新增projectDistributionMods纯投影，完整baseline保留、旧hash删除/替换、op-index新scan绑定和有界事实校验；9项专注及最新853项849PASS/0FAIL/4SKIP与type/lint/build通过。此函数无IO、无许可或ownership授权，不是完整domain验证器；见execution/20261117/PROJECTION.md。
+
+2026-11-17 r3：LocalModDomain本地Mod内部gate已实现。typed证据许可绑定计划/操作/制品；真实worker scan和前后source stamp；实际rootinode/runtime context；strict journal区分基线/已发布，完整最终facts/local+platform复核。one-active、16sessions/1024seen、TTL/时钟回退、prepared取消释放cache但保留tombstone、close/drain等待实际settle。6+15专项及完整874项870PASS/0FAIL/4SKIP、type/lint/build通过。它不是实际artifact locator/许可政策，不开放公共能力，其他区域域验证unsupported；详execution/20261117-r3。

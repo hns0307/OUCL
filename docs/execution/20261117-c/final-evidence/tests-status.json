@@ -1,0 +1,10 @@
+{
+  "exitCode": 0,
+  "durationMs": 54060,
+  "unsandboxed": true,
+  "tests": 937,
+  "pass": 933,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 4
+}

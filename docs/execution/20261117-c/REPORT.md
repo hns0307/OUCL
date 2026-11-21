@@ -1,0 +1,13 @@
+# 方案A公共调用层接线结果
+
+已完成五通道transport、严格preload、main handler及文档owners/retired drain，真实source/key/locator/许可政策和持久执行backend未齐，生产显式new DistributionExecutionAdapter()无port。合法调用先SOURCE_UNAVAILABLE，不读target/分发DB/网络；应用正常启动自身metadata IO不在该零执行副作用断言之外冒称全应用零IO。没有执行能力广告或可执行UI入口。
+
+最新全回归937项933PASS/0FAIL/4既有SKIP，type/全lint/build全部0。adapter+owners+旧contract专项21PASS、preload9PASS。独立只读认可当前no-port生命周期边界，无确定阻断；不能据此宣称configured executor已实现。
+
+候选release/OUCL-0.3.0-execution-20261117-c.exe，452096字节，SHA256 6ff268e1d8c85e22635fffb309fbc19f33c6db16e399dbe507b1f9515c42656a，appHash77b3da600194862145ca7aa35a67319779f998beaaf316a0f9a920ee8224514b。11应用文件包审计通过，实际外层26/26检查通过，outer/Electron/Worker exit0、owner.lock释放；运行后11应用/73runtime逐项摘要匹配，见candidate-evidence/run-1。宽窄截图已目视无横向溢出。
+
+原18检查保持，新增8为五方法存在、无execute广告、五合法SOURCE_UNAVAILABLE、五非法参数拒绝合组。后者真实桥返回值不等于shell证明零IPC；下发前零invoke由preload专注测试证明。使用隐藏内存hook、合成catalog、缓存固定官方runtime、封闭外网，不是公网分发/真实站点/游戏/真实许可证验证。
+
+transport active重复共用promise，completed只留轻digest，可原ID重新dispatch；durable幂等必须由后继main-owned port/outbox保证。文档旧adapter同步disposed，retiredclose直到实际settle且失败留标志，shutdown顺序在storage前；abort不冒充worker/commit退出。已知capability字面量不等于实际广告。
+
+正式OUCL-0.3.0.exe SHA仍6d4f7f25d29a06b4d3730fd79ad64a160dbcdb28f747e20eda1ce05f98cc690e，未替换；无push/新依赖/旧WIP或tmp清理。后继为确认ticket、持久执行task backend/target/控制、configured闭环与UI；并非技术方案全部完成。

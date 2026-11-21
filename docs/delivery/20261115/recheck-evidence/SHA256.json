@@ -1,0 +1,52 @@
+[
+  {
+    "file": "bootstrap.log",
+    "bytes": 47,
+    "sha256": "573c92a2c290abec1a012c2cc11deb36de15c879202a2dbac0199672ad9462fd"
+  },
+  {
+    "file": "build.log",
+    "bytes": 602,
+    "sha256": "45f3401283fc8a5239410a139bd1621a9c0acc0ccd9aca303ff148d3610bf66f"
+  },
+  {
+    "file": "bundle-difference-review.json",
+    "bytes": 2281,
+    "sha256": "e891f01e19da3c981dccbb901955bf1649443e9f2a89fd8b9c1e3ae07942fef5"
+  },
+  {
+    "file": "lint.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "package-verification.json",
+    "bytes": 1950,
+    "sha256": "c4d215048f531d98c0115858c6af48a092d3d7425a4d0736adcfbc3b1a0975d2"
+  },
+  {
+    "file": "pnpm-bootstrap-initial.log",
+    "bytes": 98665,
+    "sha256": "ce9ebd4605e978eb751e34810cadb63f4c62b28216916d6e4285fe183672aba3"
+  },
+  {
+    "file": "pnpm-check-initial.log",
+    "bytes": 173,
+    "sha256": "935c797a9a708e9bd2013d5f9585b5d6edfb324f3416f378a873357af5233c29"
+  },
+  {
+    "file": "rebuild-comparison.json",
+    "bytes": 1122,
+    "sha256": "a9358dc976c0ca7bfb137d917e1b57d58809601a0b742977287373954b4ecbb4"
+  },
+  {
+    "file": "test.log",
+    "bytes": 106062,
+    "sha256": "cf220001fb583794b59e60c9d32ebd1b51e2aea59ae45dcdf153b61a180b017e"
+  },
+  {
+    "file": "typecheck.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

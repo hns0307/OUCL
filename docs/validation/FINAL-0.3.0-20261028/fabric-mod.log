@@ -1,0 +1,17 @@
+file:///D:/MC_start/OUCL/.test-build/src/services/download/http.js:242
+          throw error instanceof DownloadError ? error : new DownloadError("NETWORK_FAILED");
+                                                         ^
+
+DownloadError: NETWORK_FAILED
+    at HttpTransfer.run (file:///D:/MC_start/OUCL/.test-build/src/services/download/http.js:242:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async RequestBudget.run (file:///D:/MC_start/OUCL/.test-build/src/services/download/request-budget.js:17:14)
+    at async SourceTransfer.run (file:///D:/MC_start/OUCL/.test-build/src/services/download/source-transfer.js:68:14)
+    at async ArtifactTransfer.run (file:///D:/MC_start/OUCL/.test-build/src/services/download/artifact-transfer.js:58:16)
+    at async file:///D:/MC_start/OUCL/.test-build/src/services/download/coordinator.js:124:22 {
+  code: 'NETWORK_FAILED',
+  retryAfterMs: undefined,
+  category: 'network'
+}
+
+Node.js v24.22.0

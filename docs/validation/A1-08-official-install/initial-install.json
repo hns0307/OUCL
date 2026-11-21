@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "fixture": false,
+  "gameLaunched": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "rootId": "11271a66-1fe3-4053-b460-175615865b04",
+  "taskId": "fbc5c9c9-5dfa-44f3-a2a2-2499b9cd6ebd",
+  "instanceId": "83537073-0b71-5bcf-95ff-3495fb4d0115",
+  "artifacts": 3641,
+  "totalBytes": 735814641,
+  "receipts": 3641,
+  "privateNativesPublished": true,
+  "localManifestMatchesRecord": true,
+  "dataRetainedForLaunchValidation": true,
+  "timestamp": "2026-10-25T07:10:38.172Z",
+  "durationMs": 375378
+}

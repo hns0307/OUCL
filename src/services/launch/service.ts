@@ -1,0 +1,282 @@
+import { createHash } from 'node:crypto';
+import { totalmem } from 'node:os';
+import { controlTask, applyWorkerEvent } from '../../core/task/machine.js';
+import type { Execution, WorkerEvent } from '../../core/task/machine.js';
+import { planLaunch, LaunchPlanError } from '../../core/launch/plan.js';
+import type { LaunchIdentity } from '../../core/launch/plan.js';
+import type { StorageClient } from '../workers/storage-client.js';
+import type { StoredTask } from '../storage/tasks.js';
+import type { InstallerService } from '../install/installer.js';
+import type { ProfileService } from './profiles.js';
+import { GameProcessService, GameProcessError } from './process.js';
+import type { GameSession } from './process.js';
+import { LAUNCH_ERRORS } from '../storage/game-sessions.js';
+import type { GameSessions, LaunchFailure, SavedSession } from '../storage/game-sessions.js';
+import type { RecordEnvelope } from '../storage/records.js';
+import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
+import type { JavaRuntimeService } from '../java/runtime.js';
+
+export interface PreparedOnlineIdentity { identity: LaunchIdentity; verify(): Promise<boolean> }
+export type LaunchIdentityResolver = (accountId: string, signal: AbortSignal) => Promise<PreparedOnlineIdentity | undefined>;
+
+export interface LaunchRequest { instanceId: string; accountId: string; expectedRevision: number }
+interface Job { task: StoredTask; controller: AbortController; changes: Promise<void>; done: Promise<void>; commitUncertain?: boolean }
+export interface GameTaskView { task: StoredTask; session: SavedSession }
+export class LaunchServiceError extends Error { constructor(readonly code: LaunchFailure | 'CANCEL_TOO_LATE' | 'INVALID_TASK_STATE') { super(code); this.name = 'LaunchServiceError'; } }
+const failure = (error: unknown): LaunchFailure => {
+  const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+  if (LAUNCH_ERRORS.includes(code as LaunchFailure)) return code as LaunchFailure;
+  if (code === 'ENOENT' || code === 'INSTANCE_NOT_FOUND') return 'DEPENDENCY_MISSING';
+  return error instanceof LaunchPlanError && error.code === 'MEMORY_OUT_OF_RANGE' ? 'MEMORY_OUT_OF_RANGE' : 'LAUNCH_FAILED';
+};
+
+/** Connects durable launch/stop tasks, trusted profiles, verified installation inputs and actual owned JVM sessions. */
+export class LaunchService {
+  private registry: RecordEnvelope<GameSessions> | undefined;
+  private indexTail: Promise<void> = Promise.resolve();
+  private admissionTail: Promise<void> = Promise.resolve();
+  private readonly jobs = new Map<string, Job>();
+  private readonly owned = new Set<string>();
+  private readonly observers = new Set<Promise<void>>();
+  private closed = false;
+  private idleListener?: () => void;
+  constructor(private readonly storage: StorageClient, private readonly profiles: Pick<ProfileService, 'list'>,
+    private readonly installer: Pick<InstallerService, 'prepareLaunch' | 'verifyPreparedLaunch' | 'inspectLaunchMods'>, private readonly processes = new GameProcessService(), private readonly physicalMemory = totalmem,
+    private readonly javaRuntime?: Pick<JavaRuntimeService, 'ensure'>, private readonly resolveOnline?: LaunchIdentityResolver) {}
+
+  /** Normal restart preserves exited history. A previous running record cannot become an owned process by PID guesswork. */
+  async initialize(): Promise<void> {
+    this.registry = await this.storage.readGameSessions();
+    for (const session of this.registry?.data.items ?? []) if (['running', 'stopping'].includes(session.snapshot.state)) {
+      await this.save(session.taskId, current => ({ ...current!, snapshot: { ...current!.snapshot, state: 'unknown', revision: current!.snapshot.revision + 1 } }));
+    }
+    // This service is the sole launch owner. The deadline is checked around each RPC,
+    // not a hard timeout: a single RPC may still consume the storage client's timeout.
+    const deadline = performance.now() + 2000;
+    for (const session of this.records().slice(-32).reverse()) {
+      if (performance.now() >= deadline) break;
+      try { await this.reconcile(session.rootId, session.taskId, deadline); }
+      catch { break; } // Retry this and remaining records on individual task queries.
+    }
+  }
+  private async root(): Promise<string> {
+    const root = await this.storage.readInstallation(); if (!root) throw new GameProcessError('LAUNCH_FAILED'); return root.data.rootId;
+  }
+  private records(): SavedSession[] { return this.registry?.data.items ?? []; }
+  private save(taskId: string, update: (current: SavedSession | undefined) => SavedSession): Promise<SavedSession> {
+    const operation = this.indexTail.then(async () => {
+      const items = this.records(); const previous = items.find(item => item.taskId === taskId); const next = update(previous);
+      if (!previous && items.length >= 1000) throw new GameProcessError('LAUNCH_FAILED');
+      if (previous && JSON.stringify(previous) === JSON.stringify(next)) return previous;
+      this.registry = await this.storage.writeGameSessions(this.registry?.revision ?? 0, { items: [...items.filter(item => item.taskId !== taskId), next] });
+      return next;
+    });
+    this.indexTail = operation.then(() => {}, () => {}); return operation;
+  }
+  private admitted(action: () => Promise<{ taskId: string }>): Promise<{ taskId: string }> {
+    const operation = this.admissionTail.then(async () => { if (this.closed) throw new GameProcessError('LAUNCH_FAILED'); return action(); });
+    this.admissionTail = operation.then(() => {}, () => {}); return operation;
+  }
+  /** A repeated business request returns the same durable task/session; changed content is rejected by SQLite. */
+  launch(requestId: string, input: LaunchRequest): Promise<{ taskId: string }> {
+    if (![requestId, input.instanceId, input.accountId].every(id => UUID_PATTERN.test(id)) || !Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 1) return Promise.reject(new GameProcessError('LAUNCH_FAILED'));
+    const canonical = { instanceId: input.instanceId.toLowerCase(), accountId: input.accountId.toLowerCase(), expectedRevision: input.expectedRevision };
+    return this.admitted(async () => {
+      const rootId = await this.root(); const task = await this.storage.accept(rootId, requestId.toLowerCase(), 'launch', createHash('sha256').update(JSON.stringify(canonical)).digest('hex'));
+      if (task.execution.state !== 'queued' || this.jobs.has(task.taskId)) return { taskId: task.taskId };
+      await this.save(task.taskId, current => current ?? { rootId, taskId: task.taskId, spawned: false, stopTaskIds: [], snapshot: {
+        sessionId: task.taskId, instanceId: canonical.instanceId, state: 'unknown', revision: 1, startedAt: new Date().toISOString() } });
+      this.start(task, async job => {
+        const accountData = await this.profiles.list(); const account = accountData.accounts.find(item => item.accountId === canonical.accountId);
+        const rootSnapshot = await this.storage.readInstallation();
+        if (!account && !this.resolveOnline) throw new LaunchServiceError('AUTH_REQUIRED');
+        if (2048 * 1024 ** 2 > this.physicalMemory() * 0.75) throw new LaunchPlanError('MEMORY_OUT_OF_RANGE');
+        const record = await this.storage.readInstance(canonical.instanceId);
+        if (!record || record.data.summary.rootId !== rootId || record.data.phase !== 'ready') throw new GameProcessError('LAUNCH_FAILED');
+        if (record.revision !== canonical.expectedRevision) throw new LaunchServiceError('REVISION_CONFLICT');
+        const verified = await this.installer.prepareLaunch(canonical.instanceId, canonical.expectedRevision, job.controller.signal);
+        this.check(job);
+        const java = this.javaRuntime ? await this.javaRuntime.ensure(verified.prepared.version.javaMajor, task.taskId, job.controller.signal)
+          : accountData.javas.find(item => item.javaId === accountData.selectedJavaId);
+        if (!java) throw new GameProcessError('JAVA_INCOMPATIBLE');
+        this.check(job);
+        const profileSnapshot = await this.profiles.list();
+        if (profileSnapshot.selectedJavaId !== java.javaId
+          || JSON.stringify(profileSnapshot.accounts.find(item => item.accountId === canonical.accountId)) !== JSON.stringify(account)) throw new LaunchServiceError('REVISION_CONFLICT');
+        const settingsSnapshot = await this.storage.readSettings();
+        const baseline = await this.installer.inspectLaunchMods(canonical.instanceId, canonical.expectedRevision, java.version, job.controller.signal);
+        const fresh = async (): Promise<void> => {
+          const current = await this.storage.readInstance(canonical.instanceId);
+          if (JSON.stringify(current) !== JSON.stringify(record) || JSON.stringify(await this.storage.readInstallation()) !== JSON.stringify(rootSnapshot)
+            || JSON.stringify(await this.profiles.list()) !== JSON.stringify(profileSnapshot)
+            || JSON.stringify(await this.storage.readSettings()) !== JSON.stringify(settingsSnapshot)) throw new LaunchServiceError('REVISION_CONFLICT');
+        };
+        const verify = async (): Promise<void> => {
+          await fresh();
+          await this.installer.verifyPreparedLaunch(canonical.instanceId, canonical.expectedRevision, verified.nativeFiles, job.controller.signal);
+          const inventory = await this.installer.inspectLaunchMods(canonical.instanceId, canonical.expectedRevision, java.version, job.controller.signal);
+          if (inventory.fingerprint !== baseline.fingerprint) throw new LaunchServiceError('REVISION_CONFLICT');
+          if (inventory.local.state !== 'satisfied') throw new LaunchServiceError('DEPENDENCY_MISSING');
+          await fresh(); this.check(job);
+        };
+        const index = verified.prepared.version.assetIndex;
+        const indexViews = verified.prepared.plan.views.filter(view => view.area === 'assets' && view.artifactId === `sha1-${index?.sha1.toLowerCase()}` && /^indexes\/[^/]+\.json$/.test(view.path));
+        if (!index || indexViews.length !== 1) throw new GameProcessError('NEEDS_RECOVERY');
+        const indexId = indexViews[0]!.path.slice('indexes/'.length, -'.json'.length);
+        const online = account ? undefined : await this.resolveOnline?.(canonical.accountId, job.controller.signal);
+        const identity: LaunchIdentity | undefined = account ? { kind: 'offline', gameName: account.gameName, uuid: account.uuid } : online?.identity;
+        if (!identity) throw new LaunchServiceError('AUTH_REQUIRED');
+        this.check(job);
+        const verifyIdentity = async (): Promise<void> => {
+          await verify();
+          if (online && !await online.verify()) throw new LaunchServiceError('AUTH_REAUTH');
+        };
+        const plan = planLaunch({ version: verified.prepared.version, layout: verified.layout, classpath: verified.prepared.plan.classpath,
+          java: { javaId: java.javaId, major: java.major, architecture: 'x64' }, account: identity, assets: { ...verified.prepared.assets, indexId }, memoryMiB: settingsSnapshot?.data.memoryMiB ?? 2048, launcherVersion: '0.5.0' });
+        await this.event(job, 'transferred'); this.check(job);
+        const session = await this.processes.launch(canonical.instanceId, java.executable, java.major, plan,
+          { signal: job.controller.signal, sessionId: task.taskId, initialRevision: 2, expectedVersion: java.version,
+            finalize: async () => { await verifyIdentity(); return plan; }, commitPermit: () => this.commitPermit(job), recheck: verifyIdentity });
+        this.owned.add(session.sessionId); this.observe(session.sessionId);
+        await this.save(task.taskId, current => ({ ...current!, spawned: true, snapshot: current!.snapshot.revision > session.revision ? current!.snapshot : session }));
+        await this.event(job, 'committed');
+      }); return { taskId: task.taskId };
+    });
+  }
+  /** Stop is a separate durable task; only a confirmed force request can terminate an owned JVM. */
+  stop(requestId: string, sessionId: string, mode: 'graceful' | 'force', confirmed: boolean): Promise<{ taskId: string }> {
+    if (!UUID_PATTERN.test(requestId) || !UUID_PATTERN.test(sessionId)) return Promise.reject(new GameProcessError('LAUNCH_FAILED'));
+    if (!confirmed) return Promise.reject(new GameProcessError('CONFIRMATION_REQUIRED'));
+    if (mode !== 'force') return Promise.reject(new GameProcessError('STOP_UNSUPPORTED'));
+    return this.admitted(async () => {
+      const rootId = await this.root(); const session = this.records().find(item => item.rootId === rootId && item.taskId === sessionId.toLowerCase());
+      if (!session) throw new GameProcessError('SESSION_NOT_FOUND');
+      const task = await this.storage.accept(rootId, requestId.toLowerCase(), 'stop', createHash('sha256').update(JSON.stringify({ sessionId: session.taskId, mode, confirmed })).digest('hex'));
+      if (task.execution.state !== 'queued' || this.jobs.has(task.taskId)) return { taskId: task.taskId };
+      await this.save(session.taskId, current => {
+        if (current!.stopTaskIds.includes(task.taskId)) return current!;
+        if (current!.stopTaskIds.length >= 16) throw new GameProcessError('LAUNCH_FAILED');
+        return { ...current!, stopTaskIds: [...current!.stopTaskIds, task.taskId] };
+      });
+      this.start(task, async job => {
+        await this.event(job, 'transferred'); this.check(job); await this.event(job, 'verified');
+        const current = await this.session(rootId, session.taskId);
+        const exited = current.state === 'exited' ? current : await this.processes.stop(session.taskId, mode, confirmed);
+        if (exited.state !== 'exited') throw new GameProcessError('NEEDS_RECOVERY');
+        await this.save(session.taskId, latest => ({ ...latest!, snapshot: exited })); await this.event(job, 'committed');
+      }); return { taskId: task.taskId };
+    });
+  }
+  private start(task: StoredTask, action: (job: Job) => Promise<void>): void {
+    const job: Job = { task, controller: new AbortController(), changes: Promise.resolve(), done: Promise.resolve() }; this.jobs.set(task.taskId, job);
+    job.done = (async () => {
+      try { await this.change(job, state => controlTask(state, 'start').execution); this.check(job); await action(job); }
+      catch (error) {
+        const saved = this.records().find(item => item.taskId === task.taskId || item.stopTaskIds.includes(task.taskId));
+        const reason = job.controller.signal.aborted ? 'CANCELLED' : failure(error);
+        const errors: unknown[] = [error];
+        if (saved) {
+          try { await this.save(saved.taskId, current => ({ ...current!, errors: [...(current!.errors ?? []).filter(item => item.taskId !== task.taskId), { taskId: task.taskId, code: reason }] })); }
+          catch (saveError) { errors.push(saveError); }
+        }
+        try {
+          if (job.commitUncertain) {
+            const current = await this.storage.get(task.ownerId, task.taskId);
+            if (!current || current.kind !== task.kind || current.ownerId !== task.ownerId || current.taskId !== task.taskId) throw new GameProcessError('NEEDS_RECOVERY');
+            job.task = current;
+            await this.change(job, state => controlTask(state, 'interrupted').execution);
+          } else if (this.owned.has(task.taskId) || reason === 'NEEDS_RECOVERY') await this.change(job, state => controlTask(state, 'interrupted').execution);
+          else { if (reason !== 'CANCELLED') await this.event(job, 'failed'); await this.event(job, 'cleaned'); }
+        } catch (recoveryError) { errors.push(recoveryError); }
+        if (errors.length > 1) throw new AggregateError(errors, 'Launch task recovery failed', { cause: error });
+      }
+    })().finally(() => { this.jobs.delete(task.taskId); }); void job.done.catch(() => {});
+  }
+  private check(job: Job): void { if (job.controller.signal.aborted) throw new GameProcessError('CANCELLED'); }
+  /** Shares cancel's durable queue: a dropped verified event can never grant permission to spawn. */
+  private commitPermit(job: Job): Promise<void> {
+    return this.change(job, state => {
+      this.check(job);
+      if (state.state !== 'verifying') throw new GameProcessError('CANCELLED');
+      const next = applyWorkerEvent(state, { kind: 'verified', attempt: state.attempt, sequence: state.lastSequence + 1 }).execution;
+      if (next.state !== 'committing') throw new GameProcessError('LAUNCH_FAILED');
+      job.commitUncertain = true;
+      return next;
+    }).then(() => { job.commitUncertain = false; });
+  }
+  private change(job: Job, transform: (state: Execution) => Execution): Promise<void> {
+    const operation = job.changes.then(async () => {
+      const next = transform(job.task.execution); if (next === job.task.execution) return;
+      try { job.task = await this.storage.update(job.task.ownerId, job.task.taskId, job.task.execution.revision, next); }
+      catch (error) {
+        // A lost permit acknowledgement may already have committed. Reconcile while still
+        // inside the same queue, before a pending cancel can observe the stale verifying state.
+        if (job.commitUncertain) {
+          const current = await this.storage.get(job.task.ownerId, job.task.taskId);
+          if (current && current.ownerId === job.task.ownerId && current.taskId === job.task.taskId && current.kind === job.task.kind) job.task = current;
+        }
+        throw error;
+      }
+    }); job.changes = operation.catch(() => {}); return operation;
+  }
+  private event(job: Job, kind: 'transferred' | 'verified' | 'committed' | 'failed' | 'cleaned'): Promise<void> {
+    return this.change(job, state => applyWorkerEvent(state, { kind, attempt: state.attempt, sequence: state.lastSequence + 1 } as WorkerEvent).execution);
+  }
+  private observe(sessionId: string): void {
+    const observer = this.processes.wait(sessionId).then(async snapshot => { await this.save(sessionId, current => ({ ...current!, spawned: true, snapshot })); });
+    this.observers.add(observer); void observer.finally(() => { this.observers.delete(observer); if (!this.hasRunningGames()) this.idleListener?.(); }).catch(() => {});
+  }
+  /** Only sessions belonging to the registered root are visible; live process facts override an older persisted snapshot. */
+  async session(rootId: string, sessionId: string): Promise<GameSession> {
+    const record = this.records().find(item => item.rootId === rootId && item.taskId === sessionId); if (!record) throw new GameProcessError('SESSION_NOT_FOUND');
+    return this.owned.has(sessionId) ? this.processes.get(sessionId) : { ...record.snapshot };
+  }
+  async sessions(rootId: string): Promise<GameSession[]> {
+    return Promise.all(this.records().filter(item => item.rootId === rootId && (item.spawned || this.owned.has(item.taskId) || this.jobs.has(item.taskId))).map(item => this.session(rootId, item.taskId)));
+  }
+  // Only the sole launch-service owner may reconcile registered tasks. Never infer process death from a session flag.
+  private async reconcile(rootId: string, taskId: string, deadline?: number): Promise<StoredTask | undefined> {
+    const checkBudget = (): void => { if (deadline !== undefined && performance.now() >= deadline) throw new Error('RECOVERY_SCAN_BUDGET'); };
+    checkBudget();
+    const task = await this.storage.get(rootId, taskId);
+    checkBudget();
+    if (!task || task.ownerId !== rootId || task.taskId !== taskId || task.kind !== 'launch' || task.execution.state !== 'committing'
+      || this.jobs.has(taskId) || this.owned.has(taskId)
+      || !this.records().some(item => item.rootId === rootId && item.taskId === taskId)) return task;
+    const next = controlTask(task.execution, 'interrupted').execution;
+    checkBudget();
+    const updated = await this.storage.update(rootId, taskId, task.execution.revision, next);
+    checkBudget();
+    return updated;
+  }
+  /** Queries launch/stop only; install tasks remain with their original owner/service. */
+  async task(rootId: string, taskId: string): Promise<GameTaskView | undefined> {
+    const task = this.jobs.get(taskId)?.task ?? await this.reconcile(rootId, taskId);
+    if (!task || task.ownerId !== rootId || !['launch', 'stop'].includes(task.kind)) return undefined;
+    const session = this.records().find(item => item.rootId === rootId && (item.taskId === taskId || item.stopTaskIds.includes(taskId)));
+    if (!session) throw new GameProcessError('NEEDS_RECOVERY'); return { task, session };
+  }
+  async tasks(rootId: string): Promise<GameTaskView[]> {
+    const ids = this.records().filter(item => item.rootId === rootId).flatMap(item => [item.taskId, ...item.stopTaskIds]);
+    const tasks: GameTaskView[] = []; for (const id of ids) { const task = await this.task(rootId, id); if (task) tasks.push(task); } return tasks;
+  }
+  /** Tests registry membership without querying install task rows or exposing another owner's sessions. */
+  hasTask(rootId: string, taskId: string): boolean { return this.records().some(item => item.rootId === rootId && (item.taskId === taskId || item.stopTaskIds.includes(taskId))); }
+  /** Main-process lifecycle callback; no renderer function crosses this boundary. */
+  onIdle(listener: () => void): void { this.idleListener = listener; }
+  /** Persist cancellation before interrupting pre-spawn verification. A committed/started process needs an explicit stop. */
+  async cancel(rootId: string, taskId: string): Promise<void> {
+    const job = this.jobs.get(taskId);
+    if (!job || job.task.ownerId !== rootId) { const task = await this.storage.get(rootId, taskId); throw new LaunchServiceError(task?.execution.state === 'completed' ? 'CANCEL_TOO_LATE' : 'INVALID_TASK_STATE'); }
+    await this.change(job, state => { const next = controlTask(state, 'cancel'); if (next.rejected) throw new LaunchServiceError(next.rejected); return next.execution; }); job.controller.abort();
+  }
+  hasRunningGames(): boolean { return [...this.owned].some(id => ['running', 'stopping'].includes(this.processes.get(id).state)); }
+  /** False means a real game remains alive: the application must retain this process owner and storage. */
+  async close(): Promise<boolean> {
+    this.closed = true; await this.admissionTail;
+    for (const job of this.jobs.values()) if (job.task.execution.state !== 'committing') await this.cancel(job.task.ownerId, job.task.taskId).catch(() => {});
+    await Promise.allSettled([...this.jobs.values()].map(job => job.done));
+    if (this.hasRunningGames()) { this.closed = false; return false; }
+    await Promise.allSettled([...this.observers]); await this.indexTail; return true;
+  }
+}

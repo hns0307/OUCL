@@ -1,0 +1,114 @@
+{
+  "status": "DIAGNOSTIC_CAPTURED",
+  "cancelOutcome": "NOT_EXERCISED",
+  "firstEarlyCloseCause": "UNKNOWN unless event-specific error evidence and reliable identity independently establish causation; ordering alone is insufficient",
+  "callbacks": [
+    {
+      "line": 20,
+      "interceptionId": 7,
+      "guards": {
+        "target": true,
+        "notHeldYet": true,
+        "hasHeldRequest": true,
+        "notAborted": true,
+        "notClosed": false
+      },
+      "heldRequest": {
+        "id": 1,
+        "closed": true,
+        "aborted": false
+      },
+      "latestRequest": {
+        "id": 1,
+        "closed": true,
+        "aborted": false
+      },
+      "callbackCount": 1
+    },
+    {
+      "line": 28,
+      "interceptionId": 8,
+      "guards": {
+        "target": true,
+        "notHeldYet": true,
+        "hasHeldRequest": true,
+        "notAborted": true,
+        "notClosed": false
+      },
+      "heldRequest": {
+        "id": 1,
+        "closed": true,
+        "aborted": false
+      },
+      "latestRequest": {
+        "id": 2,
+        "closed": true,
+        "aborted": false
+      },
+      "callbackCount": 1
+    }
+  ],
+  "requests": [
+    {
+      "request": 1,
+      "createdLine": 17,
+      "events": [
+        {
+          "line": 17,
+          "kind": "request-created",
+          "monoMs": 34961.853
+        },
+        {
+          "line": 18,
+          "kind": "request-finish",
+          "monoMs": 34964.1286
+        },
+        {
+          "line": 19,
+          "kind": "request-close",
+          "monoMs": 34964.6627
+        },
+        {
+          "line": 23,
+          "kind": "request-error",
+          "monoMs": 34967.4175,
+          "code": null,
+          "netToken": "ERR_BLOCKED_BY_CLIENT",
+          "category": "blocked-by-client"
+        }
+      ]
+    },
+    {
+      "request": 2,
+      "createdLine": 25,
+      "events": [
+        {
+          "line": 25,
+          "kind": "request-created",
+          "monoMs": 35222.6225
+        },
+        {
+          "line": 26,
+          "kind": "request-finish",
+          "monoMs": 35223.3109
+        },
+        {
+          "line": 27,
+          "kind": "request-close",
+          "monoMs": 35223.5663
+        },
+        {
+          "line": 31,
+          "kind": "request-error",
+          "monoMs": 35224.9774,
+          "code": null,
+          "netToken": "ERR_BLOCKED_BY_CLIENT",
+          "category": "blocked-by-client"
+        }
+      ]
+    }
+  ],
+  "parseIssues": [],
+  "unexpectedResponses": 0,
+  "limits": "Immediate rejection is intentional. Candidate request associations are not verified Chromium IDs. No automatic replays."
+}

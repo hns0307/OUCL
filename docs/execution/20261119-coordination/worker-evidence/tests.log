@@ -1,0 +1,10 @@
+✔ real worker accepts fixed bytes and rejects a different archive (182.1673ms)
+✔ worker exit, duplicate messages, cancellation and deadlines are enforced (171.5548ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 441.777

@@ -1,0 +1,34 @@
+{
+  "tests": {
+    "exitCode": 0,
+    "count": 4,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "durationMs": 1643.296,
+    "log": "tests.log",
+    "sourceAndBinaryStatus": "status.json"
+  },
+  "typecheck": {
+    "command": "node ../../node_modules/typescript/bin/tsc --noEmit",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "lint": {
+    "command": "node ../../node_modules/eslint/bin/eslint.js tests/distribution-native-authority.test.ts",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "evidenceBoundary": {
+    "realSQLite": true,
+    "realOwnerGuardCloseReopen": true,
+    "realNativeFactory": true,
+    "syntheticCrashCheckpoint": true,
+    "realKill": false,
+    "processRestart": false,
+    "publicNetwork": false,
+    "realGameOrJarValidation": false
+  }
+}

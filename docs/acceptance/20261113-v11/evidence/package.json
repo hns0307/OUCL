@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0",
+  "output": "D:\\MC_start\\OUCL-acceptance-v11-20261113\\release\\OUCL-0.3.0-acceptance-20261113-v11.exe",
+  "bytes": 406528,
+  "sha256": "3d9a0ebaf289a9552933c97033ffbd6a069e0a0258e3ea8322cc2a5ceb6efce6",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "d863502b24972f98dc62e578794ea5e881bea5033e86efd5074ee4d20a63bb5d"
+}

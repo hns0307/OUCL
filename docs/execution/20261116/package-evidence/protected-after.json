@@ -1,0 +1,29 @@
+{
+  "officialExeSha256": "6d4f7f25d29a06b4d3730fd79ad64a160dbcdb28f747e20eda1ce05f98cc690e",
+  "dist": [
+    {
+      "path": "main/index.cjs",
+      "sha256": "204dd13d98c2cd07c7c12d201d41ee75912d827ee1e1c4c5a70fea900ff0a6c3"
+    },
+    {
+      "path": "preload/index.cjs",
+      "sha256": "96d2f45e7b24a777f1658dc11cdededf7b7925d46a1d49fd9d1c83bb18ea41a4"
+    },
+    {
+      "path": "renderer/assets/index-PEE99890.js",
+      "sha256": "db7a348ca39679940fccb754f7f30a79a4001abe519a23447900b1e775d48744"
+    },
+    {
+      "path": "renderer/assets/index-qjws1iSf.css",
+      "sha256": "89e3b679344db44653f978dfd80ef24e712121dcbeb87d8c1b6ab4e70bf3a5cb"
+    },
+    {
+      "path": "renderer/index.html",
+      "sha256": "f09a239fc9d5e776d18378934a7f6d27607e72a5d85a2a88508252ffd648fa8f"
+    },
+    {
+      "path": "workers/entry.cjs",
+      "sha256": "f87dab9e40aa0608b1f0ad6d48f6cfaa75e244c481a3d4e047e13505806eeacc"
+    }
+  ]
+}

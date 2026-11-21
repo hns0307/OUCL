@@ -1,0 +1,33 @@
+$ pnpm build && node scripts/bootstrap-package.mjs
+$ node scripts/build.mjs
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 33 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                   0.61 kB │ gzip:  0.36 kB
+dist/renderer/assets/index-BVOoEoWk.css   18.65 kB │ gzip:  5.05 kB
+dist/renderer/assets/index-CzBGIMRO.js   268.40 kB │ gzip: 83.43 kB
+
+✓ built in 160ms
+
+  dist\main\index.cjs  331.6kb
+
+Done in 35ms
+
+  dist\preload\index.cjs  58.6kb
+
+Done in 6ms
+
+  dist\workers\entry.cjs  112.5kb
+
+Done in 14ms
+{
+  "version": "0.2.2",
+  "output": "D:\\MC_start\\OUCL\\release\\OUCL-0.2.2.exe",
+  "bytes": 234496,
+  "sha256": "2b1f141d0cbd7610f19117b91009ac2c76bc3b4809febfc538b3009386ef7454",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "3dbcf140987d6384a22cf8f7ce7e9c5bbe8c26b05537f7aafde1ff481fb308df"
+}

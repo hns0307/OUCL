@@ -1,0 +1,14 @@
+✔ real runner directly completes J→K, wrong task does not poison identity, historical new receipt never re-enters J (3351.7533ms)
+✔ K actual CAS remains inside the root slot: different job stays out, cancel too late, close drains same-ID callers (1435.8744ms)
+✔ real post-publication cancellation rolls native bytes back, settles failed, and preserves original typed cancellation (1150.7872ms)
+✔ unknown actual claim acknowledgement stays running without files; later runner is K-only and never retries J (540.7355ms)
+✔ preclaim busy target preserves the original typed error and leaves the task queued (403.5476ms)
+✔ close during held J validation drains actual cancellation and keeps shared stores open (430.1551ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7468.0305

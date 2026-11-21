@@ -1,0 +1,11 @@
+{"time":"2026-11-11T19:11:43.155Z","network":"blocked"}
+{"time":"2026-11-11T19:11:43.160Z","kind":"ready","mode":"destroy","security":{"contextIsolation":true,"sandbox":true,"nodeIntegration":false},"handshake":{"contractVersion":1,"requestId":"6e920747-6b15-4865-b918-0783d81ff82b","ok":true,"data":{"selectedVersion":1,"capabilities":["roots.v1","catalog.v1","instances.v1","instances.v2","instance-folders.v1","tasks.v1","downloads.v1","java.v1","accounts.v1","settings.v1","desktop.v1","game.v1","sessions.v1","resources.v1","loaders.v1","mods.v1","task-targets.v1","packs.fixed-preview.v1","mods-maintenance-preview.v1"],"sessionId":"a34f2765-f5a6-48d8-bd0e-9210efa50e6e"}},"bridgeKeys":["inspectFixedPack","listInstances","createInstance","listTasks","getTask","controlTask","subscribeTask","listInstanceTaskTargets","getDownloadSettings","updateDownloadSettings","updateSettings","chooseJava","listAccounts","createOfflineAccount","getSettings","launchGame","stopGame","listSessions","getSession","searchResources","resourceVersions","downloadResource","resourceLibrary","openResourceLibrary","getDesktop","updateAppearance","saveForumDraft","deleteForumDraft","chooseDesktopIcon","resourceIcon","loaderVersions","createLoaderInstance","listInstancesV2","openInstanceFolder","listMods","checkMods","modReport","planMod","getModPlan","cancelModPlan","confirmModPlan","modInstallState","maintenancePreview","maintenancePreviewStatus","maintenancePreviewCancel","catalog","listRoots","chooseRoot","handshake"],"nodeAbsent":true}
+{"time":"2026-11-11T19:11:43.427Z","network":"blocked"}
+{"time":"2026-11-11T19:11:43.677Z","kind":"pack-panel","text":"检查整合包样本当前仅支持指定的测试样本，检查不会创建游戏实例。选择样本并检查"}
+{"time":"2026-11-11T19:11:43.944Z","network":"blocked"}
+{"time":"2026-11-11T19:11:58.247Z","kind":"native-chooser-open"}
+{"time":"2026-11-11T19:11:58.457Z","kind":"pack-panel","text":"检查整合包样本当前仅支持指定的测试样本，检查不会创建游戏实例。选择样本并检查正在等待文件选择或检查完成…"}
+{"time":"2026-11-11T19:12:15.013Z","kind":"destroy-request","windowCount":1}
+{"time":"2026-11-11T19:12:15.030Z","kind":"sender-destroyed"}
+{"time":"2026-11-11T19:12:15.052Z","kind":"will-quit"}
+{"time":"2026-11-11T19:12:15.052Z","kind":"exit","code":0}

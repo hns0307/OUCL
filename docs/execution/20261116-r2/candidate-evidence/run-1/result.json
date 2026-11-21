@@ -1,0 +1,11 @@
+{
+  "status": "FAIL",
+  "outerExeExecuted": true,
+  "observedOuterExit": {
+    "code": 0,
+    "signal": null
+  },
+  "error": "Expected values to be strictly equal:\n\n'FAIL' !== 'PASS'\n",
+  "inspectorPid": 25340,
+  "root": "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1"
+}

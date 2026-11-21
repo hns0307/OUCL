@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "executesLauncher": false,
+  "executable": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\source\\release\\OUCL-0.3.0-execution-20261116.exe",
+  "buildRoot": "D:\\MC_start\\OUCL\\tmp\\package-execution-20261116\\dist",
+  "bytes": 433664,
+  "sha256": "7ee7bfc5166659361dc39b575c6e82324156a5caa22c8a9b7d817b7d93b2265e",
+  "appHash": "ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "runtimeUrl": "https://github.com/electron/electron/releases/download/v45.0.0/electron-v45.0.0-win32-x64.zip",
+  "entries": [
+    {
+      "path": "package.json",
+      "bytes": 62,
+      "sha256": "facca117bb3d2254b43e5d48c20c6c50e1ea2265028f130399e89db28e52cded",
+      "manifestMatch": true,
+      "buildMatch": false
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.txt",
+      "bytes": 5921,
+      "sha256": "ef9e7b544bf607b769043008d4e516ff8a0e72f6cf3a119cfd49b572ca0ca549",
+      "manifestMatch": true,
+      "buildMatch": false
+    },
+    {
+      "path": "dist/main/index.cjs",
+      "bytes": 869135,
+      "sha256": "9ed91a81d9e008a999a7ff662dad124599f24cb8403a20f0f6fc0f7780e8a9e2",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/preload/index.cjs",
+      "bytes": 151333,
+      "sha256": "561d9ec76f98c5b245d889ba41812e6681f453ff0140e3616e3b51e8c577df71",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/index.html",
+      "bytes": 617,
+      "sha256": "a01b042d98c0f3ef982d9f39e6e79eb0ba2a46ee037ef6d0d9ee7c05f0c8511d",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/assets/index-BBn04PRj.css",
+      "bytes": 31186,
+      "sha256": "a5c88d2ce8a4e5db3a2d990339c17b90bb705eaaa851026529bf84f03e8df62b",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/renderer/assets/index-CVgd03lx.js",
+      "bytes": 369414,
+      "sha256": "085f973e49a93bc530ed7c29649b91d337deaa88e54835d13fda734555d53de2",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/workers/entry.cjs",
+      "bytes": 254726,
+      "sha256": "b67b2242ca8da904946620046cc576780f84554d22650c19fbf01de89c77b9b2",
+      "manifestMatch": true,
+      "buildMatch": true
+    },
+    {
+      "path": "dist/workers/fixed-pack.cjs",
+      "bytes": 17444,
+      "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8",
+      "manifestMatch": true,
+      "buildMatch": true
+    }
+  ]
+}

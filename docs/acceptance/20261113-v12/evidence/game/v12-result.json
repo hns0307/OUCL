@@ -1,0 +1,512 @@
+{
+  "status": "PASS",
+  "cutoff": "2026-11-13T06:00:00.000Z",
+  "checkedAt": "2026-11-13T06:17:18.963Z",
+  "checks": [
+    {
+      "name": "new-session:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true,
+      "attempts": 1
+    },
+    {
+      "name": "exit-zero:020285b6-f734-4f21-9d83-7ec3e047f8cb",
+      "ok": true,
+      "state": "exited",
+      "exitCode": 0
+    },
+    {
+      "name": "new-session:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true,
+      "attempts": 1
+    },
+    {
+      "name": "exit-zero:01623877-4a24-40c8-8a72-fbda60448f4e",
+      "ok": true,
+      "state": "exited",
+      "exitCode": 0
+    },
+    {
+      "name": "new-session:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true,
+      "attempts": 2
+    },
+    {
+      "name": "exit-zero:f6ac6e8c-6616-499c-b682-c8b8395e7553",
+      "ok": true,
+      "state": "exited",
+      "exitCode": 0
+    },
+    {
+      "name": "exit-zero:7b0d3e60-7ad3-44c1-afe4-9a6e74a9ca11",
+      "ok": true,
+      "state": "exited",
+      "exitCode": 0
+    },
+    {
+      "name": "durable-launch:020285b6-f734-4f21-9d83-7ec3e047f8cb",
+      "ok": true
+    },
+    {
+      "name": "durable-launch:01623877-4a24-40c8-8a72-fbda60448f4e",
+      "ok": true
+    },
+    {
+      "name": "durable-launch:f6ac6e8c-6616-499c-b682-c8b8395e7553",
+      "ok": true
+    },
+    {
+      "name": "durable-launch:7b0d3e60-7ad3-44c1-afe4-9a6e74a9ca11",
+      "ok": true
+    },
+    {
+      "name": "index:indexes/5.json",
+      "ok": true
+    },
+    {
+      "name": "index:indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json",
+      "ok": true
+    },
+    {
+      "name": "two-distinct-indexes",
+      "ok": true
+    },
+    {
+      "name": "instance-proof-unchanged:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true
+    },
+    {
+      "name": "recorded-index-path:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:24871144-2454-505b-92aa-2741ccb05834:24871144-2454-505b-92aa-2741ccb05834.jar",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:24871144-2454-505b-92aa-2741ccb05834:24871144-2454-505b-92aa-2741ccb05834.json",
+      "ok": true
+    },
+    {
+      "name": "latest-log-is-current:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true
+    },
+    {
+      "name": "renderer-milestones:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true
+    },
+    {
+      "name": "stopping-marker:24871144-2454-505b-92aa-2741ccb05834",
+      "ok": true
+    },
+    {
+      "name": "instance-proof-unchanged:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "recorded-index-path:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:5297a61f-56b1-5159-a84f-440c49b9ff5b:dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838.jar",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:5297a61f-56b1-5159-a84f-440c49b9ff5b:dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838.json",
+      "ok": true
+    },
+    {
+      "name": "latest-log-is-current:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "renderer-milestones:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "stopping-marker:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "loader-version:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "ferritecore-version:5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "ok": true
+    },
+    {
+      "name": "instance-proof-unchanged:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "recorded-index-path:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:34d051d5-22db-58a2-9bf0-e5990b01b87b:dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250.jar",
+      "ok": true
+    },
+    {
+      "name": "dependency-bytes:34d051d5-22db-58a2-9bf0-e5990b01b87b:dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250.json",
+      "ok": true
+    },
+    {
+      "name": "latest-log-is-current:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "renderer-milestones:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "stopping-marker:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "loader-version:34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "ok": true
+    },
+    {
+      "name": "release-executable",
+      "ok": true
+    },
+    {
+      "name": "seven-product-files",
+      "ok": true
+    },
+    {
+      "name": "release-product:main/index.cjs",
+      "ok": true
+    },
+    {
+      "name": "release-product:preload/index.cjs",
+      "ok": true
+    },
+    {
+      "name": "release-product:renderer/assets/index-AuOkr_BU.css",
+      "ok": true
+    },
+    {
+      "name": "release-product:renderer/assets/index-CMBKe6pc.js",
+      "ok": true
+    },
+    {
+      "name": "release-product:renderer/index.html",
+      "ok": true
+    },
+    {
+      "name": "release-product:workers/entry.cjs",
+      "ok": true
+    },
+    {
+      "name": "release-product:workers/fixed-pack.cjs",
+      "ok": true
+    },
+    {
+      "name": "sessions-stable-during-audit",
+      "ok": true
+    }
+  ],
+  "scope": "New persisted sessions/real launch task admissions, local log milestones and byte/path coexistence. No GUI/menu observation by this script; no cold-download or owner-recovery claim.",
+  "preparedSha256": "0639c5c3d1d0c248c7b3e3637d914ac48bd8544f648e9a7709a722c9964d2c72",
+  "recentSessions": [
+    {
+      "taskId": "020285b6-f734-4f21-9d83-7ec3e047f8cb",
+      "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+      "startedAt": "2026-11-13T06:08:33.728Z",
+      "spawned": true,
+      "state": "exited",
+      "exitCode": 0,
+      "stopTaskCount": 0,
+      "errors": []
+    },
+    {
+      "taskId": "01623877-4a24-40c8-8a72-fbda60448f4e",
+      "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "startedAt": "2026-11-13T06:10:04.767Z",
+      "spawned": true,
+      "state": "exited",
+      "exitCode": 0,
+      "stopTaskCount": 0,
+      "errors": []
+    },
+    {
+      "taskId": "f6ac6e8c-6616-499c-b682-c8b8395e7553",
+      "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "startedAt": "2026-11-13T06:11:49.594Z",
+      "spawned": true,
+      "state": "exited",
+      "exitCode": 0,
+      "stopTaskCount": 0,
+      "errors": []
+    },
+    {
+      "taskId": "7b0d3e60-7ad3-44c1-afe4-9a6e74a9ca11",
+      "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "startedAt": "2026-11-13T06:15:33.888Z",
+      "spawned": true,
+      "state": "exited",
+      "exitCode": 0,
+      "stopTaskCount": 0,
+      "errors": []
+    }
+  ],
+  "launchAdmissions": [
+    {
+      "taskId": "020285b6-f734-4f21-9d83-7ec3e047f8cb",
+      "kind": "launch",
+      "state": "completed",
+      "requestIds": [
+        "3f590947-4934-4bc1-8498-0a5882e48efa"
+      ]
+    },
+    {
+      "taskId": "01623877-4a24-40c8-8a72-fbda60448f4e",
+      "kind": "launch",
+      "state": "completed",
+      "requestIds": [
+        "4ea59c7d-e69c-4b3e-8580-43681d6e197d"
+      ]
+    },
+    {
+      "taskId": "f6ac6e8c-6616-499c-b682-c8b8395e7553",
+      "kind": "launch",
+      "state": "completed",
+      "requestIds": [
+        "61b8465b-b823-4810-a6c2-6b7a3cdf9857"
+      ]
+    },
+    {
+      "taskId": "7b0d3e60-7ad3-44c1-afe4-9a6e74a9ca11",
+      "kind": "launch",
+      "state": "completed",
+      "requestIds": [
+        "45f4089c-d5be-400d-889f-c7820d5e2736"
+      ]
+    }
+  ],
+  "indexes": [
+    {
+      "path": "indexes/5.json",
+      "sha1": "ada52cc672270e8dc69e912b2ba0ea9c141ed664",
+      "unchanged": true
+    },
+    {
+      "path": "indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json",
+      "sha1": "2b3aa959237269caa09ac97fc3f7eae651315696",
+      "unchanged": true
+    }
+  ],
+  "instances": [
+    {
+      "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+      "dependencyFiles": [
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\24871144-2454-505b-92aa-2741ccb05834\\24871144-2454-505b-92aa-2741ccb05834.jar",
+          "sha256": "56b71336d2b4fdffd197f56595b0da93e32a946f78f382a299b8f4b92758bb0f"
+        },
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\24871144-2454-505b-92aa-2741ccb05834\\24871144-2454-505b-92aa-2741ccb05834.json",
+          "sha256": "24cb0d4af9d3d551d20a87172a6bb2d77fffb539ee7c4e1d97fd058009f27c11"
+        }
+      ],
+      "indexes": [
+        "indexes/5.json"
+      ],
+      "log": {
+        "sha256": "a4d922d2319aa62509a127cbb0cf12066b30f8b32a4a021eb655c82cda73a3a8",
+        "mtime": "2026-11-13T06:09:19.184Z",
+        "markers": [
+          {
+            "line": 41,
+            "time": "14:08:44",
+            "kind": "renderer-initialized"
+          },
+          {
+            "line": 48,
+            "time": "14:08:48",
+            "kind": "sound-ready"
+          },
+          {
+            "line": 49,
+            "time": "14:08:48",
+            "kind": "blocks-atlas-ready"
+          },
+          {
+            "line": 62,
+            "time": "14:09:19",
+            "kind": "stopping"
+          }
+        ],
+        "interpretation": "Renderer milestones support initialization; menu observation belongs to the coordinating GUI evidence, not inferred from logs."
+      },
+      "screenshot": {
+        "present": true,
+        "sha256": "b59ca2764d647b4d01bf9b598cd17d944f0accc5b9828cc1d85a75e1501abd29",
+        "contentReviewedByScript": false
+      }
+    },
+    {
+      "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "dependencyFiles": [
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838.jar",
+          "sha256": "56b71336d2b4fdffd197f56595b0da93e32a946f78f382a299b8f4b92758bb0f"
+        },
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838.json",
+          "sha256": "0a00020d0ef1f08ebaa7fe96fc6d4d4844e50f3c7e1857021e1833e0da846d62"
+        }
+      ],
+      "indexes": [
+        "indexes/5.json"
+      ],
+      "log": {
+        "sha256": "6f39d9f0361eb4a1dafdb8ba52405369622418eb1026648f99eb8e953f3f8fd3",
+        "mtime": "2026-11-13T06:11:12.316Z",
+        "markers": [
+          {
+            "line": 1,
+            "time": "14:10:11",
+            "kind": "loader",
+            "minecraft": "1.20.1",
+            "loader": "fabric",
+            "version": "0.20.1"
+          },
+          {
+            "line": 6,
+            "kind": "ferritecore",
+            "version": "6.0.1"
+          },
+          {
+            "line": 31,
+            "time": "14:10:18",
+            "kind": "renderer-initialized"
+          },
+          {
+            "line": 38,
+            "time": "14:10:21",
+            "kind": "sound-ready"
+          },
+          {
+            "line": 39,
+            "time": "14:10:21",
+            "kind": "blocks-atlas-ready"
+          },
+          {
+            "line": 52,
+            "time": "14:11:12",
+            "kind": "stopping"
+          }
+        ],
+        "interpretation": "Renderer milestones support initialization; menu observation belongs to the coordinating GUI evidence, not inferred from logs."
+      },
+      "screenshot": {
+        "present": true,
+        "sha256": "f7eae2dd8a54c6c1b9b31715ebfad5225b3f2a457a8b64b32485b04f1cda18fc",
+        "contentReviewedByScript": false
+      }
+    },
+    {
+      "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "dependencyFiles": [
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250.jar",
+          "sha256": "56b71336d2b4fdffd197f56595b0da93e32a946f78f382a299b8f4b92758bb0f"
+        },
+        {
+          "path": "roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\versions\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250\\dep-0c3ec587af28e5a785c0b4a7b8a30f9a8f78f838-3ecf2cab995685d345a257326ba72192b7911250.json",
+          "sha256": "392f4dfce6e6c616f0c6c1e11558f8e73289c81e1781a2b3c36e958e322cd7c3"
+        }
+      ],
+      "indexes": [
+        "indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json"
+      ],
+      "log": {
+        "sha256": "f8eeb0251dce3e807176b68cef663d664453b2d4af5d07f2eb21431853703f2f",
+        "mtime": "2026-11-13T06:16:36.137Z",
+        "markers": [
+          {
+            "line": 1,
+            "time": "14:15:35",
+            "kind": "loader",
+            "minecraft": "1.20.1",
+            "loader": "quilt",
+            "version": "0.29.2"
+          },
+          {
+            "line": 46,
+            "time": "14:15:44",
+            "kind": "renderer-initialized"
+          },
+          {
+            "line": 53,
+            "time": "14:15:47",
+            "kind": "sound-ready"
+          },
+          {
+            "line": 54,
+            "time": "14:15:47",
+            "kind": "blocks-atlas-ready"
+          },
+          {
+            "line": 67,
+            "time": "14:16:36",
+            "kind": "stopping"
+          }
+        ],
+        "interpretation": "Renderer milestones support initialization; menu observation belongs to the coordinating GUI evidence, not inferred from logs."
+      },
+      "screenshot": {
+        "present": true,
+        "sha256": "c426e9527f9953e890b4db191208c4bedafb054b2b85dba18e8621238844d3b9",
+        "contentReviewedByScript": false
+      }
+    }
+  ],
+  "product": {
+    "executable": {
+      "sha256": "3d9a0ebaf289a9552933c97033ffbd6a069e0a0258e3ea8322cc2a5ceb6efce6",
+      "bytes": 406528
+    },
+    "appHash": "d863502b24972f98dc62e578794ea5e881bea5033e86efd5074ee4d20a63bb5d",
+    "files": [
+      {
+        "path": "main/index.cjs",
+        "sha256": "4a5419f3b81b9ce11dd95966a56f70ea60c656f585d6e8d8463f9b290686ffe5",
+        "expectedSha256": "4a5419f3b81b9ce11dd95966a56f70ea60c656f585d6e8d8463f9b290686ffe5"
+      },
+      {
+        "path": "preload/index.cjs",
+        "sha256": "d7027253ad7594c553ff39c5f90b02add83e0019c6d2bedb7697773be466efd0",
+        "expectedSha256": "d7027253ad7594c553ff39c5f90b02add83e0019c6d2bedb7697773be466efd0"
+      },
+      {
+        "path": "renderer/assets/index-AuOkr_BU.css",
+        "sha256": "54cdd16ee42d56227b9d9087a1eac7814a8a7944ce03259fae71fbdead780d1b",
+        "expectedSha256": "54cdd16ee42d56227b9d9087a1eac7814a8a7944ce03259fae71fbdead780d1b"
+      },
+      {
+        "path": "renderer/assets/index-CMBKe6pc.js",
+        "sha256": "691d48329e1b2a0b40e62f4798f5e4f6e45a94e6072301648f88bedc230cf517",
+        "expectedSha256": "691d48329e1b2a0b40e62f4798f5e4f6e45a94e6072301648f88bedc230cf517"
+      },
+      {
+        "path": "renderer/index.html",
+        "sha256": "a512ce3d38acb821a87c22f0aa6798562a85c0eb1296ca468625f53d66ddf826",
+        "expectedSha256": "a512ce3d38acb821a87c22f0aa6798562a85c0eb1296ca468625f53d66ddf826"
+      },
+      {
+        "path": "workers/entry.cjs",
+        "sha256": "459b3413e776ac21fc23151da24004db1b44fdc33b6ed8b800a528a507d4ebbb",
+        "expectedSha256": "459b3413e776ac21fc23151da24004db1b44fdc33b6ed8b800a528a507d4ebbb"
+      },
+      {
+        "path": "workers/fixed-pack.cjs",
+        "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8",
+        "expectedSha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+      }
+    ]
+  },
+  "ownerMarkerPresent": false
+}

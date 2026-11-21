@@ -1,0 +1,115 @@
+warning: in the working copy of 'OUCL-Codex/docs/DECISIONS.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'OUCL-Codex/docs/TASK_PLAN.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/electron-interaction-smoke.cjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/electron-network-fixture.cjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/electron-smoke.cjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/package-smoke.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/package.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/prepare-loader-download-test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/verify-download-launch.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/verify-download-network.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/verify-download-ui.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/verify-game-launch.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scripts/verify-loader-network.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/core/install/plan.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/core/launch/plan.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/core/mods/dependency-graph.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ipc/preload-profiles.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ipc/preload.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/main/index.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/main/network.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/install/installer.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/launch/service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/mods/candidates.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/objects/provenance.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/resources/service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/storage/resources.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/workers/entry.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/workers/protocol.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/services/workers/storage-client.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shared/contracts/handshake.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shared/contracts/instances.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shared/contracts/profiles.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shared/contracts/resources.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/App.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/DownloadSettings.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/InstallPanel.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/ResourceBrowser.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/SettingsPage.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/main.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/desktop-network.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/game-process.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/install-plan.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/installer.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/java-runtime.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/launch-plan.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/loader-maven.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/loader-source.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/mod-candidates.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/mod-dependency-graph.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/mod-java-facts.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/network-retry.test.ts', CRLF will be replaced by LF the next time Git touches it
+The following paths are ignored by one of your .gitignore files:
+docs/work-packages/P-A/tools/acceptance-fix-v10/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v11/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v12/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v13/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v14/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v15/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v16/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v17/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v18/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v19/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v20/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v3/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v4/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v5/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v6/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v7/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v8/app/dist
+docs/work-packages/P-A/tools/acceptance-fix-v9/app/dist
+docs/work-packages/P-A/tools/product-candidate/app/dist
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"
+warning: in the working copy of 'docs/acceptance/20261112-v2/FREEZE-MANIFEST.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/bootstrap.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/build.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/dual-capacity.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/fixed-pack.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/pc-component.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v2/evidence/tests.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/CANDIDATE-FILES.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/FREEZE-MANIFEST.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/ade-split/hashes.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/ade-split/tests.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/bootstrap.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/build.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/fixed-pack.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/pc-component.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/product-manifest.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/product-window.cjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/protected-state.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/acceptance/20261112-v3/evidence/tests.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-A/tools/full-check.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/INPUTS.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/PLAN.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/TASK_TARGETS_V1.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/binding-candidate.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/candidate.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/contract-candidate.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/replay-probe.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-B/contracts/T1/tsconfig.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-C/evidence.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-D/IMPLEMENTATION-20261111.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-D/PLAN.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-D/REVIEW-20261110.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-D/source-inputs.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-D/validation.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/work-packages/P-E/sample/modrinth.index.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shared/contracts/task-targets.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/TaskCenter.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/task-observer.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ui/task-query.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/launcher-state.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/task-observer.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/task-query.test.ts', CRLF will be replaced by LF the next time Git touches it

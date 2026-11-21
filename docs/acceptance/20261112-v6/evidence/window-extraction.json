@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "expected": [
+    "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+    "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+    "c925a628-bea3-4e3a-98af-308648ee2689",
+    "f236be40-ca29-4952-bb96-1b146f3af798"
+  ],
+  "results": [
+    {
+      "label": "cold",
+      "publicWitness": {
+        "line": 5,
+        "time": "2026-11-12T09:50:13.390Z",
+        "taskIds": [
+          "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+          "c925a628-bea3-4e3a-98af-308648ee2689",
+          "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+          "f236be40-ca29-4952-bb96-1b146f3af798"
+        ]
+      },
+      "domWitness": {
+        "line": 15,
+        "time": "2026-11-12T09:50:28.455Z",
+        "cards": [
+          {
+            "taskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "安装完成已准备 75 B / 75 B已确认任务状态 · 上次确认 17:50:25"
+          },
+          {
+            "taskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "安装完成已准备 75 B / 75 B已确认任务状态 · 上次确认 17:50:26"
+          },
+          {
+            "taskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "检查完成已确认任务状态 · 上次确认 17:50:26"
+          },
+          {
+            "taskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "检查完成已确认任务状态 · 上次确认 17:50:28"
+          }
+        ]
+      },
+      "errors": [],
+      "normalExit": true
+    },
+    {
+      "label": "hot",
+      "publicWitness": {
+        "line": 5,
+        "time": "2026-11-12T09:51:25.099Z",
+        "taskIds": [
+          "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+          "c925a628-bea3-4e3a-98af-308648ee2689",
+          "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+          "f236be40-ca29-4952-bb96-1b146f3af798"
+        ]
+      },
+      "domWitness": {
+        "line": 14,
+        "time": "2026-11-12T09:51:38.679Z",
+        "cards": [
+          {
+            "taskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "安装完成已准备 75 B / 75 B已确认任务状态 · 上次确认 17:51:36"
+          },
+          {
+            "taskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "安装完成已准备 75 B / 75 B已确认任务状态 · 上次确认 17:51:37"
+          },
+          {
+            "taskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "检查完成已确认任务状态 · 上次确认 17:51:37"
+          },
+          {
+            "taskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+            "state": "completed",
+            "observation": "confirmed",
+            "text": "检查完成已确认任务状态 · 上次确认 17:51:38"
+          }
+        ]
+      },
+      "errors": [],
+      "normalExit": true
+    }
+  ],
+  "scope": "Production shell, real installer/mod tasks, synthetic non-executable local inputs; no game/upstream acceptance."
+}

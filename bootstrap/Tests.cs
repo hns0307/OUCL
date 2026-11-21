@@ -1,0 +1,87 @@
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Reflection;
+using System.Text;
+internal static class BootstrapTests {
+    static int checks;
+    static object Invoke(string name, params object[] args) { return typeof(Launcher).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args); }
+    static void Assert(bool value) { checks++; if (!value) throw new Exception("ASSERTION_FAILED"); }
+    static MemoryStream Zip(params string[] names) {
+        var stream = new MemoryStream();
+        using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, true)) foreach (var name in names) using (var writer = new StreamWriter(zip.CreateEntry(name).Open())) writer.Write("test");
+        stream.Position = 0; return stream;
+    }
+    static void Reject(string root, params string[] names) {
+        bool refused = false;
+        try { using (var stream = Zip(names)) Invoke("Extract", stream, root); }
+        catch (TargetInvocationException ex) { refused = ex.InnerException is IOException; }
+        Assert(refused);
+    }
+    [STAThread] static void Main(string[] args) {
+        string root = Path.GetFullPath(args[0]); Directory.CreateDirectory(root);
+        Assert(Launcher.EnvironmentRoot(Path.Combine(root, "portable", "OUCL.exe")) == Path.Combine(root, "portable", "OUCL.runtime"));
+        string originalDirectory = Environment.CurrentDirectory;
+        var firstError = new IOException("PREPARATION_FAILED");
+        Exception observed = null;
+        try { Launcher.WithCleanup(() => { throw firstError; }, () => { throw new IOException("CLEANUP_FAILED"); }); }
+        catch (Exception error) { observed = error; }
+        Assert(Object.ReferenceEquals(observed, firstError));
+        observed = null;
+        try { Launcher.WithCleanup(() => {}, () => { throw new IOException("CLEANUP_FAILED"); }); }
+        catch (Exception error) { observed = error; }
+        Assert(observed != null && observed.Message == "CLEANUP_FAILED");
+        bool cleaned = false; Launcher.WithCleanup(() => {}, () => { cleaned = true; }); Assert(cleaned);
+        var start = new System.Diagnostics.ProcessStartInfo(); start.Arguments = "application";
+        start.EnvironmentVariables["CHROME_CRASHPAD_PIPE_NAME"] = "test-parent-pipe";
+        start.EnvironmentVariables["CHROME_CRASHPAD_SERVER_URL"] = "https://invalid.example/";
+        Launcher.ConfigureRuntimeLogging(start, root);
+        string log = Path.Combine(root, "logs", "electron.log");
+        Assert(start.EnvironmentVariables["ELECTRON_LOG_FILE"] == log && start.EnvironmentVariables["CHROME_LOG_FILE"] == log);
+        Assert(start.Arguments.Contains("--log-file=" + log));
+        Assert(!start.EnvironmentVariables.ContainsKey("CHROME_CRASHPAD_PIPE_NAME") && !start.EnvironmentVariables.ContainsKey("CHROME_CRASHPAD_SERVER_URL"));
+        Assert(Launcher.FailureMessage(new System.Net.WebException()).Contains("下载失败"));
+        Assert(Launcher.FailureMessage(new IOException("HASH_MISMATCH")).Contains("校验失败"));
+        Environment.CurrentDirectory = root;
+        Assert(Launcher.EnvironmentRoot(Path.Combine(root, "elsewhere", "OUCL.exe")) == Path.Combine(root, "elsewhere", "OUCL.runtime"));
+        Environment.CurrentDirectory = originalDirectory;
+        string executable = Path.Combine(root, "portable 中文", "OUCL.exe");
+        string expectedProfile = "--user-data-dir=" + Path.Combine(root, "portable 中文", "OUCL.runtime", "profile");
+        Assert(Launcher.ApplicationArguments(executable, new string[0])[0] == expectedProfile);
+        string[] defaults = Launcher.ApplicationArguments(executable, new[] {"--disable-gpu"});
+        Assert(defaults.Length == 2 && defaults[0] == "--disable-gpu" && defaults[1] == expectedProfile);
+        string[] explicitProfile = new[] {"--user-data-dir=" + Path.Combine(root, "test profile"), "--disable-gpu"};
+        Assert(Object.ReferenceEquals(Launcher.ApplicationArguments(executable, explicitProfile), explicitProfile));
+        string[] splitProfile = new[] {"--user-data-dir", Path.Combine(root, "test profile")};
+        Assert(Object.ReferenceEquals(Launcher.ApplicationArguments(executable, splitProfile), splitProfile));
+        foreach (string[] invalid in new[] { new[] {"--user-data-dir"}, new[] {"--user-data-dir="}, new[] {"--user-data-dir", "--disable-gpu"} }) {
+            bool rejected = false;
+            try { Launcher.ApplicationArguments(executable, invalid); } catch (ArgumentException) { rejected = true; }
+            Assert(rejected);
+        }
+        using (var context = new BootstrapContext()) {
+            var window = (DownloadWindow)typeof(BootstrapContext).GetField("window", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);
+            Assert(window.IsHandleCreated && !window.Visible);
+        }
+        Reject(Path.Combine(root, "traversal"), "../escape"); Reject(Path.Combine(root, "absolute"), "/escape");
+        Reject(Path.Combine(root, "drive"), "C:/escape"); Reject(Path.Combine(root, "ads"), "file:stream");
+        Reject(Path.Combine(root, "reserved"), "CON.txt"); Reject(Path.Combine(root, "alias"), "file.");
+        Reject(Path.Combine(root, "duplicate"), "file", "FILE"); Reject(Path.Combine(root, "backslash"), "a\\b");
+        string valid = Path.Combine(root, "valid"); using (var stream = Zip("bin/java.exe")) Invoke("Extract", stream, valid);
+        string digest = Launcher.Hash(Path.Combine(valid, "bin/java.exe")); string manifest = digest + "  bin/java.exe\n";
+        Assert((bool)Invoke("Verify", valid, manifest));
+        File.WriteAllText(Path.Combine(valid, "untrusted.dll"), "extra"); Assert(!(bool)Invoke("Verify", valid, manifest)); File.Delete(Path.Combine(valid, "untrusted.dll"));
+        File.WriteAllText(Path.Combine(valid, "bin/java.exe"), "corrupt");
+        Assert(!(bool)Invoke("Verify", valid, manifest)); Assert(!File.Exists(Path.Combine(root, "escape")));
+        Assert((string)Invoke("Quote", "D:\\space path\\") == "\"D:\\space path\\\\\"");
+        Assert((string)Invoke("Quote", "a\"b") == "\"a\\\"b\"");
+        string cancelledStaging = Path.Combine(root, ".download-cancel-test");
+        Directory.CreateDirectory(cancelledStaging); Launcher.Cancel.Cancel();
+        bool cancelled = false;
+        try { using (var stream = Zip("runtime/electron.exe")) Invoke("Extract", stream, cancelledStaging); }
+        catch (TargetInvocationException ex) { cancelled = ex.InnerException is OperationCanceledException; }
+        Assert(cancelled && !File.Exists(Path.Combine(cancelledStaging, "runtime/electron.exe")));
+        Invoke("SafeCleanup", root, cancelledStaging); Assert(!Directory.Exists(cancelledStaging));
+        Console.WriteLine("PASS " + checks + " bootstrap archive/hash/quoting checks");
+    }
+}

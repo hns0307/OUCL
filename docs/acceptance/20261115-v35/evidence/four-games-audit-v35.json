@@ -1,0 +1,139 @@
+{
+  "status": "FOUR_GAME_NORMAL_PATHS_PASS",
+  "newSessions": [
+    {
+      "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+      "taskId": "d676efd4-ff58-44c3-9ba5-c7e4d134f630",
+      "snapshot": {
+        "sessionId": "d676efd4-ff58-44c3-9ba5-c7e4d134f630",
+        "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+        "state": "exited",
+        "revision": 3,
+        "startedAt": "2026-11-15T03:46:29.291Z",
+        "exitCode": 0
+      },
+      "spawned": true,
+      "stopTaskIds": []
+    },
+    {
+      "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+      "taskId": "65e357f5-a3cc-495d-a0e8-4507dbe03e77",
+      "snapshot": {
+        "sessionId": "65e357f5-a3cc-495d-a0e8-4507dbe03e77",
+        "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+        "state": "exited",
+        "revision": 3,
+        "startedAt": "2026-11-15T03:47:54.255Z",
+        "exitCode": 0
+      },
+      "spawned": true,
+      "stopTaskIds": []
+    },
+    {
+      "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+      "taskId": "d0326c8c-517d-4036-a80f-152bf92615cd",
+      "snapshot": {
+        "sessionId": "d0326c8c-517d-4036-a80f-152bf92615cd",
+        "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+        "state": "exited",
+        "revision": 3,
+        "startedAt": "2026-11-15T03:49:50.167Z",
+        "exitCode": 0
+      },
+      "spawned": true,
+      "stopTaskIds": []
+    },
+    {
+      "rootId": "45d6e04c-4b82-4d30-be9b-86b02d74bcc5",
+      "taskId": "52adee6a-c570-4395-988a-db6452abecc8",
+      "snapshot": {
+        "sessionId": "52adee6a-c570-4395-988a-db6452abecc8",
+        "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+        "state": "exited",
+        "revision": 3,
+        "startedAt": "2026-11-15T05:02:54.770Z",
+        "exitCode": 0
+      },
+      "spawned": true,
+      "stopTaskIds": []
+    }
+  ],
+  "completedTasks": [
+    {
+      "taskId": "d676efd4-ff58-44c3-9ba5-c7e4d134f630",
+      "kind": "launch",
+      "state": "completed"
+    },
+    {
+      "taskId": "65e357f5-a3cc-495d-a0e8-4507dbe03e77",
+      "kind": "launch",
+      "state": "completed"
+    },
+    {
+      "taskId": "d0326c8c-517d-4036-a80f-152bf92615cd",
+      "kind": "launch",
+      "state": "completed"
+    },
+    {
+      "taskId": "52adee6a-c570-4395-988a-db6452abecc8",
+      "kind": "launch",
+      "state": "completed"
+    }
+  ],
+  "oldTaskRowsPreserved": 21,
+  "oldSessionsPreserved": 13,
+  "sourceMetadataUnchanged": 18,
+  "instanceRecordsUnchanged": 3,
+  "indexes": [
+    {
+      "path": "indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json",
+      "sha1": "2b3aa959237269caa09ac97fc3f7eae651315696"
+    },
+    {
+      "path": "indexes/5.json",
+      "sha1": "ada52cc672270e8dc69e912b2ba0ea9c141ed664"
+    }
+  ],
+  "whitelistedLogs": [
+    {
+      "instanceId": "24871144-2454-505b-92aa-2741ccb05834",
+      "logSha256": "9133e0cea118ff0d1addcded7ccefa2c662470033585251d2acb3028740f2b84",
+      "lines": [
+        "[11:47:20] [Render thread/INFO]: Stopping!"
+      ]
+    },
+    {
+      "instanceId": "5297a61f-56b1-5159-a84f-440c49b9ff5b",
+      "logSha256": "d8f0fb633c000e002e837ddeabffe9d9b693ef925217171804d195bf99a1238b",
+      "lines": [
+        "[11:48:03] [main/INFO]: Loading Minecraft 1.20.1 with Fabric Loader 0.20.1",
+        "\t- ferritecore 6.0.1",
+        "[11:48:52] [Render thread/INFO]: Stopping!"
+      ]
+    },
+    {
+      "instanceId": "34d051d5-22db-58a2-9bf0-e5990b01b87b",
+      "logSha256": "6caf2c50927d259b14554a8f4ea08ec3c40f1d026d928cd165da58690e579e20",
+      "lines": [
+        "[13:02:56] [main/INFO]: Loading Minecraft 1.20.1 with Quilt Loader 0.29.2",
+        "|     2 | Quilt Loader             | quilt_loader | 0.29.2  | Quilt   | 517e5a696ba6ff779e09821b1799c989779b4219 | D:\\MC_start\\OUCL-acceptance-v33-20261114\\game-data\\games\\roots\\45d6e04c-4b82-4d30-be9b-86b02d74bcc5\\.minecraft\\libraries\\org\\quiltmc\\quilt-loader\\0.29.2\\quilt-loader-0.29.2.jar |                                             |",
+        "[13:03:31] [Render thread/INFO]: Stopping!"
+      ]
+    }
+  ],
+  "sevenProductOutputsMatch": true,
+  "launcherStillOpen": true,
+  "normalLauncherReopen": "VERIFIED_SAME_EXE_PROFILE",
+  "firstExitObservation": {
+    "firstExit": {
+      "image": "D:\\MC_start\\OUCL-acceptance-exe-v32-20261114\\OUCL.runtime\\electron-ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47\\electron.exe",
+      "observedUtc": "2026-11-15T04:59:54.6250290Z",
+      "exitCode": null,
+      "pid": 3884
+    },
+    "metadataOwnerAbsent": true,
+    "objectOwnerAbsent": true
+  },
+  "screenshots": "Three menu screenshots separately inspected by coordinator; audit does not infer menus from logs",
+  "account": "Existing synthetic OUCLTest16; attempted OUCLAV33 background switch did not apply"
+}

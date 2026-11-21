@@ -1,0 +1,41 @@
+✔ listAll returns accepted and projected admissions completely and detached across restart (103.7359ms)
+✔ listAll audit and results share one real SQLite snapshot during a concurrent committed update (60.2174ms)
+✔ listAll returns exactly 1024 records and rejects 1025 rather than silently truncating (342.0344ms)
+✖ listAll rejects corrupt records, orphan identities and unknown schema without returning a partial set (115.1979ms)
+✔ existing confirmation remains a receipt after authority advances, while a new alias needs current authority (42.1286ms)
+✔ listAll checks the held owner marker and handles concurrent close with controlled errors (31.4396ms)
+✔ strict admission parser rejects unknown fields, changed canonical binding and illegal phase revisions (47.0526ms)
+✔ admission keeps one task/outbox across exact retries and confirmation aliases (84.0794ms)
+✔ immutable binding rejects same request/proposal with changed snapshot, inode, plan or identity (55.8427ms)
+✔ new admissions require current archived release but old exact receipts survive high-water advance (84.8205ms)
+✔ lost acceptance and projection acknowledgements reopen as exact original task, without execution (144.2421ms)
+✔ schema v1 migrates atomically while preserving legacy release, journal and receipt bytes (84.6557ms)
+✔ unknown versions/schema and corrupt admission/outbox records fail closed without repair (210.7448ms)
+✔ admission reads reject invalid bounds and stop on live corruption without leaking native SQL (35.4927ms)
+✔ identity bounds preserve old receipts and reject new aliases/admissions without eviction (679.397ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (67.5328ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (85.215ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (37.2137ms)
+✔ executor archives must match already-authenticated canonical release high-water state (98.582ms)
+✔ SQL schema failures and concurrent close reads remain controlled without leaking native errors (51.3462ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 19
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1493.9368
+
+✖ failing tests:
+
+test at ..\..\tmp\admission-query-20261117-b\distribution-admission-query.test.mjs:1196:1
+✖ listAll rejects corrupt records, orphan identities and unknown schema without returning a partial set (115.1979ms)
+  Error: FOREIGN KEY constraint failed
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/admission-query-20261117-b/distribution-admission-query.test.mjs:1205:91)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'ERR_SQLITE_ERROR',
+    errcode: 787,
+    errstr: 'constraint failed'
+  }

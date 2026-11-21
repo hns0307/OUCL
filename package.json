@@ -1,12 +1,14 @@
 {
   "name": "oucl",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "private": true,
-  "description": "OUCL desktop launcher engineering foundation",
+  "description": "OUCL vanilla Minecraft offline desktop launcher",
   "type": "module",
   "main": "dist/main/index.cjs",
   "packageManager": "pnpm@12.3.4",
-  "engines": { "node": ">=24.21.0 <25" },
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests scripts vite.config.ts",
@@ -18,13 +20,21 @@
     "start": "node scripts/start.mjs",
     "smoke": "node scripts/smoke.mjs",
     "package:dir": "pnpm build && node scripts/package.mjs",
+    "package:exe": "pnpm build && node scripts/bootstrap-package.mjs",
+    "test:bootstrap": "node scripts/bootstrap-test.mjs",
+    "smoke:exe": "node scripts/bootstrap-smoke.mjs",
+    "smoke:portable": "node scripts/portable-smoke.mjs",
+    "smoke:mod-plans": "node scripts/mod-plan-ui-smoke.mjs",
     "smoke:package": "node scripts/package-smoke.mjs",
     "audit:licenses": "node scripts/audit-dependencies.mjs",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
+    "@azure/msal-node": "7.2.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "skinview3d": "3.4.2",
+    "smol-toml": "1.9.0",
     "zustand": "5.0.16"
   },
   "devDependencies": {

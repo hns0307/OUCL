@@ -1,0 +1,12 @@
+✔ real RecordStore projects the exact admitted task identity idempotently without executing it (27.2905ms)
+✔ SQL projection rejects either orphan side and foreign kind instead of adopting existing rows (1.6841ms)
+✔ real worker bridge derives owner and rejects a stale expected root without projection (85.2677ms)
+✔ private projection command rejects caller owner fields and malformed bindings (0.4119ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 198.0051

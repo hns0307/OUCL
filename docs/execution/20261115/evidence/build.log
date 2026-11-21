@@ -1,0 +1,26 @@
+vite v8.3.5 building client environment for production...
+transforming...
+鉁?64 modules transformed.
+rendering chunks...
+computing gzip size...
+tmp/execution-final/dist/renderer/index.html                   0.61 kB 鈹?gzip:   0.36 kB
+tmp/execution-final/dist/renderer/assets/index-CH_0cAgx.css   30.25 kB 鈹?gzip:   7.37 kB
+tmp/execution-final/dist/renderer/assets/index-C9640VII.js   360.15 kB 鈹?gzip: 109.67 kB
+
+鉁?built in 219ms
+
+  tmp\execution-final\dist\main\index.cjs  793.7kb
+
+Done in 128ms
+
+  tmp\execution-final\dist\preload\index.cjs  133.2kb
+
+Done in 35ms
+
+  tmp\execution-final\dist\workers\entry.cjs  248.7kb
+
+Done in 56ms
+
+  tmp\execution-final\dist\workers\fixed-pack.cjs  17.0kb
+
+Done in 19ms

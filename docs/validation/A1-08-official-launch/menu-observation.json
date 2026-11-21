@@ -1,0 +1,14 @@
+{
+  "fixture": false,
+  "packagedPayload": false,
+  "versionId": "1.20.1",
+  "instanceId": "58ffe787-b717-522f-a971-79c730e531fa",
+  "sessionId": "22c7e249-5eee-4381-a108-fb9fb93d04eb",
+  "menuVisuallyVerified": true,
+  "worldVisuallyVerified": false,
+  "evidence": "menu.png",
+  "method": "Computer Use sky.get_window_state; observed Singleplayer/Multiplayer/Realms/Options/Quit Game, Minecraft 1.20.1",
+  "userInteractionDetected": true,
+  "furtherAutomationInputStopped": true,
+  "processExitNotYetVerified": true
+}

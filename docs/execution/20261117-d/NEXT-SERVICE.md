@@ -1,0 +1,13 @@
+# 后继持久确认与执行服务（计划，未实现）
+
+A已批准，不需再次确认。本页仅明确后继接口和安全顺序，不宣称配置完备或新增代码已交付。
+
+1. 每root一个main-owned持久任务服务持有Store/Coordinator/Domain/Projection；每document facade仅管理未确认prepare与传输调用。生产准备条件不齐继续no-port，固定trust snapshot变更须close/drain旧服务，不开放renderer改pins。
+2. prepare必须有120秒服务预算及16active/1024seen边界，原ID同输入查询准备，其他输入冲突；document离开取消未确认工作并真实drain。退役document不能绕过全局active预算，复用既有observer pools不扩大。
+3. confirm先查原confirmRequestId的durable admission；已有匹配回执只恢复同task，不重跑prepare或把旧回执当新执行许可。新确认才取得ticket并校验root/proposal/revision/sequence，独占admitting状态后落admission，再同taskId对账并返回实际TaskSnapshot。响应超时未知，原ID重试，不自动换ID。
+4. 同proposal其他confirm ID需要原子alias与同意图绑定，不造第二task。当前Store新增alias要求当前highwater，而旧原ID回执不要求；实现服务时须明确过期/高水位前进后的只读回执alias语义。推荐专用只绑定已存在匹配receipt的内部alias操作，不能把只读回执恢复变成新授权，也不能丢掉request ID永久冲突关系；需真实正反例后再改，不在本ticket片预记。
+5. 执行前必须读取并匹配durable admission+task projection，不能直接用transport重派或内存ticket触发文件写入。无journal时比对原previewFingerprint/rootIdentity/实例修订、当前accepted release/pins/有效期及真实domain/许可/idle，禁止重扫后重新收编变化基线；必须用受保护native factory。
+6. 终态journal/receipt匹配只完成task观察，不重执行；部分/未知journal进入needsRecovery并显式恢复，遵守新metadata owner/原gameIdentity/lease规则。没有确认不投影，没有journal不盲重放。取消提交许可前允许，commit开始后TooLate，清理不可中断。
+7. 任务target派生自admission的root/instance/revision，不由renderer给路径；snapshot/错误/结果严格DTO，kind固定distribution-install，状态和任务结果分别持久。接入原tasks:get/list/control/subscribe及全局观察预算，不能把projected当completed。
+8. facade.dispatch返回完整契约envelope，completed重试的durable幂等由服务负责，不依赖transport只存digest。空source/no backend五通道SOURCE_UNAVAILABLE先于target/存储/网络，不广告能力；真实locator/平台/许可证未提供时不伪造替身开产品。
+9. 验证至少含ticket→admit→投影→执行/terminal readback，接纳/投影回执丢失重开，scope切换与document撤销，源/许可变化阻断，真实native/JAR有限链及UI任务状态。fixture政策不可当真实许可或公网验收。

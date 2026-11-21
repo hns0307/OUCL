@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "outerExeExecuted": true,
+  "outerExit": 0,
+  "electronExit": 0,
+  "candidateSha256": "37e76f53f0ef5a29eb365d1f65d2e011bf2a56b60fe3bfb9b3a094194ea31dc7",
+  "appHash": "0afd73fa8de43ef62e886f596b1233d472cdff1b779db24cd7a3c1f0e6c6937b",
+  "executable": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-r1\\OUCL-candidate.exe",
+  "profile": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-r1\\profile",
+  "application": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-r1\\OUCL.runtime\\app-0afd73fa8de43ef62e886f596b1233d472cdff1b779db24cd7a3c1f0e6c6937b",
+  "runtimeRoot": "D:\\MC_start\\OUCL\\tmp\\candidate-execution-20261117-r1\\OUCL.runtime",
+  "inspectorPid": 29500,
+  "applicationEntriesVerified": 9,
+  "runtimeFilesVerified": 73,
+  "externalNetwork": false,
+  "syntheticCatalog": true,
+  "visibilityHook": true,
+  "checks": [
+    {
+      "name": "actual app path is candidate bootstrap extraction",
+      "pass": true
+    },
+    {
+      "name": "isolated explicit profile used",
+      "pass": true
+    },
+    {
+      "name": "packaged window security unchanged",
+      "pass": true
+    },
+    {
+      "name": "renderer loaded from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "preload script parsed from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "packaged handshake advertises both initialized extensions",
+      "pass": true
+    },
+    {
+      "name": "packaged renderer has no Node globals",
+      "pass": true
+    },
+    {
+      "name": "packaged tools registry is empty and closed",
+      "pass": true
+    },
+    {
+      "name": "unknown tool refused",
+      "pass": true
+    },
+    {
+      "name": "arbitrary URL refused",
+      "pass": true
+    },
+    {
+      "name": "packaged pinned sources registry is empty",
+      "pass": true
+    },
+    {
+      "name": "empty source cannot scan or install",
+      "pass": true
+    },
+    {
+      "name": "close IPC confirms closed",
+      "pass": true
+    },
+    {
+      "name": "packaged online tab displays unconfigured site",
+      "pass": true
+    },
+    {
+      "name": "packaged package tab displays unconfigured sources and keys",
+      "pass": true
+    },
+    {
+      "name": "wide packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "narrow packaged layout has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "no additional product windows",
+      "pass": true
+    }
+  ]
+}

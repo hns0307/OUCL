@@ -1,0 +1,43 @@
+✔ durable admission/projected task freshly claims once and commits through native; repeat reads terminal evidence only (2263.7701ms)
+✔ real claim commit with lost acknowledgement leaves running and no journal/files; retry never regrants effects (572.4956ms)
+✔ busy target and original preview file snapshot changes reject before claim and preserve unknown content (453.6604ms)
+✔ same-path replacement root cannot inherit admitted original directory identity (740.0383ms)
+✔ current synthetic trust revocation or signed release expiry blocks a fresh claim (5925.0941ms)
+✔ cancel and close drain held real domain validation and exclude legacy confirmation before publication (3730.0341ms)
+✔ legacy-created terminal journal with pristine queued task is not admitted execution evidence (5017.5318ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup (10241.3654ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup with unknown terminal metadata (4052.5963ms)
+✔ execution integrates real signature, SQLite authority, file publication and idempotent confirmation (222.8468ms)
+✔ empty source registry rejects without target, network, artifact or receipt access (29.6407ms)
+✔ new accepted publisher sequence invalidates an earlier prepared proposal before publication (62.1177ms)
+✔ revocation after prepare is checked against current pinned configuration (41.5894ms)
+✔ expired prepared release/proposal cannot publish a file or receipt (33.635ms)
+✔ archived signature metadata is reverified before execution, beyond its accepted payload hash (42.282ms)
+✔ publisher upgrade during final product validation cannot pass the SQLite receipt commit guard (122.9018ms)
+✔ same request cannot change identity; cancelled and closed coordinators cannot confirm preparation (48.9164ms)
+✔ cancel between confirm admission and transaction start aborts the original proposal (44.9179ms)
+✔ revocation during awaited product validation is rechecked before receipt commit (127.0586ms)
+✔ external filesystem changes after prepare are retained and invalidate confirmation (57.608ms)
+✔ product validator rejection and active session prevent trusted release execution (96.7983ms)
+✔ failed identities release active capacity but retain bounded same-input failure and reject changed input (22.7448ms)
+✔ TTL releases a ready slot without allowing expired identity to fetch or execute again (57.8122ms)
+✔ expired unresolved work still consumes the active budget until its underlying job settles (41.2416ms)
+✔ in-flight duplicate preparation shares one effect and cancelled requests free slots beyond the former sixteen limit (281.8672ms)
+✔ unknown validator errors become small stable failures and cannot rerun the same identity after recovery (60.0128ms)
+✔ close is idempotent, cancels pre-transaction confirmation and drains its delayed target read (48.6123ms)
+✔ replacing an empty game directory namespace after prepare invalidates the unchanged-looking proposal (56.9645ms)
+✔ completed identities retain read-only confirmation under the total identity limit without retaining proposal capability (136.9858ms)
+✔ close also drains a preparation whose trusted target port is still pending (23.4962ms)
+✔ cancellation signal reaches a pending preparation validator without releasing its unfinished work (44.7875ms)
+✔ close aborts validator work but drains its actual settlement before the store can close (43.1142ms)
+✔ cancel during the authority read prevents a late validator from starting (45.4454ms)
+✔ transaction-local cancellation reaches the final domain validator and rolls back published bytes (155.4623ms)
+✔ coordinator cancellation reaches artifact work through the transaction combined signal (70.3537ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33220.8942

@@ -1,0 +1,14 @@
+{
+  "source": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main",
+  "root": "D:/MC_start/OUCL/tmp/distribution-cancellation-20261117/final",
+  "node": "v24.21.0",
+  "args": [
+    "--test",
+    "--test-reporter=spec",
+    "D:\\MC_start\\OUCL\\tmp\\distribution-cancellation-20261117\\final\\distribution-execution.test.mjs",
+    "D:\\MC_start\\OUCL\\tmp\\distribution-cancellation-20261117\\final\\distribution-transaction.test.mjs"
+  ],
+  "exitCode": 0,
+  "signal": null,
+  "environment": "see tool permission record; real FS and SQLite, no network"
+}

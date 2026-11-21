@@ -1,0 +1,12 @@
+{
+  "name": "tests",
+  "args": [
+    "scripts/test.mjs"
+  ],
+  "environment": {
+    "OUCL_TEST_ROOT": "D:/MC_start/OUCL/tmp/20261118-o-final-tests"
+  },
+  "started": "2026-11-18T10:15:30.372Z",
+  "ended": "2026-11-18T10:17:57.445Z",
+  "exitCode": 0
+}

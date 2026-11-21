@@ -1,0 +1,13 @@
+# 启动任务与会话接口 v1
+
+落实已批game:launch/stop、sessions:list/get候选，固定信封与严格shared/contracts/game.ts校验。launch只接受instanceId/accountId/expectedRevision；stop只接受sessionId/mode/confirmed。renderer不提供executable、路径、JVM参数、token或PID。只读sessions使用每页1–100、30秒不透明游标、窗口/root归属与128游标上限；当前UI每秒非重叠查询，不声称sessions:subscribe已实现。
+
+启动/停止3秒受理返回TaskAccepted，完成使用既有tasks:get/list/control/subscribe与events:task，不另建泛化执行通道。TaskSnapshot新增launch/stop及preparing阶段，禁止把它们标成下载阶段；完成result按kind精确区分instanceId、sessionId、stop的stopped/exitCode。输入sender与信封先于服务，输出再次校验；不可用/超时不等于任务取消。
+
+LaunchService先SQLite幂等受理，再提交固定game-sessions JSON意图、再启动任务；taskId同时作为唯一sessionId，重复requestId/同payload返回原任务，改变payload拒绝。JSON最多1000会话，每会话最多16停止请求，错误按对应taskId保存；主进程单写/CAS及原恢复日志，无SQLite schema改变。初始unknown/spawned:false不表示进程已启动。正常重开保留exited；此前running/stopping转unknown，不以PID猜测接管，保留目录锁。
+
+验证实例ready/expectedRevision、已批离线档案/所选Java、2GiB默认分配不超物理内存75%，再复核客户端/classpath/原生归档/资产索引和私有native树。InstallerService.prepareLaunch复用现有ObjectStore/HashPool/NativeExtractor与文件串行lane，不抢第二个store owner；目录投影比较规范实际路径，支持Windows 8.3等无链接别名。既有入口先存在且receipt匹配才复核，不覆盖未知入口；不以此宣称全资产修复/阶段1D完成。
+
+spawn前可取消并等待检查收尾；commit后返回取消太晚，真实spawn后才Task completed，表示进程建立，非到菜单。实际close推进session.exited及退出码并释放本人的gameDir锁。写入确认不明/外来锁/提交失败保持保守状态；既有owner异常接管仍未自动实现。
+
+Windows graceful明确不支持，不自动强杀。UI仅在用户勾选“已保存进度，确认强制结束”后发force/confirmed:true；停止任务等待真实close才完成。运行时关闭启动器窗口隐藏而不销毁拥有者/数据库；再次打开exe通过single-instance显示原窗口。隐藏后游戏自然退出触发正常关闭，真正退出流程等待启动任务、Java探测、下载/worker及持久写入，重复quit不越过收尾。

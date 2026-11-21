@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readdir, rm, rmdir, symlink } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, realpath, rm, rmdir, symlink, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { RootService } from '../src/services/roots/service.js';
@@ -66,6 +66,24 @@ test('native-adapter selection persists once and survives a storage-worker resta
   assert.deepEqual(await f.service.choose(async () => { throw new Error('must not reopen dialog for fixed registration'); }), selected);
   const output = await handleRoots(request, true, trace, () => f.service.list());
   assert.ok(isRootsResult(output, id, 'list')); assert.ok(!JSON.stringify(output).includes(f.selected));
+}));
+
+test('portable default is created only for a fresh installation and never replaces an existing selection', async () => fixture(async f => {
+  const portable = path.join(f.base, 'OUCL.games'); const first = await f.service.ensureDefault(portable);
+  assert.equal(first.selection, 'chosen'); assert.equal((await f.client.readInstallation())?.data.dataDirectory, await realpath(portable));
+  const other = path.join(f.base, 'other');
+  assert.deepEqual(await f.service.ensureDefault(other), first);
+  assert.equal((await f.client.readInstallation())?.data.dataDirectory, await realpath(portable));
+  assert.deepEqual(await readdir(f.base).then(items => items.includes('other')), false);
+}));
+
+test('a blocked portable directory can be retried without replacing any files or registration', async () => fixture(async f => {
+  const portable = path.join(f.base, 'OUCL.games'); await writeFile(portable, 'existing file');
+  await assert.rejects(f.service.ensureDefault(portable), { code: 'ROOT_UNAVAILABLE' });
+  assert.equal(await f.client.readInstallation(), undefined);
+  await unlink(portable);
+  assert.equal((await f.service.ensureDefault(portable)).selection, 'chosen');
+  assert.equal((await f.client.readInstallation())?.data.dataDirectory, await realpath(portable));
 }));
 
 test('application directories, their ancestors and linked selections are rejected', async () => fixture(async f => {

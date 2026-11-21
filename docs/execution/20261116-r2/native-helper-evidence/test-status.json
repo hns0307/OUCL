@@ -1,0 +1,11 @@
+{
+  "exitCode": 1,
+  "command": [
+    "D:\\nodejs\\node.exe",
+    "--test",
+    "D:/MC_start/OUCL/tmp/native-helper-20261116-r2-tests/native-helper.test.mjs"
+  ],
+  "OUCL_SOURCE_ROOT": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main",
+  "OUCL_TEST_ROOT": "D:\\MC_start\\OUCL\\tmp\\native-helper-20261116-r2-share-read-tests",
+  "directoryShare": "ShareRead only"
+}

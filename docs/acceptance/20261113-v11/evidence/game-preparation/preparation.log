@@ -1,0 +1,29 @@
+copied and verified 0/15387
+copied and verified 1000/15387
+copied and verified 2000/15387
+copied and verified 3000/15387
+copied and verified 4000/15387
+copied and verified 5000/15387
+copied and verified 6000/15387
+copied and verified 7000/15387
+copied and verified 8000/15387
+copied and verified 9000/15387
+copied and verified 10000/15387
+copied and verified 11000/15387
+copied and verified 12000/15387
+copied and verified 13000/15387
+copied and verified 14000/15387
+copied and verified 15000/15387
+file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/game-data/compiled/src/services/storage/launch-profiles.js:7
+  throw new StorageError("INVALID_RECORD");
+        ^
+
+StorageError: INVALID_RECORD
+    at invalid (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/game-data/compiled/src/services/storage/launch-profiles.js:7:9)
+    at parseLaunchProfiles (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/game-data/compiled/src/services/storage/launch-profiles.js:24:423)
+    at file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/game-data/prepare.mjs:151:56 {
+  code: 'INVALID_RECORD',
+  category: 'validation'
+}
+
+Node.js v24.21.0

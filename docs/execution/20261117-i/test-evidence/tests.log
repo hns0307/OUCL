@@ -1,0 +1,13 @@
+✔ real native fresh-bound first commit binds the captured root and refuses a second call (1260.8546ms)
+✔ replacement of the original root inode fails before lease, journal or publication (39.2747ms)
+✔ missing protected factory and malformed proof reject before calling authorization or artifacts (31.6022ms)
+✔ existing terminal and interrupted journals never call fresh factory or artifact (1159.2126ms)
+✔ caller proof mutation during awaited authorization cannot change the captured expected root (887.3136ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3492.5425

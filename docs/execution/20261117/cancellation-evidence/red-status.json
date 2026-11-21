@@ -1,0 +1,15 @@
+{
+  "source": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main",
+  "root": "D:/MC_start/OUCL/tmp/distribution-cancellation-20261117/red",
+  "node": "v24.21.0",
+  "args": [
+    "--test",
+    "--test-reporter=spec",
+    "--test-name-pattern=cancellation signal reaches|cancelled artifact late",
+    "D:\\MC_start\\OUCL\\tmp\\distribution-cancellation-20261117\\red\\distribution-execution.test.mjs",
+    "D:\\MC_start\\OUCL\\tmp\\distribution-cancellation-20261117\\red\\distribution-transaction.test.mjs"
+  ],
+  "exitCode": 1,
+  "signal": null,
+  "environment": "see tool permission record; real FS and SQLite, no network"
+}

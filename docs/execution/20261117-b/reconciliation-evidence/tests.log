@@ -1,0 +1,18 @@
+✔ real authority and worker reconcile a fixed task identity exactly once (234.7955ms)
+✔ actual project commit with lost acknowledgement recovers the same task (188.6794ms)
+✔ actual mark commit with lost acknowledgement recovers the same task (216.0237ms)
+✔ refuses orphan without reconstructing a queued task (197.2257ms)
+✔ refuses digest without reconstructing a queued task (166.8175ms)
+✔ refuses task-id without reconstructing a queued task (178.6698ms)
+✔ refuses projected-missing without reconstructing a queued task (176.435ms)
+✔ unconfirmed proposals and another root never create a task; worker enforces expected root (164.5047ms)
+✔ close drains a held actual commit and rejects subsequent reconciliation (200.0826ms)
+✔ final audit rejects admissions added after the startup snapshot (192.2854ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2039.991

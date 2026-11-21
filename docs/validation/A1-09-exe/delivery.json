@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-25",
+  "version": "0.1.0",
+  "target": "win32-x64",
+  "userAcceptance": "用户明确反馈实测已经可用",
+  "exe": "release/OUCL-0.1.0-win32-x64/OUCL.exe",
+  "exeBytes": 249797632,
+  "exeSha256": "8e84549b05d27d444da2957653200d1e0ac287eff0fc5722b92835b9e0821a59",
+  "archive": "release/OUCL-0.1.0-win32-x64.zip",
+  "archiveBytes": 163127981,
+  "archiveSha256": "51ea34043e9d6ddba096f8257dbc4ed26f4e594b7237666b41c41887464b4ec9",
+  "archiveEntries": 97,
+  "archiveRequiredFilesVerified": true,
+  "portableFolderRequired": true,
+  "binariesCommitted": false,
+  "signed": false
+}

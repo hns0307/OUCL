@@ -1,0 +1,7 @@
+{
+  "source": "acceptance-results/c-r5-status-v20",
+  "reason": "Prior GUI B-key delivery refused; fresh run preserves old evidence, same fixed handler/2500ms hold",
+  "targetSha256": "3eabd9c79a66c52de69319b931b1ca5382254acd6576d3b4d3244077891fbeec",
+  "sourceSha256": "3eabd9c79a66c52de69319b931b1ca5382254acd6576d3b4d3244077891fbeec",
+  "target": "acceptance-results/c-r5-status-v20-r2"
+}

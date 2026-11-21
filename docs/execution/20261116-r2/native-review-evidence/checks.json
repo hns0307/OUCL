@@ -1,0 +1,26 @@
+{
+  "typecheck": {
+    "command": "node ../../node_modules/typescript/bin/tsc --noEmit",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "lint": {
+    "command": "node ../../node_modules/eslint/bin/eslint.js tests/distribution-native-files.test.ts",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "nativeWrapper": {
+    "command": "node --test D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs",
+    "exitCode": 1,
+    "tests": 12,
+    "pass": 6,
+    "fail": 6,
+    "skip": 0,
+    "log": "native-wrapper-tests.log",
+    "sourceAndBinaryStatus": "status.json",
+    "directoryShare": "ShareRead only",
+    "admission": "NOT_ADMITTED_REPARSE_ATOMIC"
+  }
+}

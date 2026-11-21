@@ -1,0 +1,97 @@
+{
+  "status": "PASS",
+  "externalNetwork": false,
+  "syntheticPublisherKeyAndArtifacts": true,
+  "productionBuildExceptConfigurationStub": true,
+  "first": {
+    "taskId": "fbf464cb-fa4c-4670-83f8-c70829c2ce5b",
+    "confirmRequestId": "7584002b-ca5d-4e97-a169-5b31366f4112",
+    "input": {
+      "proposalId": "bfb7f8b4-cb39-4955-9c00-a2db28ea72a7",
+      "instanceRevision": 1,
+      "sequence": 1
+    },
+    "proposalId": "bfb7f8b4-cb39-4955-9c00-a2db28ea72a7",
+    "row": "社团包安装 · fbf464cb-fa4c-4670-83f8-c70829c2ce5b\n\n安装完成\n\n已确认任务状态 · 上次确认 01:11:26",
+    "sources": [
+      {
+        "sourceId": "fixture-source"
+      }
+    ],
+    "capabilities": [
+      "roots.v1",
+      "catalog.v1",
+      "tools.isolated.v1",
+      "distribution.preview.v1",
+      "distribution.execute.v1",
+      "instances.v1",
+      "instances.v2",
+      "instance-folders.v1",
+      "tasks.v1",
+      "downloads.v1",
+      "java.v1",
+      "accounts.v1",
+      "settings.v1",
+      "desktop.v1",
+      "game.v1",
+      "sessions.v1",
+      "resources.v1",
+      "loaders.v1",
+      "mods.v1",
+      "task-targets.v1",
+      "packs.fixed-preview.v1",
+      "mods-maintenance-preview.v1"
+    ],
+    "secureWindow": true,
+    "startupTaskId": "5a1abb3c-55b0-4946-944f-38415263a82c",
+    "startupState": "queued",
+    "repeatedOriginalConfirmation": true,
+    "electron": "45.0.0",
+    "unexpectedNetwork": []
+  },
+  "restart": {
+    "taskId": "fbf464cb-fa4c-4670-83f8-c70829c2ce5b",
+    "row": "社团包安装 · fbf464cb-fa4c-4670-83f8-c70829c2ce5b\n\n安装完成\n\n已确认任务状态 · 上次确认 01:11:29",
+    "capabilities": [
+      "roots.v1",
+      "catalog.v1",
+      "tools.isolated.v1",
+      "distribution.preview.v1",
+      "distribution.execute.v1",
+      "instances.v1",
+      "instances.v2",
+      "instance-folders.v1",
+      "tasks.v1",
+      "downloads.v1",
+      "java.v1",
+      "accounts.v1",
+      "settings.v1",
+      "desktop.v1",
+      "game.v1",
+      "sessions.v1",
+      "resources.v1",
+      "loaders.v1",
+      "mods.v1",
+      "task-targets.v1",
+      "packs.fixed-preview.v1",
+      "mods-maintenance-preview.v1"
+    ],
+    "repeatedOriginalConfirmation": true,
+    "unexpectedNetwork": []
+  },
+  "stores": {
+    "startup": {
+      "confirmRequestId": "8e734206-f27a-4942-8852-a6377c2ec51a",
+      "proposalId": "63cf6f46-f721-426a-bd4c-345c070b89b4",
+      "taskId": "5a1abb3c-55b0-4946-944f-38415263a82c"
+    },
+    "startupState": "queued",
+    "projectedTasks": 2,
+    "taskState": "completed",
+    "admissionState": "projected",
+    "journalState": "committed",
+    "receiptRevision": 1,
+    "installedFile": "fixture-managed.jar",
+    "installedSha256": "f0dedfd059f681c751199c86447525956f9585e25cbd605cb119600e443f0848"
+  }
+}

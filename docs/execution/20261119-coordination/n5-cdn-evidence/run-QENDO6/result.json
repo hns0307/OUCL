@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "electron": "45.0.0",
+  "transport": "synthetic HTTP and HTTPS protocol handlers, no sockets or real TLS",
+  "chromiumEvents": "observed from real link clicks and synthetic HTTP response 302; no manual event emission",
+  "checks": [
+    {
+      "name": "isolated product adapter opened the synthetic document",
+      "pass": true,
+      "details": {
+        "phase": "ready",
+        "finalUrl": "https://tools.example.com/start"
+      }
+    },
+    {
+      "name": "listed distinct HTTPS CDN loaded and executed as a subresource",
+      "pass": true,
+      "details": {
+        "cdnMarker": "loaded",
+        "served": true
+      }
+    },
+    {
+      "name": "actual same-origin HTTP 302 reaches the allowed document",
+      "pass": true,
+      "details": {
+        "initialServed": true,
+        "destinationServed": true,
+        "finalUrl": "https://tools.example.com/landed"
+      }
+    },
+    {
+      "name": "actual HTTP 302 cannot promote the listed CDN into a main document",
+      "pass": true,
+      "details": {
+        "redirectAttempt": true,
+        "initialServed": true,
+        "targetServed": false,
+        "finalUrl": "https://tools.example.com/landed"
+      }
+    },
+    {
+      "name": "clicking a CDN top-level link is blocked before delivery",
+      "pass": true,
+      "details": {
+        "directAttempt": true,
+        "targetServed": false,
+        "finalUrl": "https://tools.example.com/landed"
+      }
+    },
+    {
+      "name": "remote contents destroyed and service closed",
+      "pass": true,
+      "details": {
+        "phase": "closed"
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "will-frame-navigate",
+      "url": "https://tools.example.com/redirect-same",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-navigate",
+      "url": "https://tools.example.com/redirect-same",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-redirect",
+      "url": "https://tools.example.com/landed",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-frame-navigate",
+      "url": "https://tools.example.com/redirect-other",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-navigate",
+      "url": "https://tools.example.com/redirect-other",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-redirect",
+      "url": "https://cdn.example.com/redirect-target",
+      "isMainFrame": true
+    },
+    {
+      "name": "will-frame-navigate",
+      "url": "https://cdn.example.com/link-target",
+      "isMainFrame": true
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://tools.example.com/start",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.example.com/fixture.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://tools.example.com/redirect-same",
+      "method": "GET"
+    },
+    {
+      "url": "https://tools.example.com/landed",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.example.com/fixture.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://tools.example.com/redirect-other",
+      "method": "GET"
+    }
+  ]
+}

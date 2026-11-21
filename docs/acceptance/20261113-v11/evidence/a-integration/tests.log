@@ -1,0 +1,399 @@
+✔ spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease (50.7717ms)
+✔ gameDir lease excludes another instance and foreign marker is never removed (15.5099ms)
+✔ spawn exception and asynchronous start failure leave no falsely running session or lease (38.6854ms)
+✔ only explicit confirmed force stop kills; graceful rejection preserves the live JVM (18.7764ms)
+✔ changed lease after process exit remains unknown and blocks future launches (26.8905ms)
+✔ Java mismatch, failed probe and pre-spawn cancellation cannot create game effects (2.0709ms)
+✔ finalization holds the sole lease, blocks same-major patch substitution and releases on rejection (26.1743ms)
+✔ cancel during finalization drains the callback before lease release and never permits spawn (15.1066ms)
+✔ failure after commit permission still releases owned lease without invoking start (11.0082ms)
+✔ asset index projections distinguish the same upstream ID with different trusted hashes (6.7785ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (1.679ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (1.295ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (1.351ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (138.5ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (0.7336ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (0.5354ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (0.4926ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (0.542ms)
+✔ library views reject case, file-directory and differing-content collisions (0.509ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (0.8501ms)
+✔ actual installer commits a complete private instance and reuses shared files across a second instance (1394.9262ms)
+✔ Fabric installation uses the same transaction and reopens with its pinned loader plan (820.1167ms)
+✔ fabric reference target installs privately and reopens without metadata or transfer access (1611.1732ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ fabric cancellation stays unlaunchable and a new request can install the same display name (861.6534ms)
+✔ quilt reference target installs privately and reopens without metadata or transfer access (1615.8907ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ quilt cancellation stays unlaunchable and a new request can install the same display name (991.6753ms)
+✔ request idempotency rejects changed payload and same-name admission never overwrites an instance (810.0656ms)
+{"level":"warn","event":"instance-install-failed","stage":"metadata","code":"CANCELLED"}
+✔ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (870.4367ms)
+{"level":"warn","event":"instance-install-failed","stage":"materializing","code":"NEEDS_RECOVERY"}
+✔ unknown existing shared entries are preserved and leave a recovery state rather than ready (456.7987ms)
+✔ installed objects stay owned once while launch tasks, subscriptions, natural exit and session history persist (1375.938ms)
+✔ explicit stop is durable, cannot act without confirmation and waits for the actual owned process close (1024.6306ms)
+✔ new inherited isolation captures the saved default and remains stable after settings change and retry (736.5471ms)
+✔ launch rejects changed revisions, inventories, native trees, profiles and unknown constraints under the real lease (6589.0225ms)
+✔ accepted cancellation drains locked verification and a lost commit-permit acknowledgement never spawns (1925.4752ms)
+✔ prepared launch final verification succeeds with every materialization and extraction capability disabled (928.3877ms)
+✔ new inherited layouts distinguish metadata for the same client while old receipts retain the original location (13.8818ms)
+✔ instance folder contract accepts only opaque identity and fixed folder keys (0.3475ms)
+✔ folder resolver uses the actual isolated game directory (25.9203ms)
+✔ folder resolver uses the actual shared game directory (16.4713ms)
+✔ folder resolver rejects a linked allowlisted directory that escapes the instance (16.2494ms)
+✔ instance summaries and indexes have exact bounded fields, canonical IDs and independent revisions (6.5203ms)
+✔ instance phases cannot claim ready without all materialization checkpoints (4.7205ms)
+✔ instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry (2.5535ms)
+✔ instance object refs and receipts reject paths, unknown fields, conflicts and absent content identities (2.7274ms)
+✔ instance body and metadata budgets are checked before accepting persistent JSON (18.5128ms)
+✔ instance metadata persists the exact bounded Windows rule environment instead of guessing it on reopen (1.3094ms)
+✔ loader metadata is revalidated from original profile bytes and per-library source proofs (4.5231ms)
+✔ installer loader metadata preserves its upstream chain and validates processor evidence (13.9512ms)
+✔ private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions (1.874ms)
+✔ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (319.6629ms)
+✔ instance record and index commit separately so a half-completed index is never promoted to ready (277.1759ms)
+✔ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (32.7098ms)
+✔ instance storage does not create or accept arbitrary caller-selected parent directories (108.2458ms)
+✔ modern launch retains one argument per value, absolute Windows paths and inherited client jar (6.0643ms)
+✔ legacy JVM fallback and virtual assets use the supplied actual game directory (0.8892ms)
+✔ Forge module exclusion follows the inherited physical client JAR without changing version identity (1.1904ms)
+✔ JNA writes temporary DLLs outside the verified native directory (0.4521ms)
+✔ Java mismatch, invalid identities, memory and launcher version fail before execution (2.1263ms)
+✔ conflicting JVM settings, unknown placeholders and oversized argv cannot silently launch (3.5139ms)
+✔ assetIndex id overrides legacy name and additional official argument bindings are literal (0.3852ms)
+✔ launch uses only the trusted index alias and matches the virtual resource directory (1.0666ms)
+✔ native runtime caches stay private and outside the verified immutable natives (0.6581ms)
+✔ read-only worker receipt lookup does not admit work, change state or cross request ownership (348.9591ms)
+✔ all four loader receipts survive restart and offline catalog without new task or metadata effects (281.0105ms)
+✔ receipt worker protocol rejects arbitrary fields and invalid hashes before SQL access (0.4483ms)
+✔ Java facts measure selected compatible registered JVM and never trust persisted version text (1.7671ms)
+✔ missing, failed or changed-major JVM leaves unknown and does not discover a runtime (0.3155ms)
+✔ Java facts cancel by joining probe close, reject overlapping work and detect profile changes (0.7391ms)
+✔ Mod context requests the real metadata Java major and propagates measured facts without inference (8.0868ms)
+✔ metadata reconstruction preserves the original official index path and input record (1.0709ms)
+✔ ready restoration accepts only one trusted legacy or alias index receipt and never rewrites evidence (2.4415ms)
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (6.9451ms)
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (4.055ms)
+✖ failed preparation persists bounded assessment and immutable task/plan association (0.74ms)
+✖ lost result acknowledgement resolves only exact durable content and restarts without replay (1.3923ms)
+✖ executor cancellation waits for preparation cleanup and leaves no transaction or instance change (1.2865ms)
+✖ executor classifies a proven rollback as failed and never replays it after restart (1.3562ms)
+✖ orphan confirmation without a transaction becomes needsRecovery without running preparation (1.1053ms)
+✖ executor restores completion from a real committed transaction after the final task update was absent (0.8834ms)
+✖ commit boundary rejects cancellation and close joins the actual transaction (0.7333ms)
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1.5434ms)
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1.3239ms)
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1.2019ms)
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (0.5732ms)
+✖ pre-existing player files and session owners are never overwritten or cleared (0.5579ms)
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (0.588ms)
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (0.5465ms)
+✖ cancellation during source verification joins the worker boundary and does not start a staged copy (0.7242ms)
+✖ recovery finishes a published instance after index failure using its unique commit ID (0.78ms)
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (0.8029ms)
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1.2335ms)
+✖ real process termination recovers owned transactions at three commit boundaries (1.5578ms)
+ℹ tests 92
+ℹ suites 0
+ℹ pass 71
+ℹ fail 21
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22410.1121
+
+✖ failing tests:
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:178:1
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (6.9451ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:179:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:241:1
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (4.055ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:242:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:288:1
+✖ failed preparation persists bounded assessment and immutable task/plan association (0.74ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:289:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:318:1
+✖ lost result acknowledgement resolves only exact durable content and restarts without replay (1.3923ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:319:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:348:1
+✖ executor cancellation waits for preparation cleanup and leaves no transaction or instance change (1.2865ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:349:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:387:1
+✖ executor classifies a proven rollback as failed and never replays it after restart (1.3562ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:388:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:415:1
+✖ orphan confirmation without a transaction becomes needsRecovery without running preparation (1.1053ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:416:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:435:1
+✖ executor restores completion from a real committed transaction after the final task update was absent (0.8834ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:436:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:458:1
+✖ commit boundary rejects cancellation and close joins the actual transaction (0.7333ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:459:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:494:1
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1.5434ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:495:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:516:1
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (1.3239ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:517:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:534:1
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1.2019ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:535:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:554:1
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (0.5732ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:555:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:572:1
+✖ pre-existing player files and session owners are never overwritten or cleared (0.5579ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:573:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:593:1
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (0.588ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:595:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:618:1
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (0.5465ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:619:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:638:1
+✖ cancellation during source verification joins the worker boundary and does not start a staged copy (0.7242ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:639:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:670:1
+✖ recovery finishes a published instance after index failure using its unique commit ID (0.78ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:671:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:686:1
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (0.8029ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:687:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:709:1
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1.2335ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:710:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at acceptance-results\a-integration\compiled\tests\mod-transaction.test.js:757:3
+✖ real process termination recovers owned transactions at three commit boundaries (1.5578ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL-acceptance-v11-20261113\.test-build\mod-kill-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL-acceptance-v11-20261113/acceptance-results/a-integration/compiled/tests/mod-transaction.test.js:759:25)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL-acceptance-v11-20261113\\.test-build\\mod-kill-XXXXXX'
+  }

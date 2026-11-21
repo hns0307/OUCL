@@ -1,0 +1,18 @@
+✔ C-R7 mixed six-list total512 is exact, complete and not falsely truncated (6.298ms)
+✔ C-R7 mixed total512 without failures can remain ready; 513 is incomplete/unknown and bounded512 (2.6043ms)
+✔ C-R7 mixed six-list total513 truncates the extra failure and preserves blocked (1.8622ms)
+✔ C-R8 sixteen completed unexpired observations remain readable; seventeenth is SCAN_BUSY (6.1229ms)
+✔ C-R8 sixteen failed unexpired observations remain readable; seventeenth is SCAN_BUSY (2.4623ms)
+✔ C-R8 sixteen cancelled unexpired observations remain readable; seventeenth is SCAN_BUSY (0.8024ms)
+✔ C-R8 failed TTL boundary899999/900000 expires status/cancel/same-request without rerun (1.0356ms)
+✔ C-R8 cancelled TTL boundary899999/900000 expires status/cancel/same-request without rerun (0.3745ms)
+✔ C-R8 tombstones4095 still admits one, 4096 rejects new, old IDs never revive; restart clears bound (178.7544ms)
+ℹ 4096 tombstones reached only via public start/get and injected constructor clock; no private-state/Map mutation.
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 282.7777

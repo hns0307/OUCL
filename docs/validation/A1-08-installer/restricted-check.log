@@ -1,0 +1,967 @@
+$ pnpm typecheck && pnpm lint && pnpm test && pnpm build
+$ tsc --noEmit
+$ eslint src tests scripts vite.config.ts
+$ node scripts/test.mjs
+✔ official manifest parser bounds entries, identities, hashes, timestamps and origins (6.1254ms)
+✔ metadata HTTPS reader refuses origins, status, oversized bodies and wrong SHA1 (52.3381ms)
+✔ catalog paginates by source revision and does not claim runtime compatibility (3.2755ms)
+✔ stale verified cache works offline with its original timestamp and bounded refresh retries (3.6764ms)
+✔ invalid cache and corrupt fresh metadata never acquire trust through fallback (3.0135ms)
+✔ descriptor resolution verifies official metadata before returning the client plan and provenance (13.4501ms)
+✔ catalog IPC rejects paths/URLs and invalid senders before network access, and validates output (1.4738ms)
+✖ official catalog cache persists through real SQLite/JSON worker restart (271.6389ms)
+✖ physical transfer persists before writing and commits only verified bytes, then reuses the object (361.2822ms)
+✖ interrupted HTTP bytes survive a normal worker/store restart and resume with validators (371.4921ms)
+✖ wrong digest never commits and a retry restarts rather than trusting the bad prefix (507.7335ms)
+✖ object commit with a lost final journal acknowledgement is reconciled without a second download (314.8964ms)
+✖ one physical engine rejects a concurrent same-identity writer rather than racing its staging file (414.354ms)
+✖ lost acknowledgement after a successful final commit does not rewrite terminal state (349.2246ms)
+✖ cancellation during a verified-cache lookup wins before returning the object (259.7889ms)
+✖ verified cache cannot hide a contradictory authoritative committed object identity (251.4302ms)
+✔ one cancelled installer cannot interrupt another, including independent source evidence (7.6728ms)
+✔ paused consumers hold completion and revalidate their object when resuming (1.5054ms)
+✔ all-paused transport joins before resume starts a new attempt (1.0888ms)
+✔ last cancellation waits for physical cleanup and a new consumer waits for that old attempt (1.0023ms)
+✔ bounded admission and per-consumer callback failures do not kill other demand (1.5073ms)
+✔ global concurrency stays bounded and failure evidence is redacted for every consumer (0.9098ms)
+✔ physical cleanup failure takes precedence over a cancellation request (2.7105ms)
+✔ close joins failed source-proof work and reports its failure rather than fake cancellation (1.2095ms)
+✔ close joins in-flight source-proof writes and never delivers to a cancelled consumer (9.475ms)
+✖ real HTTP/object pipeline shares one transfer and writes both independently verified source proofs (5398.155ms)
+✔ full transfer streams real bytes and commits progress only after the file is visible (66.4223ms)
+✔ 206 resumes a durable prefix and truncates an uncommitted disk tail before requesting (88.1438ms)
+✔ a server ignoring Range replaces the old prefix with a full verified-size response (64.4768ms)
+✔ reset sync failure cannot restore a durable prefix after its file was truncated (70.8533ms)
+✔ changed ETag and invalid range response reset once, then reject repeated protocol failure (78.8622ms)
+✔ 416 accepts exactly complete durable bytes and otherwise performs one clean restart (61.681ms)
+✔ weak or missing validator causes a full restart; Last-Modified can safely resume (61.7955ms)
+✔ network interruption preserves and checkpoints the received prefix for the next attempt (28.1412ms)
+✔ cancellation waits for the durable prefix and closes the staging handle (13.2747ms)
+✔ overlong body, encoding, length and retry responses cannot produce complete state (49.9694ms)
+✔ header and idle timers are bounded and redact the original network exception (98.2696ms)
+✔ missing durable bytes and checkpoint failures stop without false completion (55.2773ms)
+﹣ linked staging files are refused when file symlink privilege is available (20.2892ms) # File symlink privilege unavailable; no system policy changed.
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (153.3216ms)
+✖ durable transfer checkpoint is created with its marker and reopens without losing validators (149.7199ms)
+✖ transfer revisions reject stale callbacks and roll back a locked write cleanly (93.4634ms)
+✖ invalid identity, metadata, progress and validators cannot replace a checkpoint (86.0047ms)
+✖ only a zero-byte reset may change source or retreat; committed state cannot be rewritten (69.8998ms)
+✖ losing the authoritative ledger never creates an empty replacement or removes accepted tasks (69.6451ms)
+✖ the empty initialization crash window may finish the marker but populated unmarked ledgers stop (90.0938ms)
+✖ unknown ledger version, identity or schema stays on disk without being reset (78.7581ms)
+✖ malformed checkpoint records and unknown states block opening instead of disappearing (68.6898ms)
+✖ cached SQLite handles reject missing, changed or nonregular backing identity before reads and writes (77.7314ms)
+✖ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (83.0628ms)
+✖ verified copy views preserve shared objects, validate receipts and reject unknown existing entries (260.7797ms)
+✖ file-link privilege failure explicitly returns a checked copy without changing system policy (273.668ms)
+✖ unknown linked parents and target entries are rejected without touching their external target (386.5081ms)
+✖ cancellation and invalid source facts create no new file and missing recorded projections require recovery (364.6028ms)
+✖ real preferred file projection reports actual link capability and deletion preserves the object (299.6403ms)
+✖ a recorded copy replaced by a hard link never acquires copy ownership (288.5992ms)
+✖ concurrent same-target creation serializes and refuses silent overwrite (298.7741ms)
+✔ handshake only accepts strict request DTO and safe version integers (2.5239ms)
+✔ trusted handshake negotiates version with zero business capabilities (2.0531ms)
+✔ handshake validates the four implemented capabilities and still rejects duplicates or unknown APIs (0.3508ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (1.8634ms)
+✔ sender requires exact URL, same contents and main frame (0.2475ms)
+✔ response rejects mismatched request identity and injected capabilities (0.2905ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.391ms)
+✔ sequential small-file hashes reuse one real worker and release each file before success (1302.8698ms)
+✔ cancelled active session exits before rejection and a queued hash uses a fresh worker (426.5397ms)
+✔ queue budget remains concurrency plus 32 waiting jobs and close joins all sessions (19.1192ms)
+✔ strict session schemas require correlated UUIDs and retain legacy single-file replies (1.0258ms)
+✔ well-formed stale replies from a previous job cannot complete or update the next job (120.128ms)
+✖ batch imports exact metadata, bounds work, commits all independent proofs and reuses cached bytes (387.6247ms)
+✔ bad metadata and already aborted batches do not start a single network consumer (136.2095ms)
+✖ one batch cancellation joins its work while another installation finishes shared downloads (411.996ms)
+✖ callback failures abort siblings and are redacted after all owned transfers finish (235.482ms)
+✔ an in-flight commit error takes precedence over concurrent user cancellation (226.8314ms)
+✔ index import maps operating-system and cleanup exceptions to fixed errors (280.8106ms)
+✖ cancellation during metadata commit joins the commit and retains verified shared content (271.1888ms)
+✖ caller changes to the prepared plan or body cannot alter the admitted private plan (143.1701ms)
+✔ first-release install metadata refuses unsupported OS or architecture before network access (3.2447ms)
+✔ install metadata keeps each descriptor origin and exact validated asset-index bytes (7.8052ms)
+✔ wrong returned hashes and forged same-size bodies are rejected before planning (0.502ms)
+✔ asset-index declared size is checked as UTF8 bytes and cannot be trusted from a reader claim (0.379ms)
+✔ missing asset metadata or its actual declaring origin never starts an index request (0.3079ms)
+✔ malformed asset JSON and absent source proofs are redacted rather than becoming an install plan (1.5322ms)
+✔ known catalog/network errors retain their fixed code and unknown dependency errors never leak (0.5056ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (4.9093ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (2.4092ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (1.9585ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (218.6641ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (1.0951ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (0.9325ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (0.8462ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (1.3044ms)
+✔ library views reject case, file-directory and differing-content collisions (1.921ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (2.0137ms)
+✔ installer adapter enforces registered root scope and exposes only public summary/task fields (15.4747ms)
+✔ installer adapter pagination tokens are opaque, bounded to sender/channel/filter, and hold stable snapshots (5.6623ms)
+✔ installer task lists enforce owner/kind and completed results contain only the corresponding instance ID (0.8857ms)
+✔ installer controls call only durable cancel and return actual persisted state (2.7924ms)
+✔ installer adapter maps known failures and rejects raw exception text at its boundary (0.9635ms)
+✔ installer subscriptions provide atomic seq-zero snapshots and strictly ordered bounded full updates (459.126ms)
+✔ installer subscription ownership, repeated unsubscribe and sender removal never cancel installation (1.2198ms)
+✔ installer send callback failure removes only its subscription even if it throws a recognized service error (110.3399ms)
+✔ installer poll iterations never overlap and close suppresses an already pending response (487.7967ms)
+✔ installer admission counts pending subscriptions and enforces per-sender and global budgets (12.4105ms)
+✔ installer pending subscription is discarded if its window disappears during snapshot acquisition (14.9278ms)
+✖ actual installer commits a complete private instance and reuses shared files across a second instance (223.7512ms)
+✖ request idempotency rejects changed payload and same-name admission never overwrites an instance (177.9092ms)
+✖ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (230.9805ms)
+✖ unknown existing shared entries are preserved and leave a recovery state rather than ready (220.2002ms)
+✔ instance summaries and indexes have exact bounded fields, canonical IDs and independent revisions (8.2306ms)
+✔ instance phases cannot claim ready without all materialization checkpoints (35.6123ms)
+✔ instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry (1.4078ms)
+✔ instance object refs and receipts reject paths, unknown fields, conflicts and absent content identities (2.8697ms)
+✔ instance body and metadata budgets are checked before accepting persistent JSON (22.8183ms)
+✔ instance metadata persists the exact bounded Windows rule environment instead of guessing it on reopen (1.9904ms)
+✔ private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions (4.364ms)
+✖ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (261.6364ms)
+✖ instance record and index commit separately so a half-completed index is never promoted to ready (249.5866ms)
+✖ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (150.2204ms)
+✔ instance storage does not create or accept arbitrary caller-selected parent directories (229.3509ms)
+✔ instance/task requests enforce each exact candidate payload and v1 envelope (3.9688ms)
+✔ pagination, names, MC identities, UUIDs and actions remain bounded (0.6307ms)
+✔ public instance summaries exclude storage identity and paths (0.7347ms)
+✔ task snapshots validate progress, enumerations and exact error mapping (0.8988ms)
+✔ task results and events reject leaked fields, wrong identities and nonterminal result (0.5636ms)
+✔ every domain error has fixed controlled public data (0.6148ms)
+✔ handler checks sender before dispatch and returns correlated safe failures (0.9358ms)
+✔ handler validates adapter outputs and task correlation without leaking private results (1.9006ms)
+✔ handler maps declared adapter failures and redacts arbitrary thrown values (0.9363ms)
+✔ Java properties parse supported 8/17/21 versions and explicit Windows x64 metadata (5.2368ms)
+✔ Java properties refuse incompatible majors, architecture, OS and inconsistent specification (1.7641ms)
+✔ Java properties cannot use banners, duplicate properties, malformed versions or private text as runtime evidence (1.1924ms)
+✔ Java probe uses exact non-shell argv, hidden child and removes ambient agent injection settings (13.6775ms)
+✔ Java cancellation kills and joins close rather than reporting termination immediately (2.9167ms)
+✔ Java timeout and combined output budget terminate and await child close (20.3414ms)
+✔ Java probe rejects nonzero exit, spawn errors and malformed UTF8 without exposing diagnostics (4.8293ms)
+✔ Java probe rejects unselected paths and cancelled/invalid inspections before spawning (1.0722ms)
+✔ Java default inspection requires an actual nonempty regular executable path (26.7795ms)
+✔ Java default inspection refuses a directory even when named java.exe (8.4313ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (14.3092ms)
+✔ isolation priority is pack, explicit override, then global default (1.9969ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (6.8789ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (1.2034ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (1.9042ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.7016ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (1.8644ms)
+✔ pure path imports remain allowed while actual Node and UI capabilities stay prohibited (2011.5037ms)
+✖ actual linked source parents and destination directories never redirect native extraction (21.3488ms)
+✔ native archives extract stored/deflated files, UTF8, descriptors and empty directories with exclusions (272.8853ms)
+✔ native archive original SHA256 and size are mandatory before creating any output (84.3785ms)
+✔ native archives reject traversal, Windows aliases and noncanonical names before writing (435.0298ms)
+✔ native archives reject unknown filename encoding and malformed UTF8 (90.3954ms)
+✔ native archives reject symlink, special file, reparse and Unix hardlink metadata (173.8613ms)
+✔ native archives reject duplicates, case collisions and file/directory conflicts across all archives before writes (260.7962ms)
+✔ native archive CRC, declared output and fully consumed deflate bytes are verified (257.7967ms)
+✔ native archive limits reject excessive per-entry, aggregate and entry-count budgets before writes (107.3389ms)
+✔ native archive header disagreement, unsupported flags, ZIP64 and overlapping local records are refused (105.0328ms)
+✔ native extraction requires an empty destination and never overwrites player files (12.6953ms)
+✔ native extraction errors are fixed codes without filesystem paths (17.4776ms)
+✔ native worker schemas reject scripts, unknown keys, unsafe limits and unbounded replies (13.2251ms)
+✔ real one-shot worker releases its directory and rejects occupied output without leaking paths (360.5684ms)
+✔ native extraction admission is bounded and active cancellation joins before staging removal (214.0824ms)
+✔ close joins a running extraction and prevents admission, timeout and malformed archives stay fixed (262.0652ms)
+✖ real object commits deduplicate bytes but preserve independent source evidence (943.9115ms)
+✔ same-sized wrong bytes never enter objects and malformed artifact facts reject early (618.7164ms)
+✖ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (384.0964ms)
+✖ interrupted append-only commits preserve orphan bytes and recover only proven sources (333.5719ms)
+✖ corrupt existing object is never overwritten by a new commit or reused through an index (265.378ms)
+✖ broken provenance cannot acquire trust from a valid object or index hint (213.822ms)
+✖ unknown cache schema blocks object search while durable tasks stay readable (245.7174ms)
+✔ root request schema accepts only an empty payload and valid correlated envelope (2.316ms)
+✔ root results enforce labels, exact keys, channel schema and fixed error mapping (0.9485ms)
+✔ directory cancellation changes no registration and leaks no selected local path (298.3029ms)
+✖ native-adapter selection persists once and survives a storage-worker restart (261.8605ms)
+✖ application directories, their ancestors and linked selections are rejected (217.9818ms)
+✖ concurrent directory requests share one native selection and one stable record (227.1388ms)
+✖ disconnected directory is retained and shown unavailable rather than silently replaced (287.5958ms)
+✖ versioned JSON commits real files, reopens and preserves strict revisions (104.0141ms)
+✖ all five commit boundaries recover old or new JSON and replay idempotently (56.3439ms)
+✖ first-create interruption rolls back absence or completes committed JSON (229.2366ms)
+✖ same-process revisions serialize and another repository cannot acquire the owner lease (78.8203ms)
+✖ invalid data and identifiers never create an operation or change JSON (131.7975ms)
+✖ changed JSON or missing authoritative database never silently becomes an empty store (41.5091ms)
+✖ unknown operation state, broken history and future schema all stop recovery (42.6554ms)
+✔ unknown staging content and unjournaled records are preserved for recovery (129.3904ms)
+✖ linked repository paths are refused without touching the target (7.0334ms)
+✔ an existing stale/foreign lease is never removed automatically (17.2812ms)
+✔ corrupt staging is kept intact and never promoted or silently discarded (71.9199ms)
+✔ SQLite atomically accepts tasks and identical request retries return the same task (88.5554ms)
+✔ persisted task CAS rejects stale updates and restart protects uncertain effects (97.2933ms)
+✔ missing acceptance evidence and corrupt task state fail recovery instead of replaying (225.8405ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (5.1416ms)
+✔ execution verifies before commit and never repeats terminal effects (1.4697ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.5788ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.7779ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.2232ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.3296ms)
+✔ shared transfers obey demand from all installers independently (2.7772ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (4.6991ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (5.7635ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.893ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (1.0615ms)
+✔ server-only input cannot provide a client or main class (0.3928ms)
+✔ library and asset-index provenance follows each actual declaration independently of the selected leaf (0.8656ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (2.7343ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.6017ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (1.1832ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (6.4578ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.6619ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.8828ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (1.0999ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (34.3912ms)
+✔ private worker messages reject extra keys, scripts, paths, unknown errors and versions (5.3625ms)
+✔ real storage worker persists idempotent acceptance and protects interrupted task state (531.8384ms)
+✔ storage request queue is bounded and reserves a draining close slot (259.6666ms)
+✔ storage caller timeout retains its queue slot and does not pretend mutation was cancelled (1586.6764ms)
+✔ worker crash becomes a fixed redacted failure and close waits for exit (42.705ms)
+✔ real streamed hashes match known bytes and the parent event loop stays responsive (277.1921ms)
+✔ hash cancellation waits for worker exit and leaves input bytes untouched (119.347ms)
+✔ hash queue has a fixed budget and queued cancellation starts no worker (20.5161ms)
+✔ failed worker startup preserves corrupt metadata rather than replacing it (179.1929ms)
+ℹ tests 221
+ℹ suites 0
+ℹ pass 161
+ℹ fail 59
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 75888.3544
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------
+ℹ .test-build       |        |          |         |
+ℹ  src              |        |          |         |
+ℹ   core            |        |          |         |
+ℹ    download       |        |          |         |
+ℹ     integrity.js  | 100.00 |   100.00 |  100.00 |
+ℹ    install        |        |          |         |
+ℹ     assets.js     | 100.00 |   100.00 |  100.00 |
+ℹ     plan.js       | 100.00 |    98.78 |  100.00 |
+ℹ    path           |        |          |         |
+ℹ     layout.js     | 100.00 |    94.92 |  100.00 |
+ℹ    task           |        |          |         |
+ℹ     machine.js    | 100.00 |   100.00 |  100.00 |
+ℹ     scheduling.js | 100.00 |   100.00 |  100.00 |
+ℹ    version        |        |          |         |
+ℹ     arguments.js  | 100.00 |    97.10 |  100.00 |
+ℹ     manifest.js   | 100.00 |   100.00 |  100.00 |
+ℹ     resolve.js    | 100.00 |   100.00 |  100.00 |
+ℹ     validation.js | 100.00 |   100.00 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ all files         | 100.00 |    98.98 |  100.00 |
+ℹ ------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at .test-build\tests\catalog.test.js:163:1
+✖ official catalog cache persists through real SQLite/JSON worker restart (271.6389ms)
+  Error [CatalogError]: CATALOG_UNAVAILABLE
+      at CatalogService.refresh (file:///<workspace>/.test-build/src/services/catalog/service.js:62:15) {
+    code: 'CATALOG_UNAVAILABLE',
+    category: 'network'
+  }
+
+test at .test-build\tests\download-artifact.test.js:41:1
+✖ physical transfer persists before writing and commits only verified bytes, then reuses the object (361.2822ms)
+  Error [DownloadError]: NEEDS_RECOVERY
+      at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:51:18
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NEEDS_RECOVERY',
+    retryAfterMs: undefined,
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-artifact.test.js:57:1
+✖ interrupted HTTP bytes survive a normal worker/store restart and resume with validators (371.4921ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\download-artifact.test.js:88:1
+✖ wrong digest never commits and a retry restarts rather than trusting the bad prefix (507.7335ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    Comparison {
+  +   code: 'NEEDS_RECOVERY'
+  -   code: 'HASH_MISMATCH'
+    }
+
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:95:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DownloadError: NEEDS_RECOVERY
+        at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async file:///<workspace>/.test-build/tests/download-artifact.test.js:95:3
+        at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'HASH_MISMATCH' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\download-artifact.test.js:101:1
+✖ object commit with a lost final journal acknowledgement is reconciled without a second download (314.8964ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    Comparison {
+  +   code: 'NEEDS_RECOVERY'
+  -   code: 'TRANSFER_IO'
+    }
+
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:114:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DownloadError: NEEDS_RECOVERY
+        at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async file:///<workspace>/.test-build/tests/download-artifact.test.js:114:3
+        at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'TRANSFER_IO' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\download-artifact.test.js:120:1
+✖ one physical engine rejects a concurrent same-identity writer rather than racing its staging file (414.354ms)
+  Error [DownloadError]: NEEDS_RECOVERY
+      at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:133:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    retryAfterMs: undefined,
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-artifact.test.js:138:1
+✖ lost acknowledgement after a successful final commit does not rewrite terminal state (349.2246ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    Comparison {
+  +   code: 'NEEDS_RECOVERY'
+  -   code: 'TRANSFER_IO'
+    }
+
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:151:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DownloadError: NEEDS_RECOVERY
+        at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async file:///<workspace>/.test-build/tests/download-artifact.test.js:151:3
+        at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: { code: 'TRANSFER_IO' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\download-artifact.test.js:156:1
+✖ cancellation during a verified-cache lookup wins before returning the object (259.7889ms)
+  Error [DownloadError]: NEEDS_RECOVERY
+      at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:158:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    retryAfterMs: undefined,
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-artifact.test.js:168:1
+✖ verified cache cannot hide a contradictory authoritative committed object identity (251.4302ms)
+  Error [DownloadError]: NEEDS_RECOVERY
+      at ArtifactTransfer.run (file:///<workspace>/.test-build/src/services/download/artifact-transfer.js:75:13)
+      at async file:///<workspace>/.test-build/tests/download-artifact.test.js:170:3
+      at async fixture (file:///<workspace>/.test-build/tests/download-artifact.test.js:32:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    retryAfterMs: undefined,
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-coordinator.test.js:257:1
+✖ real HTTP/object pipeline shares one transfer and writes both independently verified source proofs (5398.155ms)
+  Error: TEST_CONDITION_TIMEOUT
+      at until (file:///<workspace>/.test-build/tests/download-coordinator.test.js:28:38)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/download-coordinator.test.js:285:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at .test-build\tests\download-http.test.js:250:1
+✖ production HTTPS policy can be exercised through a local HTTP fetch adapter (153.3216ms)
+  Error [DownloadError]: NETWORK_FAILED
+      at HttpTransfer.run (file:///<workspace>/.test-build/src/services/download/http.js:242:58)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///<workspace>/.test-build/tests/download-http.test.js:270:5
+      at async fixture (file:///<workspace>/.test-build/tests/download-http.test.js:35:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NETWORK_FAILED',
+    retryAfterMs: undefined,
+    category: 'network'
+  }
+
+test at .test-build\tests\download-journal.test.js:50:1
+✖ durable transfer checkpoint is created with its marker and reopens without losing validators (149.7199ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:65:1
+✖ transfer revisions reject stale callbacks and roll back a locked write cleanly (93.4634ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:80:1
+✖ invalid identity, metadata, progress and validators cannot replace a checkpoint (86.0047ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:96:1
+✖ only a zero-byte reset may change source or retreat; committed state cannot be rewritten (69.8998ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:118:1
+✖ losing the authoritative ledger never creates an empty replacement or removes accepted tasks (69.6451ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:131:1
+✖ the empty initialization crash window may finish the marker but populated unmarked ledgers stop (90.0938ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async file:///<workspace>/.test-build/tests/download-journal.test.js:134:16
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:25:5)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/download-journal.test.js:132:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:150:1
+✖ unknown ledger version, identity or schema stays on disk without being reset (78.7581ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/download-journal.test.js:151:159)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:165:1
+✖ malformed checkpoint records and unknown states block opening instead of disappearing (68.6898ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/download-journal.test.js:166:141)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:185:1
+✖ cached SQLite handles reject missing, changed or nonregular backing identity before reads and writes (77.7314ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async file:///<workspace>/.test-build/tests/download-journal.test.js:187:14
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:25:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\download-journal.test.js:207:1
+✖ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (83.0628ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at TransferDatabase.open (file:///<workspace>/.test-build/src/services/storage/transfer-db.js:90:13)
+      at async fixture (file:///<workspace>/.test-build/tests/download-journal.test.js:24:32)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:51:1
+✖ verified copy views preserve shared objects, validate receipts and reject unknown existing entries (260.7797ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:68:1
+✖ file-link privilege failure explicitly returns a checked copy without changing system policy (273.668ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:84:1
+✖ unknown linked parents and target entries are rejected without touching their external target (386.5081ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:100:1
+✖ cancellation and invalid source facts create no new file and missing recorded projections require recovery (364.6028ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:112:1
+✖ real preferred file projection reports actual link capability and deletion preserves the object (299.6403ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:127:1
+✖ a recorded copy replaced by a hard link never acquires copy ownership (288.5992ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\file-views.test.js:145:1
+✖ concurrent same-target creation serializes and refuses silent overwrite (298.7741ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\install-downloads.test.js:105:1
+✖ batch imports exact metadata, bounds work, commits all independent proofs and reuses cached bytes (387.6247ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\install-downloads.test.js:150:1
+✖ one batch cancellation joins its work while another installation finishes shared downloads (411.996ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\install-downloads.test.js:173:1
+✖ callback failures abort siblings and are redacted after all owned transfers finish (235.482ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    Comparison {
+  +   code: 'OBJECT_IO',
+  +   message: 'OBJECT_IO'
+  -   code: 'CALLBACK_FAILED',
+  -   message: 'CALLBACK_FAILED'
+    }
+
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/install-downloads.test.js:178:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ObjectError: OBJECT_IO
+        at file:///<workspace>/.test-build/src/services/objects/store.js:77:54,
+    expected: { code: 'CALLBACK_FAILED', message: 'CALLBACK_FAILED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\install-downloads.test.js:238:1
+✖ cancellation during metadata commit joins the commit and retains verified shared content (271.1888ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    Comparison {
+  +   code: 'OBJECT_IO'
+  -   code: 'CANCELLED'
+    }
+
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/install-downloads.test.js:276:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ObjectError: OBJECT_IO
+        at file:///<workspace>/.test-build/src/services/objects/store.js:77:54,
+    expected: { code: 'CANCELLED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\install-downloads.test.js:284:1
+✖ caller changes to the prepared plan or body cannot alter the admitted private plan (143.1701ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\installer.test.js:134:1
+✖ actual installer commits a complete private instance and reuses shared files across a second instance (223.7512ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\installer.test.js:175:1
+✖ request idempotency rejects changed payload and same-name admission never overwrites an instance (177.9092ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\installer.test.js:189:1
+✖ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (230.9805ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\installer.test.js:204:1
+✖ unknown existing shared entries are preserved and leave a recovery state rather than ready (220.2002ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\instance-records.test.js:151:1
+✖ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (261.6364ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\instance-records.test.js:179:1
+✖ instance record and index commit separately so a half-completed index is never promoted to ready (249.5866ms)
+  Error [WorkerError]: NEEDS_RECOVERY
+      at StorageClient.receive (file:///<workspace>/.test-build/src/services/workers/storage-client.js:100:27)
+      at Worker.<anonymous> (file:///<workspace>/.test-build/src/services/workers/storage-client.js:62:16)
+      at Worker.emit (node:events:514:28)
+      at MessagePort.<anonymous> (node:internal/worker:350:14)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+      at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+    code: 'NEEDS_RECOVERY',
+    category: 'system'
+  }
+
+test at .test-build\tests\instance-records.test.js:195:1
+✖ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (150.2204ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at file:///<workspace>/.test-build/src/services/storage/records.js:233:15
+      at async file:///<workspace>/.test-build/src/services/storage/records.js:87:16 {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\native-archive.test.js:9:1
+✖ actual linked source parents and destination directories never redirect native extraction (21.3488ms)
+  Error: EPERM: operation not permitted, symlink '<fixture-path>' -> '<fixture-path>'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///<workspace>/.test-build/tests/native-archive.test.js:12:3
+      at async fixture (file:///<workspace>/.test-build/tests/native-archive.test.js:92:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-native-cz2UtE\\output',
+    dest: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-native-cz2UtE\\alias'
+  }
+
+test at .test-build\tests\objects.test.js:42:1
+✖ real object commits deduplicate bytes but preserve independent source evidence (943.9115ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\objects.test.js:66:1
+✖ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (384.0964ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\objects.test.js:82:1
+✖ interrupted append-only commits preserve orphan bytes and recover only proven sources (333.5719ms)
+  Error: ENOENT: no such file or directory, open '<fixture-path>'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:1996:14)
+      at async file:///<workspace>/.test-build/tests/objects.test.js:87:22
+      at async fixture (file:///<workspace>/.test-build/tests/objects.test.js:28:5)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/objects.test.js:83:64)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-objects-opyGXk\\store\\objects\\sha256\\54\\5440bbc081d7a175494f6023597cc5fb1716874b145bfc318ae37853811f0e76'
+  }
+
+test at .test-build\tests\objects.test.js:94:1
+✖ corrupt existing object is never overwritten by a new commit or reused through an index (265.378ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\objects.test.js:105:1
+✖ broken provenance cannot acquire trust from a valid object or index hint (213.822ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\objects.test.js:113:1
+✖ unknown cache schema blocks object search while durable tasks stay readable (245.7174ms)
+  Error [ObjectError]: OBJECT_IO
+      at file:///<workspace>/.test-build/src/services/objects/store.js:77:54 {
+    code: 'OBJECT_IO',
+    category: 'disk'
+  }
+
+test at .test-build\tests\roots.test.js:68:1
+✖ native-adapter selection persists once and survives a storage-worker restart (261.8605ms)
+  Error [RootError]: ROOT_UNAVAILABLE
+      at RootService.performChoice (file:///<workspace>/.test-build/src/services/roots/service.js:88:13) {
+    code: 'ROOT_UNAVAILABLE'
+  }
+
+test at .test-build\tests\roots.test.js:86:1
+✖ application directories, their ancestors and linked selections are rejected (217.9818ms)
+  Error: EPERM: operation not permitted, symlink '<fixture-path>' -> '<fixture-path>'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///<workspace>/.test-build/tests/roots.test.js:89:3
+      at async fixture (file:///<workspace>/.test-build/tests/roots.test.js:25:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-roots-9gBbLk\\游戏 数据',
+    dest: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-roots-9gBbLk\\alias'
+  }
+
+test at .test-build\tests\roots.test.js:93:1
+✖ concurrent directory requests share one native selection and one stable record (227.1388ms)
+  Error [RootError]: ROOT_UNAVAILABLE
+      at RootService.performChoice (file:///<workspace>/.test-build/src/services/roots/service.js:88:13) {
+    code: 'ROOT_UNAVAILABLE'
+  }
+
+test at .test-build\tests\roots.test.js:115:1
+✖ disconnected directory is retained and shown unavailable rather than silently replaced (287.5958ms)
+  Error [RootError]: ROOT_UNAVAILABLE
+      at RootService.performChoice (file:///<workspace>/.test-build/src/services/roots/service.js:88:13) {
+    code: 'ROOT_UNAVAILABLE'
+  }
+
+test at .test-build\tests\storage.test.js:22:1
+✖ versioned JSON commits real files, reopens and preserves strict revisions (104.0141ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at file:///<workspace>/.test-build/src/services/storage/records.js:233:15
+      at async file:///<workspace>/.test-build/src/services/storage/records.js:87:16 {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\storage.test.js:41:1
+✖ all five commit boundaries recover old or new JSON and replay idempotently (56.3439ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at file:///<workspace>/.test-build/src/services/storage/records.js:233:15
+      at async file:///<workspace>/.test-build/src/services/storage/records.js:87:16 {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\storage.test.js:66:1
+✖ first-create interruption rolls back absence or completes committed JSON (229.2366ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  undefined !== 1
+
+      at file:///<workspace>/.test-build/tests/storage.test.js:75:14
+      at async fixture (file:///<workspace>/.test-build/tests/storage.test.js:17:5)
+      at async TestContext.<anonymous> (file:///<workspace>/.test-build/tests/storage.test.js:67:58)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\storage.test.js:81:1
+✖ same-process revisions serialize and another repository cannot acquire the owner lease (78.8203ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at file:///<workspace>/.test-build/tests/storage.test.js:87:12
+      at async fixture (file:///<workspace>/.test-build/tests/storage.test.js:17:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .test-build\tests\storage.test.js:93:1
+✖ invalid data and identifiers never create an operation or change JSON (131.7975ms)
+  Error [StorageError]: NEEDS_RECOVERY
+      at file:///<workspace>/.test-build/src/services/storage/records.js:233:15
+      at async file:///<workspace>/.test-build/src/services/storage/records.js:87:16 {
+    code: 'NEEDS_RECOVERY',
+    category: 'disk'
+  }
+
+test at .test-build\tests\storage.test.js:106:1
+✖ changed JSON or missing authoritative database never silently becomes an empty store (41.5091ms)
+  [Error: EBUSY: resource busy or locked, unlink '<fixture-path>'] { errno: -4082, code: 'EBUSY', syscall: 'unlink', path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-storage-AcbXKb\\tasks.sqlite' }
+
+test at .test-build\tests\storage.test.js:118:1
+✖ unknown operation state, broken history and future schema all stop recovery (42.6554ms)
+  [Error: EBUSY: resource busy or locked, unlink '<fixture-path>'] { errno: -4082, code: 'EBUSY', syscall: 'unlink', path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-storage-FOemQT\\tasks.sqlite' }
+
+test at .test-build\tests\storage.test.js:151:1
+✖ linked repository paths are refused without touching the target (7.0334ms)
+  Error: EPERM: operation not permitted, symlink '<fixture-path>' -> '<fixture-path>'
+      at async symlink (node:internal/fs/promises:1707:10)
+      at async file:///<workspace>/.test-build/tests/storage.test.js:156:3
+      at async fixture (file:///<workspace>/.test-build/tests/storage.test.js:17:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'symlink',
+    path: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-storage-M2R9bj\\target',
+    dest: 'C:\\Users\\Administrator\\AppData\\Local\\Packages\\sandbox.{e790e158-3318-499d-a66e-7db433aab2cf}\\AC\\Temp\\oucl-storage-M2R9bj\\alias'
+  }
+[ELIFECYCLE] Test failed. See above for more details.
+[ELIFECYCLE] Command failed with exit code 1.

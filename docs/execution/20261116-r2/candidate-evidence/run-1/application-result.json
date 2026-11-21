@@ -1,0 +1,121 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "actual app path is candidate bootstrap extraction",
+      "pass": true
+    },
+    {
+      "name": "isolated explicit profile used",
+      "pass": true
+    },
+    {
+      "name": "packaged window security unchanged",
+      "pass": true
+    },
+    {
+      "name": "renderer loaded from candidate extraction",
+      "pass": true
+    },
+    {
+      "name": "preload script parsed from candidate extraction",
+      "pass": true
+    }
+  ],
+  "preloadScripts": [
+    "electron/js2c/event_emitter_dispatch",
+    "D:\\MC_start\\OUCL\\tmp\\candidate-init-20261116-r2-run-1\\OUCL.runtime\\app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710\\dist\\preload\\index.cjs",
+    "",
+    "file:///D:/MC_start/OUCL/tmp/candidate-init-20261116-r2-run-1/OUCL.runtime/app-ec55fb620f8e5cf96b59ebb6660bcc734720155a5e9ea83d7ad74e7fbb992710/dist/renderer/assets/index-CVgd03lx.js"
+  ],
+  "inspectorArguments": [],
+  "ipcReply": {
+    "handshake": {
+      "contractVersion": 1,
+      "requestId": "e19fd3bb-e469-4170-be04-41ef52351ebb",
+      "ok": true,
+      "data": {
+        "selectedVersion": 1,
+        "capabilities": [],
+        "sessionId": "d6fb32d9-6e74-4e2f-ba0c-052352f50ae5"
+      }
+    },
+    "tools": {
+      "contractVersion": 1,
+      "requestId": "62a59726-b0ad-4893-b1b6-0a8ab9d37d78",
+      "ok": true,
+      "data": {
+        "tools": [],
+        "snapshot": {
+          "revision": 0,
+          "phase": "closed"
+        }
+      }
+    },
+    "sources": {
+      "contractVersion": 1,
+      "requestId": "63696a51-b385-41df-8a64-9335073c4290",
+      "ok": false,
+      "error": {
+        "category": "validation",
+        "code": "UNAVAILABLE",
+        "messageKey": "unavailable",
+        "retryable": true,
+        "traceId": "63696a51-b385-41df-8a64-9335073c4290"
+      }
+    },
+    "open": {
+      "contractVersion": 1,
+      "requestId": "e03a045e-088c-4eb4-99fe-6fc52dffa7b4",
+      "ok": false,
+      "error": {
+        "category": "biz",
+        "messageKey": "onlineToolsUnconfigured",
+        "retryable": false,
+        "code": "TOOL_NOT_FOUND",
+        "traceId": "7e0f6913-7e72-42dc-bb2b-91ef340e8a45"
+      }
+    },
+    "arbitrary": {
+      "contractVersion": 1,
+      "requestId": "c48e10c2-9315-43a6-9086-723df4bdea48",
+      "ok": false,
+      "error": {
+        "category": "validation",
+        "messageKey": "invalidArgument",
+        "retryable": false,
+        "code": "INVALID_ARGUMENT",
+        "traceId": "f081472b-2dbc-4a51-89e6-408a097cfc49"
+      }
+    },
+    "preview": {
+      "contractVersion": 1,
+      "requestId": "1b4c2576-5eaf-4d4b-982a-715720ddc477",
+      "ok": false,
+      "error": {
+        "category": "validation",
+        "code": "UNAVAILABLE",
+        "messageKey": "unavailable",
+        "retryable": true,
+        "traceId": "1b4c2576-5eaf-4d4b-982a-715720ddc477"
+      }
+    },
+    "closed": {
+      "contractVersion": 1,
+      "requestId": "cbb69a60-14e0-49c3-91cc-50448df36604",
+      "ok": true,
+      "data": {
+        "tools": [],
+        "snapshot": {
+          "phase": "closed",
+          "revision": 2
+        }
+      }
+    },
+    "noNode": true
+  },
+  "error": "packaged handshake advertises both initialized extensions",
+  "nodeExitCode": 0,
+  "applicationQuitCode": 0,
+  "applicationQuitObserved": true
+}

@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "files": 15408,
+  "directories": 4628,
+  "issues": [],
+  "ledger": {
+    "tasks": {
+      "count": 21,
+      "sha256": "32ba96e2a85a7d13b5d461a01680ebf4c0497382ea16ed6d6d1921bd61ce84bb",
+      "unchanged": true
+    },
+    "requests": {
+      "count": 21,
+      "sha256": "820c9902ae8255e74ecba06e15b5677bbd47d6ebd96c0e7bb7960da60e14a478",
+      "unchanged": true
+    },
+    "operations": {
+      "unchangedOriginalPrefix": 640,
+      "targetOnlyAppended": [
+        {
+          "recordId": "installation",
+          "phase": "COMMITTED"
+        },
+        {
+          "recordId": "launch-profiles",
+          "phase": "COMMITTED"
+        },
+        {
+          "recordId": "launch-profiles",
+          "phase": "COMMITTED"
+        },
+        {
+          "recordId": "launch-profiles",
+          "phase": "COMMITTED"
+        },
+        {
+          "recordId": "instances",
+          "phase": "COMMITTED"
+        }
+      ]
+    }
+  },
+  "unchangedSourceRecords": 18,
+  "measuredJava": {
+    "major": 17,
+    "version": "17.0.15",
+    "vendor": "Microsoft",
+    "architecture": "x64",
+    "os": "windows",
+    "executable": "D:\\MC_start\\OUCL-acceptance-v11-20261113\\acceptance-results\\game-data\\isolated\\java17\\bin\\java.exe"
+  },
+  "indexes": [
+    {
+      "path": "indexes/5.json",
+      "sourceSha1": "ada52cc672270e8dc69e912b2ba0ea9c141ed664",
+      "targetSha1": "ada52cc672270e8dc69e912b2ba0ea9c141ed664"
+    },
+    {
+      "path": "indexes/5-2b3aa959237269caa09ac97fc3f7eae651315696.json",
+      "sourceSha1": "2b3aa959237269caa09ac97fc3f7eae651315696",
+      "targetSha1": "2b3aa959237269caa09ac97fc3f7eae651315696"
+    }
+  ],
+  "frozenFiles": 597,
+  "scope": "Ordinary isolated copy, genuine historical ledger retained plus API journal rebinds; no GUI/game, no cold download or original owner recovery."
+}

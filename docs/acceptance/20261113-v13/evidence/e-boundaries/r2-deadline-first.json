@@ -1,0 +1,82 @@
+{
+  "name": "r2-deadline-first",
+  "passed": true,
+  "trace": [
+    {
+      "sequence": 0,
+      "kind": "reader-admitted",
+      "aborted": false
+    },
+    {
+      "sequence": 1,
+      "kind": "worker-online",
+      "workerId": 1
+    },
+    {
+      "sequence": 2,
+      "kind": "reader-terminate-called",
+      "workerId": 1
+    },
+    {
+      "sequence": 3,
+      "kind": "sender-invalidated-after-deadline"
+    },
+    {
+      "sequence": 4,
+      "kind": "reader-terminate-called",
+      "workerId": 1
+    },
+    {
+      "sequence": 5,
+      "kind": "reader-slot-refused-before-exit"
+    },
+    {
+      "sequence": 6,
+      "kind": "global-slot-refused-before-exit"
+    },
+    {
+      "sequence": 7,
+      "kind": "worker-exit",
+      "workerId": 1,
+      "exitCode": 1
+    },
+    {
+      "sequence": 8,
+      "kind": "old-request-rejected",
+      "code": "TIMEOUT"
+    },
+    {
+      "sequence": 9,
+      "kind": "next-request-issued"
+    },
+    {
+      "sequence": 10,
+      "kind": "reader-admitted",
+      "aborted": false
+    },
+    {
+      "sequence": 11,
+      "kind": "worker-online",
+      "workerId": 2
+    },
+    {
+      "sequence": 12,
+      "kind": "message-after-reader-listeners",
+      "workerId": 2,
+      "kindReceived": "fixed-pack-result"
+    },
+    {
+      "sequence": 13,
+      "kind": "worker-exit",
+      "workerId": 2,
+      "exitCode": 0
+    },
+    {
+      "sequence": 14,
+      "kind": "next-request-succeeded"
+    }
+  ],
+  "liveWorkersAfterCleanup": [],
+  "unhandled": [],
+  "workerFixtureScope": "Real Node Workers with controlled protocol-valid messages; not fixed mrpack content validation or Electron/native GUI."
+}

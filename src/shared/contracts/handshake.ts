@@ -1,10 +1,31 @@
+import type { DesktopBridge } from './desktop.js';
+import type { ResourcesBridge } from './resources.js';
 import type { MessageKey } from '../locales/messages.js';
 import type { RootsBridge } from './roots.js';
 import type { CatalogBridge } from './catalog.js';
+import type { InstanceBridge } from './instances.js';
+import type { ProfilesBridge } from './profiles.js';
+import type { GameBridge } from './game.js';
+import type { LoadersBridge } from './loaders.js';
+import type { InstancesV2Bridge } from './instances-v2.js';
+import type { ModsBridge } from './mods.js';
+import type { InstanceFoldersBridge } from './instance-folders.js';
+import type { TargetBridge } from './task-targets.js';
+import type { MaintenancePreviewBridge } from './mod-maintenance-preview.js';
+import type { PacksBridge } from './packs.js';
+import type { OnlineToolsBridge } from './online-tools.js';
+import type { DistributionBridge } from './distribution-preview.js';
+import type { DistributionExecutionBridge } from './distribution-execution.js';
+import type { OnlineAccountsBridge } from './online-accounts.js';
+import type { SkinBridge } from './skin.js';
+import type { WebExtensionsBridge } from './web-extensions.js';
+import type { MultiplayerBridge } from './multiplayer.js';
 
 export const CONTRACT_VERSION = 1 as const;
 export const HANDSHAKE_CHANNEL = 'app:handshake' as const;
 export const HANDSHAKE_TIMEOUT_MS = 3000;
+export const CAPABILITIES = ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'task-targets.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1', 'mods-maintenance-preview.v1', 'downloads.v1', 'desktop.v1', 'packs.fixed-preview.v1', 'tools.isolated.v1', 'distribution.preview.v1', 'distribution.execute.v1', 'accounts.online.v1', 'skin.v1', 'web-extensions.v1', 'multiplayer.v1'] as const;
+export type Capability = typeof CAPABILITIES[number];
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type ErrorCategory = 'system' | 'minecraft' | 'network' | 'biz' | 'validation' | 'auth' | 'permission' | 'disk' | 'cancelled';
@@ -29,7 +50,7 @@ export interface HandshakeData {
 }
 export type HandshakeResult = { contractVersion: 1; requestId: string; ok: true; data: HandshakeData }
   | { contractVersion: 1; requestId: string; ok: false; error: AppError };
-export interface LauncherBridge extends RootsBridge, CatalogBridge { handshake(): Promise<HandshakeResult> }
+export interface LauncherBridge extends RootsBridge, InstancesV2Bridge, InstanceFoldersBridge, CatalogBridge, InstanceBridge, ProfilesBridge, GameBridge, ResourcesBridge, LoadersBridge, ModsBridge, DesktopBridge, TargetBridge, PacksBridge, MaintenancePreviewBridge, OnlineToolsBridge, DistributionBridge, DistributionExecutionBridge, OnlineAccountsBridge, SkinBridge, WebExtensionsBridge, MultiplayerBridge { handshake(): Promise<HandshakeResult> }
 
 /** Accepts a plain DTO with exact keys, excluding arrays and null. */
 export function exactObject(value: unknown, keys: readonly string[]): value is Record<string, unknown> {
@@ -54,9 +75,9 @@ export function isHandshakeResult(value: unknown, requestId: string): value is H
   if (value.contractVersion !== CONTRACT_VERSION || value.requestId !== requestId) return false;
   if (value.ok === true) {
     return exactObject(value.data, ['selectedVersion', 'capabilities', 'sessionId'])
-      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length <= 2
+      && value.data.selectedVersion === 1 && Array.isArray(value.data.capabilities) && value.data.capabilities.length <= CAPABILITIES.length
       && new Set(value.data.capabilities).size === value.data.capabilities.length
-      && value.data.capabilities.every((item: unknown) => item === 'roots.v1' || item === 'catalog.v1')
+      && value.data.capabilities.every((item: unknown) => CAPABILITIES.includes(item as Capability))
       && typeof value.data.sessionId === 'string' && UUID_PATTERN.test(value.data.sessionId);
   }
   if (value.ok !== false || !exactObject(value.error, ['category', 'code', 'messageKey', 'retryable', 'traceId'])) return false;

@@ -1,0 +1,25 @@
+{
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "actual app path is candidate bootstrap extraction",
+      "pass": true
+    },
+    {
+      "name": "isolated explicit profile used",
+      "pass": true
+    },
+    {
+      "name": "packaged window security unchanged",
+      "pass": true
+    },
+    {
+      "name": "renderer loaded from candidate extraction",
+      "pass": true
+    }
+  ],
+  "error": "Cannot read properties of undefined (reading 'toLowerCase')",
+  "nodeExitCode": 0,
+  "applicationQuitCode": 0,
+  "applicationQuitObserved": true
+}

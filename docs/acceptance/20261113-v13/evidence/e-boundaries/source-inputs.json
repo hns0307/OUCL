@@ -1,0 +1,37 @@
+{
+  "inputs": [
+    {
+      "path": "src/services/packs/coordinator.ts",
+      "sha256": "3ebe5312873eed7e4acd529d626932fee2e6bbdfd6ddb24212de7a38c7537459"
+    },
+    {
+      "path": "src/shared/contracts/handshake.ts",
+      "sha256": "70eebea6efea0c7ac714acd2cc63bf4ea1b6e91c795a17dc3c74b0b1e22a79a7"
+    },
+    {
+      "path": "src/core/packs/fixed-preview.ts",
+      "sha256": "d6b8840f244b8901fbc63e4720c1916213f02c51b5c66c49450a8056385828ae"
+    },
+    {
+      "path": "src/services/packs/fixed-protocol.ts",
+      "sha256": "71d3d23a1cb47f5bf80621fcc277c802cd544e5f3cc3862eb274e49b9da6df48"
+    },
+    {
+      "path": "src/services/packs/fixed-reader.ts",
+      "sha256": "8c5cb8700b7641bc4a0388d829b87beb68b8752768273585a9c98f474c60ccad"
+    },
+    {
+      "path": "src/shared/contracts/packs.ts",
+      "sha256": "9e853b6bb3140834fcc98254f8fbf7e741bee1a4b8836305fc653474644a4606"
+    },
+    {
+      "path": "src/ipc/packs.ts",
+      "sha256": "d1a7178c0d79b935dba5a2eeb9cfc79ed24ece9a628f28124e30c8359fd2677d"
+    },
+    {
+      "path": "acceptance-results/e-boundaries-v13/entry.mjs",
+      "sha256": "8d04845160744a1a875c75a39f3a11c6353d4ab7dfa0c87e2283b8aa7cc0147a"
+    }
+  ],
+  "bundleSha256": "fe1fd4cf824169ebb5f3c5d8992e25e40d88b3a85821731cf45cc04e03fad3e6"
+}

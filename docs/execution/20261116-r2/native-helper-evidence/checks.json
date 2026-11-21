@@ -1,0 +1,21 @@
+[
+  {
+    "name": "lint",
+    "command": [
+      "D:\\nodejs\\node.exe",
+      "../../node_modules/eslint/bin/eslint.js",
+      "scripts/build-distribution-files.mjs",
+      "tests/distribution-native-helper.test.ts"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "typecheck",
+    "command": [
+      "D:\\nodejs\\node.exe",
+      "../../node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "exitCode": 0
+  }
+]

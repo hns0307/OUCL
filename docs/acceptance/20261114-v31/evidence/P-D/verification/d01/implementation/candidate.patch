@@ -1,0 +1,68 @@
+--- a/src/services/launch/service.ts
++++ b/src/services/launch/service.ts
+@@ -45,6 +45,14 @@
+     this.registry = await this.storage.readGameSessions();
+     for (const session of this.registry?.data.items ?? []) if (['running', 'stopping'].includes(session.snapshot.state)) {
+       await this.save(session.taskId, current => ({ ...current!, snapshot: { ...current!.snapshot, state: 'unknown', revision: current!.snapshot.revision + 1 } }));
++    }
++    // This service is the sole launch owner. The deadline is checked around each RPC,
++    // not a hard timeout: a single RPC may still consume the storage client's timeout.
++    const deadline = performance.now() + 2000;
++    for (const session of this.records().slice(-32).reverse()) {
++      if (performance.now() >= deadline) break;
++      try { await this.reconcile(session.rootId, session.taskId, deadline); }
++      catch { break; } // Retry this and remaining records on individual task queries.
+     }
+   }
+   private async root(): Promise<string> {
+@@ -154,9 +162,21 @@
+       catch (error) {
+         const saved = this.records().find(item => item.taskId === task.taskId || item.stopTaskIds.includes(task.taskId));
+         const reason = job.controller.signal.aborted ? 'CANCELLED' : failure(error);
+-        if (saved) await this.save(saved.taskId, current => ({ ...current!, errors: [...(current!.errors ?? []).filter(item => item.taskId !== task.taskId), { taskId: task.taskId, code: reason }] }));
+-        if (job.commitUncertain || this.owned.has(task.taskId) || reason === 'NEEDS_RECOVERY') await this.change(job, state => controlTask(state, 'interrupted').execution);
+-        else { if (reason !== 'CANCELLED') await this.event(job, 'failed'); await this.event(job, 'cleaned'); }
++        const errors: unknown[] = [error];
++        if (saved) {
++          try { await this.save(saved.taskId, current => ({ ...current!, errors: [...(current!.errors ?? []).filter(item => item.taskId !== task.taskId), { taskId: task.taskId, code: reason }] })); }
++          catch (saveError) { errors.push(saveError); }
++        }
++        try {
++          if (job.commitUncertain) {
++            const current = await this.storage.get(task.ownerId, task.taskId);
++            if (!current || current.kind !== task.kind || current.ownerId !== task.ownerId || current.taskId !== task.taskId) throw new GameProcessError('NEEDS_RECOVERY');
++            job.task = current;
++            await this.change(job, state => controlTask(state, 'interrupted').execution);
++          } else if (this.owned.has(task.taskId) || reason === 'NEEDS_RECOVERY') await this.change(job, state => controlTask(state, 'interrupted').execution);
++          else { if (reason !== 'CANCELLED') await this.event(job, 'failed'); await this.event(job, 'cleaned'); }
++        } catch (recoveryError) { errors.push(recoveryError); }
++        if (errors.length > 1) throw new AggregateError(errors, 'Launch task recovery failed', { cause: error });
+       }
+     })().finally(() => { this.jobs.delete(task.taskId); }); void job.done.catch(() => {});
+   }
+@@ -202,9 +222,24 @@
+   async sessions(rootId: string): Promise<GameSession[]> {
+     return Promise.all(this.records().filter(item => item.rootId === rootId && (item.spawned || this.owned.has(item.taskId) || this.jobs.has(item.taskId))).map(item => this.session(rootId, item.taskId)));
+   }
++  // Only the sole launch-service owner may reconcile registered tasks. Never infer process death from a session flag.
++  private async reconcile(rootId: string, taskId: string, deadline?: number): Promise<StoredTask | undefined> {
++    const checkBudget = (): void => { if (deadline !== undefined && performance.now() >= deadline) throw new Error('RECOVERY_SCAN_BUDGET'); };
++    checkBudget();
++    const task = await this.storage.get(rootId, taskId);
++    checkBudget();
++    if (!task || task.ownerId !== rootId || task.taskId !== taskId || task.kind !== 'launch' || task.execution.state !== 'committing'
++      || this.jobs.has(taskId) || this.owned.has(taskId)
++      || !this.records().some(item => item.rootId === rootId && item.taskId === taskId)) return task;
++    const next = controlTask(task.execution, 'interrupted').execution;
++    checkBudget();
++    const updated = await this.storage.update(rootId, taskId, task.execution.revision, next);
++    checkBudget();
++    return updated;
++  }
+   /** Queries launch/stop only; install tasks remain with their original owner/service. */
+   async task(rootId: string, taskId: string): Promise<GameTaskView | undefined> {
+-    const task = this.jobs.get(taskId)?.task ?? await this.storage.get(rootId, taskId);
++    const task = this.jobs.get(taskId)?.task ?? await this.reconcile(rootId, taskId);
+     if (!task || task.ownerId !== rootId || !['launch', 'stop'].includes(task.kind)) return undefined;
+     const session = this.records().find(item => item.rootId === rootId && (item.taskId === taskId || item.stopTaskIds.includes(taskId)));
+     if (!session) throw new GameProcessError('NEEDS_RECOVERY'); return { task, session };

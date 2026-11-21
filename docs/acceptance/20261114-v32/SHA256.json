@@ -1,0 +1,67 @@
+[
+  {
+    "path": "evidence/.gitattributes",
+    "bytes": 8,
+    "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+  },
+  {
+    "path": "evidence/account-created.png",
+    "bytes": 221868,
+    "sha256": "3d7c5377da1ed29393d0eaa181bc8bce4e8681bfaab9bf239cd8825a65acfdf7"
+  },
+  {
+    "path": "evidence/audit-package-v32.ps1",
+    "bytes": 2227,
+    "sha256": "f4df45b6f0b3dde7a8ac8fb7f28f8c28f8eb35ac2c6febe14288869072cdcaa7"
+  },
+  {
+    "path": "evidence/bootstrap-package-v32.log",
+    "bytes": 434,
+    "sha256": "fe722213be7c99e1eedf84c5482f83bbf0ffecf9f6af75072d250cfd8097ad51"
+  },
+  {
+    "path": "evidence/bootstrap-tests-v32.log",
+    "bytes": 47,
+    "sha256": "573c92a2c290abec1a012c2cc11deb36de15c879202a2dbac0199672ad9462fd"
+  },
+  {
+    "path": "evidence/first-open.png",
+    "bytes": 223770,
+    "sha256": "c94a47079f7982ef8871d1f0a10937ee22756ea5320772032762a6c694ce1c5e"
+  },
+  {
+    "path": "evidence/gui-snapshots.json",
+    "bytes": 2967,
+    "sha256": "93136ca633bc0bbe013f5a03e32034e4a9f71aae569e5affb231efd070fbc453"
+  },
+  {
+    "path": "evidence/normal-reopen-audit.json",
+    "bytes": 482,
+    "sha256": "7af396aee6be89c1e29d2ec816c2de3be32628c2df67b0c46200bcd6a6ace2e2"
+  },
+  {
+    "path": "evidence/package-audit-v32.json",
+    "bytes": 1772,
+    "sha256": "29045c084cc4aadb01c79f1640a6d3c90c1130cf63583d66be2390e288862cd2"
+  },
+  {
+    "path": "evidence/reopened-account.png",
+    "bytes": 313394,
+    "sha256": "14786e771559d35adaf134a6dda5c27d41c2b103ecb5bb76f2fb1a6d9bad967c"
+  },
+  {
+    "path": "evidence/runtime-seed-sha256.json",
+    "bytes": 9120,
+    "sha256": "8e3f04cb22f5d26f3397b75d2c87cc24c4ff6bc4f5bf7c08d2ae377622ca121f"
+  },
+  {
+    "path": "evidence/verify-exe-v32.log",
+    "bytes": 116,
+    "sha256": "832edc9cff5bb6aa18acf86b1488f73264c5172c665b2467c8f3f3944c17454b"
+  },
+  {
+    "path": "evidence/verify-exe-v32.mjs",
+    "bytes": 2380,
+    "sha256": "4ed15762dd0973497d0de300720be8660bd67f9a50e7f12eb47b09db6a2b7708"
+  }
+]

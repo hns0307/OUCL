@@ -1,0 +1,18 @@
+[
+  {
+    "path": "src/services/install/file-views.ts",
+    "sha256": "65b5282918a309b6b6a67160388deabbbe0ae60c939ff6e1625b726b536c120b"
+  },
+  {
+    "path": "tests/file-views.test.ts",
+    "sha256": "7c20066233b87894777b9f7e021ba4f345e610f5c342ee444613b78b4abe30b7"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "be1b105e8e4b44b0025f2316e55dc84ce7f63eeb100371ab9af0118cbd733b6b"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "f20e84c3569a4e32b1d39e5ea318d2438c06381f0276a088e38a56be38e1a2fb"
+  }
+]

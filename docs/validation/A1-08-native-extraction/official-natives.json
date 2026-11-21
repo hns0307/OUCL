@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-25T03:30:45.756Z",
+  "samples": [
+    {
+      "versionId": "1.20.1",
+      "archives": 7,
+      "files": 18,
+      "bytes": 3354056,
+      "officialSha1Verified": true,
+      "sha256VerifiedBeforeExtraction": true,
+      "gameLaunched": false
+    },
+    {
+      "versionId": "1.12.2",
+      "archives": 2,
+      "files": 7,
+      "bytes": 462336,
+      "officialSha1Verified": true,
+      "sha256VerifiedBeforeExtraction": true,
+      "gameLaunched": false
+    }
+  ]
+}

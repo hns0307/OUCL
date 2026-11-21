@@ -1,0 +1,26 @@
+{
+  "status": "PASS_REACHABLE_SUBSET",
+  "illegalInputRejections": 6,
+  "untrustedDocumentRejections": 3,
+  "corruptedRequestIdRejectedByProductionPreload": true,
+  "productHashes": 7,
+  "archiveWorkers": 0,
+  "validStartsReturned": 0,
+  "finalTableCounts": {
+    "tasks": 0,
+    "requests": 0,
+    "operations": 1
+  },
+  "normalExit": {
+    "at": "2026-11-13T11:22:32.8425525Z",
+    "exitCode": 0,
+    "pid": 10156
+  },
+  "ownerPresent": false,
+  "pending": [
+    "non-primary frame under unchanged preferences",
+    "wrong previewId and URL/path response variants",
+    "direct inventory.scan count",
+    "all C-R7 checks outside this subset"
+  ]
+}

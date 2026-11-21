@@ -1,0 +1,48 @@
+{
+  "label": "after-cancel",
+  "time": "2026-11-12T10:00:00.596Z",
+  "executable": {
+    "bytes": 405504,
+    "sha256": "c231342a5e6027b63675d743ce7b7d88e9071c49cd7c07b060980ac52991a009"
+  },
+  "runtime": [
+    "electron-ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47"
+  ],
+  "apps": [
+    "app-51cbde417518453652144fde7b20b5a28c5abba852af62e6685a08d840e19df3"
+  ],
+  "runtimeProof": {
+    "files": 73,
+    "manifestSha256": "e3c0e2281d32750bd02cd50ed028727f8bed14d381d27edb862da3dc699a2ddc"
+  },
+  "appProof": {
+    "files": 9,
+    "manifestSha256": "51cbde417518453652144fde7b20b5a28c5abba852af62e6685a08d840e19df3"
+  },
+  "json": [
+    {
+      "path": "catalog.json",
+      "sha256": "ba1804b4c09dec06be5d5985d8c3b0e0f327c139e75cefaba2c5056bcdbdcd58"
+    },
+    {
+      "path": "installation.json",
+      "sha256": "8aae0e44b03f99e93bbc97cfcd295cc108f5a640fdc24a3ea84b2c5a6e1a9f66"
+    }
+  ],
+  "tables": {
+    "tasks": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "requests": {
+      "count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "operations": {
+      "count": 2,
+      "sha256": "512a686d75e81778cd01e29eba6920af2f7a56887837454b739d9b78e85ad3a8"
+    }
+  },
+  "games": [],
+  "ownerPresent": true
+}

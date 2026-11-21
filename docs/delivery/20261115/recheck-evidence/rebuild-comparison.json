@@ -1,0 +1,37 @@
+[
+  {
+    "path": "dist/main/index.cjs",
+    "matches": false,
+    "sha256": "8fefd8705db58519e6f501a615d14c9418a3e040251e730c9dafc3a0f34b759e"
+  },
+  {
+    "path": "dist/preload/index.cjs",
+    "matches": true,
+    "sha256": "490edafec756255da0de7cd32e1a09aed48f00d473fbff137532abc3e4c0c221"
+  },
+  {
+    "path": "dist/renderer/assets/index-AuOkr_BU.css",
+    "matches": true,
+    "sha256": "54cdd16ee42d56227b9d9087a1eac7814a8a7944ce03259fae71fbdead780d1b"
+  },
+  {
+    "path": "dist/renderer/assets/index-CkVgLxIx.js",
+    "matches": true,
+    "sha256": "2269ff43fcd5e0b1475b92300d11933f764c92fe2a23f0e1275f750548b2b3b5"
+  },
+  {
+    "path": "dist/renderer/index.html",
+    "matches": true,
+    "sha256": "2f0fe0fa89654757532b689ef760490d01488b3ea65a7f0ecb0b59182d0d2f4c"
+  },
+  {
+    "path": "dist/workers/entry.cjs",
+    "matches": false,
+    "sha256": "b67b2242ca8da904946620046cc576780f84554d22650c19fbf01de89c77b9b2"
+  },
+  {
+    "path": "dist/workers/fixed-pack.cjs",
+    "matches": true,
+    "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+  }
+]

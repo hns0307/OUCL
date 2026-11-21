@@ -1,0 +1,5 @@
+{
+  "name": "oucl-e-native-observation",
+  "version": "0.3.0",
+  "main": "../native-window.cjs"
+}

@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0",
+  "output": "D:\\MC_start\\OUCL\\release\\OUCL-0.3.0-mod-install.exe",
+  "bytes": 363008,
+  "sha256": "ed97b39bcc3781537848cc7c4feaacbae59ee32ef63baabb6d8b3dba41b03ea5",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "fffb66f9702d4764fd67f0858076f8374a4cda4091052d1a4d3ac7c4877e6d8e"
+}

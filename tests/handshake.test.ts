@@ -21,6 +21,13 @@ test('trusted handshake negotiates version with zero business capabilities', () 
   assert.deepEqual(result, { contractVersion: 1, requestId: id, ok: true, data: { selectedVersion: 1, capabilities: [], sessionId: session } });
   assert.ok(isHandshakeResult(result, id));
 });
+test('handshake validates implemented capabilities including loaders and still rejects duplicates or unknown APIs', () => {
+  const result = negotiateHandshake(request, true, session, trace, ['roots.v1', 'catalog.v1', 'instances.v1', 'tasks.v1', 'loaders.v1', 'mods.v1']);
+  assert.equal(isHandshakeResult(result, id), true);
+  if (!result.ok) assert.fail('expected handshake success');
+  assert.equal(isHandshakeResult({ ...result, data: { ...result.data, capabilities: ['roots.v1', 'roots.v1'] } }, id), false);
+  assert.equal(isHandshakeResult({ ...result, data: { ...result.data, capabilities: ['instances.v1', 'game:not-implemented'] } }, id), false);
+});
 test('untrusted sender, incompatible version and malformed input return redacted failures', () => {
   for (const [input, trusted, code] of [[request, false, 'INVALID_SENDER'], [{ ...request, payload: { supportedVersions: [2] } }, true, 'UNSUPPORTED_CONTRACT'], [{ secret: 'must-not-leak' }, true, 'INVALID_ARGUMENT']] as const) {
     const result = negotiateHandshake(input, trusted, session, trace);

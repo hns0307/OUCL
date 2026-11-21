@@ -1,3 +1,64 @@
 * text=auto eol=lf
 *.png -text
 *.zip -text
+# Preserve archived evidence bytes and their recorded SHA-256 values.
+docs/delivery/20261115/recheck-evidence/** -text
+docs/execution/20261115/evidence/** -text
+docs/execution/20261115/baseline-evidence/** -text
+docs/execution/20261115/*-evidence/** -text
+docs/execution/20261116/*-evidence/** -text
+docs/execution/20261116-r2/*-evidence/** -text
+spikes/distribution-file-guard/** -text
+
+docs/execution/20261117/*-evidence/** -text
+
+docs/execution/20261117-r3/*-evidence/** -text
+
+docs/execution/20261117-a/*-evidence/** -text
+
+docs/execution/20261117-b/*-evidence/** -text
+
+docs/execution/20261117-c/*-evidence/** -text
+
+docs/execution/20261117-d/*-evidence/** -text
+
+docs/execution/20261117-e/*-evidence/** -text
+
+docs/execution/20261117-f/*-evidence/** -text
+
+docs/execution/20261117-g/*-evidence/** -text
+
+docs/execution/20261117-h/*-evidence/** -text
+
+docs/execution/20261117-i/*-evidence/** -text
+
+docs/execution/20261118-j/*-evidence/** -text
+
+docs/execution/20261118-k/*-evidence/** -text
+
+docs/execution/20261118-l/*-evidence/** -text
+
+docs/execution/20261118-m/*-evidence/** -text
+
+docs/execution/20261118-n/checks-evidence/** -text
+
+docs/execution/20261118-o/checks-evidence/** -text
+
+docs/execution/20261118-p/*-evidence/** -text
+docs/execution/20261118-q/*-evidence/** -text
+
+docs/execution/20261118-r/checks-evidence/** -text
+
+docs/execution/20261118-s/*-evidence/** -text
+docs/execution/20261118-t/checks-evidence/** -text
+
+docs/execution/20261118-u/checks-evidence/** -text
+docs/execution/20261118-v/*-evidence/** -text
+
+docs/execution/20261118-w/*-evidence/** -text
+
+docs/execution/20261118-x/checks-evidence/** -text
+
+docs/execution/20261119-coordination/*-evidence/** -text
+
+docs/execution/20261119-coordination/n5-cdn-evidence/run-*/** -text

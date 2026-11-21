@@ -1,0 +1,167 @@
+﻿commit,date,parents,subject
+0902c129c36ca1f766f1bf77c697314725b7a3ef,2026-10-24T19:17:23+08:00,,chore: establish OUCL phase-zero engineering baseline
+5d2d71d1c23c056da0aba1fd6523cbb633c52021,2026-10-24T19:27:44+08:00,0902c129,test: validate cross-volume staging and directory occupancy
+269874f0401ad281dbed93df2ae0b56f7e50dee0,2026-10-24T19:34:12+08:00,5d2d71d1,test: verify SQLite recovery in Electron workers
+65afd6d4f130e921853eb199672d1472ac168140,2026-10-24T20:46:35+08:00,269874f0,feat: resolve vanilla client versions and launch arguments
+799c6044028016daea4f61b3701e9def3eb728f4,2026-10-24T20:52:43+08:00,65afd6d4,feat: plan isolated Windows game layouts and shared paths
+e07702a492cec0f19b50bdfd6eb597a1f9e2b7ff,2026-10-24T20:59:04+08:00,799c6044,feat: model trusted artifact checks and cancellable shared tasks
+356b29fabde96d2e86a26c51fdfe86647952c734,2026-10-24T21:09:35+08:00,e07702a4,feat: persist versioned records and recoverable task acceptance
+509963a763d2d43350983905d2701ecf3852df4c,2026-10-24T21:20:04+08:00,356b29fa,feat: run bounded storage and hash workers in Electron
+b7f5558e2005d12edf25ae00fec6a48827469fbe,2026-10-24T21:20:26+08:00,509963a7,docs: align current task with completed worker foundation
+6439805521dfc720b6d70d0146244226e9f28655,2026-10-24T21:31:14+08:00,b7f5558e,feat: commit shared objects with independent provenance and rebuildable search
+147aeb863dd120967764bb8f1bbd691b54aa7002,2026-10-24T21:43:21+08:00,64398055,feat: register a fixed game directory through guarded native IPC
+9614e7600e013a21452a294e04647bec86431c54,2026-10-24T22:01:18+08:00,147aeb86,feat: browse official Minecraft versions with a verified metadata cache
+60e91f8a1a4e3360fbc88072bf72d12bcb3459f9,2026-10-25T00:11:37+08:00,9614e760,feat: resume verified Minecraft artifact transfers with durable checkpoints
+b739dd47ae893dd3f2865a24fca628c4c32b228c,2026-10-25T00:13:46+08:00,60e91f8a,docs: hand off verified transfer progress and remaining launcher work
+5620b0c67cf5d19b3e8dc74368d46ffbd8041a8d,2026-10-25T11:20:31+08:00,b739dd47,feat: prepare trusted vanilla installs with shared download consumers
+e834de6746cae91a68b8f2069a3ced4e633b0e8b,2026-10-25T11:26:09+08:00,5620b0c6,feat: execute bounded trusted vanilla artifact batches
+9984159fcebbbb17cc5410e344c5dd942da5baf0,2026-10-25T11:26:29+08:00,e834de67,docs: hand off trusted install batch progress
+c076c476cb72ed6314d11d131b68b96d6721730b,2026-10-25T11:33:03+08:00,9984159f,feat: extract verified native archives in a bounded worker
+d71213d1899c0c44295436f00a11b857e652d2e6,2026-10-25T11:33:29+08:00,c076c476,docs: hand off verified native extraction progress
+162317ef2e296ee7b57c8223af3ec512d509277b,2026-10-25T11:41:07+08:00,d71213d1,feat: prepare verified file views and probe selected Java runtimes
+cf3d2e85fae894dea1d249b1af61995b7427c925,2026-10-25T11:41:51+08:00,162317ef,docs: record download UI references and installer handoff
+1926f26314a17d810f8ec5a426bf18e91b2f4477,2026-10-25T15:03:04+08:00,cf3d2e85,feat(installer): connect durable vanilla installation to desktop UI
+1b5a116337f8de40bc454dd28204888b3bc6d2a5,2026-10-25T15:03:17+08:00,1926f263,feat(installer): persist instances and wire download task UI
+3975b368613e60da82b34a12426697b0b57fc440,2026-10-25T15:27:07+08:00,1b5a1163,fix(storage): stream recovery of large installation journals
+ab637facc73147b1719e456f7c8c4db5711ab851,2026-10-25T15:31:08+08:00,3975b368,feat(launch): build JVM plans and own game process leases
+d796371a758fbdac95e5d7f35b742167d6dc5b65,2026-10-25T15:39:02+08:00,ab637fac,feat(profiles): persist approved offline identities and Java selection
+32cdee5f241abba20985af0d1f918029c2d9ba52,2026-10-25T15:42:21+08:00,d796371a,docs(handoff): record live game validation and next UI integration
+4571adabc226d58e63be5f333c3a2e7954c9d56d,2026-10-25T15:59:46+08:00,32cdee5f,feat(ui): connect offline accounts and native Java selection
+fa67890b37e708a2466bc9d7f5605a83c12eca97,2026-10-25T16:50:52+08:00,4571adab,feat(launcher): wire instance launch tasks and owned game sessions
+09366d1902fe355dd0af7a143cbeaa83dafe384a,2026-10-25T17:15:54+08:00,fa67890b,build: package vanilla launcher preview executable
+f131b246987767b9fc06a32e433148b7c8b8ddde,2026-10-25T17:18:06+08:00,09366d19,docs: record executable validation progress and handoff
+48135041bc4f54ecd489d93bf96fa02d3e569d2b,2026-10-25T20:03:12+08:00,f131b246,docs: deliver user-validated launcher executable
+d15237b41533f3dc86cca293efb81db8a35436ce,2026-10-25T20:31:08+08:00,48135041,feat(settings): persist launch memory and isolation preferences
+e137ea23334775a1dd4f74f7033e80dddbbaa6bb,2026-10-25T20:56:43+08:00,d15237b4,feat(resources): add verified Modrinth downloads and resource library
+589f7040b75c0aab17390994407cc1ca5ce31445,2026-10-25T20:58:05+08:00,e137ea23,feat(ui): redesign launcher navigation and ship 0.2.0 desktop pages
+0930c65021051feb4fe660dd0468259716ec11d2,2026-10-25T21:01:28+08:00,589f7040,docs(release): record 0.2.0 validation and update handoff
+479d0e945ef15011f13d80209d6240d53eb0f752,2026-10-25T21:36:07+08:00,0930c650,feat(distribution): add small exe and on-demand Java runtimes
+9ce08f72cfaef36f505aae36e5b07d1475ec7cfd,2026-10-25T21:36:31+08:00,479d0e94,docs(release): record small exe validation and handoff
+afcbb6db65141c1db0dec29bb6900a2f1eb9219e,2026-10-25T22:52:44+08:00,9ce08f72,feat(bootstrap): use sibling environment and quiet startup
+aa21d7b976a00b0237f9d4c9c6b69d4734c916aa,2026-10-25T22:53:00+08:00,afcbb6db,docs(release): verify sibling runtime delivery and handoff
+164daf359048c812ce56653fd06318ca823b1b26,2026-10-25T23:33:15+08:00,aa21d7b9,feat(mods): add strict compatibility range foundation
+fefe1e13a8fde5ed2553790027d9d4986bbf7784,2026-10-26T01:09:28+08:00,164daf35,feat(loaders): validate official profile metadata
+50f96d8f191977326e31442ae13d107e92d4cfa4,2026-10-26T01:10:41+08:00,fefe1e13,feat(loaders): add official metadata sources
+f83ce0be4896eddc43311986901856861bdbb2d3,2026-10-26T01:11:41+08:00,50f96d8f,docs(loaders): refresh implementation handoff
+b47fbfd2f933bf52290a4ba2ff536ed59644335d,2026-10-26T01:35:22+08:00,f83ce0be,feat(loaders): define versioned public contracts
+eab9cdba65f0a084db30adb8ccba929ec507c3e0,2026-10-26T01:37:30+08:00,b47fbfd2,feat(loaders): plan trusted Maven libraries
+6ccba5adeb771d398e9e8247c4febe04a2f4dc82,2026-10-26T01:40:27+08:00,eab9cdba,feat(loaders): compose inherited client plans
+c0f09ab0dc1c022532d3903870b8d9fd08a2107d,2026-10-26T01:41:32+08:00,6ccba5ad,feat(instances): version loader identity records
+b08b6573a92ac2e3aed5fbe2bf0ae292cea50ed6,2026-10-26T01:43:00+08:00,c0f09ab0,feat(loaders): prepare complete metadata plans
+1dbe3c087f6e60f14dc1aa283114ae64ab2f4a6e,2026-10-26T01:43:38+08:00,b08b6573,docs(loaders): record metadata integration progress
+bdfeda7f950cd5756718f1185e4f46e7e62b1669,2026-10-26T02:09:05+08:00,1dbe3c08,feat(loaders): install Fabric and Quilt transactionally
+e86caf3bc56466e090331ef65e8e6be611ac5cdb,2026-10-26T02:11:13+08:00,bdfeda7f,feat(loaders): expose transactional loader API
+00ae76b251118daef7fca547c3b38624513f49e6,2026-10-26T02:12:55+08:00,e86caf3b,feat(instances): expose loader-aware summaries
+d7ffa4c05c81e74dfbdc5d5c67716846f42aceca,2026-10-26T02:18:43+08:00,00ae76b2,feat(ui): select Fabric and Quilt instances
+e532a41f3432f123226e8ab0ad822544bdef8df9,2026-10-26T02:19:28+08:00,d7ffa4c0,docs(loaders): record Fabric and Quilt integration
+1b0736ee9deb094b8c52300048cab9aa829bf228,2026-10-26T02:22:52+08:00,e532a41f,docs(loaders): checkpoint installer spike
+18d7c6f852223c2c48d5f125134019bd2590d7ad,2026-10-26T06:06:52+08:00,1b0736ee,spike(loaders): inspect Forge installer processors
+cbd29d0024edb22f256fd221edfc9d8481d1b1c3,2026-10-26T06:10:49+08:00,18d7c6f8,feat(loaders): parse Forge installer profiles
+c373f8b42c023204e2d27c38c6837bc9385646cd,2026-10-26T06:13:01+08:00,cbd29d00,feat(loaders): extract installer inputs safely
+367a64299890b047f055249154bcd0ff3a327981,2026-10-26T06:14:50+08:00,c373f8b4,feat(loaders): read Forge release catalogs
+c8c370c0b8d3cd2b3df1a1390df65b481bc7c67e,2026-10-26T06:16:01+08:00,367a6429,feat(loaders): verify installer artifacts
+90b7e9733f14374afd606d6c7207a578d4e3ecb9,2026-10-26T06:17:52+08:00,c8c370c0,feat(loaders): constrain installer processor chains
+7a76669d7c0823bdbb1fc45a525c59b8bb7b0c98,2026-10-26T06:19:41+08:00,90b7e973,feat(loaders): validate processor entry points
+6fac0cbc9769b8c84d2a7003cd94c464ce292652,2026-10-26T06:20:33+08:00,7a76669d,feat(loaders): plan processor commands safely
+940e62c30da1513c066244f103909db5d7430148,2026-10-26T06:22:18+08:00,6fac0cbc,feat(loaders): execute processors with cancellation
+50bd09914c7142382c77292afdf6587d63f917d1,2026-10-26T06:22:23+08:00,940e62c3,feat(loaders): validate processor archives safely
+e9213fea312df660d7e172b7d440e9f88407ca02,2026-10-26T06:23:32+08:00,50bd0991,feat(loaders): compose installer library plans
+42f0bc8bc1252a25efce5f8a0073ce0d8ac896b2,2026-10-26T06:24:19+08:00,e9213fea,docs(loaders): record processor safety checkpoint
+0fc8c738402e61354d15455ed8b46294b72f8641,2026-10-26T06:36:40+08:00,42f0bc8b,feat(loaders): persist installer trust evidence
+c82d203169a376bf761c12bd284ce5cd5c9c9ba4,2026-10-26T06:37:29+08:00,0fc8c738,feat(loaders): rebuild installer plans on reopen
+09ebafbf8f4bd57437dab590d531f5579d66644f,2026-10-26T06:38:25+08:00,c82d2031,feat(loaders): assemble installer checkpoints
+edf50c0626c4cdfd57d624c0860e0d7717ee8a08,2026-10-26T06:39:03+08:00,09ebafbf,docs(loaders): checkpoint installer persistence
+3edf9183cb200a3f0d4dc60fa6bd58698be00912,2026-10-26T11:18:47+08:00,edf50c06,feat(loaders): prepare verified installer workspaces
+44e59be431119793cd56b0ded3da7471f45be455,2026-10-26T11:20:38+08:00,3edf9183,feat(loaders): materialize verified processor inputs
+175553b90b008eb11d61f97bbe2d6d23dd8e291a,2026-10-26T11:25:20+08:00,44e59be4,feat(loaders): integrate processor installation transaction
+f473f2369b6339da129fac254e0c50a20e244ff9,2026-10-26T11:30:46+08:00,175553b9,fix(loaders): allow bounded client class archives
+8735f7622722fcf45adc18d277318a07cd5b0181,2026-10-26T11:38:53+08:00,f473f236,fix(loaders): harden official installer execution
+2f4b9bcbe58589592efff4a8ea525b83b6b6e121,2026-10-26T11:46:00+08:00,8735f762,fix(launch): bind Forge exclusion to inherited jar
+94ec0db463053ebad9d6b5c740d8e1028588c594,2026-10-26T11:48:28+08:00,2f4b9bcb,feat(loaders): expose Forge and NeoForge installation
+9071cab4000a6fb37114ee64b6919f5e804f890f,2026-10-26T11:51:25+08:00,94ec0db4,docs(loaders): record official installation evidence
+807e85cddf04f7bf0b516e974234b0be54d7bf46,2026-10-26T12:30:17+08:00,9071cab4,fix(launch): isolate writable native runtime caches
+1069684ef70294fe2708cf6063aaa3dbfd0c891b,2026-10-26T12:35:54+08:00,807e85cd,docs(loaders): preserve game validation and shutdown failure
+02e9aeb7214ed8fdeefb5257c9482e5685d231e9,2026-10-26T15:14:49+08:00,1069684e,test(loaders): extend official runtime matrix and record retries
+f6cb194c7f241bfc0cca0a2910ee3539872e2ca6,2026-10-26T15:19:36+08:00,02e9aeb7,feat(mods): read bounded local JAR evidence in workers
+d232058c3c5f963de145800a30ee29e38f101caa,2026-10-26T15:22:40+08:00,f6cb194c,fix(mods): preserve loader shorthand range semantics
+5efa1b030c552a4ae55f7a7a13e4da011c472911,2026-10-26T15:28:43+08:00,d232058c,feat(mods): parse loader declarations with explicit unknowns
+4a5d39f5843897927676e734b63c8c30e76ce209,2026-10-26T15:31:44+08:00,5efa1b03,feat(mods): interpret declarations inside bounded scan workers
+dc6d8b253e3d0ccc4edbc157762a0d0455eb3592,2026-10-26T15:33:30+08:00,4a5d39f5,fix(loaders): retry bounded official Maven proof requests
+76525965e33e4eafc02fbd0856401a297b6c5fcc,2026-10-26T15:37:52+08:00,dc6d8b25,feat(mods): check declared local requirements and conflicts
+4c568e14bd942aa08b8b0bcb65498ad58a632f80,2026-10-26T15:44:02+08:00,76525965,feat(mods): scan managed instance inventories without writes
+7a37b3a47ad4520eac0bcc54ccd8dab4b01c82c7,2026-10-26T15:50:49+08:00,4c568e14,feat(mods): associate exact files with Modrinth version evidence
+83821aa3b2d81d4e98d8efc06de4084021a23d73,2026-10-26T15:58:02+08:00,7a37b3a4,feat(mods): resolve declared jar versions from actual manifests
+4d96fe32207ee970f078f27bdde9d4db80e80d1c,2026-10-26T16:02:12+08:00,83821aa3,test(loaders): verify actual Forge and NeoForge test mods
+67b8495547d00b115362456be1a694efe30dc31d,2026-10-26T16:06:11+08:00,4d96fe32,feat(mods): compare local files with platform dependency evidence
+410b9bbbd4bb9eccb75faaa48aba5a1eeaef5fcf,2026-10-26T16:17:54+08:00,67b84955,feat(mods): inspect stable files with verified runtime and platform evidence
+6e10750348e494bdb7f450e37630f25432d76cc4,2026-10-26T16:28:49+08:00,410b9bbb,feat(mods): project bounded public compatibility reports
+9d28719dcc342317c5363f0e9f130506c0de5516,2026-10-26T16:38:45+08:00,6e107503,feat(mods): persist versioned inspection jobs and immutable reports
+052e0c978159b2debf03d6b0f9622b763446afa7,2026-10-26T16:58:09+08:00,9d28719d,feat(mods): orchestrate durable cancellable inspection tasks
+041ea1b0d9f74c250a859d53dd10cc68c740c282,2026-10-26T17:04:39+08:00,052e0c97,docs: save loader and mod inspection checkpoint before quota pause
+75918d7599baf9be68246ebc72ae8423bae33f4b,2026-10-26T19:47:36+08:00,041ea1b0,feat(mods): expose durable inspection through controlled IPC
+6948e7ecb73201ee3fe1b1e3681215d500194d9f,2026-10-26T20:00:32+08:00,75918d75,feat(mods): show instance inventory and compatibility evidence
+68542ab15f6b533aedb88bfa3596b8a7e21c3e94,2026-10-26T20:13:26+08:00,6948e7ec,feat(downloads): persist bounded source and connection preferences
+7fab3b16f34d721ae5a9ccedb832d1679a8e2db4,2026-10-26T20:32:58+08:00,aa21d7b9,feat(downloads): add validated source preferences on main
+9ac08953bde1c9fad7379a449faca8bdd534ba5c,2026-10-26T20:36:41+08:00,7fab3b16,feat(downloads): bound source routing and parallel trusted transfers
+8fd3eddd6633ebc05b50cfde6b95937dcb591492,2026-10-26T20:55:20+08:00,9ac08953,feat(downloads): expose validated settings and verify main integration
+1bfb8c54a38e0a02ed65d79498895ab1293b2c50,2026-10-26T21:00:59+08:00,8fd3eddd,fix(launch): isolate native caches and verify vanilla reopen on main
+d2521bb753578370f40be28865cd89e07f6c333f,2026-10-26T21:05:13+08:00,1bfb8c54,docs(downloads): record final executable cold-start evidence
+f5a8fb4b8438febc2e50cd9aa3e22b53e5c1062b,2026-10-26T21:06:59+08:00,68542ab1,feat(downloads): sync main source optimization into mod_loaders
+45d9ddebf22ccc45f5e926795ea1e05b649a6f73,2026-10-26T21:18:52+08:00,f5a8fb4b,feat(mods): validate bounded selected dependency graphs
+04ce0666e5ebaa2f012a305b65b592a937a5d06b,2026-10-26T21:54:45+08:00,45d9ddeb,fix(loaders): retry transient official profile transport failures
+c2f0247f82f5b42095a78f254fa3378776698737,2026-10-26T22:07:39+08:00,04ce0666,feat(mods): collect pinned dependency candidates and save loader checkpoint
+d066a9d89c006aeffb4cb5fd03d1d10dcdc3e6a6,2026-10-27T10:53:45+08:00,c2f0247f,feat(mods): resolve bounded dependency candidate combinations
+749eadc454ae9be81973845c24a442bdbcaeca20,2026-10-27T11:05:57+08:00,d066a9d8,feat(mods): revalidate downloaded library jars before planning
+f45f58ca83961ce96f2d7619c2dea70d42484008,2026-10-27T11:16:21+08:00,749eadc4,fix(loaders): recover accepted installation requests before catalog reads
+9b8f0108db93f3d9a52793c0401b54bffe256424,2026-10-27T11:47:12+08:00,f45f58ca,feat(loaders): align target selection and isolate stale catalogs
+9917198f671965391eea50aad08c70b521ee0b0b,2026-10-27T17:01:03+08:00,9b8f0108,test(loaders): verify local fabric quilt transactions
+742e91bdb993ecffe2a5f4d085a1379329a59be6,2026-10-27T17:03:54+08:00,9917198f,test(loaders): cover installer cancellation recovery
+196bfd7cfe7e12b670bf74eb154d0bcd55861c7f,2026-10-27T17:08:22+08:00,742e91bd,feat(mods): bind install preview evidence
+213fcb0bc61eeeaef75e205bf20eeae2f1b46376,2026-10-27T17:52:55+08:00,196bfd7c,feat(instances): add portable folders and shortcuts
+6d72cc14463b4f828638382f7ac0dbda980ff82b,2026-10-27T23:53:49+08:00,213fcb0b,docs: refresh dependency audit evidence
+e93adf54a258541cbcdd3368e2d1a53e2feebec4,2026-10-28T00:06:12+08:00,6d72cc14 d2521bb7,merge: integrate download mainline
+9dcd5b2e6e58bbf24824f582022e228513889f34,2026-10-28T00:09:26+08:00,e93adf54,docs: record 0.3.0 delivery
+a0f747ab27d3425ce6e3736815d78f86a7d6535b,2026-10-28T00:29:10+08:00,9dcd5b2e,feat(mods): expose verified install plans
+49f6608ff94581192ccf000ad78104cda7622cb0,2026-10-28T00:56:51+08:00,a0f747ab,feat(mods): show install plan previews
+e6d9214befe6eacd0c7b4643df9d9245cff93716,2026-10-28T04:01:21+08:00,49f6608f,fix(storage): isolate portable profiles and retry game roots
+40ab43961c9efa5343e98eba00ee2e643b12008b,2026-10-28T04:39:11+08:00,e6d9214b,feat(mods): persist install previews and cancellations
+2bef0ac6dcd4319b66173fa15a46c7fc4adb8a77,2026-10-28T05:08:54+08:00,40ab4396,feat(mods): verify confirmed dependency preparation
+990839067c6c7e829b82b66678d3f9b53b139c75,2026-10-28T05:49:10+08:00,2bef0ac6,feat(mods): commit add-only files with recoverable receipts
+a3b5d116cb70b83a26e5f1214169a3b75dff8033,2026-10-28T06:01:47+08:00,99083906,feat(mods): persist confirmation admission and cancellation interlock
+77584fef323a86a8b70daec9c89d338dc43acd34,2026-10-28T06:05:02+08:00,a3b5d116,feat(mods): measure registered Java facts during checks
+1edbc419df4445c42bc16cdb291aab66ba2bad19,2026-10-28T06:29:59+08:00,77584fef,feat(mods): execute durable confirmations with transaction recovery
+16d1ca7b0888025815251316d3fc2133175e0136,2026-10-28T07:00:19+08:00,1edbc419,wip(mods): preserve install result persistence before quota pause
+dfff42bea7baacad58d93f553c81c25099ac1a92,2026-10-28T13:37:37+08:00,16d1ca7b,fix(mods): project failed preparation assessments without phantom files
+473eb7e7f62b7c7c613e06ca4c8d378e1ac36939,2026-10-28T13:49:00+08:00,dfff42be,feat(desktop): persist appearance and forum drafts with controlled image access
+6af8f0e5939afe60027a0e5040a3af8aad2d6c6d,2026-10-28T13:49:28+08:00,473eb7e7,"feat(ui): add forum, collapsible sidebar and customizable drag layouts"
+78bb2602f6e8637064319757cfb959cc36f663ea,2026-10-28T13:53:29+08:00,6af8f0e5,docs(ui): record interaction validation and preview handoff
+0084b08b6ff36ac84197d4fee89f2925ab112def,2026-10-28T16:17:40+08:00,78bb2602,feat(mods): connect confirmed installation and durable task UI
+1f523be0b4a0c7eb42ef11c820a29b87925b056a,2026-10-28T16:19:03+08:00,0084b08b,build: package 0.3.0 Mod installation preview
+28a29b44415c7fc7772c89e8cf085b10ad470f09,2026-10-28T16:24:58+08:00,1f523be0,feat(distribution): reserve signed manifest and source test adapter
+b5518646c2876272e1b22d0f44044e7575b81d12,2026-10-28T16:25:41+08:00,28a29b44,docs: record Mod installation delivery and remaining validation
+5270bd2ca388f37260ee291b56ca5850aa35cce8,2026-10-28T21:53:08+08:00,b5518646,test: consolidate 0.3 validation and process interruption coverage
+5f31a34aa0452f39fe1fdc6a583f7b0094413146,2026-10-28T21:57:27+08:00,5270bd2c,build: deliver consolidated 0.3.0 final and validation evidence
+03568179213c5505267365d6d9e8797c4b6a8f04,2026-10-28T22:19:21+08:00,5f31a34a,fix(downloads): retry transient failures and separate Maven proof budgets
+f94a69ae0cb4e294b5f3563f88ebb0bbce75cb21,2026-10-28T22:32:29+08:00,03568179,fix(network): avoid Undici crashes with desktop native request streams
+b87be9dc8d3640468dbb069d29e70b6af5712d7d,2026-10-28T22:33:01+08:00,f94a69ae,docs: record verified download network fix and native Quilt install
+bc01f07487ca7e8d76f17115ea148efcafd748c2,2026-11-12T02:52:48+08:00,b87be9dc,feat: assemble scoped launcher acceptance candidate
+1b06f6bcb0b7ec53265e6887dd4541726539bd9b,2026-11-12T18:10:38+08:00,bc01f074,docs: record scoped product and package acceptance
+23b265fc2bd281735e3c736f0c40d50d0da33b98,2026-11-12T18:17:34+08:00,1b06f6bc,docs: record local integration and recovery test blocker
+fab0ac873f34d8581bf065e14fa7a9aa93c0baa3,2026-11-13T13:28:25+08:00,23b265fc,feat: isolate trusted asset and dependency projections
+ecb40f9a186214d0b7a8ea0bf5295e7d5f3f28cb,2026-11-13T14:24:39+08:00,fab0ac87,docs: verify candidate exe coexistence and reopen
+ae291dbb8fd88311637c10dc7d72d8ee247d4c10,2026-11-13T14:41:22+08:00,ecb40f9a,docs: verify expiry recovery and bounded lifecycle cases
+569c704d29182c8e10bb1587473a9049ce0b0c8a,2026-11-13T19:07:52+08:00,ae291dbb,docs: verify native callback and preview retry chains
+a7496057d8dabf40920bd6eccee8cda45737d201,2026-11-13T19:25:44+08:00,569c704d,docs: preserve cancel attempt and verify ipc boundaries
+0e115c0f914b7c919ed2bfec7980f7c0ac79de67,2026-11-14T11:13:13+08:00,a7496057,docs: verify cancellation and late response isolation
+36fada0aa151586deb8ec6ea7ca487d0cebcaa51,2026-11-14T11:22:50+08:00,0e115c0f,docs: verify inflight shutdown and remaining IPC rejection
+26483918cef993266d541e9aacc8249c4ad4c2d4,2026-11-14T11:30:05+08:00,36fada0a,docs: verify complex mod previews and consolidate acceptance
+2f7202cfb002d3de10bb4b6f95504661ba906198,2026-11-14T12:44:32+08:00,26483918,docs: centralize acceptance management and dispatch package reviews
+262d757ecad08add5a0db16817b2adab01b98149,2026-11-14T13:04:12+08:00,2f7202cf,docs: collect package reviews and queue verification
+096dd22e402ef6af58e49b7cdb89a1b4fdcdb07e,2026-11-14T16:54:14+08:00,262d757e,docs: preserve remediation candidates and failed integration checks
+0c2a889ccea544d3294136a80c74ac8a5e6f348f,2026-11-14T22:32:48+08:00,096dd22e,fix: harden owner recovery and bounded task observation
+2f8f52346b6be8dfca29e11a876a666821638267,2026-11-14T22:36:14+08:00,0c2a889c,docs: record v31 integrated acceptance fixes and evidence
+5dc4eb18885409d78cffd7ec1cfaa36d2d9afa29,2026-11-14T22:43:06+08:00,2f8f5234,docs: verify v32 repaired EXE and normal profile reopen
+7eca4143fcdcc4e291cb4f24af23e36a6e7b6b60,2026-11-15T11:56:34+08:00,5dc4eb18,docs: record v33 repaired EXE game paths and pending reopen
+31909534dc5d1c2226d9f16d5cccbba9e0e475b4,2026-11-15T12:55:54+08:00,7eca4143,docs: consolidate v34 acceptance closure review and limits
+aefc67aa839883b8bca43ffe7f47c580db0ced26,2026-11-15T14:38:02+08:00,31909534,docs: close selected acceptance with v35 runtime evidence
+8022e3fd83b1068e8d6643fc5a856b3d5369a333,2026-11-15T14:53:25+08:00,aefc67aa,docs: add v36 native network lifetime diagnostic evidence

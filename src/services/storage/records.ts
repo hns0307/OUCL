@@ -7,6 +7,7 @@ import { UUID_PATTERN } from '../../shared/contracts/handshake.js';
 import { TaskTable } from './tasks.js';
 import type { StoredTask, TaskKind } from './tasks.js';
 import type { Execution } from '../../core/task/machine.js';
+import { isOwnerGuardFile } from './owner-guard.js';
 
 export interface RecordEnvelope<T> { schemaVersion: 1; revision: number; data: T }
 export type Checkpoint = 'prepared' | 'applying' | 'staged' | 'renamed' | 'committed';
@@ -38,25 +39,27 @@ export class RecordStore {
   private available = false;
   private closed = false;
   private tail: Promise<void> = Promise.resolve();
-  private constructor(private readonly directory: string, private readonly db: DatabaseSync, private readonly token: string) {}
+  private constructor(private readonly directory: string, private readonly db: DatabaseSync, private readonly token: string, private readonly externalOwner: boolean) {}
 
   /** Opens a dedicated, existing, non-linked directory and claims an exclusive fail-closed lease. */
-  static async open(directory: string): Promise<RecordStore> {
+  static async open(directory: string, externalToken?: string): Promise<RecordStore> {
     let root: string;
     try { root = await guardDirectory(directory); }
     catch (error) { throw error instanceof StorageError ? error : new StorageError('STORAGE_IO'); }
     const leasePath = path.join(root, 'owner.lock');
-    const token = randomUUID();
+    const token = externalToken ?? randomUUID();
     let lease;
-    try { lease = await open(leasePath, 'wx'); } catch (error) {
-      throw new StorageError(hasCode(error, 'EEXIST') ? 'STORE_BUSY' : 'STORAGE_IO');
-    }
+    if (externalToken === undefined) {
+      try { lease = await open(leasePath, 'wx'); } catch (error) {
+        throw new StorageError(hasCode(error, 'EEXIST') ? 'STORE_BUSY' : 'STORAGE_IO');
+      }
+    } else if ((await readRegular(leasePath, 200))?.toString('utf8') !== externalToken) throw new StorageError('STORE_BUSY');
     let db: DatabaseSync | undefined;
     try {
-      await lease.writeFile(token); await lease.sync(); await lease.close();
+      if (lease) { await lease.writeFile(token); await lease.sync(); await lease.close(); }
       const databasePath = path.join(root, 'tasks.sqlite');
       const exists = await guardDatabase(databasePath);
-      if (!exists && (await readdir(root)).some(name => name !== 'owner.lock')) throw new StorageError('NEEDS_RECOVERY');
+      if (!exists && (await readdir(root)).some(name => name !== 'owner.lock' && !(externalToken && isOwnerGuardFile(name)))) throw new StorageError('NEEDS_RECOVERY');
       db = new DatabaseSync(databasePath);
       if (exists) {
         const application = db.prepare('PRAGMA application_id').get();
@@ -72,10 +75,10 @@ export class RecordStore {
         CREATE TABLE requests (owner_id TEXT NOT NULL, request_id TEXT NOT NULL, kind TEXT NOT NULL,
           payload_digest TEXT NOT NULL, task_id TEXT NOT NULL UNIQUE REFERENCES tasks(id), PRIMARY KEY (owner_id, request_id));
         PRAGMA application_id=${APPLICATION_ID}; PRAGMA user_version=${STORE_VERSION}; COMMIT;`);
-      return new RecordStore(root, db, token);
+      return new RecordStore(root, db, token, externalToken !== undefined);
     } catch (error) {
-      db?.close(); await lease.close().catch(() => {});
-      if (await ownsLease(leasePath, token)) await unlink(leasePath);
+      db?.close(); await lease?.close().catch(() => {});
+      if (externalToken === undefined && await ownsLease(leasePath, token)) await unlink(leasePath);
       throw error instanceof StorageError ? error : new StorageError('NEEDS_RECOVERY');
     }
   }
@@ -95,15 +98,16 @@ export class RecordStore {
     return path.join(this.directory, `${recordId}.json`);
   }
 
-  private operations(): Operation[] {
-    return this.db.prepare('SELECT id, record_id, phase, before_json, after_json FROM operations ORDER BY rowid').all().map(row => {
+  private *operations(): Iterable<Operation> {
+    // Journal size grows with revisions, while the worker heap must stay bounded by a few records.
+    for (const row of this.db.prepare('SELECT id, record_id, phase, before_json, after_json FROM operations ORDER BY rowid').iterate()) {
       if (typeof row.id !== 'string' || !UUID_PATTERN.test(row.id)
         || typeof row.record_id !== 'string' || !ID_PATTERN.test(row.record_id)
         || typeof row.phase !== 'string' || !['PREPARED', 'APPLYING', 'COMMITTED', 'ROLLED_BACK'].includes(row.phase)
         || (row.before_json !== null && (typeof row.before_json !== 'string' || Buffer.byteLength(row.before_json) > MAX_RECORD_BYTES)) || typeof row.after_json !== 'string'
         || Buffer.byteLength(row.after_json) > MAX_RECORD_BYTES) throw new StorageError('NEEDS_RECOVERY');
-      return { id: row.id, recordId: row.record_id, phase: row.phase as Phase, before: row.before_json, after: row.after_json };
-    });
+      yield { id: row.id, recordId: row.record_id, phase: row.phase as Phase, before: row.before_json, after: row.after_json };
+    }
   }
 
   private requireKnown(recordId: string, bytes: Buffer | undefined): void {
@@ -120,20 +124,22 @@ export class RecordStore {
     return this.serial(async () => {
       this.available = false;
       try {
-        const operations = this.operations();
         const outcomes = new Map<string, string | undefined>();
         const pending = new Set<string>();
-        for (const operation of operations) {
+        for (const operation of this.operations()) {
           if (pending.has(operation.recordId)) throw new StorageError('NEEDS_RECOVERY');
           if (operation.phase === 'PREPARED' || operation.phase === 'APPLYING') pending.add(operation.recordId);
-          if (operation.before !== (outcomes.get(operation.recordId) ?? null)) throw new StorageError('NEEDS_RECOVERY');
+          if (digest(operation.before ?? undefined) !== outcomes.get(operation.recordId)) throw new StorageError('NEEDS_RECOVERY');
           const before = operation.before === null ? undefined : envelope(operation.before, value => value);
           const after = envelope(operation.after, value => value);
           if (after.revision !== (before?.revision ?? 0) + 1) throw new StorageError('NEEDS_RECOVERY');
-          outcomes.set(operation.recordId, operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined);
+          outcomes.set(operation.recordId, digest(operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined));
         }
-        for (const operation of operations) {
-          if (operation.phase === 'COMMITTED' || operation.phase === 'ROLLED_BACK') continue;
+        const latest = new Map<string, string | undefined>();
+        for (const operation of this.operations()) {
+          if (operation.phase === 'COMMITTED' || operation.phase === 'ROLLED_BACK') {
+            latest.set(operation.recordId, digest(operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined)); continue;
+          }
           const current = await readRegular(this.file(operation.recordId));
           let phase: Phase;
           if (digest(current) === digest(operation.after) && operation.phase === 'APPLYING') phase = 'COMMITTED';
@@ -143,14 +149,12 @@ export class RecordStore {
           const staged = await readRegular(temporary);
           if (staged !== undefined && digest(staged) !== digest(operation.after)) throw new StorageError('NEEDS_RECOVERY');
           this.db.prepare('UPDATE operations SET phase=? WHERE id=?').run(phase, operation.id);
+          latest.set(operation.recordId, digest(phase === 'COMMITTED' ? operation.after : operation.before ?? undefined));
           if (staged !== undefined) await unlink(temporary);
         }
         // Each latest record must agree with its last authoritative journal outcome.
-        const latest = new Map<string, Operation>();
-        for (const operation of this.operations()) latest.set(operation.recordId, operation);
-        for (const [id, operation] of latest) {
-          const wanted = operation.phase === 'COMMITTED' ? operation.after : operation.before ?? undefined;
-          if (digest(await readRegular(this.file(id))) !== digest(wanted)) throw new StorageError('NEEDS_RECOVERY');
+        for (const [id, wantedDigest] of latest) {
+          if (digest(await readRegular(this.file(id))) !== wantedDigest) throw new StorageError('NEEDS_RECOVERY');
         }
         const known = new Set([...latest.keys()].map(id => `${id}.json`));
         for (const name of await readdir(this.directory)) {
@@ -162,11 +166,63 @@ export class RecordStore {
     });
   }
 
+  /** Reads an exact accepted request without changing the task or request journal. */
+  readModConfirmations(ownerId: string) {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).modConfirmations(ownerId);
+    });
+  }
+
+  /** Reads the bounded, bidirectionally checked inventory for the selected Mod domains. */
+  readModTargetAdmissions(ownerId: string, kinds: readonly ('mod-check' | 'mod-install')[], checkBudget?: () => void) {
+    let budgetFailed = false; let budgetError: unknown;
+    const check = checkBudget && (() => {
+      try { checkBudget(); } catch (error) { budgetFailed = true; budgetError = error; throw error; }
+    });
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).modTargetAdmissions(ownerId, kinds, check);
+    }).catch((error: unknown) => { if (budgetFailed) throw budgetError; throw error; });
+  }
+
+  /** Reads an exact accepted request without changing the task or request journal. */
+  findAcceptedTask(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): Promise<StoredTask | undefined> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).findAccepted(ownerId, requestId, kind, payloadDigest);
+    });
+  }
+
   /** Accepts and persists a side-effect request before any executor starts. */
   acceptTask(ownerId: string, requestId: string, kind: TaskKind, payloadDigest: string): Promise<StoredTask> {
     return this.serial(async () => {
       if (!this.available) throw new StorageError('NEEDS_RECOVERY');
       return new TaskTable(this.db).accept(ownerId, requestId, kind, payloadDigest);
+    });
+  }
+
+  /** Projects a confirmed distribution identity without starting or recovering work. */
+  projectDistributionTask(ownerId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).projectDistribution(ownerId, proposalId, payloadDigest, taskId);
+    });
+  }
+
+  /** Claims a pristine distribution task once; an unknown acknowledgement must not be read back as permission. */
+  claimDistributionTask(ownerId: string, proposalId: string, payloadDigest: string, taskId: string): Promise<StoredTask> {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).claimDistribution(ownerId, proposalId, payloadDigest, taskId);
+    });
+  }
+
+  /** Reads the complete bounded distribution task projection without changing either table. */
+  readDistributionTaskProjections(ownerId: string) {
+    return this.serial(async () => {
+      if (!this.available) throw new StorageError('NEEDS_RECOVERY');
+      return new TaskTable(this.db).readDistributionProjections(ownerId);
     });
   }
 
@@ -239,6 +295,10 @@ export class RecordStore {
     return this.serial(async () => {
       this.db.close(); this.closed = true; this.available = false;
       const lease = path.join(this.directory, 'owner.lock');
+      if (this.externalOwner) {
+        if ((await readRegular(lease, 200))?.toString('utf8') !== this.token) throw new StorageError('NEEDS_RECOVERY');
+        return;
+      }
       if (!await ownsLease(lease, this.token)) throw new StorageError('NEEDS_RECOVERY');
       await unlink(lease);
     });

@@ -1,0 +1,77 @@
+[
+  {
+    "path": "audit.mjs",
+    "bytes": 4421,
+    "sha256": "7c7b3b97cc89182909cf69bb8da2e89f624fa0fd9c9ff3c568d906258245ceb9"
+  },
+  {
+    "path": "CHECKPOINT.md",
+    "bytes": 2566,
+    "sha256": "ffd519a06af43c13f698069fdea43d0d2dbf49048b6d9dc40f3df52f0352ed4e"
+  },
+  {
+    "path": "configure-audit.mjs",
+    "bytes": 1083,
+    "sha256": "ff5fbac2f452c1233f20953ca48a7b66b2dc6e903e88aef15d647620c19313ca"
+  },
+  {
+    "path": "configure.mjs",
+    "bytes": 3045,
+    "sha256": "856a561d223329a19208861a22b194bfffc5a33d6438455b9bec99b881df004d"
+  },
+  {
+    "path": "copy-manifest.json",
+    "bytes": 10787135,
+    "sha256": "e1c077ef7021482487bf9a1f13d8f94b9ab6753f1821f776d11762e51d538f44"
+  },
+  {
+    "path": "copy-plan.json",
+    "bytes": 8079023,
+    "sha256": "739be355aea44fe9f3377eb4a66467ece62c7b7d85a3c8e7dfd197445e7da69d"
+  },
+  {
+    "path": "copy-results.jsonl",
+    "bytes": 10140879,
+    "sha256": "29a19764a15c11cbbc00cfa77c3dec72221875c69d0df4eda3e6778c94e04ee6"
+  },
+  {
+    "path": "prepare.log",
+    "bytes": 3958,
+    "sha256": "f3e337d5bb96a284fee0cc7aa737b8c2da73a6d3b5a78d79ce8e7fceba9e6b2e"
+  },
+  {
+    "path": "prepare.mjs",
+    "bytes": 16060,
+    "sha256": "db0ee5f41ee9435bacc84b5292f9ce4e23c3ad5d12cd976a8e674e31cb090235"
+  },
+  {
+    "path": "prepared.json",
+    "bytes": 3363,
+    "sha256": "d533f56efc111a070722359b0431086715f3b93468ead97ebc4ce92702e1c524"
+  },
+  {
+    "path": "production-seven-sha256.json",
+    "bytes": 1228,
+    "sha256": "ab4187c2f8b7d0d45b45b6269372f28b8f66669d687134b9ecd9bea3a5c2ed65"
+  },
+  {
+    "path": "rebuild.json",
+    "bytes": 21,
+    "sha256": "f351db0f6afc634ecce384bcb4d9d24bc4d9f8343419b6ae048ecf4028f4367e"
+  },
+  {
+    "path": "RESULT.md",
+    "bytes": 2924,
+    "sha256": "975796d0d7321da4d9e53a73b940d2ca084c7fe9ded9dfc2767ed9992e9698fd"
+  },
+  {
+    "path": "snapshot.json",
+    "bytes": 330,
+    "sha256": "0aad42fc7964f08da39dcda346d1cf7fa67b04e44429107238280d99273dd4b0"
+  },
+  {
+    "path": "source-metadata.json",
+    "bytes": 2836,
+    "sha256": "6099d2a396b8fd744d8ffff8b22d1374ace9cdf195a2fa13cb89e6333b5f8160"
+  }
+]

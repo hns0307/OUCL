@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0",
+  "output": "D:\\MC_start\\OUCL\\release\\OUCL-0.3.0-network-fix.exe",
+  "bytes": 364544,
+  "sha256": "04d8ddd7062c03e71e320e60b35f4b60105727568d441bb26930156ebf800e7b",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "edcab6423278a5a28c4dba3f9c81f1cd483428dc0e8a09b3d8ae2cf3939878d6"
+}

@@ -1,0 +1,77 @@
+{
+  "baselineFiles": 597,
+  "approvedOverlays": [
+    {
+      "path": "OUCL-Codex/docs/TASK_PLAN.md",
+      "sha256": "45918cc1a956a68ad09440e8ac6cb04ee1192b4adffd7ddca05ec5e684430886"
+    },
+    {
+      "path": "OUCL-Codex/docs/DECISIONS.md",
+      "sha256": "8be18799523bd710ad080b5a3ea15182e2e2546fdc3633b884fffa1b397c3d6b"
+    }
+  ],
+  "modified": [
+    {
+      "path": "src/core/install/plan.ts",
+      "baseSha256": "7cae2fe175e425ac6e4a04e88d3c3f68360ef5705f0adefe7cceb6f1b34b698a",
+      "currentSha256": "6c3de9be7933ce270abf49a085d0ad984a9aa39be29ac6dbc2afc56b2dd3498f",
+      "bytes": 11228
+    },
+    {
+      "path": "src/core/launch/plan.ts",
+      "baseSha256": "92dd235300744b034138a86993745565d13e11a0035d07672a56fbaac3ec6e06",
+      "currentSha256": "bf5aee6d782d262f6ea51ffbc4666de1bb6c7b874726e0547ba93b6d9ca328bd",
+      "bytes": 6186
+    },
+    {
+      "path": "src/services/install/installer.ts",
+      "baseSha256": "602d96eaafa06f3791730b7a2793ffe2d6001bd60f80e8d8ec2a9c2ed87e8ffb",
+      "currentSha256": "61cc82b9efd6ccf284fce40e6f90afeb44243762472eeb191721275f668578fe",
+      "bytes": 41162
+    },
+    {
+      "path": "src/services/install/instance-files.ts",
+      "baseSha256": "cc7937be097746b3cc3a308a5683b853bf439bb6c3d9bc814e689dd3e32bb42c",
+      "currentSha256": "dad4146247011dbeaced34311388a30a23f7b5697e60f69a2ed88a2758c66b36",
+      "bytes": 8795
+    },
+    {
+      "path": "src/services/launch/service.ts",
+      "baseSha256": "3cba657fd5ffa5285707d6e5f2390c9fb90a3af5125e2afa42599b72ffb56f23",
+      "currentSha256": "1646843329cf4a1b555e0e5d1524074185a994d8a7542eebc05920083c15024a",
+      "bytes": 19499
+    },
+    {
+      "path": "tests/install-plan.test.ts",
+      "baseSha256": "e93f23ae317bcd18148f9f784670bb59746a90bf7c91f2ad25d02cc7db57ad21",
+      "currentSha256": "bc6d3efa7c3996df77a766f653600106cc567c0373f21e35c1f76d3e52a20037",
+      "bytes": 14083
+    },
+    {
+      "path": "tests/installer.test.ts",
+      "baseSha256": "f92e5865f6371c29f6adb60ceea3e324a6748eff5ffa6a4acd0b707a22ae8a9f",
+      "currentSha256": "3791a39f6fb00086ce36f435430a4abbf1111f052b3893f67bd9de0157cdac18",
+      "bytes": 37816
+    },
+    {
+      "path": "tests/instance-folders.test.ts",
+      "baseSha256": "d4e780c5a8ece3c38667a9cbc654337828b909a84abb6083b88adec2f1e29f8b",
+      "currentSha256": "11c41c30ef577264e1a156ef55b3f8e620e976ebed5af603d179774e82744ff1",
+      "bytes": 6243
+    },
+    {
+      "path": "tests/launch-plan.test.ts",
+      "baseSha256": "803d9c95a3a86aba601c6a0f85109f9ef8cf9a695f8c20c064ea7b0abae10556",
+      "currentSha256": "4797c669a90ffafcdc1ca8efde0b0092f9f4078d75653c02740ce18d239f652c",
+      "bytes": 9327
+    },
+    {
+      "path": "tests/mod-java-facts.test.ts",
+      "baseSha256": "0353a200698aa7784e6611ec8b971a1892342f58653e705c83c9df865b94a011",
+      "currentSha256": "d73ad0665d7726f3b3c0584eb997a7687e81cdd13216b07795ce8f1482508df7",
+      "bytes": 6575
+    }
+  ],
+  "unexpectedChanges": [],
+  "unchangedExceptApprovedAndListed": true
+}

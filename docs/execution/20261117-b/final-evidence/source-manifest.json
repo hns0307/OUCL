@@ -1,0 +1,57 @@
+{
+  "base": "a8bc927d",
+  "files": [
+    {
+      "file": "src/services/distribution/admission-record.ts",
+      "sha256": "27d0e9b2d5b44d050564caf7154c4b34d131ac9973f2c5b7f83adc279f39e37b"
+    },
+    {
+      "file": "src/services/distribution/reconciliation.ts",
+      "sha256": "1aaab2ef01b505a010680127a7704a0e432393435d9d8a1cab9c1282851ec7d4"
+    },
+    {
+      "file": "src/services/storage/tasks.ts",
+      "sha256": "617eb81ef8b9e4b403f5cc986cbc91e10f94e0d0e915b35c3396070442c1cc5c"
+    },
+    {
+      "file": "src/services/storage/records.ts",
+      "sha256": "c92a50d3e816d8e8ac2f7d51960b6bd593e04c92d68d79a12aa419ffae8174fe"
+    },
+    {
+      "file": "src/services/workers/protocol.ts",
+      "sha256": "412c724a1296a45a16806ee8da743e324767879d250c99fa4d45352162a34084"
+    },
+    {
+      "file": "src/services/workers/storage-client.ts",
+      "sha256": "c083eae2dac8d22e19a80a8c128f4f86cc4561e44f1c1f26798fd636343fadb5"
+    },
+    {
+      "file": "src/services/workers/entry.ts",
+      "sha256": "dd6b30c830c8eefc7b752c2e79a8c2ab82d4d94c6435b4135a1093b22216d83a"
+    },
+    {
+      "file": "src/shared/contracts/distribution-execution.ts",
+      "sha256": "082c32122ee17b73fa1bde6f6ea63c28a8934f05ba74e466f11e2e173ec1b94a"
+    },
+    {
+      "file": "tests/distribution-execution-contract.test.ts",
+      "sha256": "efb981867b1b6e4679d81bae74c164b88c578314f22eb7c67377e92aa3ed97bd"
+    },
+    {
+      "file": "tests/distribution-admission-query.test.ts",
+      "sha256": "cbf5271982573e11971abeae9c999b349221367ee75d1e1ab6e35d947c242ff4"
+    },
+    {
+      "file": "tests/distribution-task-projection-query.test.ts",
+      "sha256": "b30fa25cd298c40b6fe3e4d3fd3d71ce60503c9fdc8846d0e09878acbe5852f9"
+    },
+    {
+      "file": "tests/distribution-reconciliation.test.ts",
+      "sha256": "37a2cb2acc814976b5175af2f04cbe5c8cc36b7940f06d801b1df9edecfa73d2"
+    },
+    {
+      "file": "tests/helpers/distribution-reconciliation-fixture.ts",
+      "sha256": "ad53cd8c93cd9bf1cf320b1f9601d366f349976bf80cbab21acd3d898268607e"
+    }
+  ]
+}

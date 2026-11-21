@@ -1,0 +1,30 @@
+PASS 1: loading disables appearance edits
+PASS 2: saving disables appearance edits
+PASS 3: no preview cannot be saved
+PASS 4: defaults create a preview
+PASS 5: pending preview can be saved explicitly
+PASS 6: child Escape does not cancel the panel
+PASS 7: panel Escape cancels its preview
+PASS 8: picker rejection renders a controlled error
+PASS 9: unread settings do not show a missing-configuration checklist or trigger reads
+PASS 10: skip collapses the guide
+PASS 11: guide can be reopened
+PASS 12: explicit retry runs exactly one read callback
+PASS 13: old read error is shown as its controlled message
+PASS 14: read error does not also report ongoing initial loading
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: successful retry clears the parent-controlled old error
+    at check (file:///D:/MC_start/OUCL/%E6%9C%AC%E5%9C%B0%E8%B5%84%E6%96%99/OUCL-download-main/scripts/ui-preparation-check.mjs:44:42)
+    at file:///D:/MC_start/OUCL/%E6%9C%AC%E5%9C%B0%E8%B5%84%E6%96%99/OUCL-download-main/scripts/ui-preparation-check.mjs:80:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.21.0

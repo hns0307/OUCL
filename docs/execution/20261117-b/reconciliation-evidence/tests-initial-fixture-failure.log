@@ -1,0 +1,140 @@
+✖ real authority and worker reconcile a fixed task identity exactly once (5.982ms)
+✖ actual project commit with lost acknowledgement recovers the same task (3.8093ms)
+✖ actual mark commit with lost acknowledgement recovers the same task (1.7251ms)
+✖ refuses orphan without reconstructing a queued task (1.7325ms)
+✖ refuses digest without reconstructing a queued task (1.6665ms)
+✖ refuses task-id without reconstructing a queued task (1.6048ms)
+✖ refuses projected-missing without reconstructing a queued task (1.3031ms)
+✖ unconfirmed proposals and another root never create a task; worker enforces expected root (1.997ms)
+✖ close drains a held actual commit and rejects subsequent reconciliation (1.6458ms)
+✖ final audit rejects admissions added after the startup snapshot (2.6892ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 150.7128
+
+✖ failing tests:
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:7:1
+✖ real authority and worker reconcile a fixed task identity exactly once (5.982ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:8:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:26:41
+✖ actual project commit with lost acknowledgement recovers the same task (3.8093ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:27:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:26:41
+✖ actual mark commit with lost acknowledgement recovers the same task (1.7251ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:27:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:56:78
+✖ refuses orphan without reconstructing a queued task (1.7325ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:57:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:56:78
+✖ refuses digest without reconstructing a queued task (1.6665ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:57:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:56:78
+✖ refuses task-id without reconstructing a queued task (1.6048ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:57:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:56:78
+✖ refuses projected-missing without reconstructing a queued task (1.3031ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:57:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:79:1
+✖ unconfirmed proposals and another root never create a task; worker enforces expected root (1.997ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:80:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:96:1
+✖ close drains a held actual commit and rejects subsequent reconciliation (1.6458ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:97:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }
+
+test at ..\..\tmp\reconciliation-20261117-b\build\tests\distribution-reconciliation.test.js:137:1
+✖ final audit rejects admissions added after the startup snapshot (2.6892ms)
+  Error [StorageError]: STORAGE_IO
+      at RecordStore.open (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/src/services/storage/records.js:44:53)
+      at async reconciliationFixture (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/helpers/distribution-reconciliation-fixture.js:19:19)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/reconciliation-20261117-b/build/tests/distribution-reconciliation.test.js:138:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'STORAGE_IO',
+    category: 'disk'
+  }

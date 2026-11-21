@@ -1,0 +1,28 @@
+{
+  "typecheck": {
+    "exitCode": 0,
+    "args": [
+      "D:\\MC_start\\OUCL\\node_modules\\typescript\\bin\\tsc",
+      "--noEmit"
+    ],
+    "log": "typecheck-final.log"
+  },
+  "lint": {
+    "exitCode": 0,
+    "args": [
+      "D:\\MC_start\\OUCL\\node_modules\\eslint\\bin\\eslint.js",
+      "src/services/distribution/local-mod-projection.ts",
+      "tests/distribution-local-mod-projection.test.ts"
+    ]
+  },
+  "files": [
+    {
+      "file": "src/services/distribution/local-mod-projection.ts",
+      "sha256": "f6e8fc19f79274ec1c7cbaa96d1f538a3f4b11cf3db0cfe4a7bb8d82d9d734b5"
+    },
+    {
+      "file": "tests/distribution-local-mod-projection.test.ts",
+      "sha256": "ed2b9e9ab166f3076bda5368f0c1f9620dccb0fe461f2e046ba983c101461b49"
+    }
+  ]
+}

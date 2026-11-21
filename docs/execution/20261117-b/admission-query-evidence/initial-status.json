@@ -1,0 +1,14 @@
+{
+  "test": {
+    "status": 1,
+    "signal": null
+  },
+  "typecheck": {
+    "status": 0,
+    "signal": null
+  },
+  "lint": {
+    "status": 0,
+    "signal": null
+  }
+}

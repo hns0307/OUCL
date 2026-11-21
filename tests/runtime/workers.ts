@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { mkdir, open, rm, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -8,6 +8,18 @@ import { StorageClient } from '../../src/services/workers/storage-client.js';
 import { HashPool } from '../../src/services/workers/hash-pool.js';
 import { controlTask } from '../../src/core/task/machine.js';
 import { ObjectStore } from '../../src/services/objects/store.js';
+import { ArtifactTransfer } from '../../src/services/download/artifact-transfer.js';
+import { HttpTransfer } from '../../src/services/download/http.js';
+import { sourceKey } from '../../src/services/objects/provenance.js';
+import { DownloadCoordinator } from '../../src/services/download/coordinator.js';
+import { InstallDownloadService } from '../../src/services/install/downloads.js';
+import { resolveClientVersion } from '../../src/core/version/resolve.js';
+import { parseAssetIndex } from '../../src/core/install/assets.js';
+import { planVanillaInstall } from '../../src/core/install/plan.js';
+import { NativeExtractor } from '../../src/services/workers/native-extractor.js';
+import { crc32 } from 'node:zlib';
+import { FileViewService } from '../../src/services/install/file-views.js';
+import { ProfileService } from '../../src/services/launch/profiles.js';
 
 const root = process.argv[2]; const entry = process.argv[3];
 assert.ok(root && path.basename(root).startsWith('oucl-runtime-workers-') && entry && path.isAbsolute(entry));
@@ -26,9 +38,22 @@ void app.whenReady().then(async () => {
     const task = await client.accept(ownerId, requestId, 'download', 'a'.repeat(64));
     assert.equal((await client.accept(ownerId, requestId, 'download', 'a'.repeat(64))).taskId, task.taskId);
     await client.update(ownerId, task.taskId, 1, controlTask(task.execution, 'start').execution);
+    const reservedInstance = { instanceId: '00000000-0000-4000-8000-000000000003', rootId: ownerId, taskId: task.taskId,
+      displayName: 'Runtime reserved fixture', mcVersionId: '1.20.1', isolation: 'on' as const, state: 'installing' as const, revision: 1 };
+    await client.writeInstance(reservedInstance.instanceId, 0, { summary: reservedInstance, phase: 'reserved' });
+    await client.writeInstances(0, { items: [reservedInstance] });
+    const profiles = new ProfileService(client, { probe: async () => ({ executable: 'D:\\Fixture\\java.exe', major: 17, version: '17.0.12', vendor: 'fixture', architecture: 'x64', os: 'windows' }) });
+    const offline = await profiles.createOffline(requestId, { displayName: 'Runtime profile', gameName: 'OUCL_Test1' });
+    const registeredJava = await profiles.registerJava('D:\\Fixture\\java.exe');
     await client.close();
     client = await StorageClient.open(entry, storeDirectory);
     assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
+    assert.equal((await client.readInstance(reservedInstance.instanceId))?.data.phase, 'reserved');
+    assert.equal((await client.readInstances())?.data.items[0]?.state, 'installing');
+    const persistedProfiles = await client.readLaunchProfiles();
+    assert.equal(persistedProfiles?.data.accounts[0]?.uuid, 'b0cfe708-13d8-3959-b8ef-18d1540b06c9');
+    assert.equal(persistedProfiles?.data.accounts[0]?.accountId, offline.accountId);
+    assert.equal(persistedProfiles?.data.selectedJavaId, registeredJava.javaId);
     await client.close(); client = undefined;
     const file = path.join(root, 'hash-input.bin'); const block = Buffer.alloc(1024 * 1024, 17);
     const sha1 = createHash('sha1'); const sha256 = createHash('sha256');
@@ -62,13 +87,90 @@ void app.whenReady().then(async () => {
     assert.equal(await objects.rebuildIndex(), 2);
     assert.equal((await objects.lookup(expected, anchor))?.digest, objectA.digest);
     assert.equal((await client.get(ownerId, task.taskId))?.execution.state, 'needsRecovery');
+    const transferSpec = { url: 'https://piston-data.mojang.com/objects/runtime-fixture/client.jar',
+      expected: { ...expected, provenanceId: 'fixture:download' }, anchor };
+    let transferRequests = 0; const halfway = Math.floor(fixture.length / 2);
+    const transferHttp = new HttpTransfer(async (_url, options) => {
+      transferRequests++;
+      if (transferRequests === 1) return new Response(new ReadableStream<Uint8Array>({ start(controller) {
+        controller.enqueue(fixture.subarray(0, halfway)); controller.enqueue(fixture.subarray(halfway)); controller.close();
+      } }), { headers: { 'content-length': String(fixture.length), etag: '"runtime-v1"' } });
+      assert.equal(new Headers(options?.headers).get('range'), `bytes=${halfway}-`);
+      return new Response(fixture.subarray(halfway), { status: 206, headers: { 'content-length': String(fixture.length - halfway),
+        'content-range': `bytes ${halfway}-${fixture.length - 1}/${fixture.length}`, etag: '"runtime-v1"' } });
+    });
+    const stopTransfer = new AbortController();
+    await assert.rejects(new ArtifactTransfer(transferHttp, client, objects).run(transferSpec,
+      { signal: stopTransfer.signal, onProgress: () => { stopTransfer.abort(); } }), { code: 'CANCELLED' });
+    await objects.close(); objects = undefined; await client.close(); client = undefined;
+    client = await StorageClient.open(entry, storeDirectory); objects = await ObjectStore.open(objectsDirectory, client, pool);
+    const physical = new ArtifactTransfer(transferHttp, client, objects);
+    const transferred = await physical.run(transferSpec);
+    assert.equal(transferred.digest, objectA.digest);
+    assert.equal((await client.getTransfer(sourceKey(transferSpec.expected, anchor)))?.state, 'committed');
+    await physical.run(transferSpec); assert.equal(transferRequests, 2);
+    const shared = new DownloadCoordinator(physical, objects);
+    try {
+      const a = shared.request(transferSpec, { consumerId: '00000000-0000-4000-8000-000000000011' });
+      const secondSource = { ...transferSpec, expected: { ...expected, provenanceId: 'fixture:independent-source' } };
+      const b = shared.request(secondSource, { consumerId: '00000000-0000-4000-8000-000000000012' });
+      await a.cancel(); await assert.rejects(a.result, { code: 'CANCELLED' });
+      assert.equal((await b.result).digest, objectA.digest); assert.equal(transferRequests, 2);
+      assert.equal((await objects.lookup(secondSource.expected, anchor))?.digest, objectA.digest);
+    } finally { await shared.close(); }
+    const assetIndexBody = '{\n  "objects": {}\n}\n'; const assetIndexHash = createHash('sha1').update(assetIndexBody).digest('hex');
+    const version = resolveClientVersion('fixture', { fixture: { id: 'fixture', mainClass: 'net.minecraft.client.main.Main',
+      downloads: { client: { url: transferSpec.url, sha1: expected.digest, size: expected.size } },
+      assetIndex: { id: 'fixture', url: `https://piston-meta.mojang.com/v1/packages/${assetIndexHash}/fixture.json`, sha1: assetIndexHash, size: Buffer.byteLength(assetIndexBody) }
+    } }, { os: 'windows', arch: 'x64', osVersion: '10.0', features: {} });
+    const assets = parseAssetIndex(JSON.parse(assetIndexBody) as unknown); const metadataSha1ByVersion = { fixture: anchor.digest };
+    let batchNetworkRequests = 0;
+    const batchPhysical = new ArtifactTransfer(new HttpTransfer(async () => {
+      batchNetworkRequests++; return new Response(fixture, { headers: { 'content-length': String(fixture.length) } });
+    }), client, objects);
+    const batchCoordinator = new DownloadCoordinator(batchPhysical, objects);
+    let batchArtifactsVerified = 0;
+    try {
+      const batch = new InstallDownloadService(batchCoordinator, objects);
+      const prepared = { version, assets, plan: planVanillaInstall(version, metadataSha1ByVersion, assets), metadataSha1ByVersion, assetIndexBody, versionDocuments: {} };
+      const result = await batch.run(prepared); batchArtifactsVerified = result.objects.size;
+      assert.equal(batchArtifactsVerified, 2); await batch.run(prepared); assert.equal(batchNetworkRequests, 1);
+    } finally { await batchCoordinator.close(); }
+    const nativeName = Buffer.from('lwjgl.dll'); const nativeCrc = crc32(fixture);
+    const local = Buffer.alloc(30); local.writeUInt32LE(0x04034b50); local.writeUInt16LE(20, 4);
+    local.writeUInt32LE(nativeCrc, 14); local.writeUInt32LE(fixture.length, 18); local.writeUInt32LE(fixture.length, 22); local.writeUInt16LE(nativeName.length, 26);
+    const central = Buffer.alloc(46); central.writeUInt32LE(0x02014b50); central.writeUInt16LE(20, 4); central.writeUInt16LE(20, 6);
+    central.writeUInt32LE(nativeCrc, 16); central.writeUInt32LE(fixture.length, 20); central.writeUInt32LE(fixture.length, 24); central.writeUInt16LE(nativeName.length, 28);
+    const end = Buffer.alloc(22); end.writeUInt32LE(0x06054b50); end.writeUInt16LE(1, 8); end.writeUInt16LE(1, 10);
+    end.writeUInt32LE(central.length + nativeName.length, 12); end.writeUInt32LE(local.length + nativeName.length + fixture.length, 16);
+    const nativeBytes = Buffer.concat([local, nativeName, fixture, central, nativeName, end]);
+    const nativeFile = path.join(root, 'native-fixture.jar'); await writeFile(nativeFile, nativeBytes);
+    const nativeOutput = path.join(root, 'native-workspace'); await mkdir(nativeOutput);
+    const nativeExtractor = new NativeExtractor(entry);
+    try {
+      assert.deepEqual(await nativeExtractor.run(nativeOutput, [{ file: nativeFile, sha256: createHash('sha256').update(nativeBytes).digest('hex'), size: nativeBytes.length, exclude: [] }]), { files: 1, bytes: fixture.length });
+      assert.deepEqual(await readFile(path.join(nativeOutput, 'lwjgl.dll')), fixture);
+    } finally { await nativeExtractor.close(); }
+    await rm(nativeOutput, { recursive: true }); await rm(nativeFile);
+    const fileViews = path.join(root, 'file-views'); await mkdir(fileViews);
+    const materializer = new FileViewService(objectsDirectory, objects, pool);
+    const receipt = await materializer.materialize(fileViews, 'fixture.jar', transferSpec, transferred, { mode: 'prefer-link' });
+    assert.deepEqual(await readFile(path.join(fileViews, receipt.relativePath)), fixture);
+    assert.deepEqual(await materializer.materialize(fileViews, receipt.relativePath, transferSpec, transferred, { mode: 'prefer-link', existing: receipt }), receipt);
+    const hashWorkersSpawned = pool.spawnedWorkers;
+    assert.ok(hashWorkersSpawned <= 3, 'HASH_SESSIONS_WERE_NOT_REUSED');
     await objects.close(); objects = undefined;
     await client.close(); client = undefined; await pool.close();
     console.log('OUCL_WORKERS_RESULT:' + JSON.stringify({ status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       builtWorkerUsed: true, storageAcceptanceIdempotent: true, interruptedTaskProtected: true, hashBytes: result.size,
       hashElapsedMs, hashMatched: true, parentEventLoopTicks: ticks,
       progressEvents, cancellationJoined: true, fileHandleReleased: true, objectDeduplicated: true, provenanceSeparated: true,
-      objectIndexRebuilt: true, durableTaskPreserved: true }));
+      objectIndexRebuilt: true, durableTaskPreserved: true, artifactTransferVerified: true,
+      transferCancelledAndResumed: true, transferJournalCommitted: true, verifiedTransferReused: true,
+      sharedConsumerCancellationIsolated: true, independentSourceAdopted: true, hashWorkersSpawned,
+      batchArtifactsVerified, batchNetworkRequests, batchIndexImported: true, batchCachedReuse: true,
+      nativeWorkerExtracted: true, nativeWorkerHandlesReleased: true, fileViewMode: receipt.mode, fileViewVerified: true,
+      instanceRecordsPersisted: true, unreadyInstanceNotPromoted: true, offlineIdentityPersisted: true, javaSelectionPersisted: true, profileJavaProbeMocked: true }));
     clearTimeout(deadline); app.exit(0);
   } catch (error) {
     await objects?.close().catch(() => {}); await pool.close(); await client?.close().catch(() => {});

@@ -1,0 +1,1743 @@
+▶ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain
+  ✔ missing (408.8568ms)
+  ✔ changed (390.4797ms)
+✔ acceptance real worker/SQLite: missing or externally changed A plan blocks the complete B install domain (800.7425ms)
+▶ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed
+  ✔ future-envelope (433.8028ms)
+  ✔ future-plan (471.4117ms)
+  ✔ cross-root (483.0067ms)
+  ✔ request-mismatch (509.6773ms)
+  ✔ digest-mismatch (585.1404ms)
+  ✔ foreign-instance (602.8947ms)
+✔ acceptance real worker/SQLite: journal-consistent future format, cross-root and mismatched confirmation evidence fail closed (3088.292ms)
+✔ acceptance real worker: controlled target-clock crossing 2000ms returns TIMEOUT and keeps worker alive (592.7009ms)
+ℹ Real worker + SQLite; deterministic injected target-reader Date.now, not wall-clock performance evidence.
+✔ acceptance main adapter: real 2500ms deadline retains global pending slots and late replies do not publish snapshots (2521.4289ms)
+ℹ main real-timer deadline observed 2515ms; storage/projection are controlled doubles
+✔ acceptance main adapter: at most 16 bounded snapshots / 16MiB serialized payload and 256 cursor references (331.3944ms)
+ℹ 14113008 serialized bytes across 16 x 2000-row snapshots; bound check, not JS heap measurement
+✔ processor archive validation protocol admits only bounded verified files and results (1.8913ms)
+✔ official manifest parser bounds entries, identities, hashes, timestamps and origins (4.314ms)
+✔ metadata HTTPS reader refuses origins, status, oversized bodies and wrong SHA1 (1592.1783ms)
+✔ catalog paginates by source revision and does not claim runtime compatibility (2.1948ms)
+✔ stale verified cache works offline with its original timestamp and bounded refresh retries (775.6268ms)
+✔ invalid cache and corrupt fresh metadata never acquire trust through fallback (2.4383ms)
+✔ descriptor resolution verifies official metadata before returning the client plan and provenance (3.1668ms)
+✔ catalog IPC rejects paths/URLs and invalid senders before network access, and validates output (1.3588ms)
+✔ official catalog cache persists through real SQLite/JSON worker restart (412.2158ms)
+✔ desktop HTTPS adapter streams native bytes and retains request policy without ambient cookies (38.9802ms)
+✔ desktop redirects are either returned as one manual hop or refused; never followed implicitly (1.2969ms)
+✔ desktop cancellation before headers and during streaming aborts the owned native request (5.7721ms)
+✔ desktop adapter forwards explicit JSON POST and returns no body for HEAD, without retaining auth or raw errors (1.6302ms)
+✔ appearance schema forbids CSS/remote paths, malformed icons and inconsistent layout identities (1.9491ms)
+✔ desktop sender/envelope validation precedes native/image side effects, exact outputs remain correlated (2.1895ms)
+✔ desktop worker persists themes, exact icons, layout and local drafts without mutating launch defaults (351.751ms)
+✔ official icon resolution rejects alternate origins, unrelated projects and SVG without renderer networking (25.1009ms)
+✔ listAll returns accepted and projected admissions completely and detached across restart (93.5308ms)
+✔ listAll audit and results share one real SQLite snapshot during a concurrent committed update (68.9663ms)
+✔ listAll returns exactly 1024 records and rejects 1025 rather than silently truncating (350.0995ms)
+✔ listAll rejects corrupt records, orphan identities and unknown schema without returning a partial set (259.4381ms)
+✔ existing confirmation remains a receipt after authority advances, while a new alias needs current authority (68.9357ms)
+✔ listAll checks the held owner marker and handles concurrent close with controlled errors (41.9728ms)
+✔ strict admission parser rejects unknown fields, changed canonical binding and illegal phase revisions (51.8783ms)
+✔ aggregate byte budget rejects oversized persisted data before parsing and prevents new over-budget writes (504.0953ms)
+✔ admission keeps one task/outbox across exact retries and confirmation aliases (77.5092ms)
+✔ receipt aliases recover an existing task after publisher advancement without a new execution grant (82.2999ms)
+✔ immutable binding rejects same request/proposal with changed snapshot, inode, plan or identity (51.3335ms)
+✔ new admissions require current archived release but old exact receipts survive high-water advance (73.8251ms)
+✔ lost acceptance and projection acknowledgements reopen as exact original task, without execution (113.1689ms)
+✔ schema v1 migrates atomically while preserving legacy release, journal and receipt bytes (95.1121ms)
+✔ unknown versions/schema and corrupt admission/outbox records fail closed without repair (357.0915ms)
+✔ admission reads reject invalid bounds and stop on live corruption without leaking native SQL (37.5037ms)
+✔ identity bounds preserve old receipts and reject new aliases/admissions without eviction (923.9806ms)
+✔ durable admission/projected task freshly claims once and commits through native; repeat reads terminal evidence only (3100.4294ms)
+✔ real claim commit with lost acknowledgement leaves running and no journal/files; retry never regrants effects (1153.178ms)
+✔ busy target and original preview file snapshot changes reject before claim and preserve unknown content (879.7124ms)
+✔ same-path replacement root cannot inherit admitted original directory identity (894.9395ms)
+✔ current synthetic trust revocation or signed release expiry blocks a fresh claim (1838.0562ms)
+✔ cancel and close drain held real domain validation and exclude legacy confirmation before publication (1839.456ms)
+✔ legacy-created terminal journal with pristine queued task is not admitted execution evidence (2721.7819ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup (3095.7302ms)
+✔ actual receipt commit makes cancel too late and close drains cleanup with unknown terminal metadata (3147.0778ms)
+✔ stable absence is undefined; real admitted/native committed evidence is thin, detached and read-only (2678.9331ms)
+✔ real staged failure rolls back via native factory and proves absent before-receipt at revision zero (1336.5998ms)
+✔ malicious admission/root/journal bindings cannot certify a real terminal (2569.5964ms)
+✔ partial/pending journals and wrong committed or rolled-back receipt direction are not terminal evidence (2607.0721ms)
+✔ a genuinely newer native receipt conservatively refuses the old admitted terminal (5656.2101ms)
+✔ journal and receipt envelope drift across J1/R1/J2/R2 are rejected (2841.3481ms)
+✔ untrusted port envelope budgets, extra keys, cycles and read failures fail closed without storage writes (2776.2155ms)
+✔ real ticket admits and projects one queued task; old receipt aliases survive higher release and proposal TTL (1311.0146ms)
+✔ wrong root/revision/sequence and conflicting request identity refuse new admission (1088.6668ms)
+✔ real admit commit with lost acknowledgement returns the one durable task (620.0256ms)
+✔ real project commit with lost acknowledgement returns the one durable task (856.6668ms)
+✔ real mark commit with lost acknowledgement returns the one durable task (890.381ms)
+✔ reopened service reads original durable confirmation without obtaining another ticket (935.8919ms)
+✔ different proposals serialize complete metadata chains without overlapping tickets or task identities (1435.5016ms)
+✔ same ID shares held real ticket and close waits the admitted operation to settle (850.6167ms)
+✔ close after real admission commit drains projection/read-back without abandoning uncertain acceptance (934.5684ms)
+✔ real signed/worker/domain ticket is detached; durable admission repeats one task without publication (1051.2776ms)
+✔ ticket rejects an external file change and leaves unknown content untouched (250.5553ms)
+✔ new accepted release high-water invalidates the old ticket without publication (249.2584ms)
+✔ expired proposal identity cannot obtain a ticket or revive on retry (240.9761ms)
+✔ ticket cancel rejects and drains a held real domain context before shutdown (241.6442ms)
+✔ ticket close rejects and drains a held real domain context before shutdown (217.1663ms)
+✔ ticket singleflight and legacy confirm are mutually exclusive before any publication (475.5404ms)
+✔ unconfigured or unavailable execution rejects all five channels before any backend dispatch (2.8642ms)
+✔ request and sender validation reject future versions, extras, channels and malformed IDs without dispatch (0.6363ms)
+✔ strict complete response envelopes and business identities are checked on every channel (3.6854ms)
+✔ active duplicates share the exact promise and sorted flat payload digest rejects changed identities (0.5841ms)
+✔ completed IDs retain digest only and redispatch exact retries without transport pretending durable authorization (0.3588ms)
+✔ active quota16 and seen quota1024 reject new identities without evicting old digests (40.477ms)
+✔ sender revocation rejects late success or throw even if the same closure becomes trusted again (7.7144ms)
+✔ close aborts immediately but waits for noncooperative real promise settlement before port close (1.0174ms)
+✔ upstream errors are redacted while exact public error envelopes preserve commit-too-late semantics (1.2199ms)
+✔ distribution execution receipts reject other existing task kinds (1.5961ms)
+✔ execution contract defines five channels and the approved bounded lifecycle constants (2.6813ms)
+✔ requests reject future versions, unknown fields, noncanonical UUIDs and arbitrary path or URL input (0.4084ms)
+✔ proposal enforces 256 operations, exact 1024 path boundary, safe Windows paths and nonoverlap (3.9207ms)
+✔ preparation states constrain proposal/error to one exact discriminated variant (0.4742ms)
+✔ accepted/recovery validate real TaskSnapshot structure and cannot substitute task identity or unintroduced kind (0.3177ms)
+✔ result correlation rejects wrong prepare identities, cross-instance proposals, wrong proposal and mixed channel DTOs (0.7914ms)
+✔ all error codes roundtrip their exact mapping; unknown codes, details, retry drift and oversized responses fail (3.9665ms)
+✔ owners reject untrusted/invalid/closed senders before creating any backend generation (1.9196ms)
+✔ retired generation cannot admit late replies and shutdown waits for retired plus live settlement (5.8682ms)
+✔ retired close errors are remembered after settlement without retaining every finished promise (2.0877ms)
+✔ factory failures stay redacted and repeated completed revocations close each generation once (2.7519ms)
+✔ real runner directly completes J→K, wrong task does not poison identity, historical new receipt never re-enters J (6246.1547ms)
+✔ K actual CAS remains inside the root slot: different job stays out, cancel too late, close drains same-ID callers (3263.8437ms)
+✔ real post-publication cancellation rolls native bytes back, settles failed, and preserves original typed cancellation (2547.6062ms)
+✔ unknown actual claim acknowledgement stays running without files; later runner is K-only and never retries J (1418.2457ms)
+✔ preclaim busy target preserves the original typed error and leaves the task queued (1143.196ms)
+✔ close during held J validation drains actual cancellation and keeps shared stores open (1077.5381ms)
+✔ execution integrates real signature, SQLite authority, file publication and idempotent confirmation (290.9185ms)
+✔ empty source registry rejects without target, network, artifact or receipt access (38.2451ms)
+✔ new accepted publisher sequence invalidates an earlier prepared proposal before publication (91.108ms)
+✔ revocation after prepare is checked against current pinned configuration (83.9224ms)
+✔ expired prepared release/proposal cannot publish a file or receipt (63.441ms)
+✔ archived signature metadata is reverified before execution, beyond its accepted payload hash (87.9656ms)
+✔ publisher upgrade during final product validation cannot pass the SQLite receipt commit guard (227.2541ms)
+✔ same request cannot change identity; cancelled and closed coordinators cannot confirm preparation (86.3095ms)
+✔ cancel between confirm admission and transaction start aborts the original proposal (66.8115ms)
+✔ revocation during awaited product validation is rechecked before receipt commit (231.112ms)
+✔ external filesystem changes after prepare are retained and invalidate confirmation (88.2908ms)
+✔ product validator rejection and active session prevent trusted release execution (158.7902ms)
+✔ failed identities release active capacity but retain bounded same-input failure and reject changed input (34.2808ms)
+✔ TTL releases a ready slot without allowing expired identity to fetch or execute again (95.8795ms)
+✔ expired unresolved work still consumes the active budget until its underlying job settles (61.3508ms)
+✔ in-flight duplicate preparation shares one effect and cancelled requests free slots beyond the former sixteen limit (470.537ms)
+✔ unknown validator errors become small stable failures and cannot rerun the same identity after recovery (80.0333ms)
+✔ close is idempotent, cancels pre-transaction confirmation and drains its delayed target read (72.1569ms)
+✔ replacing an empty game directory namespace after prepare invalidates the unchanged-looking proposal (73.3824ms)
+✔ completed identities retain read-only confirmation under the total identity limit without retaining proposal capability (199.4999ms)
+✔ close also drains a preparation whose trusted target port is still pending (32.4888ms)
+✔ cancellation signal reaches a pending preparation validator without releasing its unfinished work (59.0382ms)
+✔ close aborts validator work but drains its actual settlement before the store can close (57.1634ms)
+✔ cancel during the authority read prevents a late validator from starting (57.0957ms)
+✔ transaction-local cancellation reaches the final domain validator and rolls back published bytes (226.814ms)
+✔ coordinator cancellation reaches artifact work through the transaction combined signal (106.1142ms)
+✔ real native fresh-bound first commit binds the captured root and refuses a second call (2067.0459ms)
+✔ replacement of the original root inode fails before lease, journal or publication (78.2863ms)
+✔ missing protected factory and malformed proof reject before calling authorization or artifacts (61.733ms)
+✔ existing terminal and interrupted journals never call fresh factory or artifact (2129.2999ms)
+✔ caller proof mutation during awaited authorization cannot change the captured expected root (1603.4088ms)
+✔ signed manifest enum fields reject arrays and objects rather than coercing their string value (3.4743ms)
+✔ local receipt area must be an exact string before it can influence ownership classification (1.1826ms)
+✔ v1 preview cancellation ends even when an injected fetch, body read or body cleanup ignores abort (56.0988ms)
+✔ local domain validates real JAR worker facts before and after a real SQLite/native transaction (2298.2901ms)
+✔ internal execution coordinator confirms real local-domain JAR facts through SQLite and native publication exactly once (2179.1785ms)
+✔ replace and remove final validation does not require the old JAR to remain in the published inventory (7876.8583ms)
+✔ external final JAR mutation is rejected and rollback preserves the unknown replacement with needsRecovery (1124.2341ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint staged (736.9662ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint published (1114.1358ms)
+✔ local domain cannot adopt an invalid post session at transaction checkpoint receipt-committed (1556.4424ms)
+✔ class bridge blocks unknown permission, missing platform, server-only additions and unknown runtime facts (600.7517ms)
+✔ local domain rejects unsupported nested mod paths and other content areas without publishing (465.5012ms)
+✔ artifact cannot silently rebind an identical-content source to a different inode after validation (481.1511ms)
+✔ local domain TTL, active session and total identity bounds do not revive expired plans (481.784ms)
+✔ clock rollback during an awaited port expires the existing artifact session before returning its path (480.3521ms)
+✔ aborting the original prepared request releases its session slot and preserves a cancelled identity (474.751ms)
+✔ real archive worker cancel settles before local domain releases its active operation (275.1912ms)
+✔ real archive worker close settles before local domain releases its active operation (54.9235ms)
+✔ local evidence reads a real synthetic JAR through the worker and binds measured runtime and root inode (173.2573ms)
+✔ missing permission and a foreign operation binding refuse local bytes before any scanner starts (4.9013ms)
+✔ wrong signed content hash, invalid JAR and multiply linked local sources never become verified artifacts (303.1188ms)
+✔ unknown runtime facts and replacement game directories cannot borrow the old root identity (9.39ms)
+✔ source namespace replacement after a successful worker scan is detected before returning its path (136.7653ms)
+✔ a late successful worker result after cancellation cannot return an artifact or leak its path (147.0583ms)
+✔ replacement removes the exact old item once and creates the complete expected fingerprint without aliasing (7.709ms)
+✔ remove leaves remaining dependency declarations intact for a separate complete compatibility check (2.3487ms)
+✔ keep, disabled and omitted inventory items are preserved without adopting new facts (0.8763ms)
+✔ occupied case-folded filenames, duplicate baseline names and unknown hashes are rejected (1.9508ms)
+✔ replace and remove require the exact baseline hash, while projection never grants managed ownership (1.3878ms)
+✔ missing, repeated, extra and cross-index scan facts fail without changing the baseline (1.652ms)
+✔ unsafe paths, nested target paths and non-Mod operations are not treated as supported (1.4391ms)
+✔ scan size, hashes and strict worker fact shapes must match the selected operation (0.9397ms)
+✔ the full final inventory is limited to 256 files and all supplied facts to 8MiB (26.2223ms)
+✔ real SQLite owner restart and native published recovery preserve the authoritative commit boundary (1290.765ms)
+✔ real SQLite owner restart and native receipt-committed recovery preserve the authoritative commit boundary (610.1092ms)
+✔ real reopened owner rejects recovery into a replacement game namespace without touching either directory or authority (326.6605ms)
+✔ real reopened owner preserves a foreign game lease and all persisted evidence when recovery is busy (338.8456ms)
+✔ Node wrapper executes real C# identity-bound link, delete, rename and lease release (1139.6811ms)
+✔ existing destination is preserved for both native no-replace rename and hardlink (217.1939ms)
+✔ wrong file inode, volume, hash and size cannot mutate the real source (450.233ms)
+✔ wrong root identity or lease token fail before native publication and preserve the lease (187.4219ms)
+✔ renamed original root and replacement same-path namespace do not satisfy persisted directory identity (103.1099ms)
+✔ binary digest mismatch rejects a valid operation before launching the helper (17.8843ms)
+✔ wrapper rejects path escape, protected regions, wrong transaction staging, ADS and unknown DTO fields (8.025ms)
+✔ transaction file factory really uses the native helper for publication, rollback moves and lease release (577.8255ms)
+✔ real transaction published crash recovery uses the native factory and persisted root identity (452.6203ms)
+✔ real transaction receipt-committed crash recovery uses the native factory and persisted root identity (441.892ms)
+✔ packaged metadata loader returns a working real native factory from freshly built protected payload entries (392.6444ms)
+✔ packaged metadata loader rejects schema/path/hash/size tampering and changed executable bytes without granting a factory (541.949ms)
+✔ native helper accepts Node dev/ino/SHA proof and publishes exactly one protected hardlink (713.7532ms)
+✔ native helper accepts valid v7 transaction and lease UUIDs used by the shared contract (112.5777ms)
+✔ native no-replace rename and link preserve a preoccupied destination (229.7817ms)
+✔ native same-handle rename preserves Node inode and hash (113.1462ms)
+✔ native delete removes one proven alias without deleting its live published pair (213.4803ms)
+✔ native lease release reuses its protected source handle and rejects a wrong token (194.1581ms)
+✔ native helper refuses a replaced source or wrong proof without deleting replacement bytes (104.6607ms)
+✔ native root identity and lease gates precede mutation (170.0242ms)
+✔ native helper refuses unknown third hardlinks (85.2793ms)
+✔ native schema rejects extra/duplicate fields, unbounded input, invalid UTF8 and future versions (553.9035ms)
+✔ native paths reject foreign transaction staging, traversal, ADS, cross-volume and unrelated files (331.6831ms)
+✔ native helper rejects a real junction ancestor before touching its sentinel (85.1176ms)
+✔ production guard source blocks source edits and ancestor renames from an independent process (392.0007ms)
+✔ actual metadata-only FSCTL reparse succeeds but held-parent operations refuse and cannot escape (476.814ms)
+✔ the application owner reconciles persisted admissions before exposing task and target observations (1945.1091ms)
+✔ production pinned source verifies real Ed25519 and exact package/version; default trust is empty (36.7922ms)
+✔ pinned source rejects tampering, wrong key, revoked key, future fields and oversized envelopes (6.1124ms)
+✔ pinned source accepts only fixed HTTPS public origins and unique Ed25519 public keys (1.3806ms)
+✔ receipt parser is exact, bound to instance, versioned and rejects escape without adopting files (1.2408ms)
+✔ ownership detects user overrides and multiple package claims rather than inferring shared ownership (0.3341ms)
+✔ real file preview preserves bytes, exposes no absolute path, and allows exact owned proposal only (45.4751ms)
+✔ preview rejects no source, wrong environment, changed target and corrupt receipt (10.2477ms)
+✔ real observation discovers only allowed areas, hashes nested files and missing receipt remains missing (16.1325ms)
+✔ config replacements remain conflicts and signature failures retain their authentication classification (26.3333ms)
+✔ real authority and worker reconcile a fixed task identity exactly once (360.6086ms)
+✔ actual project commit with lost acknowledgement recovers the same task (280.1621ms)
+✔ actual mark commit with lost acknowledgement recovers the same task (288.7872ms)
+✔ refuses orphan without reconstructing a queued task (250.0754ms)
+✔ refuses digest without reconstructing a queued task (278.1598ms)
+✔ refuses task-id without reconstructing a queued task (263.0253ms)
+✔ refuses projected-missing without reconstructing a queued task (360.9445ms)
+✔ unconfirmed proposals and another root never create a task; worker enforces expected root (269.8872ms)
+✔ close drains a held actual commit and rejects subsequent reconciliation (248.3246ms)
+✔ final audit rejects admissions added after the startup snapshot (251.1985ms)
+✔ release v2 strict canonical format preserves embedded v1 bytes and bounds lifetime/sequence (7.7896ms)
+✔ real Ed25519 release accepts increasing sequence and exact idempotent payload through authoritative CAS (34.2088ms)
+✔ bad signature, revoked/wrong key, wrong request/source/target and manifest digest never touch authority (10.7078ms)
+✔ expired and not-yet-valid signed releases cannot advance highest accepted sequence (1.9984ms)
+✔ accepted high water rejects downgrade and same-sequence differing signed content across package versions (3.9031ms)
+✔ CAS concurrency prevents delayed lower release and idempotent old release accepting after a newer sequence (4.4533ms)
+✔ same sequence competing signed payloads have one CAS winner and deterministic equivocation rejection (2.3993ms)
+✔ hard timeout and cancellation settle even when fetch/read/cancel ignore abort (75.268ms)
+✔ authority corruption, endless CAS contention and timed-out commit remain conservative (60.3321ms)
+✔ hard budget also bounds a stalled authority read and expiry during CAS rejects current acceptance (32.3249ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (80.9276ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (103.5215ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (39.2275ms)
+✔ executor archives must match already-authenticated canonical release high-water state (51.6567ms)
+✔ SQL schema failures and concurrent close reads remain controlled without leaking native errors (66.0447ms)
+✔ real Store claim permits one pristine start and rejects wrong binding without changing queued state (48.3792ms)
+✔ real Store non-pristine queued tasks cannot regain first-start permission through generic updates (58.0396ms)
+✔ a committed claim with lost acknowledgement is not replayed, including after real worker recovery (407.5529ms)
+✔ claim private protocol rejects arbitrary owner and malformed bindings (0.7797ms)
+✔ real RecordStore and worker return the complete fixed identity projection and reject stale roots (264.6932ms)
+✔ SQL reader rejects either orphan, kind mismatch, invalid digest and overflow without writing (81.0674ms)
+✔ private query parser rejects owner injection and reply duplicate aliases (0.7821ms)
+✔ real RecordStore projects the exact admitted task identity idempotently without executing it (38.6932ms)
+✔ SQL projection rejects either orphan side and foreign kind instead of adopting existing rows (2.8233ms)
+✔ real worker bridge derives owner and rejects a stale expected root without projection (212.5907ms)
+✔ private projection command rejects caller owner fields and malformed bindings (0.7513ms)
+✔ real native committed evidence settles the real running task once; repeat reads unchanged completed state (3011.837ms)
+✔ real task CAS commit with lost acknowledgement reads back the exact expected tuple without writing again (2943.2185ms)
+✔ real fresh claim and protected staged rollback settle failed without a committed receipt (1548.7467ms)
+✔ later real receipt does not invalidate the already-settled historical task or require current receipt reads (5897.2942ms)
+✔ wrong root/task/proposal bindings and pristine queued journal cannot be settled as terminal tasks (2683.0281ms)
+✔ actual competing CAS cannot be overwritten or treated as the exact settlement acknowledgement (3196.1684ms)
+✔ close drains a held actual task CAS and refuses new settlement without abandoning committed state (3014.5752ms)
+✔ distribution targets are read alone or paginated together with Mod targets (5.8525ms)
+✔ missing or mismatched distribution reader rejects a mixed query before the Mod read (1.0518ms)
+✔ invalid distribution rows are rejected before a first page can hide them (2.2703ms)
+✔ real registered root/instance queued views become completed after actual runner/native settlement (3248.3892ms)
+✔ real orphan task and malicious accepted-request binding cannot pass point lookup (933.2872ms)
+✔ list/targets audit the full inventory before selected-instance filtering (1262.0653ms)
+✔ genuinely accepted but not projected admission is unavailable rather than empty (1448.1816ms)
+✔ startup barrier blocks metadata reads and failure remains unavailable (913.324ms)
+✔ real instance revision change and injected root revision drift invalidate target scope (1021.7647ms)
+✔ concurrent point and inventory readers share work; close drains held actual read (952.6939ms)
+✔ distribution transaction add, replace, remove and keep use private ledger and unique receipt commit (437.0749ms)
+✔ distribution transaction rejects forged game receipts, owned config edits and rollback publisher sequence (151.2751ms)
+✔ distribution cancellation before receipt commit rolls back published files and retains private bytes (126.8725ms)
+✔ receipt acknowledgement loss reconciles exact txID and cancellation after commit is too late (120.3628ms)
+✔ fresh distribution service recovers durable backed-up crash from exact journal proofs (248.0485ms)
+✔ fresh distribution service recovers durable published crash from exact journal proofs (310.793ms)
+✔ fresh distribution service recovers durable receipt-committed crash from exact journal proofs (268.3798ms)
+✔ fresh distribution service recovers durable journal-committed crash from exact journal proofs (277.3204ms)
+✔ cancellation arriving after receipt publication cannot roll back committed files (122.7489ms)
+✔ rolled-back journal crash recovery releases only the proven original lease (112.2269ms)
+✔ terminal recovery preserves foreign leases and refuses an unrecognized ledger commit (145.431ms)
+✔ lost journal acknowledgements reconcile exact durable records without publishing twice (110.5321ms)
+✔ lease replacement during staging stops before publication and preserves the foreign lease (60.1116ms)
+✔ in-place external changes to a published inode are retained instead of rolled back (67.5514ms)
+✔ external replacement during a crashed publication is preserved with needsRecovery and lease evidence (94.2583ms)
+✔ existing game lease, live sessions and changed target revision block distribution mutation (29.9628ms)
+✔ unknown journal versions and tampered lease/pending/manifest proof stop recovery before file access (46.2933ms)
+✔ recovery refuses a replacement game-directory inode even with matching persisted token and file bytes (49.0225ms)
+✔ linked target ancestors are never followed by the transaction (16.0087ms)
+✔ cancellation signal reaches artifact work through the transaction local cancel controller (12.3283ms)
+✔ cancelled artifact late success cannot start a new copy or persist a journal (13.3921ms)
+✔ cancellation after receipt commit starts cannot interrupt its acknowledgement or committed cleanup (118.9328ms)
+✔ distribution manifest is bounded, exact and rejects protected areas, aliases and path escape (3.3535ms)
+✔ distribution changes require ownership and exact observed old hash, preserving omitted and unknown files (0.7159ms)
+✔ in-memory distribution adapter requires configured Ed25519 key and rejects tampering, substitution and cancellation (3.6585ms)
+✔ physical transfer persists before writing and commits only verified bytes, then reuses the object (426.3742ms)
+✔ interrupted HTTP bytes survive a normal worker/store restart and resume with validators (627.565ms)
+✔ wrong digest never commits and a retry restarts rather than trusting the bad prefix (803.683ms)
+✔ object commit with a lost final journal acknowledgement is reconciled without a second download (425.2524ms)
+✔ one physical engine rejects a concurrent same-identity writer rather than racing its staging file (410.203ms)
+✔ lost acknowledgement after a successful final commit does not rewrite terminal state (519.9479ms)
+✔ cancellation during a verified-cache lookup wins before returning the object (627.7894ms)
+✔ verified cache cannot hide a contradictory authoritative committed object identity (622.8176ms)
+✔ a mirror hash mismatch retries the official bytes once without publishing bad content (668.2097ms)
+✔ one cancelled installer cannot interrupt another, including independent source evidence (4.0247ms)
+✔ paused consumers hold completion and revalidate their object when resuming (0.9245ms)
+✔ all-paused transport joins before resume starts a new attempt (0.5772ms)
+✔ last cancellation waits for physical cleanup and a new consumer waits for that old attempt (0.5128ms)
+✔ bounded admission and per-consumer callback failures do not kill other demand (0.8598ms)
+✔ global concurrency stays bounded and failure evidence is redacted for every consumer (0.5082ms)
+✔ physical cleanup failure takes precedence over a cancellation request (0.354ms)
+✔ close joins failed source-proof work and reports its failure rather than fake cancellation (1.3469ms)
+✔ close joins in-flight source-proof writes and never delivers to a cancelled consumer (4.6907ms)
+✔ real HTTP/object pipeline shares one transfer and writes both independently verified source proofs (570.3218ms)
+✔ full transfer streams real bytes and commits progress only after the file is visible (28.3279ms)
+✔ 206 resumes a durable prefix and truncates an uncommitted disk tail before requesting (19.0667ms)
+✔ a server ignoring Range replaces the old prefix with a full verified-size response (11.1859ms)
+✔ reset sync failure cannot restore a durable prefix after its file was truncated (9.2536ms)
+✔ changed ETag and invalid range response reset once, then reject repeated protocol failure (16.8222ms)
+✔ 416 accepts exactly complete durable bytes and otherwise performs one clean restart (16.0404ms)
+✔ weak or missing validator causes a full restart; Last-Modified can safely resume (21.8643ms)
+✔ network interruption preserves and checkpoints the received prefix for the next attempt (14.216ms)
+✔ cancellation waits for the durable prefix and closes the staging handle (9.2164ms)
+✔ overlong body, encoding, length and retry responses cannot produce complete state (23.3224ms)
+✔ header and idle timers are bounded and redact the original network exception (57.2358ms)
+✔ missing durable bytes and checkpoint failures stop without false completion (9.8181ms)
+﹣ linked staging files are refused when file symlink privilege is available (3.8648ms) # File symlink privilege unavailable; no system policy changed.
+✔ production HTTPS policy can be exercised through a local HTTP fetch adapter (52.3879ms)
+✔ durable transfer checkpoint is created with its marker and reopens without losing validators (64.0669ms)
+✔ transfer revisions reject stale callbacks and roll back a locked write cleanly (60.7194ms)
+✔ invalid identity, metadata, progress and validators cannot replace a checkpoint (38.9984ms)
+✔ only a zero-byte reset may change source or retreat; committed state cannot be rewritten (44.8447ms)
+✔ losing the authoritative ledger never creates an empty replacement or removes accepted tasks (46.846ms)
+✔ the empty initialization crash window may finish the marker but populated unmarked ledgers stop (69.677ms)
+✔ unknown ledger version, identity or schema stays on disk without being reset (169.1035ms)
+✔ malformed checkpoint records and unknown states block opening instead of disappearing (138.3664ms)
+✔ cached SQLite handles reject missing, changed or nonregular backing identity before reads and writes (40.7022ms)
+﹣ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (38.7173ms) # Windows refused rename of an open SQLite database; deterministic identity-adapter coverage remains active.
+✔ transport source changes require a validator-free zero checkpoint (140.234ms)
+✔ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (226.0339ms)
+✔ unsupported ranges fall back to one stream, while mirror failure clears source validators (67.7123ms)
+✔ a failed parallel checkpoint has recovery precedence and never reports complete (11.7296ms)
+✔ global and per-host request budgets apply through body completion and queued cancellation (0.7448ms)
+✔ mirror redirects remain fixed HTTPS routes and cannot reach arbitrary hosts or credentials (0.4197ms)
+✔ parallel cancellation joins stalled bodies and leaves only the contiguous prefix for resume (145.1608ms)
+✔ changed entity in a parallel lane aborts all lanes then restarts through the serial validator (84.5747ms)
+✔ parallel idle timeout cancels a stalled body even when a mock transport ignores abort (35.5133ms)
+✔ switching away from a mirror truncates its prefix and never sends its validators to the official host (57.3667ms)
+✔ weak or missing ETags and malformed range lengths never enable parallel writes (139.2004ms)
+✔ download settings reject arbitrary sources, unsafe concurrency and unknown versions (2.8361ms)
+✔ real settings worker preserves old fields, CAS conflicts and download preferences across restart (430.4534ms)
+✔ extension adapters reject untrusted documents, future versions and extra fields before invoking ports (2.7741ms)
+✔ online mutations join identical identities and reject identity reuse across input or operation (1.6616ms)
+✔ online document invalidation closes a late view and blocks replay (0.5459ms)
+✔ online mutation capacity preserves earlier identities and leaves close available (17.4846ms)
+✔ online DTOs accept ordinary titles and reject controls, duplicate IDs and extra snapshot data (0.2101ms)
+✔ distribution previews join pending and completed jobs but reject changed target identities (0.6563ms)
+✔ distribution cancellation waits for port settlement and rejects late successful preview (0.7039ms)
+✔ distribution disposal aborts jobs, denies late results and prevents replay (0.2546ms)
+✔ distribution jobs remain bounded and cancellation remains available at capacity (0.9756ms)
+✔ distribution DTOs retain relative file names but reject path escapes, controls and mixed conflicts (0.2704ms)
+✔ distribution public enums require strings rather than coercible arrays (0.1631ms)
+✔ distribution source-list port exceptions become controlled public failures (0.2169ms)
+✔ both adapters redact unexpected port failures instead of exposing private exceptions (0.433ms)
+✔ preload bridges reject invalid input before IPC and reject forged operation results (1.1454ms)
+✔ preload bridges validate response version and request identity with real adapters (0.3767ms)
+✔ online preload timeout preserves the mutation identity and never implicitly retries (1.3367ms)
+✔ distribution preload timeout never cancels or retries a preview and ignores its late reply (0.27ms)
+✔ verified copy views preserve shared objects, validate receipts and reject unknown existing entries (319.1617ms)
+✔ file-link privilege failure explicitly returns a checked copy without changing system policy (236.3298ms)
+✔ unknown linked parents and target entries are rejected without touching their external target (250.3615ms)
+✔ cancellation and invalid source facts create no new file and missing recorded projections require recovery (260.4762ms)
+✔ real preferred file projection reports actual link capability and deletion preserves the object (254.0894ms)
+✔ a recorded copy replaced by a hard link never acquires copy ownership (228.3208ms)
+✔ concurrent same-target creation serializes and refuses silent overwrite (242.6265ms)
+✔ unread settings do not classify a returning player as configured or new (2.3513ms)
+✔ guide preserves existing root, profile, Java and preferences exactly (0.5201ms)
+✔ automatic Java preparation remains optional and is never represented as registered Java (0.2087ms)
+✔ stale selected account and unavailable profile do not complete preparation (0.1542ms)
+✔ stored root preference does not substitute for the current selected root (0.1937ms)
+✔ sender, envelope and exact payload checked before selection (1.423ms)
+✔ result validates only exact fixed facts and maps redacted failures (0.8858ms)
+✔ same request joins chooser; another request cannot open a second chooser (1.5593ms)
+✔ sender destruction waits for chooser and discards late selected path (0.285ms)
+✔ worker concurrency is global and destruction drains the active worker (0.3532ms)
+✔ fixed preview is unknown and does not grant install permission (0.9732ms)
+✔ protocol rejects paths and forged worker replies (0.3968ms)
+﹣ real worker accepts fixed bytes and rejects a different archive (0.2976ms) # dedicated worker bundle not provided
+﹣ worker exit, duplicate messages, cancellation and deadlines are enforced (0.1552ms) # dedicated worker bundle not provided
+✔ game/session payloads and public outputs exclude executable, path, credentials and PID capabilities (1.5549ms)
+✔ game handler never starts effects for an invalid request id/sender/envelope and validates output (0.52ms)
+✔ launch/stop task results are discriminated from install results and require completed state (0.4059ms)
+✔ private session records enforce task/session ownership associations and reject ambiguous process facts (0.9279ms)
+✔ spawn is real acceptance boundary, fixed options remove ambient Java injection and close releases lease (28.9493ms)
+✔ gameDir lease excludes another instance and foreign marker is never removed (5.0135ms)
+✔ spawn exception and asynchronous start failure leave no falsely running session or lease (34.2962ms)
+✔ only explicit confirmed force stop kills; graceful rejection preserves the live JVM (18.104ms)
+✔ changed lease after process exit remains unknown and blocks future launches (28.7054ms)
+✔ Java mismatch, failed probe and pre-spawn cancellation cannot create game effects (2.3692ms)
+✔ finalization holds the sole lease, blocks same-major patch substitution and releases on rejection (26.4357ms)
+✔ cancel during finalization drains the callback before lease release and never permits spawn (17.5055ms)
+✔ failure after commit permission still releases owned lease without invoking start (17.6254ms)
+✔ gradient gives exact endpoints, rounded midpoint and stable single-character color (12.9789ms)
+✔ joined emoji, skin tone and combining marks remain intact in preview and JSON (0.4032ms)
+✔ JSON output escapes quotes, newlines and backslashes without creating executable content (0.4278ms)
+✔ bounded input rejects empty text, invalid colors, controls and oversized grapheme or code-unit input (0.7709ms)
+✔ handshake only accepts strict request DTO and safe version integers (1.2588ms)
+✔ trusted handshake negotiates version with zero business capabilities (1.1036ms)
+✔ handshake validates implemented capabilities including loaders and still rejects duplicates or unknown APIs (0.1616ms)
+✔ untrusted sender, incompatible version and malformed input return redacted failures (0.2106ms)
+✔ sender requires exact URL, same contents and main frame (0.1462ms)
+✔ response rejects mismatched request identity and injected capabilities (0.1534ms)
+✔ a well-formed future envelope reports unsupported major and retains request identity (0.1793ms)
+✔ sequential small-file hashes reuse one real worker and release each file before success (457.5449ms)
+✔ cancelled active session exits before rejection and a queued hash uses a fresh worker (279.0393ms)
+✔ queue budget remains concurrency plus 32 waiting jobs and close joins all sessions (10.9124ms)
+✔ strict session schemas require correlated UUIDs and retain legacy single-file replies (1.2695ms)
+✔ well-formed stale replies from a previous job cannot complete or update the next job (55.5401ms)
+✔ batch imports exact metadata, bounds work, commits all independent proofs and reuses cached bytes (1901.8777ms)
+✔ bad metadata and already aborted batches do not start a single network consumer (36.851ms)
+✔ one batch cancellation joins its work while another installation finishes shared downloads (937.6528ms)
+✔ callback failures abort siblings and are redacted after all owned transfers finish (1313.4899ms)
+✔ an in-flight commit error takes precedence over concurrent user cancellation (81.517ms)
+✔ index import maps operating-system and cleanup exceptions to fixed errors (127.1059ms)
+✔ cancellation during metadata commit joins the commit and retains verified shared content (119.2184ms)
+✔ caller changes to the prepared plan or body cannot alter the admitted private plan (443.671ms)
+✔ first-release install metadata refuses unsupported OS or architecture before network access (1.7584ms)
+✔ install metadata keeps each descriptor origin and exact validated asset-index bytes (3.1272ms)
+✔ wrong returned hashes and forged same-size bodies are rejected before planning (0.31ms)
+✔ asset-index declared size is checked as UTF8 bytes and cannot be trusted from a reader claim (0.2523ms)
+✔ missing asset metadata or its actual declaring origin never starts an index request (0.3016ms)
+✔ malformed asset JSON and absent source proofs are redacted rather than becoming an install plan (0.4969ms)
+✔ known catalog/network errors retain their fixed code and unknown dependency errors never leak (0.2589ms)
+✔ asset index projections distinguish the same upstream ID with different trusted hashes (4.3259ms)
+✔ Windows x64 native extraction excludes modern x86 and ARM64 archives while preserving metadata classpath (0.7757ms)
+✔ asset index parses Unicode names, aliases and optional legacy projections without mutating input (0.8732ms)
+✔ asset logical names reject Windows escapes, reserved entries, case collisions and file-directory conflicts (1.6921ms)
+✔ asset index bounds facts and rejects inconsistent sizes for the same content identity (93.0478ms)
+✔ vanilla install plans shared assets, Maven classpath and private native inputs using actual source proofs (0.7338ms)
+✔ content dedup keeps distinct official anchors and transport addresses instead of discarding source identity (0.4505ms)
+✔ missing, inherited or out-of-ancestry proofs never substitute the child for parent bytes (0.4621ms)
+✔ same digest with conflicting size, same URL with different facts and native recipe conflicts reject (0.4327ms)
+✔ library views reject case, file-directory and differing-content collisions (0.4936ms)
+✔ invalid archives, coordinates, unsafe exclusions and unsupported asset-less versions fail explicitly (1.4305ms)
+✔ installed language versions are admitted only after the actual object matches upstream SHA1 and recorded SHA256 (2.8702ms)
+✔ Quilt exposes Fabric Loader only from its verified and exact loader declaration (1.5791ms)
+✔ installer adapter enforces registered root scope and exposes only public summary/task fields (5.7158ms)
+✔ installer adapter pagination tokens are opaque, bounded to sender/channel/filter, and hold stable snapshots (1.6169ms)
+✔ installer task lists enforce owner/kind and completed results contain only the corresponding instance ID (0.8475ms)
+✔ installer controls call only durable cancel and return actual persisted state (0.8516ms)
+✔ installer adapter maps known failures and rejects raw exception text at its boundary (1.5075ms)
+✔ installer subscriptions provide atomic seq-zero snapshots and strictly ordered bounded full updates (442.668ms)
+✔ installer subscription ownership, repeated unsubscribe and sender removal never cancel installation (0.8944ms)
+✔ installer send callback failure removes only its subscription even if it throws a recognized service error (107.7734ms)
+✔ installer poll iterations never overlap and close suppresses an already pending response (496.8391ms)
+✔ installer admission counts pending subscriptions and enforces per-sender and global budgets (6.8873ms)
+✔ installer pending subscription is discarded if its window disappears during snapshot acquisition (23.5173ms)
+✔ verified installer extraction writes only the fixed selected entries (29.942ms)
+✔ installer extraction refuses wrong hashes, missing entries and nonempty destinations (14.3679ms)
+✔ installer worker protocol accepts no arbitrary entries, commands or reply shapes (1.0859ms)
+✔ Forge installer proof is bound to an exact official catalog choice and Maven path (27.474ms)
+✔ NeoForge installer uses the releases path and rejects catalog or matrix substitution (1.2776ms)
+✔ installer composition adds processor libraries without polluting launch classpath (4.9302ms)
+✔ installer composition refuses a non-policy processor chain and duplicate loader version (0.5567ms)
+✔ assembler binds extracted documents and every library to the verified installer choice (88.3358ms)
+✔ reopen revalidates shared object bytes and re-extracts exact documents into a fresh private tree (221.47ms)
+✔ reopen refuses changed object identity and cancellation before extraction (84.1617ms)
+✔ concurrent preparations serialize the shared one-shot extractor (190.3906ms)
+✔ forge extraction cancellation joins owned work and preserves private recovery material (141.9958ms)
+✔ neoforge extraction cancellation joins owned work and preserves private recovery material (155.1708ms)
+✔ executes with a clean environment and records upstream and local proof separately (3.8592ms)
+✔ cancellation terminates and waits for child close before rejecting (5.7072ms)
+✔ forge processor cancellation escalates but still waits for the owned process close (24.6242ms)
+✔ neoforge processor cancellation escalates but still waits for the owned process close (31.2174ms)
+✔ refuses existing outputs, wrong hashes and excessive child output (3.6858ms)
+✔ Mojang mappings must use the trusted preparation callback and never spawn a networking tool (0.6061ms)
+✔ expands controlled commands into a private workspace and retains upstream proofs (4.0054ms)
+✔ rejects manifest entry substitution, missing libraries and workspace escape (3.5664ms)
+✔ accepts only the frozen Forge and NeoForge six-step client chains (2.4889ms)
+✔ rejects task injection, reordering, unknown tools and invented upstream output proof (0.5452ms)
+✔ requires the mapping input to be one of the profile verified libraries (0.1344ms)
+✔ Forge installer profile becomes inert client processor facts with trusted artifacts (5.2393ms)
+✔ NeoForge identities and its official Maven origin remain distinct (0.6983ms)
+✔ installer profiles reject substituted identities, unsafe proof sources and unknown placeholders (0.6322ms)
+✔ server-only steps, duplicate libraries, unsafe embedded paths and partial artifacts are refused (0.3777ms)
+{"observation":"after-owner-normal-close","firstErrors":["STORE_BUSY","STORE_BUSY"],"retryError":"INSTANCE_NOT_FOUND","registrations":2}
+{"observation":"fixed-runtime-closed","registrations":2,"externalOwnerUntouched":true,"successorOwnerClosedNormally":true}
+✔ failed shared initialization drains, retries once after real owner closes, reuses one runtime and closes normally (151.4531ms)
+{"observation":"cleanup-before-retry","reads":2,"bothConsumersSharedFailure":true}
+✔ failed initialization remains shared until delayed cleanup actually settles (90.9265ms)
+{"observation":"concurrent-successful-retry","reads":2,"returned":2,"successorOwnerClosedNormally":true}
+✔ simultaneous retries after a failed owner claim share one successful runtime (110.4109ms)
+{"observation":"failed-cleanup-stays-closed","attempted":["native","installer","hash"],"reads":1}
+✔ cleanup failure drains other resources and keeps the failed cache closed to retries (45.2762ms)
+{"observation":"close-joins-cleanup","reads":1,"ownerPreserved":true}
+✔ service close joins in-flight failure cleanup and prevents later initialization (44.6474ms)
+✔ actual installer commits a complete private instance and reuses shared files across a second instance (1973.9265ms)
+✔ Fabric installation uses the same transaction and reopens with its pinned loader plan (2014.4386ms)
+✔ fabric reference target installs privately and reopens without metadata or transfer access (4086.5429ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ fabric cancellation stays unlaunchable and a new request can install the same display name (2061.1928ms)
+✔ quilt reference target installs privately and reopens without metadata or transfer access (4107.9497ms)
+{"level":"warn","event":"instance-install-failed","stage":"downloading","code":"CANCELLED"}
+✔ quilt cancellation stays unlaunchable and a new request can install the same display name (2224.638ms)
+✔ request idempotency rejects changed payload and same-name admission never overwrites an instance (1923.8017ms)
+{"level":"warn","event":"instance-install-failed","stage":"metadata","code":"CANCELLED"}
+✔ cancelled install stays unready, joins transfers and a new retry can reuse the original display name (1890.9512ms)
+{"level":"warn","event":"instance-install-failed","stage":"materializing","code":"NEEDS_RECOVERY"}
+✔ unknown existing shared entries are preserved and leave a recovery state rather than ready (1037.3235ms)
+✔ installed objects stay owned once while launch tasks, subscriptions, natural exit and session history persist (2674.4465ms)
+✔ explicit stop is durable, cannot act without confirmation and waits for the actual owned process close (2102.5875ms)
+✔ new inherited isolation captures the saved default and remains stable after settings change and retry (1454.5849ms)
+✔ launch rejects changed revisions, inventories, native trees, profiles and unknown constraints under the real lease (12640.7579ms)
+✔ accepted cancellation drains locked verification and a lost commit-permit acknowledgement never spawns (4137.7705ms)
+✔ prepared launch final verification succeeds with every materialization and extraction capability disabled (2195.4283ms)
+✔ new inherited layouts distinguish metadata for the same client while old receipts retain the original location (11.6426ms)
+✔ instance folder contract accepts only opaque identity and fixed folder keys (0.607ms)
+✔ folder resolver uses the actual isolated game directory (20.8807ms)
+✔ folder resolver uses the actual shared game directory (10.8687ms)
+✔ folder resolver rejects a linked allowlisted directory that escapes the instance (12.8442ms)
+✔ changing instance ignores a late old reply and does not control any task (2.0296ms)
+✔ refresh responses cannot regress to an older request (0.2028ms)
+✔ query failures change observation status without fabricating failed execution (0.2287ms)
+✔ target queries remain bounded and indicate additional pages rather than claiming completeness (0.2153ms)
+✔ an injected reply for another instance is not admitted (0.1496ms)
+✔ global snapshots only advance proven identities and never add unrelated tasks (0.2251ms)
+✔ current session selection excludes other instances and prioritizes real ongoing facts (0.22ms)
+✔ inherited isolation stays explicitly unresolved (0.1749ms)
+✔ instance summaries and indexes have exact bounded fields, canonical IDs and independent revisions (4.8125ms)
+✔ instance phases cannot claim ready without all materialization checkpoints (4.3821ms)
+✔ instance metadata preserves original bytes and rejects mismatched keys, hashes, index bytes and foreign ancestry (0.8881ms)
+✔ instance object refs and receipts reject paths, unknown fields, conflicts and absent content identities (1.1482ms)
+✔ instance body and metadata budgets are checked before accepting persistent JSON (16.9538ms)
+✔ instance metadata persists the exact bounded Windows rule environment instead of guessing it on reopen (1.1848ms)
+✔ loader metadata is revalidated from original profile bytes and per-library source proofs (4.2996ms)
+✔ installer loader metadata preserves its upstream chain and validates processor evidence (9.1469ms)
+✔ private instance worker commands and replies reject arbitrary records, foreign IDs and mismatched revisions (2.8ms)
+✔ real instance storage worker CAS persists through close/reopen without altering tasks or object hints (388.0407ms)
+✔ instance record and index commit separately so a half-completed index is never promoted to ready (355.0136ms)
+✔ instance checkpoints reuse original JSON recovery instead of adding a parallel database schema (37.4551ms)
+✔ instance storage does not create or accept arbitrary caller-selected parent directories (154.0045ms)
+✔ instance/task requests enforce each exact candidate payload and v1 envelope (2.0004ms)
+✔ pagination, names, MC identities, UUIDs and actions remain bounded (0.398ms)
+✔ public instance summaries exclude storage identity and paths (0.4706ms)
+✔ task snapshots validate progress, enumerations and exact error mapping (0.4149ms)
+✔ task results and events reject leaked fields, wrong identities and nonterminal result (0.3639ms)
+✔ every domain error has fixed controlled public data (0.468ms)
+✔ handler checks sender before dispatch and returns correlated safe failures (0.7672ms)
+✔ handler validates adapter outputs and task correlation without leaking private results (1.3539ms)
+✔ handler maps declared adapter failures and redacts arbitrary thrown values (0.4601ms)
+✔ Java properties parse supported 8/17/21 versions and explicit Windows x64 metadata (2.5587ms)
+✔ Java properties refuse incompatible majors, architecture, OS and inconsistent specification (0.7824ms)
+✔ Java properties cannot use banners, duplicate properties, malformed versions or private text as runtime evidence (0.455ms)
+✔ Java probe uses exact non-shell argv, hidden child and removes ambient agent injection settings (7.2466ms)
+✔ Java cancellation kills and joins close rather than reporting termination immediately (1.6728ms)
+✔ Java timeout and combined output budget terminate and await child close (24.2057ms)
+✔ Java probe rejects nonzero exit, spawn errors and malformed UTF8 without exposing diagnostics (1.7184ms)
+✔ Java probe rejects unselected paths and cancelled/invalid inspections before spawning (0.4771ms)
+✔ Java default inspection requires an actual nonempty regular executable path (9.608ms)
+✔ Java default inspection refuses a directory even when named java.exe (4.7394ms)
+✔ Java metadata accepts only fixed official index and content-addressed manifests (1.0809ms)
+✔ Java package refuses traversal, links, aliases, collisions, missing executable and untrusted downloads (0.9781ms)
+✔ compatible measured registered Java is reused without contacting the network (0.578ms)
+✔ missing Java follows pinned official manifest, prepares files then measures before registration (1.4289ms)
+✔ cancelled or unsupported Java never downloads or registers (0.7147ms)
+✔ inspection and runtime share selected-candidate priority and measurement budget; registration cannot substitute a patch (20.4501ms)
+✔ modern launch retains one argument per value, absolute Windows paths and inherited client jar (4.7276ms)
+✔ legacy JVM fallback and virtual assets use the supplied actual game directory (1.5282ms)
+✔ Forge module exclusion follows the inherited physical client JAR without changing version identity (0.3513ms)
+✔ JNA writes temporary DLLs outside the verified native directory (0.3181ms)
+✔ Java mismatch, invalid identities, memory and launcher version fail before execution (1.6499ms)
+✔ conflicting JVM settings, unknown placeholders and oversized argv cannot silently launch (4.0483ms)
+✔ assetIndex id overrides legacy name and additional official argument bindings are literal (0.4148ms)
+✔ launch uses only the trusted index alias and matches the virtual resource directory (0.9853ms)
+✔ native runtime caches stay private and outside the verified immutable natives (0.3627ms)
+✔ offline UUID v3 matches Java nameUUIDFromBytes compatibility vectors and preserves case (2.0723ms)
+✔ profile parser refuses unknown fields, invalid relationships and path/identity spoofing (4.206ms)
+✔ actual worker persists Java selection and independent offline identity across restart and unknown outcome retry (463.3797ms)
+✔ private worker profile messages remain exact and cannot become arbitrary record IO (1.1735ms)
+✔ profile shutdown joins an admitted Java probe and commit and refuses new mutations (0.9053ms)
+✔ launch recovery preserves errors and bounds restart reconciliation (300.5423ms)
+✔ renderer store exposes complete active and instance collections without losing selection (7.5663ms)
+✔ root B can refresh while root A is in flight; late A cannot refill B (2.369ms)
+✔ A to B to A generation does not accept an old same-root response (1.4486ms)
+✔ original-task query is deduplicated and never treats a failed read as safe business retry (0.7828ms)
+✔ concurrent task confirmation cannot be overwritten by an older list snapshot (1.2546ms)
+✔ explicit history browsing is retained until a deliberate list refresh (8.1011ms)
+✔ local data paths preserve spaces/Chinese and reject ambiguous or remote roots (7.1511ms)
+✔ isolation priority is pack, explicit override, then global default (1.5751ms)
+✔ instance/version/upstream identities are independent and jar references are not copied (0.8722ms)
+✔ paths reject invalid opaque ids and assigned directory escapes (0.4568ms)
+✔ absolute classpath uses root libraries plus nearest ancestor jar, not gameDir (0.4423ms)
+✔ content object paths use local SHA256 without upgrading source trust (0.2667ms)
+✔ removal keeps shared targets, parent dependencies and nonisolated root player data protected (0.9762ms)
+✔ pure path imports remain allowed while actual Node and UI capabilities stay prohibited (955.3414ms)
+✔ loader composition inherits vanilla content while pinning entry, arguments and trusted libraries (4.5759ms)
+✔ loader composition refuses mismatched library facts and duplicate version identities (0.8206ms)
+✔ loader metadata orchestration produces one complete pinned plan without side effects (4.0699ms)
+✔ loader metadata orchestration rejects cancellation, corrupt stored bytes and unknown failures (1.1749ms)
+✔ provider facts distinguish Forge major from the independent NeoForge FML artifact version (3.6364ms)
+✔ loader Maven libraries use inline profile proof or the exact official sidecar (32.8542ms)
+✔ official Maven proof retries network failures three times, never malformed proof or cancellation (1020.3627ms)
+✔ artifact policy admits only exact official Maven hosts without query or credentials (0.992ms)
+✔ loader Maven resolver rejects malformed proof, unsafe size, bad evidence and cancellation (3.2525ms)
+✔ Maven size retries do not refetch a successful checksum and cancellation interrupts its backoff (802.0602ms)
+✔ loader catalogs retain official identities and reject duplicate or mismatched entries (2.8183ms)
+✔ official profiles produce deterministic Maven paths and require missing proof sidecars (1.3456ms)
+✔ profiles reject identity substitution, unsafe repositories and partial checksums (0.53ms)
+✔ Forge promotions preserve Recommended priority without turning Latest into stable (0.3869ms)
+✔ NeoForge release catalog filters the exact 1.21.1 series and sorts deterministically (0.3645ms)
+✔ read-only worker receipt lookup does not admit work, change state or cross request ownership (320.7237ms)
+✔ all four loader receipts survive restart and offline catalog without new task or metadata effects (329.3324ms)
+✔ receipt worker protocol rejects arbitrary fields and invalid hashes before SQL access (0.8374ms)
+✔ four loader targets preserve approved Minecraft and Java identities without claiming runtime support (1.8232ms)
+✔ stable representative wins over an earlier returned newer loader only for its own Minecraft target (0.534ms)
+✔ missing or no-longer-stable target is never invented or selected over another stable version (0.3875ms)
+✔ same in-flight loader request shares catalog work and pending admission is bounded (3.9753ms)
+✔ loader service rechecks official catalog identity before transactional admission (2.2394ms)
+✔ loader service rejects unimplemented Minecraft series before network access (0.3557ms)
+✔ both processor families expose unverified candidates and preserve exact isolated identities (0.5062ms)
+✔ loader source allowlist accepts only fixed official endpoint shapes (1.718ms)
+✔ metadata client binds Forge and NeoForge catalogs to their fixed official endpoints (1.444ms)
+✔ metadata client binds validated facts to the exact official response digest (1.4171ms)
+✔ metadata client redacts malformed documents and refuses unsafe identifiers (0.6576ms)
+✔ background loader profiles retry only bounded transport unavailability (0.7236ms)
+✔ untrusted responses and invalid profiles are never retried (0.8461ms)
+✔ loader profile transport retry budget is exactly three (0.3775ms)
+✔ cancelled loader profile cannot start another retry (0.4437ms)
+✔ loaders.v1 accepts controlled identities and rejects paths, URLs and extra fields (2.589ms)
+✔ loaders.v1 validates bounded unique version output and fixed safe errors (0.6077ms)
+✔ instances.v2 distinguishes vanilla and pinned loader identities without leaking storage facts (0.8553ms)
+✔ instances.v2 handler enforces its versioned envelope and validates private projections (0.48ms)
+✔ loader handler validates sender, envelope and adapter output without leaking failures (0.4504ms)
+✔ accepts a lower local ZIP version while rejecting a higher unsupported minimum (33.7412ms)
+✔ local JAR worker returns real hashes, exact four declarations and nested evidence without writes (143.7607ms)
+✔ declaration interpretation runs inside the worker and its private facts are independently validated (147.2207ms)
+✔ scanner refuses corrupt class CRCs, unsafe identities, malformed ZIPs and invalid UTF8 (35.4413ms)
+✔ scanner enforces entry, nesting, node and shared decompression budgets (65.2325ms)
+✔ internal Mod worker protocol rejects executable selectors, forged trees and unbounded output (17.5155ms)
+✔ Mod scan cancellation, timeout, concurrency and malformed workers join exit before reuse (258.1243ms)
+✔ pinned closure recursively fetches exact versions and deduplicates shared projects (11.225ms)
+✔ project-only dependencies return explicit choices and never silently select a preferred release (0.7021ms)
+✔ installed versions are reused without querying an upgrade and pins never replace them (0.5415ms)
+✔ a fixed-version identity substitution is rejected before becoming a candidate (0.7015ms)
+✔ cancellation joins metadata reads, prevents expansion, and one active collection is bounded (0.5973ms)
+✔ cycles and depth are bounded while input snapshots and fetched metadata stay unchanged (1.3222ms)
+✔ fixed version conflicts remain visible, option truncation is explicit, and false project candidates are refused (0.6525ms)
+✔ a later exact pin removes a previously offered project choice (0.4973ms)
+✔ local checks distinguish runtime dependencies, aliases, disabled files and exact requirements (3.7762ms)
+✔ duplicate identities, alias collisions and conflicts are explicit; optional present versions still validate (0.4368ms)
+✔ only declared client nested JARs satisfy dependencies, with paths preserved as evidence (1.3181ms)
+✔ unknown versions, formats, unreadable files and unsupported expressions cannot pass (0.3036ms)
+✔ Forge multi-Mod and separate FML/NeoForge versions retain side and JarJar unknowns (2.5299ms)
+✔ Quilt prefers its own declaration, supports Fabric fallback and preserves unresolved conditions (0.7049ms)
+✔ instance and nested limits report unknown rather than silently truncating into success (20.0637ms)
+✔ known jarVersion substitution uses only the actual main-section manifest with continuations (3.9589ms)
+✔ Fabric declarations preserve real IDs, aliases, exact constraints, nested JARs and client applicability (1.7985ms)
+✔ Quilt declarations retain aliases, optional requirements and unknown unless/alternative/plugin conditions (0.6628ms)
+✔ malformed, unknown, variable and invalid JSON metadata remains explicitly unresolved (0.95ms)
+✔ standard TOML parses multi-Mod and preserves Forge language, Java, server-only and optional dependencies (0.9735ms)
+✔ NeoForge type defaults and incompatible/discouraged requirements remain distinct (0.572ms)
+✔ TOML unknown conditions, duplicate fields and malformed structures never produce a clean report (2.3674ms)
+✔ shared metadata limits bound recursion, tree size and unsafe nested paths (0.6371ms)
+✔ dependency closure deduplicates diamond projects and preserves every requiring parent (9.5381ms)
+✔ all incoming fixed-version constraints are checked even after a project was visited (0.2823ms)
+✔ installed projects are reused exactly and never upgraded to satisfy a different selected version (0.3277ms)
+✔ missing exact candidates, file-only identities, unknown installed files and ambiguous files remain unknown (0.2406ms)
+✔ cycles and 32-level/256-project limits stop traversal without pretending resolution (1.6762ms)
+✔ target conflicts, incompatible installed projects, duplicate projects and forged version identities are conflicts (0.3364ms)
+✔ optional and embedded declarations do not silently add external projects and input snapshots stay unchanged (0.247ms)
+✔ a previously visited shared tail is rechecked when a deeper path would exceed the limit (0.3941ms)
+✔ double check associates actual bytes and preserves platform/local version identities independently (2.1971ms)
+✔ wrong file proof, Minecraft, loader and client declarations surface evidence conflicts (0.3425ms)
+✔ fixed version prerequisites never degrade to any installed version of the same project (0.2817ms)
+✔ optional, incompatible, embedded and identity-less platform relationships remain distinct (0.1985ms)
+✔ duplicate project versions and unresolved nested content block automatic resolution (0.3162ms)
+✔ inspection binds real hash requests to two stable local observations and reports progress (3.9503ms)
+✔ platform outage remains explicit unknown and does not erase the local report (0.7966ms)
+✔ network-time file changes or environment revisions invalidate the check (1.1412ms)
+✔ inspection cancellation joins platform calls and prevents concurrent scans (0.6606ms)
+✔ instance inventory reads local hashes and disabled files without creating directories or changing JARs (793.7736ms)
+✔ scan preserves controlled unreadable/corrupt/unsafe entries as unknown evidence (134.255ms)
+✔ file content, directory inventory and instance revision changes invalidate the observation (484.7087ms)
+✔ inventory admission, cancellation and entry count are bounded (76.2921ms)
+✔ Mod IPC rejects untrusted envelopes before touching a service (1.5581ms)
+✔ Mod IPC preserves idempotency identities and report/task channel shapes (2.0125ms)
+✔ confirmation IPC requires explicit exact consent and returns only stable task references (1.605ms)
+✔ Mod plan contract rejects paths, arbitrary selections and malformed plan evidence (0.6407ms)
+✔ Mod IPC rejects malformed service output and redacts unexpected failures (1.3932ms)
+✔ Java facts measure selected compatible registered JVM and never trust persisted version text (3.8853ms)
+✔ missing, failed or changed-major JVM leaves unknown and does not discover a runtime (0.4577ms)
+✔ Java facts cancel by joining probe close, reject overlapping work and detect profile changes (1.4634ms)
+✔ Mod context requests the real metadata Java major and propagates measured facts without inference (11.7317ms)
+✔ metadata reconstruction preserves the original official index path and input record (1.2009ms)
+✔ ready restoration accepts only one trusted legacy or alias index receipt and never rewrites evidence (2.9959ms)
+✔ Mod requests and responses admit only controlled instance/task identities and validated reports (2.9763ms)
+✔ real worker durably saves Mod jobs and immutable reports, preserving task identity across restart (328.4377ms)
+✔ unknown future Mod formats stop typed IO and remain byte-for-byte intact (198.0519ms)
+✔ private Mod storage schemas reject arbitrary domains, overwrites and forged record associations (1.1578ms)
+✔ library reader rehashes a real JAR, keeps its actual declared version and never changes its bytes (323.1694ms)
+✔ corrupt cached bytes and conflicting SHA512 platform evidence cannot authorize a root (434.9121ms)
+✔ changed library records and files invalidate an observation after the platform read (412.2529ms)
+✔ unready resources, wrong source ownership and project substitutions stay controlled (303.5976ms)
+✔ cancellation waits for the in-flight source read and a reader refuses concurrent admissions (300.2091ms)
+✔ single JAR disable/enable predicts both checks without mutating or aliasing inputs (4.2372ms)
+✔ required reverse closure includes aliases and cycles; optional edges remain informational (1.8807ms)
+✔ all declarations and declared nested providers move with their physical root; stray nested archives do not (0.6118ms)
+✔ platform exact version reverse links stay separate from local Mod IDs (0.5013ms)
+✔ enabling detects conflicts, aliases, runtime mismatch and missing platform source (0.9136ms)
+✔ pre-existing broken or unknown inventory remains blocking even when the action removes the finding (0.3498ms)
+✔ rejects missing/ambiguous targets, mismatched activation snapshots and over-budget inventory (0.6257ms)
+✔ relation overflow is explicit and cannot produce a ready preview (6.8755ms)
+✔ server-only declarations cannot borrow a same-ID client provider to create reverse edges (0.8376ms)
+✔ runtime requirements never bind to spoofed JAR provider identities (0.6048ms)
+✔ admission is idempotent across key ordering and completed results are independently copied (6.5396ms)
+✔ running cancellation joins scanner exit, queued cancellation never starts and capacity is bounded (2.0597ms)
+✔ expiry is monotonic and late acceptance retry cannot start a second scan (1.0423ms)
+✔ a restarted registry never silently restores old ephemeral observations (0.8487ms)
+✔ sender and exact input validation run before service access, and status is correlated (1.2621ms)
+✔ presentation removes private URLs and archive entry paths, preserves identities and alias ownership (3.9662ms)
+✔ unsupported evidence is discarded and cannot yield a ready result (0.4997ms)
+✔ pre-existing and prospective issues remain distinguishable and preserve safe requirements (0.4995ms)
+✔ a shared 512-entry budget bounds the complete impact presentation (1.3214ms)
+✔ invalid file identifiers, digests and path-like filenames are rejected (0.8707ms)
+✔ private preview binds the requested root, instance and exact inventory and returns no filesystem path (5.9057ms)
+✔ root drift, wrong instance and stale revisions stop before a preview can be returned (2.6318ms)
+✔ same filename fileId is not sufficient after content changes, including inconsistent internal fingerprints (0.7999ms)
+✔ a platform transport failure cannot become ready by disabling the last JAR (0.4429ms)
+✔ admission and cancellation join the ongoing scan boundary and release the private lane afterwards (0.6648ms)
+✔ invalid selectors cause no context or inspection side effects (0.3675ms)
+✔ real two-scan inventory and JAR worker preview never rename or rewrite a local JAR (628.0436ms)
+✔ planner binds a downloaded root, resolved dependency bytes and the current instance fingerprint without paths or URLs (3.7683ms)
+✔ unknown installed identities remain a non-confirmable plan with their dependency evidence (0.4717ms)
+✔ platform substitution or downloaded-root hash mismatch cannot produce a plan (0.8172ms)
+✔ planner accepts unchanged version facts when independent response evidence changes (0.2872ms)
+✔ planner cancellation joins an in-flight library read and rejects concurrent previews (0.2882ms)
+✖ durable confirmation wins cancellation, joins retries and is discoverable after worker restart (6.0193ms)
+✖ cancel wins confirmation and rejected admission never creates an orphan task (1.8132ms)
+✖ admission rejects stale, foreign, unknown and substituted previews before allocating tasks (0.6973ms)
+✔ confirmation bridge rejects false confirmation, extra fields and generic acceptance bypass (2.0375ms)
+✔ saved plan schema binds request, target and content digests, and rejects mutable evidence (3.6322ms)
+✔ private plan bridge rejects paths, mismatched request identities and forged status revisions (1.9547ms)
+✖ real plan worker persists immutable previews, enforces CAS, and retains cancelled records across restart (1.348ms)
+✖ unknown saved plan formats stop writes and preserve original JSON byte for byte (0.6353ms)
+✖ plan retries and a real storage restart return the same saved evidence without repeating metadata work (0.5981ms)
+✖ same in-flight plan joins with independent outputs; other requests are bounded and inputs are snapshotted (0.9379ms)
+✖ cancellation is durable, checks exact plan identity and never reactivates the same request (0.8293ms)
+✖ lost write acknowledgement reconciles only exactly committed plan evidence (0.5202ms)
+✖ closing joins a cancellation already being persisted and rejects later operations (0.6451ms)
+✖ closing an active metadata preview aborts and joins it without publishing a plan (0.4994ms)
+✖ public saved-plan operations validate correlation, redact private records and refuse untrusted cancellation (0.5772ms)
+✔ SHA512 association sends only bounded hashes and preserves exact project/version prerequisites and evidence (28.4338ms)
+✔ candidates sort release first then publication and ID, while pinned lookups remain exact (2.923ms)
+✔ platform adapter rejects unsafe selectors, forged hash associations, project drift and invalid file proof (6.6424ms)
+✔ platform transport bounds status, rate-limit cooldown, malformed text, cancellation and concurrency (256.4346ms)
+✔ transient platform failures retry once and cancellation stops the retry (526.8948ms)
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (4.9309ms)
+✖ confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files (2.2176ms)
+✖ unconfirmed, cancelled, stale or occupied plans cannot start dependency downloads (0.8052ms)
+✖ enabled exact dependency reuse preserves a renamed JAR without downloading or upgrading it (0.6776ms)
+✖ a disabled dependency is not reused; unknown embedded project relationships stop before duplicate downloads (0.6262ms)
+✖ prospective declarations reject unsatisfied actual ranges, duplicate modIds and unknown requirements (0.5849ms)
+✖ case-insensitive filename collisions and refreshed source changes stop without overwriting an existing Mod (0.8099ms)
+✖ fixed candidate metadata and post-download SHA512 mismatch cannot prepare untrusted bytes (0.736ms)
+✖ cancelled preparation joins in-flight transfer cleanup and refuses concurrent admissions (0.8733ms)
+✖ plan refusal, external file changes and unknown sessions during transfer invalidate the preparation (0.6991ms)
+✔ Maven intervals preserve each endpoint, unbounded sides and unions (1.6165ms)
+✔ Fabric predicates, prereleases, opaque versions and Quilt any/all retain dialect (0.9685ms)
+✔ loader shorthand bounds exclude the next series prereleases and preserve unsupported syntax (0.2324ms)
+✔ three-valued aggregation never loses unresolved constraints (0.0961ms)
+✔ public Mod reports retain evidence while omitting raw declarations and private machine data (3.0329ms)
+✔ strict report schemas reject paths, extra execution data, inconsistent source/hash facts and false success (1.3532ms)
+✔ report projection preserves unknown reasons and enforces finite issue/metadata budgets (22.1775ms)
+✔ resolver proposes stable releases then newest date and exact ID without interpreting platform version numbers (14.0471ms)
+✔ later incompatible pins backtrack to a satisfying older project candidate with cached exact evidence (1.4223ms)
+✔ explicit root pins and installed versions remain fixed while optional dependencies stay unselected (1.2372ms)
+✔ explicit player choices are never silently replaced and empty choices cannot claim success (1.6009ms)
+✔ all conflicting alternatives are reported without treating a failed read as unsatisfiability (1.7692ms)
+✔ solver considers a viable candidate beyond the 32-entry display preview (6.5626ms)
+✔ search budget and unknown installed evidence stay explicit unknowns instead of false conflicts (1.3151ms)
+✔ cancellation joins an in-flight read, prevents expansion and bounds concurrent resolution (1.2575ms)
+✔ valid project identities cannot accidentally read inherited object properties (1.3165ms)
+✔ cyclic candidates can be rejected in favor of an acyclic alternative (1.2744ms)
+✔ cached version identities cannot be substituted by a project candidate response (0.6657ms)
+✔ public Mod admission shares task listing, reconnect snapshots and joined cancellation (294.3477ms)
+✔ Mod tasks are durable/idempotent, immutable reports reconnect and completed work is not repeated (565.6935ms)
+✔ Mod task cancellation joins the active read, enforces one scan and survives restart without replay (378.6886ms)
+✔ validation and read failures stay controlled and never publish a report (236.6967ms)
+✔ a lost report acknowledgement recovers the actual JSON commit without rescanning or overwriting it (461.8773ms)
+✔ failed task state waits for the durable reason instead of racing its report reader (253.6738ms)
+✔ a lost final task acknowledgement reconciles completed SQL and JSON without false recovery or duplicate reports (301.5627ms)
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (6.4031ms)
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (2.5052ms)
+✖ failed preparation persists bounded assessment and immutable task/plan association (0.8671ms)
+✖ lost result acknowledgement resolves only exact durable content and restarts without replay (0.7314ms)
+✖ executor cancellation waits for preparation cleanup and leaves no transaction or instance change (0.8376ms)
+✖ executor classifies a proven rollback as failed and never replays it after restart (0.6024ms)
+✖ orphan confirmation without a transaction becomes needsRecovery without running preparation (0.7028ms)
+✖ executor restores completion from a real committed transaction after the final task update was absent (1.2227ms)
+✖ commit boundary rejects cancellation and close joins the actual transaction (0.6722ms)
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (0.5958ms)
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (0.5375ms)
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (0.5351ms)
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (0.6185ms)
+✖ pre-existing player files and session owners are never overwritten or cleared (0.6167ms)
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (0.7868ms)
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (0.7153ms)
+✖ cancellation during source verification joins the worker boundary and does not start a staged copy (0.983ms)
+✖ recovery finishes a published instance after index failure using its unique commit ID (0.6669ms)
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (0.963ms)
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (0.7341ms)
+✖ real process termination recovers owned transactions at three commit boundaries (0.7894ms)
+✔ processor JAR validation permits class counts above native limits while retaining ZIP checks (89.5057ms)
+✔ actual linked source parents and destination directories never redirect native extraction (8.3236ms)
+✔ native archives extract stored/deflated files, UTF8, descriptors and empty directories with exclusions (39.7626ms)
+✔ native archive original SHA256 and size are mandatory before creating any output (18.9607ms)
+✔ native archives reject traversal, Windows aliases and noncanonical names before writing (103.2124ms)
+✔ native archives reject unknown filename encoding and malformed UTF8 (11.0956ms)
+✔ native archives reject symlink, special file, reparse and Unix hardlink metadata (44.5398ms)
+✔ native archives reject duplicates, case collisions and file/directory conflicts across all archives before writes (60.9624ms)
+✔ native archive CRC, declared output and fully consumed deflate bytes are verified (65.8503ms)
+✔ native archive limits reject excessive per-entry, aggregate and entry-count budgets before writes (59.2575ms)
+✔ native archive header disagreement, unsupported flags, ZIP64 and overlapping local records are refused (38.1565ms)
+✔ native extraction requires an empty destination and never overwrites player files (7.5047ms)
+✔ native extraction errors are fixed codes without filesystem paths (6.1036ms)
+✔ native worker schemas reject scripts, unknown keys, unsafe limits and unbounded replies (2.3378ms)
+✔ real one-shot worker releases its directory and rejects occupied output without leaking paths (268.3147ms)
+✔ native extraction admission is bounded and active cancellation joins before staging removal (129.3724ms)
+✔ close joins a running extraction and prevents admission, timeout and malformed archives stay fixed (168.0388ms)
+✖ transient connection failures and 502 responses retry within a three-attempt budget (5.0105ms)
+✖ a body disconnect resumes the latest fsynced prefix using Range and If-Range (1.5984ms)
+✖ permanent HTTP errors, long Retry-After and lost journal acknowledgements are not retried (1.056ms)
+✖ cancellation during backoff starts no next request; permanent outages stop after three attempts (0.9017ms)
+✔ metadata retries fresh responses for transient failure but not invalid trust or permanent HTTP status (799.932ms)
+✖ an acknowledged mirror prefix retains its validator when re-entering the same source (0.9145ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-ftNBpm"}
+{"child":15876,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:ff794b2b-9af2-49dc-97e3-62cd606950ef:2162252404:1688849861909580:2162252404:1407374885198898"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ object-root guard recovers after controlled process exit and excludes a different profile (390.7329ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-yQY0VH"}
+✔ object lease preserves refused marker 1a04ed60-7925-4ed2-9446-0e174104edc5 (4.2908ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-j3LVbp"}
+✔ object lease preserves refused marker unknown-owner-format (10.9865ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-rCTmvZ"}
+✔ object lease preserves refused marker oucl-object-owner-v1:truncated (12.1001ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-B6aoX8"}
+{"child":18152,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:9eec8733-9c13-4fcb-b193-fc63bb9192e8:2162252404:844424931778119:2162252404:562949955067449"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-RF7SQG"}
+✔ valid new marker without its guard and incomplete empty guard both fail closed (318.5118ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-WHcx1N"}
+{"child":6340,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:3ee197a8-850c-491d-985e-a0b38985c14c:2162252404:281474978356872:2162252404:281474978356847"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects replace of guard (344.0776ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-4E3HHw"}
+{"child":20316,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:aab5a8b5-112e-4eda-93bd-e99d7575cb43:2162252404:562949955067559:2162252404:562949955067566"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects corrupt of guard (345.8582ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-JpykLd"}
+{"child":10292,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:21665200-ed3d-4718-b224-7a705c35d017:2162252404:844424931778252:2162252404:281474978356947"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects hardlink of guard (334.4911ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-kPFGsd"}
+{"child":16780,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:ee896299-b9e7-4a40-8ddf-435bd1a249c4:2162252404:844424931778290:2162252404:562949955067623"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-sfQr58"}
+✔ copied guard and marker cannot authorize a different root identity (376.5921ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-eeoHZq"}
+{"child":13492,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:6a4b1434-53a2-4fc1-baa5-f57dbca69ed0:2162252404:844424931778302:2162252404:844424931778303"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-4eu1R7"}
+✔ the same guard inode cannot be transplanted to a different root identity (370.0657ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-n9iNHn"}
+✔ orphaned object guard -journal remains evidence (4.9252ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-zu9XXW"}
+✔ orphaned object guard -wal remains evidence (4.7983ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-5abMnk"}
+✔ orphaned object guard -shm remains evidence (4.9636ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-KXchFI"}
+✔ guard sidecars appearing during operations or before reopen are preserved and block work (50.7807ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-TBiKCJ"}
+✔ live guard hardlink invalidates subsequent operations and close preserves the marker (48.4387ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-hMJ9ZQ"}
+✔ marker delete during actual hash stops before publishing an object (216.9094ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-itccuE"}
+✔ marker replace during actual hash stops before publishing an object (260.5937ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-ZXUVoU"}
+✔ close drains a real commit before releasing ownership and rejects new admissions (360.363ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-4HUcQk"}
+{"child":15692,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:1de9aeca-a49d-43ee-b6bf-ce049ee2cda2:2162252404:1125899908489039:2162252404:562949955067733"},{"kind":"checkpoint","point":"object-committed"}],"stderr":""}
+✔ reacquisition after object-committed process exit never promotes orphan bytes (870.2931ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-kQ9Kww"}
+{"child":19312,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:35fced7e-876e-4738-824e-d5e1c36e6583:2162252404:562949955067552:2162252404:844424931778165"},{"kind":"checkpoint","point":"proof-committed"}],"stderr":""}
+✔ reacquisition after proof-committed process exit never promotes orphan bytes (1092.2826ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\tmp\\oucl-object-owner-xucGOf"}
+✔ object guard remains a separate domain from metadata guard (46.1384ms)
+✔ real object commits deduplicate bytes but preserve independent source evidence (495.6001ms)
+✔ same-sized wrong bytes never enter objects and malformed artifact facts reject early (337.5534ms)
+✔ missing disposable SQLite index is rebuilt from proofs without losing durable tasks (633.3461ms)
+✔ interrupted append-only commits preserve orphan bytes and recover only proven sources (1022.9516ms)
+✔ corrupt existing object is never overwritten by a new commit or reused through an index (527.5451ms)
+✔ broken provenance cannot acquire trust from a valid object or index hint (576.4082ms)
+✔ unknown cache schema blocks object search while durable tasks stay readable (829.5148ms)
+✔ default product registry has no guessed site or URL opening capability (2.6471ms)
+✔ navigation origins and resource origins are separate exact HTTPS allowlists (0.4615ms)
+✔ registry validation rejects malformed identities, private origins and mutable caller configuration (0.6341ms)
+✔ repeated open reuses one pending view and returns redacted state (5.828ms)
+✔ close invalidates late loading and awaits native cleanup before confirming closed (0.9082ms)
+✔ new open waits for old cleanup and stale failure cannot close its replacement (1.0429ms)
+✔ failed load destroys view and reports controlled failure (0.6379ms)
+✔ cleanup failure quarantines service instead of opening alongside unknown native survivor (0.307ms)
+✔ renderer crash invalidates in-flight load and disposes only its generation (0.8405ms)
+✔ synchronous construction failure still releases the returned view (0.7089ms)
+✔ retry creates a fresh view and losing retry cannot overwrite a newer explicit selection (0.4122ms)
+✔ unsubscribing observers does not close the tool and failed observers cannot stop cleanup (0.2836ms)
+✔ guard retains compatibility marker and rejects a competing writer (57.4446ms)
+✔ legacy marker is never taken over or modified (6.7608ms)
+✔ damaged guard cannot authorize takeover of a preserved marker (25.5444ms)
+✔ orphaned guard sidecars are preserved and block initialization (14.0403ms)
+✔ new-format guard can be reacquired after real owner termination (119.8685ms)
+✔ five fixed methods send exact payloads and preserve caller identities (5.3582ms)
+✔ local invalid UUID, extra fields and unsafe identifiers never invoke (0.7045ms)
+✔ wrong envelope and business identities are redacted as unavailable (1.0015ms)
+✔ rejects future versions, wrong task kind, unsafe paths, huge, cyclic and throwing outputs (4.462ms)
+✔ upstream fixed errors pass through while unknown codes and detail injection are rejected (0.6087ms)
+✔ sync throws and async rejection expose no exception details (0.4238ms)
+✔ timeout preserves identity without retries or cancel; late completion cannot replace returned result (5.6168ms)
+✔ late rejection is handled; timeout override cannot relax production budget (18.6165ms)
+✔ input and result snapshots are detached from caller and transport references (0.4765ms)
+✔ manifest parser reads one main-section class and continuation lines (2.2376ms)
+✔ loader and role freeze the expected processor entry point (0.1825ms)
+✔ processor manifest worker protocol rejects paths, extra fields and malformed replies (0.6407ms)
+✔ derived outputs publish once, verify on reuse and preserve foreign conflicting files (59.3984ms)
+✔ profile schemas reject paths, unknown channels/fields, unsafe names and invalid settings (3.1552ms)
+✔ trusted handler rejects invalid envelope/sender before side effects and validates returned DTO (0.7901ms)
+✔ adapter exposes public profiles/settings and only registers a chosen measured Java (5.7504ms)
+✔ profile error mapping/correlation and full implemented capability list remain exact (0.5891ms)
+✔ Modrinth search/version/file projection retains compatibility and re-fetches trusted source hashes (36.8312ms)
+✔ resource API rejects unsafe origins, mismatched ownership, filenames, invalid metadata and rate limits (3.7785ms)
+✔ resource IPC validates sender, correlation, bounded filters and strict DTOs before effects (1.078ms)
+✔ download acceptance deduplicates, tasks publish only verified resources and survive worker reopen (455.7279ms)
+{"level":"warn","event":"resource-download-failed","code":"HASH_MISMATCH"}
+✔ hash failures never publish resources and an explicit retry can complete from shared bytes (336.5482ms)
+{"level":"warn","event":"resource-download-failed","code":"CANCELLED"}
+✔ resource cancellation waits for transfer cleanup, and interrupted ownership remains visible (265.2199ms)
+✔ root request schema accepts only an empty payload and valid correlated envelope (2.372ms)
+✔ root results enforce labels, exact keys, channel schema and fixed error mapping (0.9658ms)
+✔ directory cancellation changes no registration and leaks no selected local path (210.7041ms)
+✔ native-adapter selection persists once and survives a storage-worker restart (387.6452ms)
+✔ portable default is created only for a fresh installation and never replaces an existing selection (181.6761ms)
+✔ a blocked portable directory can be retried without replacing any files or registration (189.572ms)
+✔ application directories, their ancestors and linked selections are rejected (165.8488ms)
+✔ concurrent directory requests share one native selection and one stable record (184.9151ms)
+✔ disconnected directory is retained and shown unavailable rather than silently replaced (171.5434ms)
+✔ settings reject unknown fields, non-integers and capacity overflow before writing (2.2437ms)
+✔ settings CAS persists values, merges defaults, rejects stale revisions and maps concurrent conflicts (0.999ms)
+✔ journal larger than the 128MiB worker heap reopens without retaining historical JSON snapshots (6775.3798ms)
+✔ versioned JSON commits real files, reopens and preserves strict revisions (81.9879ms)
+✔ all five commit boundaries recover old or new JSON and replay idempotently (346.8629ms)
+✔ first-create interruption rolls back absence or completes committed JSON (85.4157ms)
+✔ same-process revisions serialize and another repository cannot acquire the owner lease (31.9007ms)
+✔ invalid data and identifiers never create an operation or change JSON (40.9958ms)
+✔ changed JSON or missing authoritative database never silently becomes an empty store (43.3545ms)
+✔ unknown operation state, broken history and future schema all stop recovery (112.4032ms)
+✔ unknown staging content and unjournaled records are preserved for recovery (50.2842ms)
+✔ linked repository paths are refused without touching the target (7.8738ms)
+✔ an existing stale/foreign lease is never removed automatically (6.5054ms)
+✔ corrupt staging is kept intact and never promoted or silently discarded (29.3245ms)
+✔ SQLite atomically accepts tasks and identical request retries return the same task (78.1487ms)
+✔ persisted task CAS rejects stale updates and restart protects uncertain effects (45.1122ms)
+✔ missing acceptance evidence and corrupt task state fail recovery instead of replaying (113.0953ms)
+✔ cancellation is absent after the commit boundary and during failure cleanup (1.6999ms)
+✔ an unavailable observation never turns old execution state into permission to cancel (0.162ms)
+✔ silent but healthy subscription is confirmed by a bounded original-task read (8.5871ms)
+✔ U07 missing backend task stops observation without changing the last business state (4.2195ms)
+✔ subscription error result uses bounded read fallback (0.5804ms)
+✔ subscription reject uses bounded read fallback (0.3758ms)
+✔ four consecutive failures stop automatic polling; explicit reconnect reads the original task (3.7939ms)
+✔ recovery of observation clears only connection errors and preserves a terminal business error (3.4086ms)
+✔ late health read never overwrites newer subscription revision (1.0292ms)
+✔ multiple cards share one observer; last disposal blocks late reads and removes the subscription (1.9008ms)
+✔ 100 cards admit at most eight details with no more than two starts per second (1.9993ms)
+✔ hidden page admits no work; old-root closure blocks late subscription and disposes it (1.6494ms)
+✔ closing during subscribe disposes its late receipt without callback delivery (0.357ms)
+✔ explicit query promotes a waiting detail without exceeding the subscription budget (0.9203ms)
+✔ slow subscriptions never exceed two concurrent bridge calls (5.1026ms)
+✔ wrong task in a health response is never delivered as this task (0.7699ms)
+✔ confirmed terminal task stays confirmed across hiding and can still be explicitly queried (0.617ms)
+✔ explicit terminal query is not starved by eight active details (1.59ms)
+✔ nine persistent active tasks each receive automatic bounded confirmation (0.5977ms)
+✔ nine active tasks keep receiving health confirmations without subscription churn (4.8814ms)
+✔ one hundred continuously active tasks all get a first confirmation under the shared budget (8.9698ms)
+✔ adding a ninth task releases one subscription and confirms it without subscription churn (2.6653ms)
+✔ delayed disposal plus explicit reconnect does not exceed eight remote subscriptions (2.9037ms)
+✔ late rotating read cannot cross a hide and later foreground generation (1.232ms)
+✔ U04 all active states beyond 100 completed installs are found with existing state filters (3.5608ms)
+✔ instance 101 remains selectable after following its own cursor (2.2663ms)
+✔ 40 calls bound a large two-state query; explicit continuation follows cursors without replaying writes (29.8657ms)
+✔ ten second elapsed budget stops before another query and keeps an incomplete marker (0.8773ms)
+✔ cursor expiry discards its old snapshot, restarts once, and does not spin on repeated expiry (1.5074ms)
+✔ known active task absent from filters is read by original ID and may become terminal (1.884ms)
+✔ missing known task keeps last facts and marks the collection incomplete (0.3579ms)
+✔ state migration merges by task identity and retains the highest revision (0.2038ms)
+✔ same revision contradictions require original task confirmation (0.3438ms)
+✔ history has an explicit continuation independent of completed active scans (1.5452ms)
+✔ invalidated root session stops admitting further queries (0.282ms)
+✔ shared list/detail budget admits at most two concurrent calls and two starts per second (2.9319ms)
+✔ queued read from an old root is abandoned before invocation (0.302ms)
+✔ long history fallback queries every active state and recovery before a second filtered page (1.0009ms)
+✔ small complete snapshot confirms known active identities without another per-task scan (0.2124ms)
+✔ expired history cursor restarts within the same explicit batch and exposes a restart hint (1.245ms)
+✔ target pages bind sender, filter and root generation while allowing limit changes (5.1124ms)
+✔ destroying sender invalidates cursor without cancelling a task (1.3253ms)
+✔ older snapshots are evicted together with their cursors (4.4848ms)
+✔ snapshot count limit rejects overflow instead of truncating (4.4777ms)
+✔ a cursor that expires while its root is being checked stays expired (0.8674ms)
+✔ timed-out or destroyed observations cannot create late cursors or release the pending budget early (2516.0241ms)
+✔ target reads serialize and a rejected read releases the admission queue (2.5082ms)
+✔ target contract requires exact bounded inputs and normalizes filter identity (2.6136ms)
+✔ target response validates request correlation, ownership, uniqueness and fixed errors (0.9883ms)
+✔ worker stops inventory between records at deadline, preserves bytes and remains usable (322.536ms)
+ℹ same worker thread=1; SQL rows sha256=2c2d8d44cdf3c1c4062411233bc6f60e34395cde6149b537302b3d196f008292; raw file sha256=97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda,a48322ea239bfe9e9331c2b03f5f93a9117b977b6d21a1c13d7363ad4cef68ed,1cbcd819632221167d870d73bd6166da258711776dcb6a589503cc04ab3e395f
+✔ RecordStore preserves the exact budget error and unrelated storage errors (78.4563ms)
+✔ budget callback preserves both 1000-item domains and refuses either 1001st item (125.9753ms)
+✔ real SQLite target inventory retains both complete 1000-row domains and rejects either overflow (163.5113ms)
+✔ target inventory checks both sides and isolates unrequested kinds (4.1813ms)
+✔ target inventory rejects duplicate task references and unsupported filters (0.6496ms)
+✔ target inventory rejects request UUIDs duplicated with different case (0.5137ms)
+✔ target inventory accepts 1000 rows and refuses 1001 without truncation (26.4678ms)
+✔ ready feature is optional and strict; target requests are bounded (3.7946ms)
+✔ worker proves per-instance Mod targets after reopening and fails closed on orphaned admission (715.5811ms)
+✔ worker derives Mod installation targets from each immutable confirmed plan after restart (471.6678ms)
+✔ target read waits through the actual SQL admission to Mod index commit gap (294.545ms)
+✔ integrity requires trusted expected digest and size, never just size or local SHA256 (2.6236ms)
+✔ execution verifies before commit and never repeats terminal effects (0.7779ms)
+✔ progress is monotonic, bounded and ignores duplicate or out-of-order messages (0.5186ms)
+✔ cancel waits for cleanup and defeats late transfer/verification/completion (0.3682ms)
+✔ pause/resume fences old attempts and resets per-attempt progress (0.2392ms)
+✔ failures require cleanup before retry; uncertain writes require recovery (0.2688ms)
+✔ shared transfers obey demand from all installers independently (1.1642ms)
+✔ scheduler enforces shared concurrency budget and waits for all dependencies (2.7207ms)
+✔ vanilla metadata resolves typed artifacts and arguments without mutating input (3.9361ms)
+✔ three-level inheritance overrides libraries by coordinate and finds nearest client jar (0.9196ms)
+✔ inheritance rejects cycles, missing parents, mismatched ids and more than 32 records (0.9283ms)
+✔ server-only input cannot provide a client or main class (0.2743ms)
+✔ library and asset-index provenance follows each actual declaration independently of the selected leaf (1.5433ms)
+✔ ordered rules default to deny, apply last match and distinguish feature false (0.9422ms)
+✔ conditional game/JVM arguments filter complete values without shell splitting (0.4553ms)
+✔ natives choose bitness classifier and preserve excludes; unrelated OS libraries filtered (0.5987ms)
+✔ legacy tokenization preserves paths, spaces, empty arguments, escaped quotes and child replacement (2.0089ms)
+✔ literal placeholders preserve arguments and reject absent/inherited/recursive bindings (0.48ms)
+✔ artifact validation rejects missing trust facts and unsafe relative paths (0.3913ms)
+✔ upstream malformed descriptors are rejected at the pure boundary (1.2343ms)
+✔ large inherited argument and library sets stop at bounded aggregate limits (19.3558ms)
+✔ private worker messages reject extra keys, scripts, paths, unknown errors and versions (3.8038ms)
+✔ real storage worker persists idempotent acceptance and protects interrupted task state (375.8904ms)
+✔ storage request queue is bounded and reserves a draining close slot (192.2664ms)
+✔ storage caller timeout retains its queue slot and does not pretend mutation was cancelled (1570.1038ms)
+✔ worker crash keeps the owner lock until its process exits (190.4784ms)
+✔ real streamed hashes match known bytes and the parent event loop stays responsive (314.5297ms)
+✔ hash cancellation waits for worker exit and leaves input bytes untouched (136.4929ms)
+✔ hash queue has a fixed budget and queued cancellation starts no worker (11.8614ms)
+✔ failed worker startup preserves corrupt metadata rather than replacing it (249.4178ms)
+ℹ tests 1003
+ℹ suites 0
+ℹ pass 951
+ℹ fail 48
+ℹ cancelled 0
+ℹ skipped 4
+ℹ todo 0
+ℹ duration_ms 92103.4906
+ℹ start of coverage report
+ℹ ----------------------------------------------------------
+ℹ file      | line % | branch % | funcs % | uncovered lines
+ℹ ----------------------------------------------------------
+ℹ ----------------------------------------------------------
+ℹ all files | 100.00 |   100.00 |  100.00 | 
+ℹ ----------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:81:1
+✖ durable confirmation wins cancellation, joins retries and is discoverable after worker restart (6.0193ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:82:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:118:1
+✖ cancel wins confirmation and rejected admission never creates an orphan task (1.8132ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:119:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:133:1
+✖ admission rejects stale, foreign, unknown and substituted previews before allocating tasks (0.6973ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:134:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:212:1
+✖ real plan worker persists immutable previews, enforces CAS, and retains cancelled records across restart (1.348ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:213:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:234:1
+✖ unknown saved plan formats stop writes and preserve original JSON byte for byte (0.6353ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:235:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:257:1
+✖ plan retries and a real storage restart return the same saved evidence without repeating metadata work (0.5981ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:258:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:286:1
+✖ same in-flight plan joins with independent outputs; other requests are bounded and inputs are snapshotted (0.9379ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:287:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:325:1
+✖ cancellation is durable, checks exact plan identity and never reactivates the same request (0.8293ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:326:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:345:1
+✖ lost write acknowledgement reconciles only exactly committed plan evidence (0.5202ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:346:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:371:1
+✖ closing joins a cancellation already being persisted and rejects later operations (0.6451ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:372:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:416:1
+✖ closing an active metadata preview aborts and joins it without publishing a plan (0.4994ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:417:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-plans.test.js:445:1
+✖ public saved-plan operations validate correlation, redact private records and refuse untrusted cancellation (0.5772ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-plans-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:68:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-plans.test.js:446:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-plans-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:217:1
+✖ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (4.9309ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:218:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:249:1
+✖ confirmed preparation uses real durable transfers and JAR workers, preserves actual versions, and writes no instance files (2.2176ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:250:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:272:1
+✖ unconfirmed, cancelled, stale or occupied plans cannot start dependency downloads (0.8052ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:273:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:291:1
+✖ enabled exact dependency reuse preserves a renamed JAR without downloading or upgrading it (0.6776ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:292:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:308:1
+✖ a disabled dependency is not reused; unknown embedded project relationships stop before duplicate downloads (0.6262ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:309:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:329:1
+✖ prospective declarations reject unsatisfied actual ranges, duplicate modIds and unknown requirements (0.5849ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:336:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:348:1
+✖ case-insensitive filename collisions and refreshed source changes stop without overwriting an existing Mod (0.8099ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:349:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:364:1
+✖ fixed candidate metadata and post-download SHA512 mismatch cannot prepare untrusted bytes (0.736ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:365:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:378:1
+✖ cancelled preparation joins in-flight transfer cleanup and refuses concurrent admissions (0.8733ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:379:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-preparation.test.js:412:1
+✖ plan refusal, external file changes and unknown sessions during transfer invalidate the preparation (0.6991ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-preparation-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async setup (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:49:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-preparation.test.js:414:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-preparation-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:178:1
+✖ real Mod transaction and launch finalization exclude each other using the same gameDir lease (6.4031ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:179:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:241:1
+✖ confirmed executor joins duplicate requests and commits real files once with durable completion (2.5052ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:242:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:288:1
+✖ failed preparation persists bounded assessment and immutable task/plan association (0.8671ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:289:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:318:1
+✖ lost result acknowledgement resolves only exact durable content and restarts without replay (0.7314ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:319:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:348:1
+✖ executor cancellation waits for preparation cleanup and leaves no transaction or instance change (0.8376ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:349:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:387:1
+✖ executor classifies a proven rollback as failed and never replays it after restart (0.6024ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:388:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:415:1
+✖ orphan confirmation without a transaction becomes needsRecovery without running preparation (0.7028ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:416:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:435:1
+✖ executor restores completion from a real committed transaction after the final task update was absent (1.2227ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:436:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:458:1
+✖ commit boundary rejects cancellation and close joins the actual transaction (0.6722ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:459:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:494:1
+✖ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (0.5958ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:495:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:516:1
+✖ mid-publication failure rolls back only owned files and retains all recovery materials (0.5375ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:517:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:534:1
+✖ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (0.5351ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:535:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:554:1
+✖ foreign replacement and renamed files are retained while remaining owned additions are rolled back (0.6185ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:555:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:572:1
+✖ pre-existing player files and session owners are never overwritten or cleared (0.6167ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:573:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:593:1
+✖ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (0.7868ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:595:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:618:1
+✖ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (0.7153ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:619:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:638:1
+✖ cancellation during source verification joins the worker boundary and does not start a staged copy (0.983ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:639:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:670:1
+✖ recovery finishes a published instance after index failure using its unique commit ID (0.6669ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:671:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:686:1
+✖ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (0.963ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:687:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:709:1
+✖ transaction records reject future formats, arbitrary operations and changes to prepared evidence (0.7341ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-transaction-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:37:16)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:710:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-transaction-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\mod-transaction.test.js:757:3
+✖ real process termination recovers owned transactions at three commit boundaries (0.7894ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\mod-kill-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/mod-transaction.test.js:759:25)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\mod-kill-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\network-retry.test.js:27:1
+✖ transient connection failures and 502 responses retry within a three-attempt budget (5.0105ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\network-retry-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:13:21)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:28:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\network-retry-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\network-retry.test.js:45:1
+✖ a body disconnect resumes the latest fsynced prefix using Range and If-Range (1.5984ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\network-retry-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:13:21)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:46:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\network-retry-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\network-retry.test.js:75:1
+✖ permanent HTTP errors, long Retry-After and lost journal acknowledgements are not retried (1.056ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\network-retry-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:13:21)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:77:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\network-retry-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\network-retry.test.js:98:1
+✖ cancellation during backoff starts no next request; permanent outages stop after three attempts (0.9017ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\network-retry-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:13:21)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:100:15)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\network-retry-XXXXXX'
+  }
+
+test at ..\20261118-p-final-tests\.test-build\tests\network-retry.test.js:140:1
+✖ an acknowledged mirror prefix retains its validator when re-entering the same source (0.9145ms)
+  Error: ENOENT: no such file or directory, mkdtemp 'D:\MC_start\OUCL\tmp\20261118-p-limited-tests\.test-build\network-retry-XXXXXX'
+      at async mkdtemp (node:internal/fs/promises:1902:10)
+      at async fixture (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:13:21)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/20261118-p-final-tests/.test-build/tests/network-retry.test.js:141:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'mkdtemp',
+    path: 'D:\\MC_start\\OUCL\\tmp\\20261118-p-limited-tests\\.test-build\\network-retry-XXXXXX'
+  }

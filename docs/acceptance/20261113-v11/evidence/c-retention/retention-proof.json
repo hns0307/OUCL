@@ -1,0 +1,43 @@
+{
+  "elapsedMs": 900517.3240999999,
+  "first": {
+    "requestId": "c8259418-9770-4c95-8432-89624ced6bf2",
+    "input": {
+      "rootId": "40000000-0000-4000-8000-000000000001",
+      "instanceId": "40000000-0000-4000-8000-000000000002",
+      "expectedRevision": 1,
+      "expectedFingerprint": "69ec7251c5fddc948157683f22029b83036464aa12d9f6cf3846f16d84cc2f36",
+      "fileId": "5da4231cf237720955df0df9428eb534720d4b54df77edce98aca0f1c6b6014c",
+      "action": "disable"
+    },
+    "previewId": "dc32e96a-34b0-4120-a340-af21342888c3",
+    "completedObservedMono": 172888.5977,
+    "completedObservedAt": "2026-11-13T05:06:05.247Z"
+  },
+  "oldStatus": {
+    "contractVersion": 1,
+    "requestId": "411a1c28-ce4a-4283-a6e9-193709c7def3",
+    "ok": false,
+    "error": {
+      "code": "PREVIEW_EXPIRED",
+      "category": "biz",
+      "messageKey": "modsTaskMissing",
+      "retryable": false,
+      "traceId": "9821fbb5-0519-4ec9-913b-29ea4d98f8c9"
+    }
+  },
+  "oldAdmission": {
+    "contractVersion": 1,
+    "requestId": "c8259418-9770-4c95-8432-89624ced6bf2",
+    "ok": false,
+    "error": {
+      "code": "PREVIEW_EXPIRED",
+      "category": "biz",
+      "messageKey": "modsTaskMissing",
+      "retryable": false,
+      "traceId": "c4dbd05d-71da-4ea8-8677-1b07defaadb3"
+    }
+  },
+  "selected": "40000000-0000-4000-8000-000000000002",
+  "previewText": "实例模组BC-A Synthetic Fabric读取真实文件与模组声明；一键检查同时核对 Modrinth 来源和依赖。读取列表一键检查无法判定本地声明 + 平台核对观察时间 2026/11/12 03:19:37 · 实例修订 1报告是当时的文件观察。已知声明满足仍需实际启动验证；外部文件变化须重新检查。alpha-dependent.jar启用预览禁用影响alpha dependent (synthetic) · alpha_dependent · 1.0.0 (fabric)来源 无法判定查看文件证据SHA-256c20f0439d6e0b68f00af128d28df34b9aef9d1cb58b66e929b49c01812e80017SHA-51298822e5608799d78476789a287c99302c257708d67011c0d2aa159793ab7bc0e7fa7469ef6140a4be4f6f5748bf093f8d0dedf3f7833e018388b8dfe65817ca7alpha-provider.jar启用预览禁用影响存在阻止因素这是只读预览，不会修改文件，也不保证游戏实际运行。资源服务暂时不可用，请检查网络后重试。此文件包含的声明：alpha_provider直接依赖此文件：alpha-dependent.jar依赖关系 (1)alpha-dependent.jar → alpha-provider.jar · 必需 alpha_provider无法判定 · 变更前 · Modrinth · alpha-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN无法判定 · 变更前 · Modrinth · alpha-provider.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN无法判定 · 变更前 · Modrinth · alpha-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN不满足 · 变更后 · JAR 声明 · alpha-dependent.jar · 缺少必需模组。 alpha_dependent · 要求 >=1.0.0无法判定 · 变更后 · Modrinth · alpha-dependent.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWN无法判定 · 变更后 · Modrinth · alpha-standalone.jar · 实际文件未能关联到可信平台版本。 PLATFORM_SOURCE_UNKNOWNalpha provider (synthetic) · alpha_provider · 1.0.0 (fabric)来源 无法判定查看文件证据SHA-256f1344fa24380e9ef53586eac0d2f9e6fa9819d7c799d0ca8ca4fab6548d7ff2fSHA-512f44a0e6e072d385152ba22320e94776d5f566da4d7cced2bb8f07187548fd645640c7dcf5c2f6f24db36e366ac552aad63433244973b0541bc9fc497d504ff5calpha-standalone.jar启用预览禁用影响alpha standalone (synthetic) · alpha_standalone · 1.0.0 (fabric)来源 无法判定查看文件证据SHA-2567c6e301b0803d145050b0cbf1e953f5644c66ed1a14c65dc5c81ee345db0f5eaSHA-51248bb82c2ba44d671d62b42914a064195143880f2b6a842df567c76e8aaa4fb2cfb63b05b15bdbf0f27dbcc2195c2248c891f113dc8fb91d0b3d33e49906988fa检查依据与问题 (4)无法判定 · 实际文件未能关联到可信平台版本。Modrinth · alpha-dependent.jarPLATFORM_SOURCE_UNKNOWN无法判定 · 实际文件未能关联到可信平台版本。Modrinth · alpha-provider.jarPLATFORM_SOURCE_UNKNOWN无法判定 · 实际文件未能关联到可信平台版本。Modrinth · alpha-standalone.jarPLATFORM_SOURCE_UNKNOWN无法判定 · 平台请求失败，来源和平台依赖无法完整核对。Modrinth · 运行环境 / 整体检查NETWORK_FAILED"
+}

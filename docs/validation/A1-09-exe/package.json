@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-25T08:53:00.718Z",
+  "version": "0.1.0",
+  "target": "win32-x64",
+  "directory": "release\\OUCL-0.1.0-win32-x64",
+  "entry": "OUCL.exe",
+  "signed": false,
+  "installer": false,
+  "minecraftBundled": false,
+  "javaBundled": false
+}

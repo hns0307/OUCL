@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { pathToFileURL } from 'node:url';
+if (!process.env.OUCL_D01_BUNDLE) throw Error('Set OUCL_D01_BUNDLE');
+const { LaunchService } = await import(pathToFileURL(process.env.OUCL_D01_BUNDLE).href);
+let clock=0;Object.defineProperty(globalThis,'performance',{value:{now:()=>clock},configurable:true});
+const root='00000000-0000-4000-8000-000000000001';const id=i=>`00000000-0000-4000-8000-${String(i).padStart(12,'0')}`;
+let items, rows, gets, updates, getFault, updateFault, advanceGet, advanceUpdate;
+function reset(){clock=0;gets=[];updates=[];getFault=false;updateFault=false;advanceGet=0;advanceUpdate=0;items=Array.from({length:40},(_,i)=>({rootId:root,taskId:id(i+1),spawned:false,stopTaskIds:[],snapshot:{sessionId:id(i+1),instanceId:id(200+i),state:'unknown',revision:1,startedAt:'2026-11-14T00:00:00Z'}}));rows=new Map(items.map(x=>[x.taskId,{ownerId:root,taskId:x.taskId,kind:'launch',execution:{state:'committing',attempt:1,lastSequence:2,revision:4,bytesDone:0}}]));}
+const storage={readGameSessions:async()=>({revision:1,data:{items:globalThis.structuredClone(items)}}),get:async(_r,i)=>{gets.push(i);clock+=advanceGet;if(getFault)throw Object.assign(Error('unavailable'),{code:'TIMEOUT'});return globalThis.structuredClone(rows.get(i));},update:async(_r,i,revision,next)=>{updates.push(i);clock+=advanceUpdate;if(updateFault)throw Object.assign(Error('conflict'),{code:'REVISION_CONFLICT'});assert.equal(rows.get(i).execution.revision,revision);rows.get(i).execution=globalThis.structuredClone(next);return globalThis.structuredClone(rows.get(i));}};
+const make=()=>new LaunchService(storage,{},{},{},()=>16*1024**3);
+reset();let s=make();await s.initialize();assert.equal(gets.length,32);assert.equal(updates.length,32);assert.equal(gets[0],id(40));assert.equal(rows.get(id(8)).execution.state,'committing');assert.equal((await s.task(root,id(8))).task.execution.state,'needsRecovery');assert.equal(gets.length,33);await s.close();
+reset();getFault=true;s=make();await s.initialize();assert.equal(gets.length,1);assert.equal(updates.length,0);getFault=false;assert.equal((await s.task(root,id(1))).task.execution.state,'needsRecovery');await s.close();
+reset();advanceGet=2001;s=make();await s.initialize();assert.equal(gets.length,1);assert.equal(updates.length,0);advanceGet=0;assert.equal((await s.task(root,id(40))).task.execution.state,'needsRecovery');await s.close();
+reset();advanceUpdate=2001;s=make();await s.initialize();assert.equal(gets.length,1);assert.equal(updates.length,1);assert.equal(rows.get(id(40)).execution.state,'needsRecovery');advanceUpdate=0;assert.equal((await s.task(root,id(39))).task.execution.state,'needsRecovery');await s.close();
+reset();updateFault=true;s=make();await s.initialize();assert.equal(gets.length,1);assert.equal(updates.length,1);await assert.rejects(s.task(root,id(40)),e=>e.code==='REVISION_CONFLICT');assert.equal(rows.get(id(40)).execution.state,'committing');updateFault=false;assert.equal((await s.task(root,id(40))).task.execution.state,'needsRecovery');await s.close();
+console.log(JSON.stringify({history40Scan32:true,lazyUnscanned:true,firstErrorStops:true,deadlineAfterGet:true,deadlineAfterUpdate:true,casConflictPropagated:true}));

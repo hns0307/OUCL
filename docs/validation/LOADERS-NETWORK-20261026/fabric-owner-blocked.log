@@ -1,0 +1,15 @@
+file:///D:/MC_start/OUCL/.test-build/official-loader-launch-current.mjs:2466
+            else finish(new WorkerError(reply.kind === "startup-failed" ? reply.code : "INVALID_MESSAGE"));
+                        ^
+
+WorkerError: STORE_BUSY
+    at Worker.receive (file:///D:/MC_start/OUCL/.test-build/official-loader-launch-current.mjs:2466:25)
+    at Worker.emit (node:events:514:28)
+    at MessagePort.<anonymous> (node:internal/worker:350:14)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+  code: 'STORE_BUSY',
+  category: 'system'
+}
+
+Node.js v24.21.0

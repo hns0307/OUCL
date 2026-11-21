@@ -1,0 +1,86 @@
+[
+  {
+    "path": "eslint.config.mjs",
+    "sha256": "1931840dc77f3bb21a89c71df00e49a848d48b927dc507239408b73fb481fc82"
+  },
+  {
+    "path": "scripts/worker-runtime.mjs",
+    "sha256": "5ebd19d370027e21457ef1a8c3d60918920c31e41eb746790ed4187198a4beed"
+  },
+  {
+    "path": "scripts/verify-install-plan.mjs",
+    "sha256": "d2a01ee33d15c53238a62e2d709fb0be0fc3b177a91c717fb39a5765115699ad"
+  },
+  {
+    "path": "src/core/install/assets.ts",
+    "sha256": "6e47ae23f7d628e7e6257494f82a973b512dc01ad41ce42b4ad7f35df2a0d033"
+  },
+  {
+    "path": "src/core/install/plan.ts",
+    "sha256": "547e8265c4787ed50bf6b7a5d5a414955e0eaf75304ba08ac5cfb4d533c9fcc5"
+  },
+  {
+    "path": "src/core/version/resolve.ts",
+    "sha256": "5030390fe36e37a8eeb2f4a3891e1ab6e16831de11ac3f88e56b23092c7b08c6"
+  },
+  {
+    "path": "src/core/version/types.ts",
+    "sha256": "dd033b096cf397c02947e105e096f35160f6df1e030a9cc8506c214a41f1790a"
+  },
+  {
+    "path": "src/services/catalog/install-metadata.ts",
+    "sha256": "0dfaa44b67b1d7479e181bf5f14c46f969e14dad185d0d38c73257c8250a6428"
+  },
+  {
+    "path": "src/services/download/coordinator.ts",
+    "sha256": "0a7fb567b05967718aae68298ad9254c91f8f26a33019f8e9671a4a42ef2a437"
+  },
+  {
+    "path": "src/services/objects/store.ts",
+    "sha256": "d00a9c8f5fc41d7da5369e198cbe64ae22806518148cd0f6bc4ed454f8e9c43b"
+  },
+  {
+    "path": "src/services/workers/entry.ts",
+    "sha256": "7afb61914c7a875a55f1737563b8403644a938579b3bacd63bd19ae68effd9e3"
+  },
+  {
+    "path": "src/services/workers/hash-pool.ts",
+    "sha256": "69f356304539f71cf57b85d69db36d6bd6dcda5dca07f30928552fce721b9a44"
+  },
+  {
+    "path": "src/services/workers/hash-session.ts",
+    "sha256": "e1370d5d359fe244bdb0777d56afbc02d934c947c77dc1fd54e483393046e7c1"
+  },
+  {
+    "path": "src/services/workers/protocol.ts",
+    "sha256": "277b1080a9cacf77e2738e6926041ea006abc6de2ed797c4fb1812eff8d5f10b"
+  },
+  {
+    "path": "tests/runtime/workers.ts",
+    "sha256": "b5df11d0fa2bdb930d348011d8afb827bd468d6671d54fe27bdabdb10cf55d75"
+  },
+  {
+    "path": "tests/version.test.ts",
+    "sha256": "9bb51962c18614e57a17db306bd5dc9b85b274cdfb3f1dda4f9e578cd3499232"
+  },
+  {
+    "path": "tests/download-coordinator.test.ts",
+    "sha256": "8eb221906e907d33d45cd58d510498452cc2133ef3970447bd14ab624c2f8d05"
+  },
+  {
+    "path": "tests/hash-session.test.ts",
+    "sha256": "52312b030a9c6b3fc20968c8b3cd07ff7d82030ae19f236082deacd2495df4a1"
+  },
+  {
+    "path": "tests/install-metadata.test.ts",
+    "sha256": "2884ca0cab32aad4b4b719a89a522e1cf3af99cd40fe893a1c8fa4662bdc1cea"
+  },
+  {
+    "path": "tests/install-plan.test.ts",
+    "sha256": "f087b6a281d51a931528b0e20f525fed464963837c0234258e864586cd139b46"
+  },
+  {
+    "path": "tests/lint-boundaries.test.ts",
+    "sha256": "5f771e3ec522a9faf07aff580e3a116624a356c2d653a5c6e245a911ee4300ee"
+  }
+]

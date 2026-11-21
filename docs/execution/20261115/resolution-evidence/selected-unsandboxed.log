@@ -1,0 +1,36 @@
+✔ production HTTPS policy can be exercised through a local HTTP fetch adapter (95.2481ms)
+✔ real HTTP parallel ranges join exact bytes and checkpoint only a complete contiguous prefix (261.7435ms)
+✔ unknown linked parents and target entries are rejected without touching their external target (350.9894ms)
+✔ a recorded copy replaced by a hard link never acquires copy ownership (279.2279ms)
+✔ folder resolver rejects a linked allowlisted directory that escapes the instance (30.1784ms)
+✔ confirmed executor connects actual dependency transfer, JAR verification and one instance transaction (2215.2027ms)
+✔ real Mod transaction and launch finalization exclude each other using the same gameDir lease (2171.7681ms)
+✔ confirmed executor joins duplicate requests and commits real files once with durable completion (1334.5883ms)
+✔ executor restores completion from a real committed transaction after the final task update was absent (1668.4671ms)
+✔ commit boundary rejects cancellation and close joins the actual transaction (1397.0389ms)
+✔ add-only transaction commits real files and unique instance proof without exposing shared cache to Mod edits (1163.7469ms)
+✔ mid-publication failure rolls back only owned files and retains all recovery materials (1061.3492ms)
+✔ an external edit to an owned new file is preserved and blocks unsafe rollback and launch (1060.849ms)
+✔ foreign replacement and renamed files are retained while remaining owned additions are rolled back (1234.3099ms)
+✔ cancellation before the JSON commit point rolls back; interruption after it reconciles a committed result (2808.2831ms)
+✔ lost instance and journal acknowledgements reconcile from exact JSON proof without double publication (1132.3721ms)
+✔ recovery finishes a published instance after index failure using its unique commit ID (1269.9168ms)
+✔ interrupted pre-commit work recovers by rolling back owned files after a real storage restart (1120.1158ms)
+✔ transaction records reject future formats, arbitrary operations and changes to prepared evidence (1296.9448ms)
+✔ real process termination recovers owned transactions at three commit boundaries (4219.6506ms)
+✔ actual linked source parents and destination directories never redirect native extraction (26.3763ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\baseline-resolution-20261115\\tmp\\oucl-object-owner-ROtV78"}
+{"child":9040,"code":73,"signal":null,"events":[{"kind":"ready","marker":"oucl-object-owner-v1:01779200-0dd3-4a69-9b9e-45faa0d5c32e:2162252404:8725724278845002:2162252404:3659174698053084"},{"kind":"exiting","point":"open","storeHeld":true,"metadataHeld":true}],"stderr":""}
+✔ preserved new marker rejects hardlink of guard (412.2293ms)
+{"fixture":"D:\\MC_start\\OUCL\\tmp\\baseline-resolution-20261115\\tmp\\oucl-object-owner-REraRP"}
+✔ live guard hardlink invalidates subsequent operations and close preserves the marker (51.4485ms)
+✔ application directories, their ancestors and linked selections are rejected (218.1599ms)
+✔ linked repository paths are refused without touching the target (17.4491ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23236.1829

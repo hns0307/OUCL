@@ -1,0 +1,37 @@
+{
+  "round": "round2",
+  "compiler": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/r:System.Web.Extensions.dll",
+    "/out:file-guard-v2.exe",
+    "NativeGuard.cs",
+    "Program.cs"
+  ],
+  "compileExitCode": 0,
+  "environment": "caller tool records sandbox approval",
+  "exitCode": 2,
+  "signal": null,
+  "executableSha256": "138e5e4d16b2d71118430fed673546942cca6b314f25d8448b28906848796a15",
+  "nativeGuardSha256": "ab94aac345ee923ff8a00e14cc04483793e0d98208f1e9c5a5655fb7fc0f4165",
+  "programSha256": "da5941898ad07eee629d13d4a4a7a5953bbbebcd4f697955578aefa364cbde1c",
+  "crossLanguage": {
+    "path": "D:\\MC_start\\OUCL\\tmp\\file-guard-r2-20261116\\fixtures\\run-70c74ffab3ca450d98b8162daad20b07\\case-0d6bcf39ecca4564bd15aafe429ed521\\target\\renamed.txt",
+    "native": {
+      "Volume": "2162252404",
+      "Inode": "281474978246863",
+      "Sha256": "a2192fa93f3c68571deb18c4c09c40cc6a7ef5f561ca310b1d7a1291168c4ffe",
+      "Size": 12,
+      "Links": 1
+    },
+    "node": {
+      "dev": "2162252404",
+      "ino": "281474978246863",
+      "size": "12",
+      "sha256": "a2192fa93f3c68571deb18c4c09c40cc6a7ef5f561ca310b1d7a1291168c4ffe",
+      "links": "1"
+    },
+    "equal": true
+  }
+}

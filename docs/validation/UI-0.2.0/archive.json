@@ -1,0 +1,10 @@
+{
+  "version": "0.2.0",
+  "zip": "release/OUCL-0.2.0-win32-x64.zip",
+  "bytes": 163475449,
+  "sha256": "BB9B88D19CEECDFC3C2812E95AD84D5F0D674B92A01E40A6700CA6A37702F594",
+  "exeSha256": "8E84549B05D27D444DA2957653200D1E0AC287EFF0FC5722B92835B9E0821A59",
+  "zipEntryExeMatches": true,
+  "zipVersionMatches": true,
+  "entries": 101
+}

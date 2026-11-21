@@ -1,0 +1,289 @@
+{
+  "synthetic": true,
+  "profile": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-r6-window-v26\\profile",
+  "games": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-r6-window-v26\\synthetic-games",
+  "rootId": "50000000-0000-4000-8000-000000000001",
+  "cases": [
+    {
+      "name": "nested-multi",
+      "location": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-r6-window-v26\\fixtures\\nested-multi",
+      "manifest": {
+        "provider.jar": {
+          "size": 694,
+          "sha1": "29e8bbe9b67eb3cb1ab0911485c6ed1342d232e0",
+          "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+          "sha512": "5453f58e26531bd37e331e9d46d2be9b23ff0150da17314aee80850d767e38ae076fcbf20256dc4510444fe664a5c766d134788e3d706050f7efea9c08d84621"
+        },
+        "dependent.jar": {
+          "size": 211,
+          "sha1": "fda826a68334667f70ff1347fa412368288f68f0",
+          "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525",
+          "sha512": "8f0ff1a2c315c97a067fdc234a3de0abd5919145a8aaeea063a3fb2e2343cccb862745e8ffaa7de4c811e2aa6f625ae11aa278830e54442701185e9874218398"
+        }
+      },
+      "requestBodySHA256": "d96e25b59373886f435839c52b871eac84dd5b026d265fabac017418a8c15a08"
+    },
+    {
+      "name": "exact-platform-pin",
+      "location": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\c-r6-window-v26\\fixtures\\exact-platform-pin",
+      "manifest": {
+        "provider.jar": {
+          "size": 388,
+          "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+          "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+          "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+        },
+        "dependent.jar": {
+          "size": 204,
+          "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+          "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859",
+          "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd"
+        }
+      },
+      "requestBodySHA256": "acc5404c72e633ee8932ef8b3659e3ac8ffeceaceb8ad813e5c4c9b3dd17d2af"
+    }
+  ],
+  "instances": [
+    {
+      "instanceId": "44ba3306-fa96-52be-bff2-f3ad43e96e75",
+      "displayName": "R6-A Synthetic Fabric",
+      "installTaskId": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+      "filename": "provider.jar",
+      "modTaskId": "b3fa2c23-423a-4a45-853c-aeeb2f004818",
+      "report": {
+        "formatVersion": 1,
+        "instanceId": "44ba3306-fa96-52be-bff2-f3ad43e96e75",
+        "instanceRevision": 6,
+        "fingerprint": "02b335dbde421460cff4ed0eb9b8ccc1d020cfb120334495e8cdfb9a8f92e7a8",
+        "checkedAt": "2026-11-14T03:21:31.995Z",
+        "mode": "check",
+        "localState": "satisfied",
+        "state": "satisfied",
+        "files": [
+          {
+            "fileId": "0982cc1bf661dd1a1a68194f647c1e3bf07d1cfa36ec194836ded28979e2f9e9",
+            "filename": "dependent.jar",
+            "enabled": true,
+            "size": 211,
+            "sha1": "fda826a68334667f70ff1347fa412368288f68f0",
+            "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525",
+            "sha512": "8f0ff1a2c315c97a067fdc234a3de0abd5919145a8aaeea063a3fb2e2343cccb862745e8ffaa7de4c811e2aa6f625ae11aa278830e54442701185e9874218398",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "dependent_mod",
+                "version": "1.0.0",
+                "name": "dependent_mod"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "matched",
+            "source": {
+              "projectId": "DepePr01",
+              "versionId": "DepeVr01",
+              "versionName": "Synthetic fixture"
+            }
+          },
+          {
+            "fileId": "530f9431458064568f4588cb93aea4d02a1ade89afbee067a7c1d1ae527ef792",
+            "filename": "provider.jar",
+            "enabled": true,
+            "size": 694,
+            "sha1": "29e8bbe9b67eb3cb1ab0911485c6ed1342d232e0",
+            "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+            "sha512": "5453f58e26531bd37e331e9d46d2be9b23ff0150da17314aee80850d767e38ae076fcbf20256dc4510444fe664a5c766d134788e3d706050f7efea9c08d84621",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "parent_mod",
+                "version": "1.0.0",
+                "name": "parent_mod"
+              },
+              {
+                "format": "quilt",
+                "id": "quilt_parent",
+                "version": "1.0.0",
+                "name": "quilt_parent"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "matched",
+            "source": {
+              "projectId": "ProvPr01",
+              "versionId": "ProvVr01",
+              "versionName": "Synthetic fixture"
+            }
+          }
+        ],
+        "issues": []
+      }
+    },
+    {
+      "instanceId": "4b3c676a-ca84-5767-afa5-e5a402819b0a",
+      "displayName": "R6-B Synthetic Fabric",
+      "installTaskId": "18947942-d074-4fc5-abe0-d73310bd6cee",
+      "filename": "provider.jar",
+      "modTaskId": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7",
+      "report": {
+        "formatVersion": 1,
+        "instanceId": "4b3c676a-ca84-5767-afa5-e5a402819b0a",
+        "instanceRevision": 6,
+        "fingerprint": "bd92c6922fb8b15c0504202d19dfd4c0902eb569ff3397be5d7c4d7b20a0318d",
+        "checkedAt": "2026-11-14T03:21:32.344Z",
+        "mode": "check",
+        "localState": "satisfied",
+        "state": "unsatisfied",
+        "files": [
+          {
+            "fileId": "41f18533da5906f225a0168f511d0f22aac449d9e2467c301eb6fa7eaa459971",
+            "filename": "dependent.jar",
+            "enabled": true,
+            "size": 204,
+            "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+            "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859",
+            "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "dependent_mod",
+                "version": "1.0.0",
+                "name": "dependent_mod"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "matched",
+            "source": {
+              "projectId": "DepePr01",
+              "versionId": "DepeVr01",
+              "versionName": "Synthetic fixture"
+            }
+          },
+          {
+            "fileId": "1cc6db607d7dec5523be483ef43b3d1211f6d8664c80723b295b2757596b37de",
+            "filename": "provider.jar",
+            "enabled": true,
+            "size": 388,
+            "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+            "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991",
+            "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2",
+            "mods": [
+              {
+                "format": "fabric",
+                "id": "parent_mod",
+                "version": "1.0.0",
+                "name": "parent_mod"
+              },
+              {
+                "format": "quilt",
+                "id": "quilt_parent",
+                "version": "1.0.0",
+                "name": "quilt_parent"
+              }
+            ],
+            "issues": [],
+            "sourceStatus": "matched",
+            "source": {
+              "projectId": "ProvPr01",
+              "versionId": "ProvVr01",
+              "versionName": "Synthetic fixture"
+            }
+          }
+        ],
+        "issues": [
+          {
+            "scope": "platform",
+            "severity": "error",
+            "code": "PLATFORM_PIN_MISMATCH",
+            "fileId": "41f18533da5906f225a0168f511d0f22aac449d9e2467c301eb6fa7eaa459971",
+            "modId": null,
+            "targetModId": null,
+            "targetProjectId": "ProvPr01",
+            "targetVersionId": "ProvVr02",
+            "requirement": null,
+            "actual": [],
+            "via": []
+          }
+        ]
+      }
+    }
+  ],
+  "initialGlobal": {
+    "items": [
+      {
+        "taskId": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 106,
+        "bytesTotal": 106
+      },
+      {
+        "taskId": "18947942-d074-4fc5-abe0-d73310bd6cee",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 7,
+        "bytesDone": 106,
+        "bytesTotal": 106
+      },
+      {
+        "taskId": "b3fa2c23-423a-4a45-853c-aeeb2f004818",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      },
+      {
+        "taskId": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      }
+    ]
+  },
+  "reopenedGlobal": {
+    "items": [
+      {
+        "taskId": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 106,
+        "bytesTotal": 106
+      },
+      {
+        "taskId": "18947942-d074-4fc5-abe0-d73310bd6cee",
+        "kind": "install",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 7,
+        "bytesDone": 106,
+        "bytesTotal": 106
+      },
+      {
+        "taskId": "b3fa2c23-423a-4a45-853c-aeeb2f004818",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      },
+      {
+        "taskId": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7",
+        "kind": "mod-check",
+        "state": "completed",
+        "stage": "completed",
+        "revision": 8,
+        "bytesDone": 0
+      }
+    ]
+  },
+  "metadataRequests": 5,
+  "transferRequests": 1,
+  "limitation": "Formal installation effects on synthetic pinned local metadata/bytes; no real upstream client/Java/game or platform known-source evidence."
+}

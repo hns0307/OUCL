@@ -1,0 +1,30 @@
+[
+  {
+    "path": "main/index.cjs",
+    "sha256": "ff8fff8b8e1112b8d80e8b04f26a12a896a65d9f40342e103a1787575a0ff284"
+  },
+  {
+    "path": "preload/index.cjs",
+    "sha256": "490edafec756255da0de7cd32e1a09aed48f00d473fbff137532abc3e4c0c221"
+  },
+  {
+    "path": "renderer/assets/index-AuOkr_BU.css",
+    "sha256": "54cdd16ee42d56227b9d9087a1eac7814a8a7944ce03259fae71fbdead780d1b"
+  },
+  {
+    "path": "renderer/assets/index-CkVgLxIx.js",
+    "sha256": "2269ff43fcd5e0b1475b92300d11933f764c92fe2a23f0e1275f750548b2b3b5"
+  },
+  {
+    "path": "renderer/index.html",
+    "sha256": "2f0fe0fa89654757532b689ef760490d01488b3ea65a7f0ecb0b59182d0d2f4c"
+  },
+  {
+    "path": "workers/entry.cjs",
+    "sha256": "459b3413e776ac21fc23151da24004db1b44fdc33b6ed8b800a528a507d4ebbb"
+  },
+  {
+    "path": "workers/fixed-pack.cjs",
+    "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+  }
+]

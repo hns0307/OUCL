@@ -1,0 +1,12 @@
+{
+  "name": "build",
+  "args": [
+    "scripts/build.mjs"
+  ],
+  "environment": {
+    "OUCL_BUILD_ROOT": "D:/MC_start/OUCL/tmp/20261118-j-final-build/dist"
+  },
+  "started": "2026-11-17T21:34:27.193Z",
+  "ended": "2026-11-17T21:34:28.906Z",
+  "exitCode": 0
+}

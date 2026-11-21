@@ -1,0 +1,15 @@
+{
+  "readyWindowSeenTwice": true,
+  "normalCloseWindowsAbsent": true,
+  "numericProcessExitCodeObserved": false,
+  "metadataLeaseReopenedNormally": true,
+  "accountCount": 1,
+  "gameName": "OUCL_V32",
+  "metadataRevisionsUnchanged": true,
+  "embeddedEntriesVerified": 9,
+  "sevenProductOutputs": 7,
+  "ownerMarkerAbsentAfterClose": true,
+  "runtimePreseeded": true,
+  "gameLaunched": false,
+  "executableSha256": "ba24713708030ba8b96a65858305fb4593d6e3fb0b2afc0ef83e6a4258904be7"
+}

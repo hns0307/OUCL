@@ -4,7 +4,16 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 
 app.disableHardwareAcceleration();
-const timeout = setTimeout(() => { console.error('SMOKE_TIMEOUT'); app.exit(1); }, 20000);
+const offlineCatalog = process.env.OUCL_SMOKE_OFFLINE === '1';
+if (offlineCatalog) {
+  // Explicit local fixture mode. All other main-process requests are rejected before network access.
+  globalThis.fetch = async url => {
+    assert.equal(String(url), 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json');
+    return new globalThis.Response(JSON.stringify({ versions: [{ id: '1.20.1', type: 'release', sha1: 'a'.repeat(40),
+      url: `https://piston-meta.mojang.com/v1/packages/${'a'.repeat(40)}/1.20.1.json`, releaseTime: '2026-10-24T00:00:00Z' }] }));
+  };
+}
+const timeout = setTimeout(() => { console.error('SMOKE_TIMEOUT'); app.exit(1); }, 45000);
 let finished = false;
 
 async function run(window) {
@@ -23,10 +32,27 @@ async function run(window) {
       return { connected: !!document.querySelector('[data-status="connected"]'), bridgeKeys: Object.keys(window.oucl), nodeAbsent: typeof require === 'undefined' && typeof process === 'undefined', result };
     })()`);
     assert.ok(renderer.connected);
-    assert.deepEqual([...renderer.bridgeKeys].sort(), ['catalog', 'chooseRoot', 'handshake', 'listRoots']);
+    assert.deepEqual([...renderer.bridgeKeys].sort(), ['cancelModPlan', 'catalog', 'checkMods', 'chooseDesktopIcon', 'chooseJava', 'chooseRoot', 'confirmModPlan', 'controlTask', 'createInstance', 'createLoaderInstance', 'createOfflineAccount', 'deleteForumDraft', 'downloadResource', 'getDesktop', 'getDownloadSettings', 'getModPlan', 'getSession', 'getSettings', 'getTask', 'handshake', 'launchGame', 'listAccounts', 'listInstances', 'listInstancesV2', 'listMods', 'listRoots', 'listSessions', 'listTasks', 'loaderVersions', 'modInstallState', 'modReport', 'openInstanceFolder', 'openResourceLibrary', 'planMod', 'resourceIcon', 'resourceLibrary', 'resourceVersions', 'saveForumDraft', 'searchResources', 'stopGame', 'subscribeTask', 'updateAppearance', 'updateDownloadSettings', 'updateSettings']);
     assert.ok(renderer.nodeAbsent);
+    const modErrors = await window.webContents.executeJavaScript(`(async () => {
+      const id = crypto.randomUUID();
+      return [await window.oucl.listMods(id, { instanceId: '../private', expectedRevision: 1 }),
+        await window.oucl.checkMods(id, { instanceId: id, expectedRevision: 1 }), await window.oucl.modReport(id),
+        await window.oucl.planMod(id, { instanceId: id, expectedRevision: 1, root: { projectId: 'RootProj', versionId: 'RootVer1', fileId: 'a'.repeat(40) }, selections: {} }),
+        await window.oucl.getModPlan(id), await window.oucl.cancelModPlan(id, { planRequestId: id, planId: 'a'.repeat(64) })];
+    })()`);
+    assert.deepEqual(modErrors.map(reply => reply.ok ? 'unexpected-success' : reply.error.code), ['INVALID_ARGUMENT', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE', 'ROOT_UNAVAILABLE']);
     assert.equal(renderer.result.ok, true);
-    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1']);
+    assert.deepEqual(renderer.result.data.capabilities, ['roots.v1', 'catalog.v1', 'instances.v1', 'instances.v2', 'instance-folders.v1', 'tasks.v1', 'downloads.v1', 'java.v1', 'accounts.v1', 'settings.v1', 'desktop.v1', 'game.v1', 'sessions.v1', 'resources.v1', 'loaders.v1', 'mods.v1']);
+    await window.webContents.executeJavaScript(`(async () => {
+      document.querySelector('.account-chooser .text-button').click(); await new Promise(resolve=>setTimeout(resolve,80));
+      const fields = document.querySelectorAll('.account-form input');
+      for (const [index,value] of ['Smoke member','OUCL_Smoke'].entries()) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(fields[index],value); fields[index].dispatchEvent(new Event('input',{bubbles:true})); }
+      await new Promise(resolve=>setTimeout(resolve,100)); document.querySelector('.account-form button[type=submit]').click();
+      const deadline=Date.now()+3000; while(!document.querySelector('select[aria-label="选择离线账户"] option')?.textContent.includes('OUCL_Smoke') && Date.now()<deadline) await new Promise(resolve=>setTimeout(resolve,30));
+    })()`);
+    const accounts = await window.webContents.executeJavaScript('window.oucl.listAccounts()');
+    assert.equal(accounts.ok, true); assert.equal(accounts.data.items.length, 1); assert.equal(accounts.data.items[0].gameName, 'OUCL_Smoke'); assert.equal('uuid' in accounts.data.items[0], false);
     const roots = await window.webContents.executeJavaScript('window.oucl.listRoots()');
     assert.equal(roots.ok, true); assert.deepEqual(roots.data.items, []);
     const chooseButton = await window.webContents.executeJavaScript('!!document.querySelector(".root-settings button")');
@@ -36,24 +62,51 @@ async function run(window) {
       while (!document.querySelector('.version-list li') && !document.querySelector('.catalog .form-error') && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 50));
       return { count: document.querySelectorAll('.version-list li').length, first: document.querySelector('.version-list strong')?.textContent, error: !!document.querySelector('.catalog .form-error') };
     })()`);
-    assert.ok(catalog.count > 0, 'OFFICIAL_CATALOG_DID_NOT_LOAD');
+    assert.ok(catalog.count > 0, 'CATALOG_DID_NOT_LOAD');
+    const confirmation = await window.webContents.executeJavaScript(`(async () => {
+      const rows = [...document.querySelectorAll('.version-list li')];
+      const chosen = rows.find(row => row.querySelector('strong')?.textContent === '1.20.1') || rows[0];
+      const id = chosen.querySelector('strong').textContent; chosen.querySelector('button').click();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return { selected: document.querySelector('.selected-version')?.textContent === id, disabledWithoutRoot: document.querySelector('.install-confirm .primary')?.disabled === true,
+        loaderChoices: [...document.querySelectorAll('.install-confirm label select')[0].options].map(option => option.value) };
+    })()`);
+    assert.equal(confirmation.selected, true); assert.equal(confirmation.disabledWithoutRoot, true);
+    assert.deepEqual(confirmation.loaderChoices, ['vanilla', 'fabric', 'quilt', 'forge', 'neoforge']);
     console.log('SMOKE_BRIDGE_AND_ISOLATION_PASS');
     await window.webContents.executeJavaScript(`window.open('https://example.com/')`);
     assert.equal(BrowserWindow.getAllWindows().length, 1);
     await new Promise(resolve => setTimeout(resolve, 500));
     const frame = await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 });
-    const directory = path.resolve('docs/validation/A1-05-catalog');
+    const directory = path.resolve(process.env.OUCL_SMOKE_REPORT_DIRECTORY ?? 'docs/validation/DOWNLOADS-mod/electron');
     await mkdir(directory, { recursive: true });
     await writeFile(path.join(directory, 'window.png'), frame.toPNG());
-    await window.webContents.executeJavaScript(`document.querySelector('.catalog').scrollIntoView({block: 'start'})`);
-    await new Promise(resolve => setTimeout(resolve, 150));
-    await writeFile(path.join(directory, 'catalog.png'), (await window.webContents.capturePage({ x: 0, y: 0, width: 1000, height: 680 })).toPNG());
+    for (const [index, name] of [[0, 'home'], [1, 'downloads'], [2, 'forum'], [3, 'settings']]) {
+      await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[${index}].click()`);
+      await new Promise(resolve => setTimeout(resolve, 120));
+      await writeFile(path.join(directory, `${name}.png`), (await window.webContents.capturePage()).toPNG());
+      const overflow = await window.webContents.executeJavaScript('document.documentElement.scrollWidth > innerWidth'); assert.equal(overflow, false, name);
+    }
+    await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[3].click(); document.querySelectorAll('.setting-row input')[0].focus()`);
+    const settings = await window.webContents.executeJavaScript(`(async()=>{
+      const old = await window.oucl.getSettings(); const changed = await window.oucl.updateSettings(crypto.randomUUID(), {expectedRevision:old.data.revision,patch:{memoryMiB:1024,isolationDefault:false}});
+      const stale = await window.oucl.updateSettings(crypto.randomUUID(), {expectedRevision:old.data.revision,patch:{memoryMiB:2048}});
+      return {changed, stale, actual:await window.oucl.getSettings()};
+    })()`);
+    assert.equal(settings.changed.ok,true); assert.equal(settings.stale.error.code,'REVISION_CONFLICT'); assert.equal(settings.actual.data.memoryMiB,1024);
+    window.setSize(720, 520); await window.webContents.executeJavaScript(`document.querySelectorAll('.top-nav button')[0].click()`); await new Promise(resolve=>setTimeout(resolve,150));
+    assert.equal(await window.webContents.executeJavaScript('document.documentElement.scrollWidth > innerWidth'),false);
+    await writeFile(path.join(directory,'small-window.png'),(await window.webContents.capturePage()).toPNG());
     const report = {
       timestamp: new Date().toISOString(), status: 'PASS', electron: process.versions.electron, node: process.versions.node,
       contextIsolation: prefs.contextIsolation, sandbox: prefs.sandbox, nodeIntegration: prefs.nodeIntegration,
-      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: ['roots.v1', 'catalog.v1'], popupDenied: true,
+      bridgeMethods: renderer.bridgeKeys, rendererHasNoNode: renderer.nodeAbsent, handshake: 'PASS', businessCapabilities: renderer.result.data.capabilities, popupDenied: true,
+      modBridgeSchemaAndRootChecks: true,
+      actualOfflineAccountDomCreation: true, accountUuidNotExposed: true, javaChooserOperated: false,
       rootsList: 'PASS', directoryButtonRendered: true, nativePickerSelected: false,
-      officialCatalogLoaded: true, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
+      officialCatalogLoaded: !offlineCatalog, localCatalogFixture: offlineCatalog, visibleCatalogItems: catalog.count, firstCatalogVersion: catalog.first,
+      versionSelectionRendered: confirmation.selected, loaderChoices: confirmation.loaderChoices, installationBlockedWithoutRoot: confirmation.disabledWithoutRoot,
+      fourPagesRendered: true, smallWindowNoHorizontalOverflow: true, settingsSaveAndConflict: true,
       packagedPayload: false,
     };
     await writeFile(path.join(directory, 'smoke.json'), JSON.stringify(report, null, 2));
@@ -76,5 +129,8 @@ async function run(window) {
   app.on('browser-window-created', (_event, window) => {
     window.webContents.once('did-finish-load', () => { void run(window); });
   });
+  if (offlineCatalog) require('./electron-network-fixture.cjs')(globalThis.fetch);
   require('../dist/main/index.cjs');
 })();
+
+

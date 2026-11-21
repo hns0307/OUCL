@@ -1,0 +1,62 @@
+✔ native helper accepts Node dev/ino/SHA proof and publishes exactly one protected hardlink (516.0249ms)
+✔ native helper accepts valid v7 transaction and lease UUIDs used by the shared contract (83.135ms)
+✔ native no-replace rename and link preserve a preoccupied destination (179.7577ms)
+✔ native same-handle rename preserves Node inode and hash (86.254ms)
+✔ native delete removes one proven alias without deleting its live published pair (155.3166ms)
+✔ native lease release reuses its protected source handle and rejects a wrong token (146.4653ms)
+✔ native helper refuses a replaced source or wrong proof without deleting replacement bytes (79.9199ms)
+✔ native root identity and lease gates precede mutation (135.4919ms)
+✔ native helper refuses unknown third hardlinks (70.5507ms)
+✔ native schema rejects extra/duplicate fields, unbounded input, invalid UTF8 and future versions (527.7687ms)
+✔ native paths reject foreign transaction staging, traversal, ADS, cross-volume and unrelated files (270.4045ms)
+✔ native helper rejects a real junction ancestor before touching its sentinel (61.2001ms)
+✖ production guard source blocks source edits and ancestor renames from an independent process (141.6008ms)
+✖ actual metadata-only FSCTL reparse succeeds but held-parent operations refuse and cannot escape (53.7746ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 12
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2588.6431
+
+✖ failing tests:
+
+test at ..\..\tmp\native-helper-v4-merge\helper.test.mjs:214:1
+✖ production guard source blocks source edits and ancestor renames from an independent process (141.6008ms)
+  AssertionError [ERR_ASSERTION]: d:\MC_start\OUCL\tmp\native-helper-v4-merge\tests\distribution-native-helper\HandleHold.cs(1,701): error CS1501: ��Capture������û���κ����ز��� 1 ������
+  native\distribution-files\NativeGuard.cs(161,27): (��ǰһ��������صķ���λ��)
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-v4-merge/helper.test.mjs:231:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-helper-v4-merge\helper.test.mjs:274:1
+✖ actual metadata-only FSCTL reparse succeeds but held-parent operations refuse and cannot escape (53.7746ms)
+  AssertionError [ERR_ASSERTION]: d:\MC_start\OUCL\tmp\native-helper-v4-merge\tests\distribution-native-helper\ReparseRace.cs(14,53): error CS1009: �޷�ʶ���ת������
+  d:\MC_start\OUCL\tmp\native-helper-v4-merge\tests\distribution-native-helper\ReparseRace.cs(14,51): error CS1010: �������л��з�
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-helper-v4-merge/helper.test.mjs:331:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

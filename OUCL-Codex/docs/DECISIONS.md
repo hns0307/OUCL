@@ -1,5 +1,35 @@
 # OUCL · 审批与未决决策记录
 
+2026-10-27用户新增明确授权：“优化下载文件的存放，在运行完exe后自动在目录下生成存放游戏的主文件夹，加一个类似PCL的版本设置功能，选中下载好的游戏后，可以打开mod文件夹、存档文件夹等等，这些运行完合并分支直接生成0.3exe版本，可以使用Strata”。状态：APPROVED。落实边界：EXE同级固定`OUCL.games`只用于首次无根记录的自动注册，绝不覆盖/迁移已有自选根；renderer只提交实例UUID和固定目录枚举，主进程从版本化实例记录重建实际gameDir，链接逃逸拒绝；不开放任意路径、删除或迁移。Strata仅作设计审查，Codex复核实现。合并和0.3 EXE须在本地完整验证后执行，不push/公开发布。
+
+2026-10-27 Mod预览执行（非新增批准）：主进程私有ModInstallPlanner绑定根JAR实际摘要/声明、平台版本、实例修订/指纹、加载器环境、已装项目及依赖求解，输出无路径/URL的确定性非授权预览。只有resolved可ready，未知与冲突保持阻止。452项450通过/0失败/2原有跳过。尚无公共IPC/持久确认/下载/实例写入，不把预览当安装交付。
+
+2026-10-27安装器恢复执行（非新增批准）：Forge与NeoForge安装器提取取消会等待自有工作、保留私有恢复材料并可重新可信提取；Java17/21处理器取消在温和终止无响应后升级强制终止，但仍等待子进程close。448项446通过/0失败/2原有跳过，外网与真实Java均为0。四加载器本地关键路径覆盖后恢复已批准Mod确认安装事务，不改变实机缺项。
+
+2026-10-27本地加载器事务执行（非新增批准）：Fabric0.16.14与Quilt0.29.2在MC1.20.1/Java17代表组合下分别完成正式安装事务、隔离物化、取消不可启动/同名新请求重试和服务重开后的零元数据/零传输启动前复验。444项442通过/0失败/2原有跳过，类型/lint/build通过。测试制品明确不可执行，不访问公网、不启动游戏，不把本地编排结论提升为实机验收。
+
+2026-10-27选择界面执行（非新增批准）：沿已批准四代表组合提供统一MC/Java参考及稳定默认，未知组合不标已验证，目录响应隔离与未就绪提交阻止；无新依赖或公共IPC/磁盘格式。440项438通过/0失败/2跳过，固定本地元数据的正式Electron UI验证通过、外网0，不改变联网/实机缺项。
+
+2026-10-27加载器接入执行（非新增批准）：原幂等/重连要求内新增固定私有worker凭据只读查询，复用现有SQLite表；loaders.v1补固定REVISION_CONFLICT及安全消息，首次校验不变，避免断网重试重复接受。437项435通过/0失败/2跳过；遵最新要求只做本地夹具，不运行外网/窗口。无新依赖/DB迁移，不标实机通过。
+
+2026-10-27用户优先级调整：原文“跳过联网测试，优先模组加载器”。在原批准方案内优先四加载器实现与本地夹具检查，跳过后续外网测试；不把跳过项标通过，不恢复此前已停止的窗口输入，不改变官方信任链。已完成Mod来源只读组件保存后转向加载器接入修订。
+
+2026-10-27执行记录（非新增批准）：用户已切回执行模式并明确继续本聊天完整批准范围，额度实际重置后从c2f0247恢复。main下载优化交付保持，mod分支新增有界平台候选组合提案与回溯，428项426通过/0失败/2跳过；不新增依赖/IPC/存储格式，不把提案resolved当JAR兼容、确认或安装许可。原Esc窗口操作停止边界继续。
+
+## 2026-10-26 下载优化优先指令
+
+状态APPROVED。用户原文：“更新一下下载源并放进设置里选择官方源或者镜像源，优化下载，参考PCL做一个多线程下载功能，让文件下载更流畅，做完这些再进行此前工作”。授权必要的下载偏好版本化记录/受控IPC/设置界面、镜像白名单及多文件/单文件有界并行传输；优先完成再恢复原四加载器/Mod目标。保持官方摘要信任、完整校验、取消加入所有连接、恢复材料与未知格式停写；不将镜像元数据当独立可信证明、不复制PCL源码。具体实施按小增量验证提交，无新增第三方包，不push/发布。
+
+## 2026-10-25 四加载器与 Mod 管理明确批准（当前新增范围）
+
+2026-10-26UI执行记录（非新增批准）：已接入所选实例Mod列表/一键检查/证据报告/任务取消重连。383项完整检查381通过/0失败/2跳过，独立真实Forge/Neo UI列表/双重检查/报告重开及大小窗口通过。无新依赖、无业务扩围，依赖确认安装和0.3.0仍未完成。
+
+2026-10-26后续执行记录（非新增批准）：额度实际重置后继续原批准范围，已装配mods.v1公共IPC/preload/主进程、通用任务查询/重连/取消及关闭顺序；383项381通过/0失败/2跳过，独立Electron30方法13能力通过。无新依赖或业务扩围；Mod界面/依赖事务及0.3.0仍未完成。
+
+2026-10-26执行记录（非新增批准）：在上述完整方案授权内已接入四加载器下载/安装；Forge/NeoForge在独立测试根完成官方安装、断网启动前复验和各两次FerriteCore实际加载/退出0，保留NeoForge此前一次未定位的间歇退出失败。已实现有界JAR/标准TOML解释、严格范围/本地与Modrinth双重证据、公开报告与持久检查任务；379项完整检查377通过/0失败/2原有跳过，实际检查任务及断网报告重开通过。mods.v1主进程/preload/UI、依赖确认安装事务、Fabric/Quilt完整实机矩阵与0.3.0仍待完成，不扩大真实后台/联机/正版认证。当前检查点052e0c9，额度86%后保存等待重置；最新范围与续接见TASK_PLAN和根agent.md。
+
+用户直接要求 `PLEASE IMPLEMENT THIS PLAN` 并完整引用《四加载器接入与 Mod 管理修订方案》。状态：**APPROVED**。用户指定分支 `mod_loaders`；批准 Fabric、Quilt、Forge、NeoForge 顺序接入，隔离实例、版本化契约/记录、可信处理器执行、JAR 声明与 Modrinth 双重检查、玩家确认后递归下载依赖，以及未来服务端分发契约和测试适配器。真实后台、远程自动更新、正版认证及联机不在本次范围。代表矩阵为 Fabric/Quilt/Forge MC1.20.1+Java17、NeoForge MC1.21.1+Java21；其他组合不承诺已验证。逐增量本地提交、更新交接，目标0.3.0小EXE，不push/发布。TOML候选smol-toml1.9.0先评估，依赖批准按引用计划执行；不把本次功能批准写成实测通过。本文下方历史未授权状态不覆盖这次直接批准。
+
 > 初始状态：**G0 / PENDING / 未获架构基线批准**。这份文件是模板，不能代表用户已确认任何技术选型。Codex 只能记录用户实际批准的结论。
 
 > 最新有效授权见末尾“默认方案与阶段0工程启动批准”：2026-10-24用户直接回复“1”，选择已展示的第1项批准范围。下文旧状态及记录保留为历史，不代表当前有效授权仍只有S-09。
@@ -213,3 +243,298 @@
 执行记录：对象仓库已提交6439805。本轮按已批准提案§7实现roots:list/roots:choose及roots.v1能力，固定数据目录登记与源码UI已接正式main/preload，70项测试及真实Electron窗口检查通过，见[A1-04d报告](../../docs/validation/A1-04d/REPORT.md)。没有新增候选外通道或第三方依赖，具体exact schema记录在ROOTS。真实native选择操作、新便携包、任务订阅及下载/启动仍未验证或未实现，不扩张声明。当前继续同一1A授权范围推进后续服务。
 
 执行记录：目录入口已提交147aeb8。本轮落实已批versions:catalog及catalog.v1，官方清单/描述信任链、缓存和分页进入正式界面，78项测试、真实官方响应及Electron显示验证通过，见[A1-05-catalog报告](../../docs/validation/A1-05-catalog/REPORT.md)。依据官方响应修正12条历史身份中的内部空格，身份不直接映射路径；未降低来源或越界校验。无新依赖，不改既有任务数据库格式；缓存使用原JSON提交/恢复协议。制品下载/启动仍未实现，不用元数据成功代替完整目标，继续相同1A批准范围。
+
+2026-10-25恢复记录：用户在暂停后明确“继续之前的目标，别忘了每一步进行git提交，你可以开多个子agent并行，最后出成果之前修改好交接给下一对话框的agent.md”。仅恢复原阶段1A下载/启动闭环，新增并行协作与交接要求，不批准后续加载器/登录/联机/后台，也不覆盖基线再审批规则。
+
+执行记录：官方目录已提交9614e76，本轮按已批SQLite下载元数据/官方摘要/共享对象方向实现物理传输、独立权威续传库和对象提交，无新依赖或渲染IPC、不改tasks.sqlite格式。110测试及真实官方JAR与Electron验证见[A1-05-transfer报告](../../docs/validation/A1-05-transfer/REPORT.md)。共享消费者/任务和安装启动链路仍待完成；现有用户暂存的两份原始资料保持原状态，不混入本轮增量提交。
+
+目标更新：用户将持续目标明确为“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能”。最终验收须为实际Windows exe的下载/启动闭环；原阶段1A业务批准、逐增量提交和交接要求继续有效，不扩大后续阶段。旧工程预览、CLI或元数据成功均不能代替此交付。
+
+执行记录：在60e91f8/b739dd4后，整合暂停保留的安装准备与活跃共享协调代码；144测试和真实官方索引/正式Electron验证见[A1-05-install-plan报告](../../docs/validation/A1-05-install-plan/REPORT.md)。仅内部来源字段、无IO计划和既有worker职责优化，没有新依赖、公开IPC或磁盘schema。consumer持久关联与真实安装启动及exe交付仍未完成，继续同一1A授权。
+
+执行记录：5620b0c后落实批量可信下载与精确原索引导入，152测试150 PASS/2 SKIP及正式Electron fixture验证通过，见[A1-05-install-downloads报告](../../docs/validation/A1-05-install-downloads/REPORT.md)。无新依赖、渲染IPC或持久schema；仍没有完整持久安装任务、物化/解压、Java/档案/进程/UI和最终exe验证，不标目标完成。
+
+执行记录：批量下载已提交e834de6、交接9984159；继续既定1A安全解压worker方向，新增ZIP校验、独占隔离写入及有界NativeExtractor，无新依赖/公开IPC/持久schema。168测试166 PASS/2 SKIP及官方两版native归档与Electron实测通过，见[A1-08-native-extraction报告](../../docs/validation/A1-08-native-extraction/REPORT.md)。尚无实例natives发布/完整任务恢复/游戏启动或新exe验收，继续既定授权。
+
+2026-10-25目标补充原文：“一直继续直到有一个简易的MC启动器，以exe的形式，至少包含下载与启动的功能，下载界面可以参考MC_start文件夹里的其他启动器”。保留原1A持续批准与exe验收，新增本地下载UI交互参考许可，不复制源码素材、不启动后续阶段。
+
+执行记录：c076c47/d71213d后增加受管文件投影/明确复制回退和已有Java探测，185测试183 PASS/2环境SKIP、实际Electron投影及本机Oracle17属性验证通过；[投影报告](../../docs/validation/A1-08-file-views/REPORT.md)、[Java报告](../../docs/validation/A1-06-java-probe/REPORT.md)。无新依赖/公开IPC/持久schema，未选定新Java供应商或下载制品。完整安装事务、进程/UI和新exe仍待继续，不标完成。
+
+执行记录：162317e/cf3d2e8后落实已批实例JSON提交/任务日志方向及候选实例/任务契约，保存原始官方输入与实际规则环境，串联下载→投影→私有native→JSON提交，接入main/preload/实际安装确认、进度与实例UI。221测试219 PASS/2 SKIP、正式Electron记录、DOM两次实际安装fixture与官方目录窗口验证见[A1-08-installer报告](../../docs/validation/A1-08-installer/REPORT.md)。没有新增依赖/更改SQLite schema，新增固定私有记录域与既定公开候选exact schema；整批真实游戏、启动和新exe未验证。崩溃遗留owner仍不自动接管，未扩张阶段或完成声明。
+
+执行记录：官方1.20.1整批3,641制品/735,814,641字节及实例manifest落盘通过。重开实际大日志触发128MiB worker OOM，已独立复现并修正为流式历史校验；233测试231 PASS/2 SKIP及原内存限制下大日志恢复通过，见[官方安装报告](../../docs/validation/A1-08-official-install/REPORT.md)。不删日志、不提高worker限制、不改schema或自动移除旧owner；新的独立验证根重新校验缓存并安装。既定1A授权继续，尚无新exe交付。
+
+## 2026-10-25 D-20离线身份细节明确批准
+
+用户对具体规则问题直接答复“批准推荐兼容规则”。状态：**APPROVED**。游戏名限3–16位ASCII英文字母、数字、下划线；按UTF-8的`OfflinePlayer:<gameName>`执行UUID v3算法生成并永久保存（MD5只用于兼容身份，非安全校验）；改游戏名创建新档案，中文显示昵称独立保存，改昵称不改游戏UUID。此记录冻结此前D-20字符/长度与UUID算法待决，历史PENDING保留但不覆盖本批准；不引入正版身份查询或认证绕过。
+
+执行记录：纯LaunchPlan与目录排他GameProcessService及11项新测试通过，完整233测试检查通过。正式源码服务实际启动官方1.20.1、Java17，并由Computer Use观察主菜单，见[启动报告](../../docs/validation/A1-08-official-launch/REPORT.md)。用户操作游戏窗口后停止键鼠自动化；世界、退出/重启及新exe仍未验收。生产离线档案与Java选择/游戏任务/会话UI下一步依据上述D-20批准接入。
+
+执行记录：D-20批准已进入正式ProfileService及固定launch-profiles JSON与typed私有worker，身份与Java登记在正常关闭重开后保持；237测试235 PASS/2 SKIP、完整检查与Electron worker验证通过，独立JDK UUID向量一致，见[档案报告](../../docs/validation/A1-08-launch-profiles/REPORT.md)。没有新依赖/公开IPC/SQLite schema；产品公开契约及选择/启动/会话UI与exe继续实施，不将内部服务当作最终交付。
+
+执行记录：已批候选档案/Java/settings读取契约已装配main/preload/界面，242测试240 PASS/2 SKIP、完整检查和实际Electron DOM创建账户验证通过，见[界面报告](../../docs/validation/A1-09-launch-ui/PROFILE_REPORT.md)。Java仅原生选择后主进程实测，内部路径与游戏UUID不回renderer；真实native选择操作尚未自动验证。没有新增依赖、SQLite格式或后续阶段能力，继续接实际实例启动/会话及新exe。
+
+执行记录：启动/停止持久任务与session JSON、严格候选game/sessions接口及实例启动按钮已接通；复用原安装器对象拥有者，关闭窗口时保活，显式确认才强停。248测试246 PASS/2 SKIP、完整检查和正式Electron DOM启动真实JVM/预期缺主类退出1验证通过，见[启动UI报告](../../docs/validation/A1-09-launch-ui/game/GAME_REPORT.md)。新私有固定session域沿用原版本JSON/日志，未改SQLite格式/新增依赖/后续阶段；不将fixture等同MC或新exe验收，下一直接打包真实验证。
+
+执行记录：`09366d1`交付0.1.0未签名Windows x64便携exe；默认入口隔离/白名单/正常退出及最新完整检查通过，见[exe报告](../../docs/validation/A1-09-exe/REPORT.md)。用户明确答复“交给代理继续验收”；实际原生目录和Java17选择、离线档案创建完成。官方1.20.1空根下载首任务失败，缓存保留后重试进行中；不编造失败根因或将尚未完成的安装/世界/重开写成通过。授权仍限原1A，无新依赖或后续阶段。
+
+2026-10-25用户随后明确反馈“我经过实测，已经可以了，接下来就是给我一个可以直接运行的EXE，并进行提交”。记录为本次简易下载/启动exe用户验收确认，交付0.1.0便携目录与zip并本地Git提交。停止进一步接管用户游戏窗口；不把用户验收改写成代理独立观察世界/重开，也不扩大批准阶段或将1A全部缺项关闭。
+
+
+## 2026-10-25 前端改版及资源下载明确批准
+
+执行交付：d15237b设置、e137ea2资源服务、589f704四页前端与0.2.0。257测试255 PASS/0 FAIL/2原有环境SKIP及完整检查通过；三类Modrinth官方样本独立摘要/大小验证和正常重开保持通过；实际Electron界面搜索/提交FerriteCore、切页继续、设置与默认隔离验证通过；新0.2.0默认EXE入口正常退出0、无Node、10能力/24方法通过。便携目录及ZIP已生成，保留旧0.1.0；证据见根docs/validation/UI-0.2.0/REPORT.md与archive.json。首次网络样本失败根因未证实，UI测试脚本时限问题已修正并保留失败记录；本轮不把fixture回归写成完整MC世界实测，不关闭历史阶段缺项。未push，待用户体验验收。
+
+用户直接要求 PLEASE IMPLEMENT THIS PLAN 并完整引用前端改版计划。状态：APPROVED。范围包括四页导航、真实实例侧栏、离线人物启动区、Modrinth资源搜索与可信下载至固定资源库、settings:update、设置与资源固定版本记录、内存实际生效和新实例默认隔离，以及0.2.0便携包、验证和本地提交。明确批准本次接口、存储、第三方API能力扩展，不新增运行库。公告仅UI；加载器、资源自动安装、后台、正版登录和远程皮肤未授权。
+
+## 2026-10-25 小EXE与按需运行时明确批准
+
+用户在了解“小EXE内置OUCL代码、首次下载Electron；启动游戏先找兼容Java，缺少则按Mojang清单下载，以后缓存复用”后直接回复“按照你说的进行”。状态：APPROVED。允许新增独立Windows引导程序、固定运行时下载/摘要校验/缓存布局，以及主进程Java发现、自动准备与对应兼容扩展；不更换Electron业务架构、不复制PCL源码、不启动后续阶段、不自动push或对外发布。此前electron-builder批准保留历史，本方案使用Windows自带.NET Framework编译引导，无需加入该依赖。用户机器需Windows 10/11 x64与.NET Framework 4.7.2或更高；应用运行环境首次按固定官方版本校验下载，不下载执行远程脚本，不启用自动更新。实现及实际验收证据后补，不预记通过。
+
+执行交付：0.2.1小EXE232448字节；官方Electron固定摘要下载与独立缓存、现有业务保持、主进程Java8/17/21按需准备实现。262测试260 PASS/0 FAIL/2原有环境SKIP、14引导安全测试、审计/许可、三种官方Java逐文件及实际JVM/离线重开、隔离冷启动与最终EXE缓存入口通过。详见根docs/validation/BOOTSTRAP-0.2.1/REPORT.md。未重做真实MC世界矩阵、未关闭历史缺项、未push或发布。待用户体验验收。
+
+## 2026-10-25 同级运行环境与安静启动明确批准
+
+用户直接要求“改为运行的时候在同级目录下配置环境，若没有则下载，有的话则直接启动，把点击exe之后的检查环境和启动阶段的界面美化或者隐藏”。状态：APPROVED。当前增量0.2.2：Electron与内嵌应用缓存改为EXE所在目录下OUCL.runtime，不依赖工作目录，不再写LocalAppData桌面缓存；本地完整缓存校验后直接启动，缺失才官方固定版本下载。常规检查/启动隐藏引导窗口，实际下载/出错才显示简洁进度/重试界面。直接授权本次缓存布局变更，不自动迁移/删除0.2.1旧缓存、账户或游戏数据，不增加依赖、不改变Java准备流程或后续阶段批准。
+
+执行交付：0.2.2真实单EXE234496字节（229KiB），EXE同级OUCL.runtime、普通检查/启动隐藏、下载/错误显示简洁窗口实现。262测试260 PASS/0 FAIL/2原有SKIP，19原生引导测试、审计与许可通过；真实单EXE在独立中文/空格目录两次冷启动官方下载及同级URL验证、同目录热启动不新增运行环境验证通过。用户Esc中断的GUI取消验收不记通过，取消信号/清理单测另有证据。旧缓存及用户游戏资料保留，未push/发布，证据见根docs/validation/BOOTSTRAP-0.2.2/REPORT.md；待用户体验验收。
+
+2026-10-26实施记录：main独立下载优化0.2.3完成代码/设置/镜像及原版闭环、最终小EXE冷热验证，严格公网分段未满足条件保留单流；限定改动同步mod_loaders，397测试395PASS/0FAIL/2SKIP及32方法14能力Electron验证通过。遵循原明确授权恢复四加载器/Mod目标，不将0.3.0或公网分段缺项标通过，证据docs/validation/DOWNLOADS-mod/REPORT.md；原WIP备份/原始暂存保留。
+
+2026-10-26实施记录：原批准Mod依赖确认前置的纯平台依赖图校验完成，core无IO、无公开IPC/存储变化/新依赖。405项403PASS/0FAIL/2原有SKIP及完整检查通过。resolved只表示已选平台快照闭包，不代表真实JAR兼容/写入授权，见docs/contracts/MOD_DEPENDENCY_GRAPH.md；原候选服务/确认事务目标继续进行。
+
+## 2026-10-28 便携游戏根、版本设置与0.3.0合并交付
+
+用户明确要求：运行EXE后自动在同目录生成游戏主文件夹；为选中的已安装游戏增加类似PCL的版本设置，可打开Mod、存档等固定目录；完成后合并分支并生成0.3版本EXE。此前又明确要求跳过联网测试、优先模组加载器，并授权继续项目。
+
+状态：**APPROVED / DELIVERED（本增量）**。落地选择为同级`OUCL.games`，仅在没有既有游戏根记录时自动建立，绝不覆盖已有选择；版本设置通过`instance-folders.v1`传递实例UUID与固定文件夹键，主进程重新解析真实实例目录并拒绝链接逃逸。`main`与`mod_loaders`对齐后生成0.3.0 EXE。此批准与交付不改变未完成边界：不补写公网测试或真实游戏启动通过，不把只读Mod检查/安装预览冒充玩家确认依赖下载及一次安装事务完成。
+
+## 2026-10-28 目录服务不可用修复
+
+用户最新心跳明确要求修复“无法选择游戏目录、目录服务不可用”，并改为EXE同级自动生成游戏目录；授权继续项目并可使用Strata辅助。状态：**APPROVED**。本增量在便携引导中显式设置同级`OUCL.runtime/profile`，与旧全局profile隔离；不迁移、删除或强制接管旧profile的锁/实例/游戏数据。既有根记录在同一profile内仍优先；默认`OUCL.games`创建失败可重试且不阻断无关服务。保留旧0.3.0 EXE，另交付同版本`directory-fix`修复文件及独立证据目录。完整Mod安装与四加载器验收缺项继续保持开放。
+
+2026-10-28原批准Mod方案实施记录：持久预览和取消在既有JSON/恢复日志方向内落地，新增固定私有mod-plan UUID记录和受控公开planState/cancelPlan，不添加依赖或修改SQL表。依据原用户完整方案中mods.v1生成/确认/取消计划的明确批准实施；本次只交付预览保存/恢复/取消，确认和实际安装事务继续保持未完成。未知格式停写与不覆盖外部文件的边界不变；证据docs/validation/MOD-PLAN-DURABLE-20261028/。
+
+2026-10-28后续实施：按同一批准方案新增私有确认下载准备服务，复用既有Modrinth元数据、可信对象/传输和有界JAR worker，不新增依赖、公开通道或持久格式。新增固定错误映射，仅形成内部可验证准备结果；原公共确认、一次实例事务与最终完整验收仍待接入。未知Java精确版本保持未知，不猜测；测试证据docs/validation/MOD-PREPARATION-20261028/。
+
+2026-10-28事务实施：依据原明确批准的版本化实例记录、来源证明、一次安装事务/恢复范围，增加固定mod-txn UUID日志、加载器ready实例可选modCommitId，复用原JSON原子提交/SQLite恢复日志与严格worker；不增加依赖、公开确认通道或远程能力。私有暂存副本hard link仅用于同卷独占发布，未将可写Mod链接到共享对象。保留全部回退材料，无法证明所有权时停写。公共确认任务/取消互锁与完整产品验收仍未完成，证据docs/validation/MOD-TRANSACTION-20261028/。
+
+2026-10-28原批准Mod方案实施：固定mod-confirm:accept/list私有worker与既有SQLite任务接纳互锁，沿用原确认/取消/重连授权，无新表、依赖、公开IPC或后台。计划UUID作为任务请求身份，确认后取消计划受控拒绝；恢复清单核对不可变计划且有界。尚未开放产品执行器/按钮，完整目标继续。证据docs/validation/MOD-CONFIRMATION-20261028/。
+
+2026-10-28原批准Mod环境双重检查实施：生产context接入已登记Java的当前实测版本，沿用既有受控JavaProbe，不扩展发现/下载/登记、公开接口或依赖。无可用测量仍unknown；新增测试用适配器，不编造本机或MC验收。证据docs/validation/MOD-JAVA-FACTS-20261028/。
+
+2026-10-28原批准确认安装继续实施：新增私有任务执行器，沿用已批准SQLite任务/确认记录、可信下载准备及JSON事务，不扩展依赖、公开IPC或远程能力。本地真实服务闭环已测，不冒充公网或实际游戏验收。证据docs/validation/MOD-EXECUTOR-20261028/；公共报告/任务/UI待接。
+
+2026-10-28安装结果增量WIP：沿用原批准固定JSON/受控报告方向；新增证据持久化测试仍未通过，不记录交付或新的批准。已到用户额度暂停阈值，保存仅工作分支，main保留1edbc41。
+# 2026-10-28 界面交互及论坛前端扩展批准
+
+执行交付（非新增批准）：dfff42b修复旧Mod失败报告，473eb7e实现desktop.v1，6af8f0e实现交互UI。512项510 PASS/0 FAIL/2原有SKIP，typecheck/lint/build及两次隔离Electron交互/重开通过，外网0；UI预览EXE已本地打包及静态读取嵌入验证，不称冷/热网络验证、main合并或完整0.3交付。论坛接口以可注入前端适配器预留，无后台实现。证据根docs/validation/UI-20261028/REPORT.md。
+
+用户目标：侧栏可收起、公告改论坛、配色/图标/布局设置、低频设置折叠、内存滑块、资源自身图标与拖动；可借鉴本地PCL/KAMUCL/XMCL设计，不复制源码/素材。对明确范围直接回复“批准，但把前端接口留出，方便接入后端”。状态APPROVED：新增固定版本外观/本地草稿记录、受控本地图标和资源图标读取及必要IPC；论坛分类/列表/详情和本地草稿UI、可替换前端数据适配接口；不实现远程发布或后台。沿用此前不进行外网验证、不接管用户游戏窗口的限制，无新依赖。
+
+2026-10-28原批准Mod确认方案实施：沿用mods.v1增加严格confirm/installState，task投影增加mod-install，main真实装配准备/文件事务；资源库明确确认并恢复原task。无新依赖/持久格式/远程能力，原私有结果记录与JSON/SQL流程保持。沿用此前已批准确认/取消/订阅及界面授权，不把本地夹具当游戏验收。证据docs/validation/MOD-PUBLIC-20261028/。
+
+2026-10-28原批准DistributionSource预留实施：仅纯契约与差异预览、tests内存签名适配器，符合原完整方案明确授权；无新依赖、后台、公开入口或远程更新。启用真实源仍需另行配置可信来源/公钥及签名验证策略，不将测试密钥视为部署批准。
+
+
+## 2026-10-28 0.3.0最终整合与验证批准
+
+用户直接要求实施《OUCL 0.3.0 最终整合与验证》，状态APPROVED / IN_PROGRESS，当前G2。允许独立测试实例的联网及游戏窗口实测，覆盖此前对应停止限制；保留用户数据/旧EXE/原始资料/stash。不新增业务契约、依赖或存储格式，最终包OUCL-0.3.0-final.exe，本地提交并对齐main/mod_loaders，不push。具体证据见根docs/validation/FINAL-0.3.0-20261028/，未运行项不得标通过。
+
+
+2026-10-28最终整合交付：0.3全部既有增量保持，正式EXE release/OUCL-0.3.0-final.exe 363008字节，SHA256 3a63f5d7aaff7a7b7d5f3560b9925d75158310bcba76943f1d683a703686ec80。517项515PASS/0FAIL/2原有SKIP、正式Electron worker30PASS、界面重开、最终包官方冷/热及便携三场景通过。Forge/NeoForge各两次主菜单、FerriteCore和退出0；Fabric基本菜单/重开/退出0但测试Mod下载失败；Quilt安装/重试和原版新装受网络失败阻塞。公共Mod窗口公网安装成功及全断电矩阵未验收。新增三点真实进程中断安全阻断测试，不等同自动恢复。统一报告根docs/validation/FINAL-0.3.0-20261028/REPORT.md；完整实机验收仍开放，不push。
+
+
+2026-10-28网络失败修复授权：用户要求修复下载网络失败，允许大量参考甚至照用MC_start下X-CL/XMCL、KAMUCL；覆盖此前仅借鉴不复制的限制，但具体第三方内容仍核对许可。本轮G2先实现同一可信地址有界重试/可取消退避与持久前缀恢复，无新依赖、公开契约或存储格式；不降低HTTPS/官方摘要/镜像白名单。系统网络差异探测与联网验证仅独立测试根，待证据，不预记通过。
+
+
+2026-10-28网络失败修复交付：在用户明确允许参考/照用X-CL/XMCL、KAMUCL范围内，独立实现有界退避、持久前缀续传/同镜像保持、永久HTTP错误分类、Maven校验摘要与HEAD独立预算。完整Quilt复验进一步触发Electron内置Undici Parser.finish assert(!this.paused)致命断言，因此桌面main显式注入Electron net.request一跳流，保持HTTPS/证书/无会话Cookie/跳转白名单，未加依赖或公开契约/存储字段。528项526PASS/0FAIL/2原有SKIP，正式main/窗口两轮及加载器选择、最终EXE便携和官方冷/热通过。Fabric/Quilt官方依赖证明、FerriteCore下载通过；Quilt742454177字节计划、3652项物化、ready提交及禁网重开启动准备实际通过（复制并重新验证历史对象缓存，不冒充全部冷下载）。旧崩溃锁/数据原样保留，未补记游戏菜单矩阵。交付release/OUCL-0.3.0-network-fix.exe，364544字节，SHA256 04d8ddd7062c03e71e320e60b35f4b60105727568d441bb26930156ebf800e7b；仅重试候选另保留，统一证据docs/validation/NETWORK-FIX-20261028/REPORT.md。不push。
+
+## 2026-10-29 对照审查范围记录
+
+用户明确要求分析当前功能，与本地KAMUCL/X-CL及主流启动器比较同功能完善度、缺失能力和生态，给出可行性与执行方案。状态：分析/文档授权；报告为根docs/FEATURE_ARCHITECTURE_COMPARISON_20261029.md。候选业务增量仍为PENDING，不能将分析建议写成批准或覆盖已有真实验收记录。本次无产品实现、依赖、IPC、schema或后台变更。
+
+2026-10-29分析范围追加：用户明确允许相关源码复制到新库并要求持续深化单项与组合生态、技术可行性和执行方案。允许本地研究归档及分析继续，不等于批准产品移植/新业务；具体文件仍遵循来源许可。参考库D:/MC_start/OUCL-reference-library，23文件记录哈希/固定提交，保留许可材料，未配置remote。自动继续只做本聊天研究；不恢复其他任务、push、发布或改动产品存储/IPC。
+
+## 2026-11-01 安全所有者锁接管授权
+
+用户对“设计安全接管机制，明确原持有者失效证明、并发处理及恢复证据，再实施并验收”的方案回复“授权并继续”。该批准允许为中断恢复调整必要的所有者租约方案及相关存储/安全基线；不授权直接清除无法证明归属的既有锁或覆盖玩家数据。旧格式锁仅有随机 UUID，不能据此推断持有者已退出；无法证明安全的场景仍停写。实现、跨进程与产品验证完成之前保持 IN PROGRESS，不记为自动恢复通过。
+
+## 2026-11-10 P-D 首片明确批准
+
+用户在本聊天对“绑定准确 Java、现有锁内最终复核、约束未知时阻止启动、提交后失败保守恢复”的明确审批问题回复“是”。状态 APPROVED / IN_PROGRESS。具体范围以根 docs/work-packages/P-D/PLAN.md 及 REVIEW-20261110.md 修订为准：内部候选绑定、只读复核拆分、原子提交许可、取消及自有租约失败释放；无新公开IPC、持久格式、依赖或共同租约重构，不接管旧gameDir锁。本地独立证据后补，不预记通过。
+
+2026-11-11实施记录：P-D批准首片已实现，独立完整检查612项608通过/0失败/4跳过，类型/lint/build通过；Java真实属性和正式Mod事务/目录锁夹具通过。产品真实游戏运行尚未重验，外部进程不遵守锁的残余窗口保留；证据docs/work-packages/P-D/IMPLEMENTATION-20261111.md。未改变批准范围，未将公开有效Java展示记为完成。
+
+## 2026-11-11 资源索引隔离方案批准
+
+用户针对 Quilt 索引冲突的两种方案明确回复“A”，批准按官方索引 ID 与可信 SHA1 生成独立路径别名，并使安装、启动、虚拟资源及恢复验证一致；既有实例依据原收据继续使用原路径。不得覆盖旧索引、改写玩家数据或清除失败现场。实施与产品验收进行中，细节见 `docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md`。
+
+## 2026-11-11 P-C 只读影响预览明确批准
+
+用户在本聊天对“是否批准按推荐草案接入只读预览”直接回复“接入”。状态 APPROVED / IN_PROGRESS。范围为 docs/work-packages/P-C/PREVIEW-CONTRACT-20261111.md 的短期内存观察、严格IPC/preload、安全展示和取消；不批准文件启停/卸载、实例持久格式或新依赖。验证结果以本包报告为准，不预记通过。
+
+## 2026-11-12 隐藏依赖双摘要隔离批准
+
+用户对同一客户端 JAR 携带不同官方版本元数据造成隐藏依赖 JSON 冲突的方案明确选择“批准，按双摘要隔离（推荐）”。新安装的隐藏依赖路径按客户端 JAR SHA1 和官方版本元数据 SHA1 区分，旧实例继续沿用原路径；不覆盖旧数据或清理失败现场。实施及产品验收进行中，证据见 docs/work-packages/P-A/runs/20261111-quilt-index-conflict/REPORT.md。
+
+2026-11-12 P-C实施记录：按已批准只读契约完成代码接线，专项27项与本包隔离构建通过；完整回归及Electron窗口仍有失败/未验收，状态继续 IN_PROGRESS。未批准文件启停/卸载或新增持久格式；结果与证据见 docs/work-packages/P-C/REPORT-20261112.md。
+
+## 2026-11-12 跨工作包授权核对与固定候选验收记录
+
+本记录汇总既有真实批准及其验证，不是新增批准：B按P-B/APPROVAL_T1.md的用户“继续”实施task-targets.v1只读查询；C按2026-11-11“接入”实施只读预览；D按2026-11-10“是”实施内部Java/最终复核首片；E按其真实聊天“批准”实施固定1355字节样本只读预览（核对见根docs/acceptance/20261112-v1/ADE-REVIEW.md）。A必要基础沿用所有者机制等既有批准，Quilt索引/隐藏依赖双摘要虽另获批准但不进入本次v3候选。
+
+当前已验证范围、精确候选、分层证据和待补证/排除表见根docs/acceptance/20261112-v7/MERGE-CHECKLIST.md；完整回归及v4–v7实际产品/游戏/EXE证据见各版本报告。仍不批准C文件启停/卸载、D公开有效Java面板、E通用导入/安装或新依赖/持久格式；不将验收报告等同扩权。A真实强制中断产品恢复与全部异常时序保持未完成，完整历史方案不标全部验收通过。用户已要求选定功能本地整合、不push/发布；实际合并结果另记，活跃共享树保持原样。
+
+2026-11-13 v12验证追加（非新增批准）：A索引/隐藏依赖隔离的精确十文件候选fab0ac8已在独立资料、同最终EXE完成旧原版/Fabric/FerriteCore/新Quilt共存及正常重开，四次自然退出0、48项审计通过。可按既有本地整合授权接纳该选定增量；不将未完成强制中断/全部时序矩阵改为通过，不扩大公共契约/存储格式/依赖或业务范围。细节见根docs/acceptance/20261113-v12/REPORT.md。
+
+## 2026-11-14 验收协作职责调整
+
+用户明确要求本对话统一管理验收，分别启动其他对话的审查。已按A–E五包分别恢复现有聊天，先提交专项审查报告，由统一管理聊天回收复核、分派必要整改并维护合并清单；不是对新业务、契约、依赖或安全边界的额外批准。分派及约束见根docs/acceptance/20261114-v27/REVIEW-MANAGEMENT.md。
+
+
+2026-11-14 v31验收整改追加（非新增批准）：五包审查的八项最小修复在独立统一候选完成691项687PASS/0FAIL/4既有SKIP，类型/全lint/build及C/D组件、固定worker专项通过。源代码0c2a889ccea544d3294136a80c74ac8a5e6f348f，13生产文件及配套测试/对象租约内部契约；A对象域租约沿11月1日授权，metadata OwnerGuard不变、未知旧锁仍停写。C受控真实窗口标签及超时后成功清错通过；尚不等同修复后最终EXE/游戏验证。真实强杀恢复、公网取消等缺项继续保留，完整方案不标全部验收。见根docs/acceptance/20261114-v31/REPORT.md及HANDOFF.md；不push发布。
+
+
+2026-11-15 v35收尾记录（非新增批准）：本轮已批选定增量在记录限制下技术接纳并完成本地整合。修复后同v32EXE四次实际菜单/游戏内自然exit0、正常关窗重开及最终launcher真实exit0、metadata/对象/gameDir租约释放审计通过；首次launcher数值退出码未观测保留。原691项687PASS/4SKIP及类型lintbuild全过、source0c2a889c不变。A最终EXE强杀/C公网取消等缺证仍DEFERRED/NOT_EXERCISED，不宣称全历史方案全验；具体有限接纳/保留/排除见根docs/acceptance/20261115-v35/REPORT.md。当前无可自动推进的本轮步骤，结束该验收轮询，独立额度监测保留。未push发布，活跃共享树未整体暂存/提交。
+
+
+2026-11-15 v36续验事实（非新增批准）：用户要求继续后完成安全无窗口网络诊断，原C独立审阅。Electron45本机回环证明request close后仍有HTTP200/原生abort，旧壳closed即事务结束判据被反例证伪；生产compiled createDesktopFetch受控HTTPS AbortSignal至原生abort链通过，四用例/真实子进程exit0。历史具体请求关联UNKNOWN及公网取消NOT_EXERCISED仍保留，不等同完整C预览/GUI取消；无生产改动、TLS降低、旧壳覆盖或全量重跑。见根docs/acceptance/20261115-v36/REPORT.md。v35有限接纳不变，不push发布。
+
+
+2026-11-15 用户最新指令：取消剩余补证，直接生成最终版本EXE、整合梳理全部提交并重新梳理目录。本轮批准执行最终本地交付和目录/文档整理，不再推进A强杀/C公网取消/不可达frame补证，不将取消等于通过。main已包含全部本地分支提交，保留共享未提交WIP。最终0.3.0沿已验源码/七产物，仅重新打包正式名称；交付/提交/目录入口见docs/delivery/20261115与docs/PROJECT_LAYOUT.md。不push发布。
+
+## 2026-11-15 对比方案执行启动（本次真实指令）
+
+用户在当前对话明确要求“读取 docs/EXECUTION_HANDOFF_20261115.md 并执行，允许创建子对话分工”，并补充同名交接文件。当前门禁 G2：按交接 N1→N6 依赖推进，在既有已批接口、存储及安全边界内实现 N1 实例概览/任务反馈、N2 首次引导、N3 外观完善、N4 固定渐变文字工具；N5/N6 先产出具体可审查方案。新公共接口、持久格式、权限、依赖、可信源与真实分发执行仍须单独批准，不批量改 APPROVED，不恢复已取消补证。
+
+实施基线为 main 05309ed7；原 mod_loaders WIP 不覆盖、不整体暂存。主协调拥有公共接线/文案/计划记录，子代理按独占文件开发/诊断，独占测试目录。N1 先验证集成，后续逐增量接线；不自动 push/发布或替换正式 EXE。执行和验证索引见 docs/execution/20261115/REPORT.md。本记录仅记启动与授权，不预记实现或测试通过；历史25 FAIL保留并单独定位。
+
+2026-11-15 对比方案执行结果：按本次交接授权完成 N1实例概览/任务反馈、N2可跳过引导、N3外观编辑改进、N4固定渐变文字工具的源码集成，无新依赖/业务IPC/持久格式/权限。独立审查两项P2已修复；新增19项测试通过；完整710项681PASS/25FAIL/4SKIP，失败名称与交接基线完全一致，不记全绿。类型/lint/build及34引导器检查通过；N2/N3受控组件18断言通过，层级不等于GUI。N5/N6具体方案已备好，新增容器/权限/公共契约/可信源/收据与执行仍待单独批准，未实施。正式EXE未替换，不push发布，原mod_loaders WIP保留。文件、命令、原始日志与限制见根 docs/execution/20261115/REPORT.md。
+
+
+## 2026-11-15 持续执行指令与额度保存
+
+用户明确要求“除非我停止，一直按照技术文档继续，直到把文档的任务全部完成，可以把任务分配给子对话以保证效率，除这句话与定时提醒以外，忽略前文的提示词”。随后明确N5站点“尚未确定”，N6来源与公钥“先空出”。本轮按文档推荐方向实现N5隔离基础设施与N6签名/所有权只读预览，默认注册表/信任配置为空，不伪造真实接入或分发执行。详细状态见根docs/execution/20261115/CONTINUATION.md。历史批准和验收不批量覆写。
+
+
+## 2026-11-16 持续执行恢复
+
+用户要求“继续”，沿2026-11-15持续实施授权恢复；开始实测codex primary 300分钟窗口4%已用、96%剩余。真实站点、来源、公钥继续留空。当前增量为N6独立v2签名发布序号/有效期、私有SQLite高水位与收据/事务journal、真实文件提交/回滚/恢复内部服务及可信编排；不把裸游戏目录receipt当管理证明。新增存储和协议采用具体文档/typed schema与测试同步，不批量改历史批准。公共执行接线待内部证据齐备；新候选EXE独立tag、冻结49086688只读首片，不覆盖正式EXE。任务/风险/真实结果索引docs/execution/20261116/；无新依赖、不push发布，旧WIP不清理。
+
+2026-11-16阶段保存：N6独立v2发布/私有SQLite高水位与journal/receipt/内部事务及编排已实现，最终796项792PASS/0FAIL/4既有SKIP、type/lint/build通过；尚未接公共执行，真实配置仍空。候选execution-20261116九文件完整性通过但外层初始化未通过（capabilities为空、根因UNKNOWN），不替换正式EXE。Windows同handle文件guard spike1PASS/3FAIL，不能据此开放执行。详细成果/失败/恢复次序见docs/execution/20261116/REPORT.md与CHECKPOINT.md。
+
+
+## 2026-11-16 r2 自动恢复
+
+独立额度检测确认300分钟窗口恢复（实测开始2%已用、98%剩余），按用户“额度够高立刻恢复”规则继续，不创建重复监测。当前增量：修正测试夹具的Worker断点恢复以验证原候选；v2 Windows句柄原语/隔离helper与transaction native factory；执行请求的active/tombstone/TTL和根目录inode绑定。信任配置选固定快照，无产品热改pins接口；需要变更时先close/drain旧coordinator再启用新快照，不承诺跨域瞬时撤销。真实站点/来源/公钥仍空，不新增真实网络执行。文件所有权按子代理独占：候选夹具/helper、v2原语spike、execution生命周期/独立review；主协调拥有事务根绑定、Node native适配、构建/最终整合。细节与证据见docs/execution/20261116-r2。
+
+2026-11-16 r2候选初始化闭合：独立实测定位为smoke调试夹具未恢复storage Worker的Break on start（非产品初始化缺陷）。仅修夹具后，同一候选外层18项通过，外层/Electron/Worker正常exit0且owner.lock释放，九应用/73运行时摘要不变；历史失败保留。原生文件helper准入仍独立进行，不能由本条视为分发执行已开放。见docs/execution/20261116-r2/CANDIDATE-INIT.md。
+
+
+2026-11-16 r2保存：相对句柄native helper与Node内部factory完成，专项14及12项通过，完整832项828PASS/0FAIL/4既有SKIP。新r2候选尚未打包/实跑，公共执行未开放、真实配置仍空。primary剩余10%按约保存；恢复与证据见根docs/execution/20261116-r2/CHECKPOINT.md。历史失败保留，无push/正式EXE覆盖。
+
+
+2026-11-17用户要求继续，primary开始0%已用，按持续执行授权恢复。先补checks及独立execution-20261117候选打包/外层验证，再补真实SQLite/OwnerGuard与native factory联合恢复内部测试；不改公共执行、真实配置仍空。计划和实际证据见根docs/execution/20261117，结果不预记。
+
+2026-11-17内部取消增量：实际复现未传signal及迟到copy后修复；局部48PASS，完整844项840PASS/0FAIL/4既有SKIP，type/全lint/build通过。候选execution-20261117沿38c441b7快照已11文件审计及18outer检查通过；不冒称该候选包含后续内部signal源码。真实来源/公钥空，公共执行未开放，无push。详根docs/execution/20261117。
+
+2026-11-17本地纯投影增量完成：9项专注通过，最新完整853项849PASS/0FAIL/4既有SKIP，type/全lint/build通过。未接公共执行、未实现完整域适配；公共execution提案已具体备好并请求批准，未收到答复不实施新增IPC/持久格式。当前状态/恢复点见根docs/execution/20261117/CHECKPOINT.md。
+
+2026-11-17 r3额度恢复：独立监测通知primary100%剩余，主协调实测1%已用后沿持续内部授权继续本地Mod域适配（真实artifact/worker/runtime/platform/许可typed port、journal前后阶段、有界取消/关闭），复用已验纯投影。公共执行A仍待明确批准，真实source/key空，不改IPC/持久格式/依赖、不push。计划/分工/风险与后继真实证据见根docs/execution/20261117-r3/PLAN.md。
+
+2026-11-17 r3内部Mod域适配完成：证据6PASS、真实worker/Inventory/SQLite/native/Coordinator联合15PASS，完整874项870PASS/0FAIL/4既有SKIP，type/全lint/build通过。只支持mods顶层JAR，许可/runtime/platform端口合成测试不等于真实政策；公共A仍未批准、source/key空。源码/原始日志/限制与恢复点见根docs/execution/20261117-r3，未push或覆盖正式EXE。
+
+
+## 2026-11-17 公共执行方案A明确批准
+
+2026-11-17真实批准：用户先要求讲述方案A，主协调解释独立执行接口、持久任务、双库接纳/outbox与配置空时禁用后，用户明确回复“批准”。本次G2允许按PUBLIC-EXECUTION-PROPOSAL方案A持续小步实现distribution.execute.v1、confirmation admission/outbox、distribution-install任务/对账及受控接线/验证；真实来源、公钥和站点仍空，领域或政策条件未齐不广告/启用执行。后续不为本范围重复索取同义批准，不批量改历史PENDING，不push或替换正式EXE。
+首个可验证基础增量为严格公共契约与私有库schema2确认接纳/outbox；基线f825b8bb、主协调实测primary57%已用。精确计划/分工见根docs/execution/20261117-a/PLAN.md；结果不预记。
+
+2026-11-17方案A基础保存：严格公共契约、私有schema2确认接纳/outbox、固定ID任务投影/expectedRoot绑定及kind标签已实现，完整893项889PASS/0FAIL/4SKIP、type/全lint/build通过。公共handler/双库对账/执行/UI尚未接线，不广告能力。primary91%已用触发保存；恢复首步收紧Accepted/Recovery snapshot.kind，再继续已批准A（不重复问批准）。详根docs/execution/20261117-a/REPORT.md与CHECKPOINT.md。
+
+2026-11-17用户继续且primary恢复（实测1%已用），沿已批准方案A实现严格任务kind回执、有界完整admission/任务投影读取与双库对账。只补固定ID元数据投影/ack读回，已projected丢task及孤儿拒绝，不自动文件执行、不广告public能力；source/key空。分工/预算/真实证据见根docs/execution/20261117-b。
+
+2026-11-17方案A对账增量完成：严格执行回执kind、完整有界admission/task读取、真实双库固定ID对账及ack读回，915项911PASS/0FAIL/4SKIP、type/全lint/build通过。未广告执行或文件重放，A持续批准无需重复询问；后继接线/真实配置条件见根docs/execution/20261117-b/CHECKPOINT.md。
+
+2026-11-17 A调用层C：五通道transport/preload/main文档owners已接，生产no-port/无execute广告；937项933PASS/0FAIL/4SKIP，type/全lint/build通过。独立候选execution-20261117-c 11文件审计/真实outer26检查/正常退出锁释放及73runtime摘要通过，不覆盖正式EXE。后继ticket/持久执行backend尚未完成，A持续授权；见根docs/execution/20261117-c。
+
+2026-11-17 A内部确认材料D：从46197ef9继续ticket(proposalId)最小main-owned接口，重新验证真实prepare快照/目录/发行/领域；仅材料、不接纳或执行。真实测试及进程隔离夹具/全检由主协调收存；A批准不变，计划和后继持久服务顺序见根docs/execution/20261117-d。
+
+2026-11-17 A确认材料D完成：内部ticket真实Prepared抽取及多次权威复验、互斥/singleflight/cancel-close drain，专项7PASS；944项940PASS/0FAIL/4SKIP、type/全lint/build通过。仅材料，不接纳/任务/文件执行；下一持久确认与执行服务见根docs/execution/20261117-d/NEXT-SERVICE.md，A授权不变。
+
+2026-11-17 A旧回执E：新增只绑定已有root/digest匹配record的request alias恢复原语，不创建admission/outbox/task或授执行；945项941PASS/0FAIL/4SKIP、type/全lint/build通过。primary92%已用/8%剩余触发保存，仅收齐已启动checks，后继持久确认/执行backend仍未完成。A批准持续有效，恢复后按根docs/execution/20261117-e/CHECKPOINT.md继续，无需重复问批准。
+
+
+2026-11-17 A持久确认F：沿用户已批准A从e666a2a5实现main-owned确认服务，真实ticket→admission/旧alias→双库对账→真实同ID任务回执。并发metadata lane及durable回执先于seen；不进行文件执行，不开放能力，source/key仍空。专注真实合装9PASS，完整检查结果另记；计划/证据见根docs/execution/20261117-f。历史批准不覆写，无push/正式EXE覆盖。
+
+2026-11-17 A确认F完成：真实合装9PASS，完整954项950PASS/0FAIL/4既有SKIP、type/全lint/build0；持久回执优先、metadata串行和close排空已验证。只记录任务不执行文件，下一内部原子claim见根docs/execution/20261117-f/CHECKPOINT.md；A批准持续有效。
+
+
+2026-11-17 A内部认领G启动：F已本地403f15b4保存；本片只在既有任务SQLite新增内部首次start原子认领，真实installation root及双表绑定/pristine检查，不改schema/公共IPC，不执行文件或广告能力。范围/测试见根docs/execution/20261117-g/PLAN.md，结果不预记，A授权不变。
+
+2026-11-17 A认领G完成：新4项+原7项专注11PASS；完整958项954PASS/0FAIL/4SKIP、type/全lint/build0，独立只读审查有限认可。首次start先持久化且未知ack不读回重授；无文件执行/生产开放。后继严格终态checker与执行服务见根docs/execution/20261117-g/CHECKPOINT.md。
+
+
+2026-11-17 A只读终态H启动：从6116daf0补独立admission终态checker，严格J/R稳定复读与plan/目录proof及receipt前后方向；不执行文件、不授claim、不改schema/公共契约。计划和后继真实证据见根docs/execution/20261117-h，A授权不变，真实配置空。
+
+2026-11-17 A只读终态H完成：真实专注7PASS，完整965项961PASS/0FAIL/4SKIP、type/全lint/build0；严格J/R稳定及前后receipt方向，薄历史证据不授文件执行。taskId须未来durable projection独立核，真实配置仍空。后继fresh-bound入口见根docs/execution/20261117-h/CHECKPOINT.md。
+
+
+2026-11-17 A首次事务绑定I启动：H已55fa9a35保存，实测primary剩21%启动最后小步。内部fresh-bound强制factory/原目录proof、拒已有journal，legacy路径保持；不授执行或开放产品。范围及后继实际证据见根docs/execution/20261117-i，低于20%不再启新实现。
+
+2026-11-17 A额度保存I：实测primary剩8%，停止新实现和新完整检查，仅收齐已启动专注5PASS；源static通过但最终新增测试未跑tsc/lint，全test/build待恢复。I按WIP保存不标完成，首轮预期错误4PASS/1FAIL原日志保留。最近完整通过仍H55fa9a35（965/961PASS/4SKIP）；恢复首步根docs/execution/20261117-i/run-checks.mjs，A持续批准无需重问。
+
+2026-11-18额度恢复，primary实测2%已用。已按I恢复点补齐完整970项966PASS/0FAIL/4SKIP、最终source/test类型/全lint/build0，I不再待全检。下一内部executeAdmitted从durable admission/projection取计划、重验现场与当前authority、亲自fresh claim再bound事务；不开放production或填真实配置。根docs/execution/20261117-i证据，A持续批准。
+
+
+2026-11-18 A内部已接纳执行J启动：I a2ab41c3全检完成，新增受信executeAdmitted，从durable admission/任务投影验证、H终态只读、本人fresh claim后I原目录绑定事务；含有界互斥/cancel/close-drain。不新增公共IPC/schema或生产接线，任务终态持久化属后继K，source/key空。计划根docs/execution/20261118-j/PLAN.md，结果不预记，A持续批准。
+
+2026-11-18 A内部执行J完成：真实专注9PASS及关闭修复35PASS；首轮全检关闭同步abort一FAIL已定位修复且原日志保留，最终979项975PASS/0FAIL/4SKIP、type/全lint/build0。从durable record本人claim再native，未知ack不授效果，取消/close真实排空。J薄结果后task仍running，K终态落盘/产品接线未做；根docs/execution/20261118-j/CHECKPOINT.md，A持续批准/source-key空。
+
+
+2026-11-18 A任务终态K启动：J f3c7fc9c已全检通过，新增私有settlement/纯reducer，首次自H证据CAS落completed或failed，既有终态只核稳定journal/绑定不依赖当前receipt；未知ack不重执行。无schema/公共/生产变化，计划根docs/execution/20261118-k，结果不预记。
+
+2026-11-18 A终态K完成：真实专项7PASS，完整986项982PASS/0FAIL/4既有SKIP、type/全lint/build0；首次H后安全CAS completed/failed，已settled历史不依赖较新receipt，unknown CAS exact读回无重执行。当前仍未接生产/public任务观察控制，source-key空；下一root-owned J→K运行编排见根docs/execution/20261118-k/CHECKPOINT.md。J review旧SHA已主协调补后继更正，无push/正式EXE覆盖，A持续批准。
+
+2026-11-18本轮保存：最新源码提交5b842e5b，主协调实测primary85%已用/15%剩，已低于20%不启动新增量；本轮I/J/K全部必要检查已收齐，无待跑full/WIP源码，仅原tmp未跟踪保留。下一按本页root-owned J→K编排继续，额度够高再恢复，不重复问A批准。
+
+
+2026-11-18额度恢复primary实测1%已用，沿A从e9d84204启动L root-owned J→K运行编排。single root slot贯穿执行/终态CAS/readback，historical bypass J，unknown claim不重演，close不提前关闭K；仅内部runner无自动startup/公共/schema变更。范围根docs/execution/20261118-l/PLAN.md，结果不预记，真实配置继续空。
+
+2026-11-18 A运行编排L完成：真实专项6PASS，完整992项988PASS/0FAIL/4SKIP、type/全lint/build0；root单job贯穿J/K/读回，historical绕J、unknown不重演、close排空不提前关K。仅内部不自动startup/公共/schema变化，下一passive任务view/目标provider见根docs/execution/20261118-l/CHECKPOINT.md，A批准持续/source-key空。
+
+
+2026-11-18 A被动任务视图M启动：L d02634b8已full通过，新增内部get/list/targets与readByTask索引映射（保持全库审计），真实双库绑定与root/instance范围、startup/inflight failclosed，绝不查询时执行或临时改状态。暂不改公共TargetKind/main/worker/schema，根docs/execution/20261118-m/PLAN.md，结果不预记，A持续批准/source-key空。
+
+2026-11-18 A被动任务视图M完成：真实专项7PASS，完整999项995PASS/0FAIL/4既有SKIP、type/全lint/build0；get/list/targets真实归属与scope、startup/在途/孤儿failclosed、总query8/target2预算和关闭排空。readByTask保留全库审计，不宣称性能优化；未改public/root路由/schema，下一N按A item1接task-target kind及观察，详根docs/execution/20261118-m/CHECKPOINT.md。source-key空/no执行广告，无push/EXE覆盖，A持续批准。
+
+2026-11-18本窗口保存：L d02634b8与M 3a30d1b3均已真实full验证，最新999项995PASS/0FAIL/4SKIP及type/全lint/build0。主协调实测primary85%已用/15%剩，按低于20%不启新增量保存，无待跑检查或源码WIP，只有原tmp未跟踪保留。停止依据仅primary规则，不按weekly作停止阈值；下一N按本页继续，A持续有效，无需重批。
+
+2026-11-18 方案 A 分发任务目标查询已通过完整检查。1002 项中 998 通过、0 失败、4 项既有跳过，类型检查、lint 和构建通过。新增三类适配器测试用受控端口。下一步装配真实账本和只读任务观察，真实来源/公钥继续空置。见根 docs/execution/20261118-n/REPORT.md。
+
+2026-11-18 方案 A 主进程分发观察已接入，首次查询对账后可读任务中心和实例目标。1003 项中 999 通过、0 失败、4 项既有跳过，类型、ESLint、构建通过。下一步补持久排队取消和显式恢复，真实配置继续空置。见根 docs/execution/20261118-o/REPORT.md。
+
+2026-11-18 方案 A 已接入排队取消及内部显式恢复。首次启动与取消竞争同一任务修订号，显式恢复复用原接纳任务、前任日志与受保护目录。最终 1004 项中 1000 通过、0 失败、4 项既有跳过，类型、ESLint、构建通过。下一步绑定并持久保存公共恢复请求 ID。根 docs/execution/20261118-p 与 20261118-q 保留证据。
+
+2026-11-18 方案 A 恢复请求身份已持久化，私有账本版本 3 加有界恢复请求绑定。完整 1004 项 1000 通过、4 既有跳过，类型、lint、构建通过。下一步文档准备与确认生命周期及公共后端装配。见根 docs/execution/20261118-r/REPORT.md。
+
+2026-11-18 方案 A 文档准备和配置后端完成真实本地组合验证。1007 项 1003 通过、0 失败、4 既有跳过，类型、lint、构建通过。应用配置仍空，后续接入用户界面及可配置根装配。见根 docs/execution/20261118-s 与 20261118-t。
+
+2026-11-18 方案 A 配置装配、确认和恢复界面及独立候选验收通过。最终本地回归 1007 项中 1003 通过、0 失败、4 项既有跳过，类型、lint、构建通过。实际外层候选 26 项、嵌入 11 应用及 73 运行时文件验证通过；真实受信配置按要求空置，产品 IPC 拒绝五个执行调用。N5 站点及 N6 真实发行、制品和许可材料仍为外部验收阻塞。详根 docs/execution/20261118-v/REPORT.md 与 CHECKPOINT.md。
+
+2026-11-18 补齐已配置恢复调用层验收。真实本地回滚后跨文档原 ID 读到同一任务终态，恢复只执行一次。1007 项中 1003 通过、0 失败、4 既有跳过，静态检查与构建通过。仅测试和记录，候选沿用 V。详见根 docs/execution/20261118-w/REPORT.md。
+
+主进程配置装配补测通过：直接调用主进程工厂，合成发行经真正的适配器、两库任务和受保护文件事务完成。全量 1008 项 1004 通过、0 失败、4 项既有跳过，类型、lint、构建通过。此增量仅测试与记录，实际配置仍空置。见根 docs/execution/20261118-x/REPORT.md。
+
+2026-11-19 统一验收入口见根 docs/execution/20261119-coordination/ACCEPTANCE.md。候选、N5、N6 三组已独立复核，固定整合包原缺参数的两项另跑通过。产品代码和真实配置无变动，授权范围不变。
+
+2026-11-19 并行补验已收口：N5 CDN 真实 Chromium 隔离 6 项通过；N6 仅在隔离编译注入合成配置，真实 Electron 主进程、预加载、界面确认、任务订阅、重启回执和两库原生落盘均验证通过。类型、lint、构建通过。产品源码与候选沿用现有快照，真实配置保持空置。详见根 docs/execution/20261119-coordination/ACCEPTANCE.md。
+
+## 2026-11-20 四系统增量明确启动
+
+用户在《OUCL 综合功能开发｜最终执行指令》授权四个功能域、必要依赖、IPC、非破坏性存储及内部架构调整，随后明确回复“Please implement the plan.”。本次以 G2 实施系统浏览器 PKCE 与加密账号、Yggdrasil 皮肤站与固定摘要的 Agent、独立沙箱 WebContentsView 与经确认导入、EasyTier 无 TUN 的 Minecraft 单端口房间。依赖与配置见[四系统说明](../../docs/FEATURE_CENTERS.md)。外部账号访问、费用、公网部署、发布、校方授权继续按原约束。
+
+## 2026-11-21 OUCL 0.5.0 本地交付
+
+用户要求整理四系统接口、生成 0.5 版 Windows EXE 并提交相关内容。此增量覆盖版本标识、接口文档和本地打包与验证。已有外部账号、网络授权及发布边界继续适用。

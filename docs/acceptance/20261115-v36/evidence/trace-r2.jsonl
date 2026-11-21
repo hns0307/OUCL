@@ -1,0 +1,25 @@
+{"time":"2026-11-15T06:47:22.777Z","monoMs":105.8386,"kind":"request-created","mode":"response"}
+{"time":"2026-11-15T06:47:22.779Z","monoMs":107.2575,"kind":"client-finish","mode":"response"}
+{"time":"2026-11-15T06:47:22.779Z","monoMs":107.4237,"kind":"client-close","mode":"response","responseSeen":false,"serverReceived":false}
+{"time":"2026-11-15T06:47:22.832Z","monoMs":160.2381,"kind":"server-body-ended","mode":"response","clientClosed":true,"clientFinish":true,"responseSeen":false}
+{"time":"2026-11-15T06:47:22.994Z","monoMs":322.164,"kind":"server-response-release","mode":"response","clientClosed":true}
+{"time":"2026-11-15T06:47:22.996Z","monoMs":323.7498,"kind":"server-response-close","mode":"response","writableEnded":true}
+{"time":"2026-11-15T06:47:22.996Z","monoMs":323.9478,"kind":"client-response","mode":"response","status":200,"clientClosed":true}
+{"time":"2026-11-15T06:47:22.996Z","monoMs":324.1987,"kind":"client-response-end","mode":"response"}
+{"time":"2026-11-15T06:47:22.999Z","monoMs":326.5754,"kind":"request-created","mode":"abort"}
+{"time":"2026-11-15T06:47:22.999Z","monoMs":327.1817,"kind":"client-finish","mode":"abort"}
+{"time":"2026-11-15T06:47:22.999Z","monoMs":327.2121,"kind":"client-close","mode":"abort","responseSeen":false,"serverReceived":false}
+{"time":"2026-11-15T06:47:23.001Z","monoMs":329.4198,"kind":"server-body-ended","mode":"abort","clientClosed":true,"clientFinish":true,"responseSeen":false}
+{"time":"2026-11-15T06:47:23.166Z","monoMs":493.7899,"kind":"native-abort-called","mode":"abort","clientClosed":true,"serverReceived":true}
+{"time":"2026-11-15T06:47:23.166Z","monoMs":493.9781,"kind":"client-abort","mode":"abort"}
+{"time":"2026-11-15T06:47:23.167Z","monoMs":494.6467,"kind":"server-response-close","mode":"abort","writableEnded":false}
+{"time":"2026-11-15T06:47:23.169Z","monoMs":497.2008,"kind":"request-created","mode":"reject"}
+{"time":"2026-11-15T06:47:23.170Z","monoMs":497.6518,"kind":"client-finish","mode":"reject"}
+{"time":"2026-11-15T06:47:23.170Z","monoMs":497.6883,"kind":"client-close","mode":"reject","responseSeen":false,"serverReceived":false}
+{"time":"2026-11-15T06:47:23.170Z","monoMs":498.4004,"kind":"exact-interception","mode":"reject","id":1,"clientClosed":true,"identity":"unique-local-url-and-single-live-request"}
+{"time":"2026-11-15T06:47:23.171Z","monoMs":498.8715,"kind":"client-error","mode":"reject","netToken":"ERR_BLOCKED_BY_CLIENT"}
+{"time":"2026-11-15T06:47:23.171Z","monoMs":499.2499,"kind":"client-abort","mode":"reject"}
+{"time":"2026-11-15T06:47:23.210Z","monoMs":538.0306,"kind":"adapter-exact-pending","mode":"production-adapter-abort","id":2,"writableClosed":true,"responseSeen":false,"identity":"one private-session request, exact URL and method"}
+{"time":"2026-11-15T06:47:23.366Z","monoMs":694.4368,"kind":"adapter-signal-abort","mode":"production-adapter-abort"}
+{"time":"2026-11-15T06:47:23.367Z","monoMs":694.6831,"kind":"adapter-native-abort-called","mode":"production-adapter-abort"}
+{"time":"2026-11-15T06:47:23.368Z","monoMs":695.5646,"kind":"adapter-native-abort","mode":"production-adapter-abort"}

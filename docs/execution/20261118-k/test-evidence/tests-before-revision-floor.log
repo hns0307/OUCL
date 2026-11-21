@@ -1,0 +1,15 @@
+✔ real native committed evidence settles the real running task once; repeat reads unchanged completed state (1934.4922ms)
+✔ real task CAS commit with lost acknowledgement reads back the exact expected tuple without writing again (1502.642ms)
+✔ real fresh claim and protected staged rollback settle failed without a committed receipt (737.3526ms)
+✔ later real receipt does not invalidate the already-settled historical task or require current receipt reads (2849.5221ms)
+✔ wrong root/task/proposal bindings and pristine queued journal cannot be settled as terminal tasks (1321.6005ms)
+✔ actual competing CAS cannot be overwritten or treated as the exact settlement acknowledgement (1433.0303ms)
+✔ close drains a held actual task CAS and refuses new settlement without abandoning committed state (1458.2102ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11394.0046

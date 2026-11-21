@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-28T08:17:21.503Z",
+  "isolatedUiFixture": true,
+  "actualComponentAndPreload": true,
+  "realStorageWorker": true,
+  "plannerMetadataIsFixture": true,
+  "downloadedOrInstalledMods": false,
+  "rendererHasNoNode": true,
+  "reloadRestoredExactPlanWithoutPlanning": true,
+  "cancellationPersisted": true,
+  "cancelledRevision": 2,
+  "staleRevisionRejected": true,
+  "smallWindowNoOverflow": true,
+  "explicitConsentRequired": true,
+  "acceptedTaskRestoredAfterReload": true,
+  "unknownPreparationBlocksCommit": true,
+  "taskSubscriptionIsFallbackFixture": true,
+  "plannerCalls": 3
+}

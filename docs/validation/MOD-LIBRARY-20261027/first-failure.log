@@ -1,0 +1,9 @@
+{"level":"warn","event":"resource-download-failed","code":"NETWORK_FAILED"}
+file:///D:/MC_start/OUCL/.test-build/official-mod-library.mjs:7091
+      if (["failed", "cancelled", "needsRecovery"].includes(current.snapshot.state) || Date.now() > deadline) throw new Error("TEST_RESOURCE_NOT_COMPLETED");
+                                                                                                                    ^
+
+Error: TEST_RESOURCE_NOT_COMPLETED
+    at file:///D:/MC_start/OUCL/.test-build/official-mod-library.mjs:7091:117
+
+Node.js v24.21.0

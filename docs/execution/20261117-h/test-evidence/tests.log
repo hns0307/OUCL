@@ -1,0 +1,15 @@
+✔ stable absence is undefined; real admitted/native committed evidence is thin, detached and read-only (1844.4751ms)
+✔ real staged failure rolls back via native factory and proves absent before-receipt at revision zero (747.9567ms)
+✔ malicious admission/root/journal bindings cannot certify a real terminal (1375.6636ms)
+✔ partial/pending journals and wrong committed or rolled-back receipt direction are not terminal evidence (1319.3515ms)
+✔ a genuinely newer native receipt conservatively refuses the old admitted terminal (2892.9302ms)
+✔ journal and receipt envelope drift across J1/R1/J2/R2 are rejected (1348.4196ms)
+✔ untrusted port envelope budgets, extra keys, cycles and read failures fail closed without storage writes (1261.0557ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10954.7479

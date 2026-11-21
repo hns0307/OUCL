@@ -1,0 +1,16 @@
+✔ distribution execution receipts reject other existing task kinds (1.2626ms)
+✔ execution contract defines five channels and the approved bounded lifecycle constants (2.4327ms)
+✔ requests reject future versions, unknown fields, noncanonical UUIDs and arbitrary path or URL input (0.2962ms)
+✔ proposal enforces 256 operations, exact 1024 path boundary, safe Windows paths and nonoverlap (2.802ms)
+✔ preparation states constrain proposal/error to one exact discriminated variant (0.2811ms)
+✔ accepted/recovery validate real TaskSnapshot structure and cannot substitute task identity or unintroduced kind (0.3418ms)
+✔ result correlation rejects wrong prepare identities, cross-instance proposals, wrong proposal and mixed channel DTOs (0.7945ms)
+✔ all error codes roundtrip their exact mapping; unknown codes, details, retry drift and oversized responses fail (3.3683ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 91.4673

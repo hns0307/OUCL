@@ -1,0 +1,17 @@
+✔ real ticket admits and projects one queued task; old receipt aliases survive higher release and proposal TTL (850.6151ms)
+✔ wrong root/revision/sequence and conflicting request identity refuse new admission (879.3564ms)
+✔ real admit commit with lost acknowledgement returns the one durable task (500.752ms)
+✔ real project commit with lost acknowledgement returns the one durable task (472.7583ms)
+✔ real mark commit with lost acknowledgement returns the one durable task (422.8395ms)
+✔ reopened service reads original durable confirmation without obtaining another ticket (461.6568ms)
+✔ different proposals serialize complete metadata chains without overlapping tickets or task identities (639.5358ms)
+✔ same ID shares held real ticket and close waits the admitted operation to settle (413.6252ms)
+✔ close after real admission commit drains projection/read-back without abandoning uncertain acceptance (406.8245ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5205.0498

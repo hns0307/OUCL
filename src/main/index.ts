@@ -1,6 +1,20 @@
-import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
+import { createDesktopFetch } from './network.js';
+import { ModrinthClient } from '../services/resources/modrinth.js';
+import { DesktopService } from '../services/desktop/service.js';
+import { DesktopImages } from './desktop-images.js';
+import { DESKTOP_CHANNELS } from '../shared/contracts/desktop.js';
+import { handleDesktop } from '../ipc/desktop.js';
+import { ResourceService } from '../services/resources/service.js';
+import { DEFAULT_DOWNLOAD_PREFERENCES } from '../shared/contracts/download-preferences.js';
+import type { DownloadPreferences } from '../shared/contracts/download-preferences.js';
+import { RESOURCE_CHANNELS, ResourceContractError, isResourcePayload } from '../shared/contracts/resources.js';
+import type { ResourceChannel, ResourcePayloads, ResourceData, ResourceDispatcher } from '../shared/contracts/resources.js';
+import { handleResources } from '../ipc/resources.js';
+import { ensureChildDirectory } from '../services/install/instance-files.js';
+import { app, BrowserWindow, dialog, ipcMain, session, shell, net, safeStorage } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -15,24 +29,224 @@ import { CATALOG_CAPABILITY, CATALOG_CHANNEL } from '../shared/contracts/catalog
 import { CatalogService } from '../services/catalog/service.js';
 import { CatalogError, OfficialMetadataReader } from '../services/catalog/transport.js';
 import { handleCatalog } from '../ipc/catalog.js';
+import { InstallMetadataService } from '../services/catalog/install-metadata.js';
+import { InstallerService } from '../services/install/installer.js';
+import { InstallerAdapter } from '../ipc/installer-adapter.js';
+import { handleInstances } from '../ipc/instances.js';
+import { TargetAdapter } from '../ipc/task-targets.js';
+import { DistributionObservationOwner } from './distribution-observation.js';
+import { configuredDistributionRuntime } from './distribution-runtime.js';
+import type { DistributionRuntime } from './distribution-runtime.js';
+import { DistributionRunnerError } from '../services/distribution/runner.js';
+import { DistributionTransactionError } from '../services/distribution/transaction-record.js';
+import { DistributionTaskViewError } from '../services/distribution/task-views.js';
+import { TARGET_CAPABILITY, TARGET_CHANNEL } from '../shared/contracts/task-targets.js';
+import { instanceFailure } from '../shared/contracts/instances.js';
+import { exactObject, UUID_PATTERN } from '../shared/contracts/handshake.js';
+import { INSTANCE_CHANNELS, INSTANCES_CAPABILITY, TASKS_CAPABILITY, TASK_EVENT_CHANNEL, InstanceContractError } from '../shared/contracts/instances.js';
+import type { InstanceDispatcher } from '../shared/contracts/instances.js';
+import { ProfileService } from '../services/launch/profiles.js';
+import { PROFILE_CAPABILITIES, PROFILE_CHANNELS, ProfileContractError } from '../shared/contracts/profiles.js';
+import { handleProfiles } from '../ipc/profiles.js';
+import { profileDispatcher } from '../ipc/profiles-adapter.js';
+import { LaunchService, LaunchServiceError } from '../services/launch/service.js';
+import type { LaunchIdentityResolver } from '../services/launch/service.js';
+import { GameProcessService } from '../services/launch/process.js';
+import { MicrosoftAccounts } from '../services/auth/microsoft-accounts.js';
+import { MicrosoftOAuth } from '../services/auth/microsoft-oauth.js';
+import { MicrosoftError, MicrosoftMinecraftApi } from '../services/auth/microsoft-api.js';
+import type { SecretAdapter } from '../services/auth/secret-adapter.js';
+import { ONLINE_ACCOUNTS_CAPABILITY } from '../shared/contracts/online-accounts.js';
+import { registerOnlineAccounts } from './online-accounts.js';
+import { SkinService } from '../services/skin/service.js';
+import { SKIN_CAPABILITY, SKIN_CHANNELS, SkinContractError } from '../shared/contracts/skin.js';
+import { handleSkin } from '../ipc/skin.js';
+import { registerElectronWebExtensions } from './web-extensions.js';
+import type { WebExtensionRuntime } from './web-extensions.js';
+import { WEB_EXTENSIONS_CAPABILITY } from '../shared/contracts/web-extensions.js';
+import { prepareMrpackImport } from '../services/packs/mrpack-import.js';
+import { WebError } from '../services/web/errors.js';
+import { createMultiplayerService, registerMultiplayerIpc } from './multiplayer.js';
+import type { MultiplayerService } from '../services/multiplayer/service.js';
+import { MULTIPLAYER_CAPABILITY } from '../shared/contracts/multiplayer.js';
+import { JavaRuntimeService, isJavaMetadataUrl } from '../services/java/runtime.js';
+import { GameAdapter } from '../ipc/game-adapter.js';
+import { handleGame } from '../ipc/game.js';
+import { GAME_CHANNELS, GAME_CAPABILITIES } from '../shared/contracts/game.js';
+import { LOADER_CHANNELS, LOADERS_CAPABILITY, LoaderContractError } from '../shared/contracts/loaders.js';
+import type { LoaderChannel, LoaderData, LoaderDispatcher, LoaderPayloads } from '../shared/contracts/loaders.js';
+import { handleLoaders } from '../ipc/loaders.js';
+import { LoaderMetadataClient, isOfficialLoaderMetadataUrl } from '../services/loaders/metadata.js';
+import { LoaderMavenResolver } from '../services/loaders/maven.js';
+import { LoaderInstallMetadataService } from '../services/loaders/install-metadata.js';
+import { LoaderService } from '../services/loaders/service.js';
+import { InstallerPreparationService } from '../services/loaders/installer-preparation.js';
+import { InstallerArtifactResolver } from '../services/loaders/installer-artifact.js';
+import { INSTANCES_V2_CAPABILITY, INSTANCES_V2_LIST_CHANNEL } from '../shared/contracts/instances-v2.js';
+import { handleInstancesV2 } from '../ipc/instances-v2.js';
+import { MOD_CHANNELS, MODS_CAPABILITY, ModContractError } from '../shared/contracts/mods.js';
+import { handleMods, modDispatcher } from '../ipc/mods.js';
+import { ModTaskService } from '../services/mods/tasks.js';
+import { ModArchiveReader } from '../services/workers/mod-archive-reader.js';
+import { InstalledLanguageReader } from '../services/mods/languages.js';
+import { modInventoryContext } from '../services/mods/context.js';
+import { InstalledJavaFacts } from '../services/mods/java-facts.js';
+import { ModInventoryService } from '../services/mods/inventory.js';
+import { ModInspectionService } from '../services/mods/inspection.js';
+import { ModMaintenancePreviewService } from '../services/mods/maintenance-preview.js';
+import { MaintenancePreviewJobs } from '../services/mods/maintenance-jobs.js';
+import { handleMaintenancePreview } from '../ipc/maintenance-preview.js';
+import { MAINTENANCE_PREVIEW_CAPABILITY, MAINTENANCE_PREVIEW_CHANNELS } from '../shared/contracts/mod-maintenance-preview.js';
+import { ModrinthModClient } from '../services/mods/modrinth.js';
+import { ModLibraryReader } from '../services/mods/library.js';
+import { ModDependencyResolver } from '../services/mods/resolver.js';
+import { ModInstallPlanner } from '../services/mods/planner.js';
+import { ModInstallPreparation } from '../services/mods/preparation.js';
+import { ModTransactionService } from '../services/mods/transaction.js';
+import { ModInstallTaskService } from '../services/mods/install-tasks.js';
+import { ModPlanService } from '../services/mods/plans.js';
+import { INSTANCE_FOLDER_CHANNEL, INSTANCE_FOLDERS_CAPABILITY, instanceFolderFailure, isInstanceFolderRequest } from '../shared/contracts/instance-folders.js';
+import { InstanceFolderError, InstanceFolderService } from '../services/install/instance-folders.js';
+import { PACK_CAPABILITY, PACK_CHANNEL } from '../shared/contracts/packs.js';
+import { handleFixedPack } from '../ipc/packs.js';
+import { FixedPackReader } from '../services/packs/fixed-reader.js';
+import { FixedPackCoordinator } from '../services/packs/coordinator.js';
+import { createElectronOnlineToolService } from './online-tools.js';
+import { OnlineToolsAdapter } from '../ipc/online-tools.js';
+import { ONLINE_TOOLS_CAPABILITY, ONLINE_TOOLS_CHANNELS, onlineToolFailure } from '../shared/contracts/online-tools.js';
+import { DISTRIBUTION_CAPABILITY, DISTRIBUTION_CHANNELS, distributionFailure } from '../shared/contracts/distribution-preview.js';
+import { createDistributionPreviewAdapter } from './distribution-preview.js';
+import { DistributionExecutionAdapter } from '../ipc/distribution-execution.js';
+import { DistributionExecutionOwners } from '../ipc/distribution-execution-owners.js';
+import { DISTRIBUTION_EXECUTION_CAPABILITY, DISTRIBUTION_EXECUTION_CHANNELS, distributionExecutionFailure } from '../shared/contracts/distribution-execution.js';
+import type { DistributionPreviewAdapter } from '../ipc/distribution-preview.js';
 
 const entryFile = path.join(__dirname, '../renderer/index.html');
 const entryUrl = pathToFileURL(entryFile).href;
 const sessions = new Map<number, string>();
+let microsoftAccounts: MicrosoftAccounts | undefined;
+let skinCenter: SkinService | undefined;
+let accountsFetch: typeof fetch | undefined;
+let webExtensions: WebExtensionRuntime | undefined;
+let multiplayer: MultiplayerService | undefined;
+
+const accountSecrets: SecretAdapter = {
+  async encrypt(text) {
+    if (!await safeStorage.isAsyncEncryptionAvailable()
+      || process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text') throw new MicrosoftError('STORAGE');
+    return safeStorage.encryptStringAsync(text);
+  },
+  async decrypt(bytes) {
+    if (!await safeStorage.isAsyncEncryptionAvailable()
+      || process.platform === 'linux' && safeStorage.getSelectedStorageBackend() === 'basic_text') throw new MicrosoftError('STORAGE');
+    return (await safeStorage.decryptStringAsync(bytes)).result;
+  },
+};
+
+const resolveOnlineLaunch: LaunchIdentityResolver = async (accountId, signal) => {
+  try {
+    // A registry read failure for one provider does not disable the other providers.
+    const microsoft = microsoftAccounts;
+    const skin = skinCenter;
+    const microsoftEntry = microsoft && (await microsoft.list().catch(() => [])).some(item => item.accountId === accountId);
+    if (microsoft && microsoftEntry) {
+      const resolved = await microsoft.resolveLaunch(accountId, signal);
+      if (!resolved) throw new LaunchServiceError('AUTH_REAUTH');
+      const { epoch, ...identity } = resolved;
+      return { identity: { ...identity, kind: 'microsoft' }, verify: async () => epoch === await microsoft.epoch(accountId) };
+    }
+    if (skin) {
+      const resolved = await skin.resolveLaunch(accountId, signal);
+      if (resolved) {
+        const { revision, ...identity } = resolved;
+        return { identity: { ...identity, kind: 'yggdrasil' }, verify: async () => {
+          if (!await skin.verifyLaunchAgent(identity.agentPath)) throw new LaunchServiceError('AUTH_PROVIDER_UNAVAILABLE');
+          return revision === await skin.accountRevision(accountId);
+        } };
+      }
+    }
+  } catch (error) {
+    if (signal.aborted) throw new LaunchServiceError('CANCELLED');
+    if (error instanceof LaunchServiceError) throw error;
+    if (error instanceof MicrosoftError) {
+      if (error.code === 'NO_LICENSE') throw new LaunchServiceError('AUTH_NO_LICENSE');
+      if (error.code === 'NO_PROFILE') throw new LaunchServiceError('AUTH_NO_PROFILE');
+      if (error.code === 'REAUTH' || error.code === 'ACCESS_DENIED') throw new LaunchServiceError('AUTH_REAUTH');
+    }
+    if (error instanceof SkinContractError && ['AUTH_EXPIRED', 'AUTH_FAILED'].includes(error.code)) throw new LaunchServiceError('AUTH_REAUTH');
+    throw new LaunchServiceError('AUTH_PROVIDER_UNAVAILABLE');
+  }
+};
+const onlineToolAdapters = new Map<number, OnlineToolsAdapter>();
+const distributionAdapters = new Map<number, DistributionPreviewAdapter>();
+let distributionRuntime: DistributionRuntime | undefined;
+const distributionExecutionOwners = new DistributionExecutionOwners(() => new DistributionExecutionAdapter(distributionRuntime?.backend.document()));
+let distributionFetch: typeof fetch | undefined;
+let distributionObservation: DistributionObservationOwner | undefined;
+
+async function observeDistribution<T>(read: () => Promise<T>): Promise<T> {
+  try { return await read(); }
+  catch (error) {
+    if (error instanceof InstanceContractError) throw error;
+    if (error instanceof DistributionTaskViewError && (error.code === 'NEEDS_RECOVERY' || error.code === 'ROOT_UNAVAILABLE')) {
+      throw new InstanceContractError(error.code);
+    }
+    throw new InstanceContractError('UNAVAILABLE');
+  }
+}
+
+/** Revokes remote views and read-only previews when the owner document goes away. */
+function revokeExtensions(id: number, documentGone = true): void {
+  const tools = onlineToolAdapters.get(id); onlineToolAdapters.delete(id);
+  void tools?.dispose().catch(() => { console.warn(JSON.stringify({ level: 'warn', event: 'tool-cleanup-failed' })); });
+  distributionAdapters.get(id)?.dispose(); distributionAdapters.delete(id);
+  if (documentGone) {
+    void webExtensions?.closeOwner(id).catch(() => {});
+    microsoftAccounts?.cancelSignIn();
+    distributionExecutionOwners.revoke(id);
+  } else { webExtensions?.hideOwner(id); }
+}
+/** Native dialogs never appear beneath an attached remote view. */
+async function closeOnlineView(id: number): Promise<void> {
+  webExtensions?.hideOwner(id);
+  const tools = onlineToolAdapters.get(id); if (tools) await tools.handle('tools:close', { contractVersion: 1, requestId: randomUUID(), payload: {} }, () => sessions.has(id), randomUUID());
+}
+let desktop: DesktopService | undefined; let desktopImages: DesktopImages | undefined;
+let resources: ResourceService | undefined;
+let downloadPreferences: Readonly<DownloadPreferences> = DEFAULT_DOWNLOAD_PREFERENCES;
+let downloadPreferencesRevision = 0;
 let storage: StorageClient | undefined;
 let roots: RootService | undefined;
 let catalog: CatalogService | undefined;
+let installer: InstallerService | undefined;
+let installerAdapter: InstallerAdapter | undefined;
+let targetAdapter: TargetAdapter | undefined;
+let loaders: LoaderService | undefined;
+let mods: ModTaskService | undefined;
+let modPlanner: ModInstallPlanner | undefined;
+let maintenancePreviews: MaintenancePreviewJobs | undefined;
+let modPlans: ModPlanService | undefined;
+let modInstalls: ModInstallTaskService | undefined;
+let instanceFolders: InstanceFolderService | undefined;
+let profiles: ProfileService | undefined;
+let launches: LaunchService | undefined; let gameAdapter: GameAdapter | undefined; let closeWhenGamesExit = false;
+const javaSelections = new Map<string, Promise<string | undefined>>();
+const pendingSelections = new Set<string>();
+const fixedPackWorker = path.join(__dirname, '../workers/fixed-pack.cjs');
+const fixedPackReader = existsSync(fixedPackWorker) ? new FixedPackReader(fixedPackWorker) : undefined;
+const fixedPackCoordinator = fixedPackReader ? new FixedPackCoordinator((file, signal) => fixedPackReader.preview(file, signal)) : undefined;
 
 /** Authorizes exact application document, current window and primary frame before any service access. */
 function trustedSender(event: IpcMainInvokeEvent): boolean {
+  if (event.sender.isDestroyed()) return false;
   return BrowserWindow.fromWebContents(event.sender) !== null && isTrustedDocument(event.senderFrame?.url ?? '', entryUrl,
     sessions.has(event.sender.id), event.senderFrame === event.sender.mainFrame);
 }
 
-/** Creates the sandboxed empty application window; no business services are wired. */
+/** Creates the sandboxed application window and binds subscriptions to its trusted document lifetime. */
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
-    width: 1040, height: 720, minWidth: 720, minHeight: 520, show: false,
+    width: 1180, height: 820, minWidth: 720, minHeight: 520, show: false,
     title: MESSAGES.appName, backgroundColor: '#f4f5f0', autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.cjs'),
@@ -42,7 +256,13 @@ function createWindow(): BrowserWindow {
   });
   sessions.set(window.webContents.id, randomUUID());
   const id = window.webContents.id;
-  window.webContents.once('destroyed', () => { sessions.delete(id); });
+  window.webContents.once('destroyed', () => { revokeExtensions(id); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) revokeExtensions(id); });
+  window.webContents.on('render-process-gone', () => { revokeExtensions(id); });
+  window.on('hide', () => { revokeExtensions(id, false); void multiplayer?.leave().catch(() => {}); });
+  window.webContents.once('destroyed', () => { sessions.delete(id); fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); for (const key of javaSelections.keys()) if (key.startsWith(`${id}:`)) javaSelections.delete(key); });
+  window.webContents.on('did-start-navigation', (_event, _url, _inPlace, mainFrame) => { if (mainFrame) { fixedPackCoordinator?.removeSender(id); targetAdapter?.removeSender(id); installerAdapter?.removeSender(id); gameAdapter?.removeSender(id); } });
+  window.on('close', event => { if (launches?.hasRunningGames()) { event.preventDefault(); closeWhenGamesExit = true; window.hide(); } });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => { event.preventDefault(); });
   window.webContents.on('will-attach-webview', event => { event.preventDefault(); });
@@ -57,14 +277,257 @@ if (!primary) app.quit();
 else void app.whenReady().then(async () => {
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => { callback(false); });
   session.defaultSession.setPermissionCheckHandler(() => false);
+  const portableRoot = process.env.OUCL_PORTABLE_ROOT; delete process.env.OUCL_PORTABLE_ROOT;
+  const portableGameDirectory = portableRoot ? path.join(portableRoot, 'OUCL.games') : undefined;
   try {
     const metadata = path.join(app.getPath('userData'), 'metadata'); await mkdir(metadata, { recursive: true });
     storage = await StorageClient.open(path.join(__dirname, '../workers/entry.cjs'), metadata);
+    const networkFetch = createDesktopFetch(options => net.request(options));
+    distributionFetch = networkFetch;
+    accountsFetch = networkFetch;
+    const identityDirectory = path.join(app.getPath('userData'), 'identity');
+    const clientId = process.env.OUCL_MICROSOFT_CLIENT_ID?.trim();
+    delete process.env.OUCL_MICROSOFT_CLIENT_ID;
+    microsoftAccounts = new MicrosoftAccounts(path.join(identityDirectory, 'microsoft'), accountSecrets,
+      new MicrosoftOAuth(clientId, url => shell.openExternal(url)), new MicrosoftMinecraftApi(networkFetch));
+    skinCenter = new SkinService({ directory: path.join(identityDirectory, 'skin'), secrets: accountSecrets, openExternal: url => shell.openExternal(url) });
+    profiles = new ProfileService(storage); desktop = new DesktopService(storage); desktopImages = new DesktopImages(new ModrinthClient(networkFetch));
     roots = new RootService(storage, [app.getAppPath(), process.resourcesPath, app.getPath('userData')]);
-    catalog = new CatalogService(new OfficialMetadataReader(), storage);
+    if (portableGameDirectory) {
+      try { await roots.ensureDefault(portableGameDirectory); }
+      catch { console.warn(JSON.stringify({ level: 'warn', event: 'default-root-unavailable', code: 'ROOT_UNAVAILABLE' })); }
+    }
+    const reader = new OfficialMetadataReader(networkFetch); catalog = new CatalogService(reader, storage);
+    const vanillaMetadata = new InstallMetadataService(catalog, reader);
+    const initialSettings = await storage.readSettings();
+    downloadPreferences = initialSettings?.data.downloads ?? DEFAULT_DOWNLOAD_PREFERENCES;
+    downloadPreferencesRevision = initialSettings?.revision ?? 0;
+    const loaderClient = new LoaderMetadataClient(new OfficialMetadataReader(networkFetch, isOfficialLoaderMetadataUrl));
+    const service: InstallerService = new InstallerService(storage, path.join(__dirname, '../workers/entry.cjs'), vanillaMetadata,
+      new LoaderInstallMetadataService(vanillaMetadata, loaderClient, new LoaderMavenResolver(networkFetch)),
+      new InstallerPreparationService(vanillaMetadata, loaderClient, new InstallerArtifactResolver(networkFetch)),
+      async (major, consumerId, signal): Promise<string> => (await processorJava.ensure(major, consumerId, signal)).executable, () => downloadPreferences, networkFetch);
+    const processorJava: JavaRuntimeService = new JavaRuntimeService(profiles, service, new OfficialMetadataReader(networkFetch, isJavaMetadataUrl));
+    await service.initialize(); installer = service;
+    instanceFolders = new InstanceFolderService(storage);
+    loaders = new LoaderService(loaderClient, service);
+    const gameProcesses = new GameProcessService();
+    launches = new LaunchService(storage, profiles, service, gameProcesses, undefined, processorJava, resolveOnlineLaunch);
+    await launches.initialize();
+    if (process.platform === 'win32' && process.arch === 'x64') multiplayer = createMultiplayerService({
+      dataDirectory: path.join(app.getPath('userData'), 'multiplayer'), games: gameProcesses,
+      roomProcessPath: path.join(__dirname, 'oucl-room-process.exe'), archiveWorkerPath: path.join(__dirname, 'multiplayer-archive.cjs'),
+    });
+    launches.onIdle(() => { if (closeWhenGamesExit) app.quit(); });
+    const repository = storage;
+    gameAdapter = new GameAdapter(launches, async () => { const root = await repository.readInstallation(); if (!root) throw new InstanceContractError('ROOT_UNAVAILABLE'); return root.data.rootId; });
+    const resourceService = new ResourceService(storage, service, new ModrinthClient(networkFetch)); await resourceService.initialize(); resources = resourceService;
+    try {
+      webExtensions = await registerElectronWebExtensions({
+        metadataDirectory: metadata, archiveWorker: path.join(__dirname, '../workers/web-archive.cjs'),
+        trustedSender, storage, resources: resourceService, transport: networkFetch,
+        installPack: async (source, displayName, authorize) => {
+          const destination = await storage?.readInstallation();
+          if (!destination) throw new WebError('INSTANCE_CHANGED');
+          const pack = await prepareMrpackImport(source, {
+            dataDirectory: destination.data.dataDirectory, transferResource: service.transferResource.bind(service), transport: networkFetch,
+          });
+          const current = await storage?.readInstallation();
+          if (!current || current.revision !== destination.revision || current.data.rootId !== destination.data.rootId) throw new WebError('INSTANCE_CHANGED');
+          if (!authorize()) throw new WebError('INVALID_SENDER');
+          return service.createFromPack(randomUUID(), {
+            rootId: destination.data.rootId, mcVersionId: pack.mcVersionId, displayName, isolation: 'on',
+            ...(pack.loader ? { loader: pack.loader } : {}),
+          }, pack);
+        },
+      });
+    } catch { console.warn(JSON.stringify({ level: 'warn', event: 'web-extensions-unavailable' })); }
+    // A damaged or newer Mod record must not disable existing launch/install capabilities.
+    try {
+      const scanner = new ModArchiveReader(path.join(__dirname, '../workers/entry.cjs'));
+      const context = modInventoryContext(storage, new InstalledLanguageReader(scanner), new InstalledJavaFacts(profiles));
+      const inventory = new ModInventoryService(context, scanner);
+      const platform = new ModrinthModClient(networkFetch); const inspections = new ModInspectionService(context, inventory, platform);
+      const modStorage = storage;
+      maintenancePreviews = new MaintenancePreviewJobs(new ModMaintenancePreviewService(async (instanceId, signal) => {
+        const registered = await modStorage.readInstallation();
+        if (!registered) throw new ModContractError('ROOT_UNAVAILABLE');
+        return { rootId: registered.data.rootId, inventory: await context(instanceId, signal) };
+      }, inspections));
+      const modTasks = new ModTaskService(storage, inventory, inspections);
+      modPlanner = new ModInstallPlanner(new ModLibraryReader(storage, scanner, platform), inspections, context, new ModDependencyResolver(platform));
+      modPlans = new ModPlanService(storage, modPlanner);
+      await modTasks.initialize(); mods = modTasks;
+      const preparation = new ModInstallPreparation(storage, { planner: modPlanner, library: new ModLibraryReader(storage, scanner, platform),
+        inspections, inventory, context, platform, transfer: service, scanner });
+      const installations = new ModInstallTaskService(storage, preparation, new ModTransactionService(storage, { context, inventory, scanner }));
+      await installations.initialize(); modInstalls = installations;
+    } catch { console.warn(JSON.stringify({ level: 'warn', event: 'mods-unavailable', code: 'NEEDS_RECOVERY' })); }
+    const resourceTasks = resources; const games = gameAdapter; const modTasks = mods; const installations = modInstalls;
+    const observation = new DistributionObservationOwner(app.getPath('userData'), storage);
+    distributionObservation = observation;
+    const config = configuredDistributionRuntime();
+    if (config) {
+      try {
+        const root = await storage.readInstallation();
+        if (root) distributionRuntime = await observation.enableExecution(root.data.rootId.toLowerCase(), path.join(__dirname, '../native'), config);
+      } catch {
+        console.warn(JSON.stringify({ level: 'warn', event: 'distribution-execution-unavailable' }));
+      }
+    }
+    installerAdapter = new InstallerAdapter(service, storage, {
+      get: async (root, id) => await games.get(root, id) ?? await resourceTasks.get(root, id) ?? await modTasks?.get(root, id) ?? await installations?.taskView(root, id)
+        ?? await observeDistribution(() => observation.get(root, id)),
+      list: async root => [...await games.list(root), ...await resourceTasks.list(root), ...(modTasks ? await modTasks.list(root) : []), ...(installations ? await installations.list(root) : []), ...await observeDistribution(() => observation.list(root))],
+      cancel: async (root, id) => { if (installations && await installations.taskView(root, id)) {
+        try { await installations.cancel(id); }
+        catch (error) { throw new InstanceContractError(error instanceof ModContractError && error.code === 'CANCEL_TOO_LATE' ? 'CANCEL_TOO_LATE'
+          : error instanceof ModContractError && error.code === 'NEEDS_RECOVERY' ? 'NEEDS_RECOVERY' : 'INVALID_TASK_STATE'); }
+      }
+        else if (modTasks && await modTasks.get(root, id)) await modTasks.cancel(root, id);
+        else if (await resourceTasks.get(root, id)) await resourceTasks.cancel(root, id);
+        else {
+          try {
+            if (!await observeDistribution(() => observation.cancelQueued(root, id))) await games.cancel(root, id);
+          } catch (error) {
+            if (!distributionRuntime || !(error instanceof InstanceContractError) || error.code !== 'INVALID_TASK_STATE'
+              || (await repository.get(root, id))?.kind !== 'distribution-install') throw error;
+            try { await distributionRuntime.cancel(id); }
+            catch (failure) {
+              if ((failure instanceof DistributionRunnerError || failure instanceof DistributionTransactionError) && failure.code === 'CANCEL_TOO_LATE') {
+                throw new InstanceContractError('CANCEL_TOO_LATE');
+              }
+              throw new InstanceContractError('NEEDS_RECOVERY');
+            }
+          }
+        } },
+    });
   } catch { /* Show a redacted unavailable state; never recreate a damaged repository. */ }
+  if (storage?.supportsModTargets && mods && modInstalls && installerAdapter) targetAdapter = new TargetAdapter(storage, mods, modInstalls, distributionObservation);
+  registerMultiplayerIpc(() => multiplayer, trustedSender);
+  registerOnlineAccounts(trustedSender, () => microsoftAccounts, async () => (await skinCenter?.listAccounts() ?? []).map(item => ({
+    accountId: item.accountId, kind: 'yggdrasil', gameName: item.gameName, displayName: item.providerName + ' · ' + item.gameName,
+    uuid: item.uuid, ready: item.ready,
+  })), () => accountsFetch);
+  for (const channel of SKIN_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleSkin(channel, input, trustedSender(event), randomUUID(), skinCenter));
   ipcMain.handle(HANDSHAKE_CHANNEL, (event, input: unknown) => {
-    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY] : []);
+    return negotiateHandshake(input, trustedSender(event), sessions.get(event.sender.id) ?? '', randomUUID(), roots && catalog ? [ROOTS_CAPABILITY, CATALOG_CAPABILITY, ONLINE_TOOLS_CAPABILITY, ...(distributionFetch ? [DISTRIBUTION_CAPABILITY] : []), ...(distributionRuntime ? [DISTRIBUTION_EXECUTION_CAPABILITY] : []), ...(installerAdapter ? [INSTANCES_CAPABILITY, INSTANCES_V2_CAPABILITY, ...(instanceFolders ? [INSTANCE_FOLDERS_CAPABILITY] : []), TASKS_CAPABILITY, 'downloads.v1' as const] : []), ...(profiles ? PROFILE_CAPABILITIES : []), ...(microsoftAccounts ? [ONLINE_ACCOUNTS_CAPABILITY] : []), ...(skinCenter ? [SKIN_CAPABILITY] : []), ...(webExtensions ? [WEB_EXTENSIONS_CAPABILITY] : []), ...(multiplayer ? [MULTIPLAYER_CAPABILITY] : []), ...(desktop ? ['desktop.v1' as const] : []), ...(gameAdapter ? GAME_CAPABILITIES : []), ...(resources ? ['resources.v1' as const] : []), ...(loaders ? [LOADERS_CAPABILITY] : []), ...(mods && installerAdapter ? [MODS_CAPABILITY] : []), ...(targetAdapter ? [TARGET_CAPABILITY] : []), ...(fixedPackCoordinator ? [PACK_CAPABILITY] : []), ...(maintenancePreviews && mods ? [MAINTENANCE_PREVIEW_CAPABILITY] : [])] : []);
+  });
+  for (const channel of ONLINE_TOOLS_CHANNELS) ipcMain.handle(channel, async (event, input: unknown) => {
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    if (!owner || !trustedSender(event)) { const trace = randomUUID(); return onlineToolFailure(trace, 'INVALID_SENDER', trace); }
+    let adapter = onlineToolAdapters.get(event.sender.id);
+    if (!adapter) { adapter = new OnlineToolsAdapter(createElectronOnlineToolService(owner)); onlineToolAdapters.set(event.sender.id, adapter); }
+    return adapter.handle(channel, input, () => trustedSender(event), randomUUID());
+  });
+  for (const channel of DISTRIBUTION_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trace = randomUUID();
+    if (!trustedSender(event)) return distributionFailure(trace, 'INVALID_SENDER', trace);
+    if (!storage || !distributionFetch) return distributionFailure(trace, 'UNAVAILABLE', trace);
+    let adapter = distributionAdapters.get(event.sender.id);
+    if (!adapter) { adapter = createDistributionPreviewAdapter(storage, distributionFetch, distributionRuntime?.sources); distributionAdapters.set(event.sender.id, adapter); }
+    return adapter.handle(channel, input, () => trustedSender(event), trace);
+  });
+  for (const channel of DISTRIBUTION_EXECUTION_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trace = randomUUID();
+    if (!trustedSender(event)) return distributionExecutionFailure(trace, 'INVALID_SENDER', trace);
+    return distributionExecutionOwners.handle(event.sender.id, channel, input, () => trustedSender(event), trace);
+  });
+  ipcMain.handle(PACK_CHANNEL, (event, input: unknown) => handleFixedPack(input, trustedSender(event), randomUUID(), async requestId => {
+    if (!fixedPackCoordinator) throw new Error('UNAVAILABLE');
+    return fixedPackCoordinator.inspect(event.sender.id, requestId, () => trustedSender(event), async () => {
+      const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
+      const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: 'Modrinth modpack', extensions: ['mrpack'] }] });
+      return selection.canceled ? undefined : selection.filePaths[0];
+    });
+  }));
+  ipcMain.handle(TARGET_CHANNEL, (event, input: unknown) => {
+    const traceId = randomUUID();
+    if (targetAdapter) return targetAdapter.handle(input, trustedSender(event), event.sender.id, traceId);
+    const id = exactObject(input, ['contractVersion', 'requestId', 'payload']) && typeof input.requestId === 'string' && UUID_PATTERN.test(input.requestId) ? input.requestId : traceId;
+    return instanceFailure(id, trustedSender(event) ? 'UNAVAILABLE' : 'INVALID_SENDER', traceId);
+  });
+  ipcMain.handle(INSTANCE_FOLDER_CHANNEL, async (event, input: unknown) => {
+    const traceId = randomUUID(); const fallback = typeof input === 'object' && input !== null && 'requestId' in input && typeof input.requestId === 'string' ? input.requestId : traceId;
+    if (!trustedSender(event)) return instanceFolderFailure(fallback, 'INVALID_SENDER', traceId);
+    if (!isInstanceFolderRequest(input)) return instanceFolderFailure(fallback, 'INVALID_ARGUMENT', traceId);
+    try {
+      if (!instanceFolders) throw new InstanceFolderError('ROOT_UNAVAILABLE');
+      const directory = await instanceFolders.resolve(input.payload.instanceId.toLowerCase(), input.payload.folder);
+      if (!trustedSender(event)) return instanceFolderFailure(input.requestId, 'INVALID_SENDER', traceId);
+      if (await shell.openPath(directory)) return instanceFolderFailure(input.requestId, 'UNAVAILABLE', traceId);
+      return { contractVersion: 1 as const, requestId: input.requestId, ok: true as const, data: { opened: true as const } };
+    } catch (error) { return instanceFolderFailure(input.requestId, error instanceof InstanceFolderError ? error.code : 'UNAVAILABLE', traceId); }
+  });
+  for (const channel of MOD_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleMods(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!mods || !installerAdapter) throw new ModContractError('UNAVAILABLE');
+    return modDispatcher(mods, modPlanner, modPlans, modInstalls)(selected, payload, requestId);
+  }));
+  for (const channel of MAINTENANCE_PREVIEW_CHANNELS) ipcMain.handle(channel, (event, input: unknown) =>
+    handleMaintenancePreview(channel, input, trustedSender(event), randomUUID(), maintenancePreviews && mods ? maintenancePreviews : undefined));
+  ipcMain.handle(INSTANCES_V2_LIST_CHANNEL, (event, input: unknown) => handleInstancesV2(input, trustedSender(event), randomUUID(), async rootId => {
+    const registered = await storage?.readInstallation();
+    if (!installer || registered?.data.rootId !== rootId) throw new Error('UNAVAILABLE');
+    return installer.listV2(rootId);
+  }));
+  for (const channel of LOADER_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleLoaders(channel, input, trustedSender(event), randomUUID(), (async (selected: LoaderChannel, payload: LoaderPayloads[LoaderChannel], requestId: string) => {
+    if (!loaders) throw new LoaderContractError('UNAVAILABLE');
+    return loaders.dispatcher()(selected, payload, requestId) as Promise<LoaderData[typeof selected]>;
+  }) as LoaderDispatcher));
+  for (const channel of RESOURCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleResources(channel, input, trustedSender(event), randomUUID(), (async (selected: ResourceChannel, payload: ResourcePayloads[ResourceChannel], requestId: string) => {
+    if (!resources || !storage) throw new ResourceContractError('UNAVAILABLE');
+    let data: ResourceData[typeof selected];
+    if (selected === 'resources:search' && isResourcePayload(payload, 'resources:search')) data = await resources.client.search(payload);
+    else if (selected === 'resources:versions' && isResourcePayload(payload, 'resources:versions')) data = await resources.client.versions(payload);
+    else if (selected === 'resources:download' && isResourcePayload(payload, 'resources:download')) data = await resources.download(requestId, payload);
+    else if (selected === 'resources:library') data = await resources.library();
+    else if (selected === 'resources:open') {
+      const registration = await storage.readInstallation(); if (!registration) throw new ResourceContractError('ROOT_UNAVAILABLE');
+      const directory = await ensureChildDirectory(registration.data.dataDirectory, 'resource-library');
+      if (!trustedSender(event)) throw new ResourceContractError('INVALID_SENDER');
+      if (await shell.openPath(directory)) throw new ResourceContractError('UNAVAILABLE'); data = { opened: true };
+    } else throw new ResourceContractError('INVALID_ARGUMENT');
+    return data;
+  }) as ResourceDispatcher));
+  for (const channel of GAME_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleGame(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!gameAdapter) throw new InstanceContractError('UNAVAILABLE'); return gameAdapter.dispatcher(event.sender.id)(selected, payload, requestId);
+  }));
+  const iconSelections = new Map<number, Promise<string>>();
+  for (const channel of DESKTOP_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleDesktop(channel, input, trustedSender(event), randomUUID(), desktop, async () => {
+    const pending = iconSelections.get(event.sender.id); if (pending) return pending;
+    const job = (async () => {
+      const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new Error('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
+      const selection = await dialog.showOpenDialog(owner, { properties: ['openFile'], filters: [{ name: MESSAGES.uiCustomIcon, extensions: ['png', 'jpg', 'jpeg', 'webp'] }] });
+      if (!trustedSender(event)) throw new Error('INVALID_SENDER'); if (selection.canceled || !selection.filePaths[0]) return '';
+      return DesktopImages.local(selection.filePaths[0]);
+    })(); iconSelections.set(event.sender.id, job); void job.finally(() => { iconSelections.delete(event.sender.id); }).catch(() => {}); return job;
+  }, id => desktopImages?.icon(id) ?? Promise.resolve('')));
+  for (const channel of PROFILE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => handleProfiles(channel, input, trustedSender(event), randomUUID(), async (selected, payload, requestId) => {
+    if (!profiles || !storage) throw new ProfileContractError('UNAVAILABLE');
+    const dispatch = profileDispatcher(profiles, storage, async id => {
+      const key = `${event.sender.id}:${id}`; const pending = javaSelections.get(key); if (pending) return pending;
+      if (pendingSelections.size >= 16) throw new ProfileContractError('UNAVAILABLE');
+      while (javaSelections.size >= 64) { const stale = [...javaSelections.keys()].find(item => !pendingSelections.has(item)); if (!stale) throw new ProfileContractError('UNAVAILABLE'); javaSelections.delete(stale); }
+      const selection = (async () => {
+        const owner = BrowserWindow.fromWebContents(event.sender); if (!owner || !trustedSender(event)) throw new ProfileContractError('INVALID_SENDER');
+        await closeOnlineView(event.sender.id);
+      const result = await dialog.showOpenDialog(owner, { title: MESSAGES.javaChoose, properties: ['openFile'], filters: [{ name: MESSAGES.javaExecutableLabel, extensions: ['exe'] }] });
+        if (!trustedSender(event)) throw new ProfileContractError('INVALID_SENDER'); return result.canceled ? undefined : result.filePaths[0];
+      })();
+      javaSelections.set(key, selection); pendingSelections.add(key); void selection.finally(() => { pendingSelections.delete(key); }).catch(() => {});
+      return selection;
+    }, (preferences, revision) => { if (revision >= downloadPreferencesRevision) { downloadPreferences = Object.freeze({ ...preferences }); downloadPreferencesRevision = revision; } });
+    return dispatch(selected, payload, requestId);
+  }));
+  for (const channel of INSTANCE_CHANNELS) ipcMain.handle(channel, (event, input: unknown) => {
+    const trusted = trustedSender(event);
+    const unavailable: InstanceDispatcher = async () => { throw new InstanceContractError('UNAVAILABLE'); };
+    const dispatch = trusted && installerAdapter ? installerAdapter.dispatcher(event.sender.id, message => {
+      if (event.sender.isDestroyed()) throw new InstanceContractError('UNAVAILABLE'); event.sender.send(TASK_EVENT_CHANNEL, message);
+    }) : unavailable;
+    return handleInstances(channel, input, trusted, randomUUID(), dispatch);
   });
   ipcMain.handle(CATALOG_CHANNEL, (event, input: unknown) => handleCatalog(input, trustedSender(event), randomUUID(), async query => {
     if (!catalog) throw new CatalogError('CATALOG_UNAVAILABLE'); return catalog.list(query);
@@ -74,9 +537,11 @@ else void app.whenReady().then(async () => {
   }));
   ipcMain.handle(ROOTS_CHOOSE_CHANNEL, (event, input: unknown) => handleRoots(input, trustedSender(event), randomUUID(), async () => {
     if (!roots) throw new RootError('ROOT_UNAVAILABLE');
+    if (portableGameDirectory) return roots.ensureDefault(portableGameDirectory);
     return roots.choose(async () => {
       const owner = BrowserWindow.fromWebContents(event.sender);
       if (!owner) throw new RootError('INVALID_SENDER');
+      await closeOnlineView(event.sender.id);
       const result = await dialog.showOpenDialog(owner, { title: MESSAGES.storageTitle, properties: ['openDirectory', 'createDirectory'] });
       if (!trustedSender(event)) throw new RootError('INVALID_SENDER');
       return result.canceled ? undefined : result.filePaths[0];
@@ -85,12 +550,22 @@ else void app.whenReady().then(async () => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 }).catch(() => { app.exit(1); });
-app.on('second-instance', () => { const window = BrowserWindow.getAllWindows()[0]; if (window) { if (window.isMinimized()) window.restore(); window.focus(); } });
+app.on('second-instance', () => { const window = BrowserWindow.getAllWindows()[0]; if (window) { closeWhenGamesExit = false; if (window.isMinimized()) window.restore(); window.show(); window.focus(); } });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 let exiting = false;
+let shutdownInProgress = false;
 app.on('before-quit', event => {
   if (exiting) return;
-  event.preventDefault(); exiting = true;
-  void storage?.close().catch(() => {}).finally(() => { app.quit(); });
-  if (!storage) app.quit();
+  event.preventDefault(); if (shutdownInProgress) return; shutdownInProgress = true;
+  void (async () => {
+    await multiplayer?.leave();
+    if (launches && !await launches.close()) { closeWhenGamesExit = true; for (const window of BrowserWindow.getAllWindows()) window.hide(); shutdownInProgress = false; return; }
+    microsoftAccounts?.close();
+    await Promise.all([skinCenter?.close(), webExtensions?.close(), multiplayer?.close()]);
+    await distributionExecutionOwners.close();
+    await Promise.all([...onlineToolAdapters.values()].map(adapter => adapter.dispose())); onlineToolAdapters.clear();
+    for (const adapter of distributionAdapters.values()) await adapter.close(); distributionAdapters.clear();
+    targetAdapter?.close(); installerAdapter?.close(); await distributionObservation?.close(); await maintenancePreviews?.close(); await modInstalls?.close(); await modPlans?.close(); await mods?.close(); await resources?.close(); await profiles?.close(); await installer?.close(); await storage?.close(); exiting = true; app.quit();
+  })().catch(() => { app.exit(1); });
 });
+

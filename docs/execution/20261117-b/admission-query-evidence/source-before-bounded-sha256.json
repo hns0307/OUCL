@@ -1,0 +1,17 @@
+[
+  {
+    "sha256": "c4092ee3b025711728c3d9d0da3dc0e36f541769842c6faf681ebbab1db17796",
+    "bytes": 15686,
+    "path": "src/services/distribution/admission-record.ts"
+  },
+  {
+    "sha256": "3146bc5a49df515533df1c16957aaeaa9e797f145d41a410dde6647f4f85ce0b",
+    "bytes": 18692,
+    "path": "src/services/distribution/store.ts"
+  },
+  {
+    "sha256": "ca727e8ae38810a93751cef8a3740258101c98c7caa63a1c18c704954d7f7a1a",
+    "bytes": 11419,
+    "path": "tests/distribution-admission-query.test.ts"
+  }
+]

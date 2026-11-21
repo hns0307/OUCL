@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-16",
+  "provenance": "Copied from the only native execution's tool stdout; no second native run was performed.",
+  "toolChunkId": "70fba8",
+  "exitCode": 1,
+  "environment": "approved-unsandboxed",
+  "platform": "Windows-x64",
+  "fixtureRoot": "D:/MC_start/OUCL/tmp/distribution-file-guard-20261116/fixtures/case-0b82849901a548e7aef92ace9c142122",
+  "executableCounts": { "cases": 4, "pass": 1, "fail": 3 },
+  "results": [
+    { "name": "source exact handle denies competing write-delete-rename and parent rename", "pass": false, "error": "InvalidOperationException", "message": "CONFLICT_NOT_BLOCKED" },
+    { "name": "native rename without replace preserves concurrently occupied destination", "pass": false, "error": "Win32Exception", "message": "系统找不到指定的文件。" },
+    { "name": "native rename moves the verified inode into a missing destination", "pass": false, "error": "Win32Exception", "message": "系统找不到指定的文件。" },
+    { "name": "native delete disposition removes only the held verified file", "pass": true }
+  ],
+  "readonlyPostRunInspection": {
+    "sourceDirectory": "present",
+    "targetDirectory": "absent",
+    "targetMovedDirectory": "present",
+    "guardedSourceContent": "owned",
+    "deletePathContentAfterCloseAndExplicitRecreation": "post-close-new-file"
+  },
+  "interpretation": {
+    "nativeDeleteDisposition": "PASS in this bounded fixture",
+    "destinationParentGuard": "FAIL: the empty target directory was renamed despite its FILE_READ_ATTRIBUTES handle",
+    "nativeRenameCases": "NOT_EXERCISED: both stopped while opening the now-missing target parent, before SetFileInformationByHandle",
+    "productionAdmission": "NOT_READY"
+  }
+}

@@ -1,0 +1,571 @@
+{
+  "kind": "synthetic HTTP Response; real worker/inventory/inspection/client/preview/presentation",
+  "scans": 2,
+  "workerReads": 4,
+  "requests": 1,
+  "manifest": {
+    "provider.jar": {
+      "size": 694,
+      "sha1": "29e8bbe9b67eb3cb1ab0911485c6ed1342d232e0",
+      "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+      "sha512": "5453f58e26531bd37e331e9d46d2be9b23ff0150da17314aee80850d767e38ae076fcbf20256dc4510444fe664a5c766d134788e3d706050f7efea9c08d84621"
+    },
+    "dependent.jar": {
+      "size": 211,
+      "sha1": "fda826a68334667f70ff1347fa412368288f68f0",
+      "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525",
+      "sha512": "8f0ff1a2c315c97a067fdc234a3de0abd5919145a8aaeea063a3fb2e2343cccb862745e8ffaa7de4c811e2aa6f625ae11aa278830e54442701185e9874218398"
+    }
+  },
+  "initial": {
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "revision": 4,
+    "fingerprint": "6cd9e1855797f47d96765a1bd187132a951197ce1833d63d4eff92ef730b318f",
+    "items": [
+      {
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "filename": "dependent.jar",
+        "enabled": true,
+        "size": 211,
+        "sha1": "fda826a68334667f70ff1347fa412368288f68f0",
+        "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525",
+        "sha512": "8f0ff1a2c315c97a067fdc234a3de0abd5919145a8aaeea063a3fb2e2343cccb862745e8ffaa7de4c811e2aa6f625ae11aa278830e54442701185e9874218398",
+        "archives": [
+          {
+            "entries": [],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "dependent_mod",
+                    "version": "1.0.0",
+                    "name": "dependent_mod",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [
+                      {
+                        "id": "parent_alias",
+                        "range": "*",
+                        "kind": "required",
+                        "client": "yes",
+                        "issues": []
+                      },
+                      {
+                        "id": "nested_mod",
+                        "range": "*",
+                        "kind": "required",
+                        "client": "yes",
+                        "issues": []
+                      }
+                    ],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          }
+        ],
+        "issues": []
+      },
+      {
+        "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "filename": "provider.jar",
+        "enabled": true,
+        "size": 694,
+        "sha1": "29e8bbe9b67eb3cb1ab0911485c6ed1342d232e0",
+        "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+        "sha512": "5453f58e26531bd37e331e9d46d2be9b23ff0150da17314aee80850d767e38ae076fcbf20256dc4510444fe664a5c766d134788e3d706050f7efea9c08d84621",
+        "archives": [
+          {
+            "entries": [],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "parent_mod",
+                    "version": "1.0.0",
+                    "name": "parent_mod",
+                    "client": "yes",
+                    "provides": [
+                      {
+                        "id": "parent_alias",
+                        "version": "1.0.0"
+                      }
+                    ],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [
+                  "META-INF/jars/private-child.jar"
+                ],
+                "language": null,
+                "issues": []
+              },
+              {
+                "format": "quilt",
+                "mods": [
+                  {
+                    "id": "quilt_parent",
+                    "version": "1.0.0",
+                    "name": "quilt_parent",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          },
+          {
+            "entries": [
+              "META-INF/jars/private-child.jar"
+            ],
+            "declarations": [
+              {
+                "format": "fabric",
+                "mods": [
+                  {
+                    "id": "nested_mod",
+                    "version": "1.0.0",
+                    "name": "nested_mod",
+                    "client": "yes",
+                    "provides": [],
+                    "dependencies": [],
+                    "issues": []
+                  }
+                ],
+                "nested": [],
+                "language": null,
+                "issues": []
+              }
+            ],
+            "jarJar": false
+          }
+        ],
+        "issues": []
+      }
+    ],
+    "local": {
+      "state": "satisfied",
+      "issues": [],
+      "providers": [
+        {
+          "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "id": "dependent_mod",
+          "ownerId": "dependent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "nested_mod",
+          "ownerId": "nested_mod",
+          "version": "1.0.0",
+          "via": [
+            "META-INF/jars/private-child.jar"
+          ]
+        }
+      ]
+    }
+  },
+  "preview": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "6cd9e1855797f47d96765a1bd187132a951197ce1833d63d4eff92ef730b318f",
+    "filename": "provider.jar",
+    "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+    "impact": {
+      "action": "disable",
+      "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+      "state": "blocked",
+      "before": {
+        "local": {
+          "state": "satisfied",
+          "issues": [],
+          "providers": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "id": "dependent_mod",
+              "ownerId": "dependent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_mod",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "parent_alias",
+              "ownerId": "parent_mod",
+              "version": "1.0.0",
+              "via": []
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "id": "nested_mod",
+              "ownerId": "nested_mod",
+              "version": "1.0.0",
+              "via": [
+                "META-INF/jars/private-child.jar"
+              ]
+            }
+          ]
+        },
+        "platform": {
+          "state": "unknown",
+          "files": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "status": "unknown",
+              "version": null
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "status": "unknown",
+              "version": null
+            }
+          ],
+          "issues": [
+            {
+              "severity": "unknown",
+              "code": "PLATFORM_SOURCE_UNKNOWN",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "projectId": null,
+              "versionId": null,
+              "dependencyProjectId": null,
+              "dependencyVersionId": null
+            },
+            {
+              "severity": "unknown",
+              "code": "PLATFORM_SOURCE_UNKNOWN",
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "projectId": null,
+              "versionId": null,
+              "dependencyProjectId": null,
+              "dependencyVersionId": null
+            }
+          ]
+        }
+      },
+      "after": {
+        "local": {
+          "state": "unsatisfied",
+          "issues": [
+            {
+              "severity": "error",
+              "code": "MOD_DEPENDENCY_MISSING",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "modId": "dependent_mod",
+              "dependencyId": "parent_alias",
+              "expected": "*",
+              "actual": [],
+              "via": []
+            },
+            {
+              "severity": "error",
+              "code": "MOD_DEPENDENCY_MISSING",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "modId": "dependent_mod",
+              "dependencyId": "nested_mod",
+              "expected": "*",
+              "actual": [],
+              "via": []
+            }
+          ],
+          "providers": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "id": "dependent_mod",
+              "ownerId": "dependent_mod",
+              "version": "1.0.0",
+              "via": []
+            }
+          ]
+        },
+        "platform": {
+          "state": "unsatisfied",
+          "files": [
+            {
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "status": "unknown",
+              "version": null
+            },
+            {
+              "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+              "status": "unknown",
+              "version": null
+            }
+          ],
+          "issues": [
+            {
+              "severity": "unknown",
+              "code": "PLATFORM_SOURCE_UNKNOWN",
+              "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+              "projectId": null,
+              "versionId": null,
+              "dependencyProjectId": null,
+              "dependencyVersionId": null
+            }
+          ]
+        }
+      },
+      "introducedIssues": [
+        {
+          "scope": "local",
+          "issue": {
+            "severity": "error",
+            "code": "MOD_DEPENDENCY_MISSING",
+            "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+            "modId": "dependent_mod",
+            "dependencyId": "parent_alias",
+            "expected": "*",
+            "actual": [],
+            "via": []
+          }
+        },
+        {
+          "scope": "local",
+          "issue": {
+            "severity": "error",
+            "code": "MOD_DEPENDENCY_MISSING",
+            "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+            "modId": "dependent_mod",
+            "dependencyId": "nested_mod",
+            "expected": "*",
+            "actual": [],
+            "via": []
+          }
+        }
+      ],
+      "resolvedIssues": [
+        {
+          "scope": "platform",
+          "issue": {
+            "severity": "unknown",
+            "code": "PLATFORM_SOURCE_UNKNOWN",
+            "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+            "projectId": null,
+            "versionId": null,
+            "dependencyProjectId": null,
+            "dependencyVersionId": null
+          }
+        }
+      ],
+      "affectedProviders": [
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_mod",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "parent_alias",
+          "ownerId": "parent_mod",
+          "version": "1.0.0",
+          "via": []
+        },
+        {
+          "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "id": "nested_mod",
+          "ownerId": "nested_mod",
+          "version": "1.0.0",
+          "via": [
+            "META-INF/jars/private-child.jar"
+          ]
+        }
+      ],
+      "directRequiredBy": [
+        "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+      ],
+      "transitiveRequiredBy": [],
+      "relations": [
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "selector": "nested_mod",
+          "optional": false,
+          "via": []
+        },
+        {
+          "scope": "local",
+          "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+          "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+          "selector": "parent_alias",
+          "optional": false,
+          "via": []
+        }
+      ],
+      "truncated": false
+    },
+    "platformFailures": [
+      "UNTRUSTED_METADATA"
+    ]
+  },
+  "display": {
+    "rootId": "00000000-0000-4000-8000-000000000001",
+    "instanceId": "00000000-0000-4000-8000-000000000002",
+    "instanceRevision": 4,
+    "fingerprint": "6cd9e1855797f47d96765a1bd187132a951197ce1833d63d4eff92ef730b318f",
+    "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+    "filename": "provider.jar",
+    "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11",
+    "action": "disable",
+    "state": "blocked",
+    "providers": [
+      {
+        "id": "parent_mod",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      },
+      {
+        "id": "parent_alias",
+        "ownerId": "parent_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 0
+      },
+      {
+        "id": "nested_mod",
+        "ownerId": "nested_mod",
+        "version": "1.0.0",
+        "embeddedDepth": 1
+      }
+    ],
+    "directRequiredBy": [
+      "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919"
+    ],
+    "transitiveRequiredBy": [],
+    "issues": [
+      {
+        "moment": "before",
+        "scope": "platform",
+        "severity": "unknown",
+        "code": "PLATFORM_SOURCE_UNKNOWN",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "before",
+        "scope": "platform",
+        "severity": "unknown",
+        "code": "PLATFORM_SOURCE_UNKNOWN",
+        "fileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "after",
+        "scope": "local",
+        "severity": "error",
+        "code": "MOD_DEPENDENCY_MISSING",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": "dependent_mod",
+        "dependencyModId": "parent_alias",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": "*",
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "after",
+        "scope": "local",
+        "severity": "error",
+        "code": "MOD_DEPENDENCY_MISSING",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": "dependent_mod",
+        "dependencyModId": "nested_mod",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": "*",
+        "actual": [],
+        "embeddedDepth": 0
+      },
+      {
+        "moment": "after",
+        "scope": "platform",
+        "severity": "unknown",
+        "code": "PLATFORM_SOURCE_UNKNOWN",
+        "fileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "modId": null,
+        "dependencyModId": null,
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "requirement": null,
+        "actual": [],
+        "embeddedDepth": 0
+      }
+    ],
+    "relations": [
+      {
+        "scope": "local",
+        "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "optional": false,
+        "dependencyModId": "nested_mod",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "embeddedDepth": 0
+      },
+      {
+        "scope": "local",
+        "dependentFileId": "e81441504cc4f4d12837b19f142aa5caa6a06bda2a51bf9adbcbb7bd93632919",
+        "providerFileId": "1bf82678e3711dda9c2e5c85a839dde4aa6de6590a89133f067300b4a515fe4f",
+        "optional": false,
+        "dependencyModId": "parent_alias",
+        "dependencyProjectId": null,
+        "dependencyVersionId": null,
+        "embeddedDepth": 0
+      }
+    ],
+    "platformFailures": [
+      "UNTRUSTED_METADATA"
+    ],
+    "incomplete": false
+  }
+}

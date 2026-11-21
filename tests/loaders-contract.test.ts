@@ -1,0 +1,86 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { instancesV2Failure, isInstanceLoaderIdentity, isInstancesV2Result, isInstanceV2Summary } from '../src/shared/contracts/instances-v2.js';
+import { handleInstancesV2 } from '../src/ipc/instances-v2.js';
+import { isLoaderData, isLoaderPayload, isLoaderResult, loaderFailure } from '../src/shared/contracts/loaders.js';
+import type { LoaderChannel, LoaderCode, LoaderPayloads } from '../src/shared/contracts/loaders.js';
+import { handleLoaders } from '../src/ipc/loaders.js';
+import { LoaderContractError } from '../src/shared/contracts/loaders.js';
+import type { LoaderDispatcher } from '../src/shared/contracts/loaders.js';
+
+const id = '00000000-0000-4000-8000-000000000001';
+const trace = '00000000-0000-4000-8000-000000000002';
+const payloads: LoaderPayloads = {
+  'loaders:versions': { minecraftVersion: '1.20.1', loader: 'fabric' },
+  'loaders:create': { rootId: id, minecraftVersion: '1.20.1', loader: 'fabric', loaderVersion: '0.20.1', displayName: 'Fabric 生存', isolation: 'on' }
+};
+
+test('loaders.v1 accepts controlled identities and rejects paths, URLs and extra fields', () => {
+  for (const channel of Object.keys(payloads) as LoaderChannel[]) {
+    assert.equal(isLoaderPayload(payloads[channel], channel), true);
+    for (const value of [null, [], { ...payloads[channel], path: 'D:/private' }, { ...payloads[channel], url: 'https://example.invalid' }]) {
+      assert.equal(isLoaderPayload(value, channel), false);
+    }
+  }
+  assert.equal(isLoaderPayload({ minecraftVersion: '../1.20.1', loader: 'fabric' }, 'loaders:versions'), false);
+  assert.equal(isLoaderPayload({ ...payloads['loaders:create'], loaderVersion: 'x/y' }, 'loaders:create'), false);
+});
+
+test('loaders.v1 validates bounded unique version output and fixed safe errors', () => {
+  const data = { items: [{ loaderVersion: '0.20.1', stable: true, support: 'verified' }] };
+  assert.equal(isLoaderData(data, 'loaders:versions'), true);
+  assert.equal(isLoaderData({ items: [...data.items, ...data.items] }, 'loaders:versions'), false);
+  assert.equal(isLoaderData({ items: [{ ...data.items[0], sourceUrl: 'private' }] }, 'loaders:versions'), false);
+  assert.equal(isLoaderData({ taskId: id }, 'loaders:create'), true);
+  const codes: LoaderCode[] = ['INVALID_ARGUMENT', 'UNSUPPORTED_CONTRACT', 'INVALID_SENDER', 'TIMEOUT', 'UNAVAILABLE',
+    'NETWORK_FAILED', 'UNTRUSTED_METADATA', 'VERSION_UNSUPPORTED', 'ROOT_UNAVAILABLE', 'NAME_CONFLICT', 'INSTALL_FAILED', 'NEEDS_RECOVERY'];
+  for (const code of codes) {
+    const result = loaderFailure<'loaders:create'>(id, code, trace);
+    assert.equal(isLoaderResult(result, id, 'loaders:create'), true);
+    assert.equal(isLoaderResult({ ...result, details: 'private' }, id, 'loaders:create'), false);
+  }
+});
+
+test('instances.v2 distinguishes vanilla and pinned loader identities without leaking storage facts', () => {
+  assert.equal(isInstanceLoaderIdentity({ kind: 'vanilla' }), true);
+  assert.equal(isInstanceLoaderIdentity({ kind: 'vanilla', version: 'none' }), false);
+  assert.equal(isInstanceLoaderIdentity({ kind: 'quilt', version: '0.29.2' }), true);
+  const summary = { instanceId: id, displayName: 'Quilt 实例', minecraftVersion: '1.20.1', loader: { kind: 'quilt', version: '0.29.2' },
+    isolation: 'on', state: 'ready', revision: 3 };
+  assert.equal(isInstanceV2Summary(summary), true);
+  assert.equal(isInstanceV2Summary({ ...summary, rootId: id }), false);
+  assert.equal(isInstanceV2Summary({ ...summary, loader: { kind: 'forge' } }), false);
+  assert.equal(isInstanceV2Summary({ ...summary, isolation: 'inherit' }), false);
+  const result = { contractVersion: 2 as const, requestId: id, ok: true as const, data: { items: [summary] } };
+  assert.equal(isInstancesV2Result(result, id), true);
+  assert.equal(isInstancesV2Result({ ...result, data: { items: [{ ...summary, rootId: id }] } }, id), false);
+  assert.equal(isInstancesV2Result(instancesV2Failure(id, 'NEEDS_RECOVERY', trace), id), true);
+});
+
+test('instances.v2 handler enforces its versioned envelope and validates private projections', async () => {
+  const input = { contractVersion: 2, requestId: id, payload: { rootId: id } };
+  const item = { instanceId: id, displayName: 'Fabric', minecraftVersion: '1.20.1', loader: { kind: 'fabric', version: '0.20.1' }, isolation: 'on', state: 'ready', revision: 2 };
+  assert.equal((await handleInstancesV2(input, true, trace, async () => [item])).ok, true);
+  for (const [value, trusted, code] of [[input, false, 'INVALID_SENDER'], [{ ...input, contractVersion: 3 }, true, 'UNSUPPORTED_CONTRACT'],
+    [{ ...input, payload: { rootId: '../private' } }, true, 'INVALID_ARGUMENT']] as const) {
+    const result = await handleInstancesV2(value, trusted, trace, async () => [item]); assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.error.code, code);
+  }
+  const hidden = await handleInstancesV2(input, true, trace, async () => [{ ...item, path: 'private' }]); assert.equal(hidden.ok, false);
+});
+
+test('loader handler validates sender, envelope and adapter output without leaking failures', async () => {
+  const envelope = { contractVersion: 1, requestId: id, payload: payloads['loaders:versions'] };
+  let calls = 0; const good = (async () => { calls++; return { items: [{ loaderVersion: '0.20.1', stable: true, support: 'unverified' }] }; }) as LoaderDispatcher;
+  assert.equal((await handleLoaders('loaders:versions', envelope, true, trace, good)).ok, true); assert.equal(calls, 1);
+  for (const [input, trusted, code] of [[envelope, false, 'INVALID_SENDER'], [{ ...envelope, contractVersion: 2 }, true, 'UNSUPPORTED_CONTRACT'],
+    [{ ...envelope, payload: { ...envelope.payload, url: 'private' } }, true, 'INVALID_ARGUMENT']] as const) {
+    const result = await handleLoaders('loaders:versions', input, trusted, trace, good); assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.error.code, code);
+  }
+  const unsafe: LoaderDispatcher = async () => ({ items: [{ loaderVersion: '0.20.1', stable: true, support: 'unverified', path: 'private' }] }) as never;
+  const hidden = await handleLoaders('loaders:versions', envelope, true, trace, unsafe); assert.equal(hidden.ok, false);
+  const known: LoaderDispatcher = async () => { throw new LoaderContractError('VERSION_UNSUPPORTED'); };
+  const failure = await handleLoaders('loaders:versions', envelope, true, trace, known); assert.equal(failure.ok, false);
+  if (!failure.ok) assert.equal(failure.error.code, 'VERSION_UNSUPPORTED');
+});

@@ -1,0 +1,21 @@
+{
+  "evidence": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\docs\\execution\\20261119-coordination\\n5-cdn-evidence\\run-QENDO6",
+  "temporary": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\tmp\\n5-cdn-MHBQEC",
+  "profile": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\tmp\\n5-cdn-MHBQEC\\profile",
+  "adapterSource": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\src\\main\\online-tools.ts",
+  "fixture": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\docs\\execution\\20261119-coordination\\n5-cdn-evidence\\electron-check.cjs",
+  "adapter": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\tmp\\n5-cdn-MHBQEC\\adapter.cjs",
+  "resultPath": "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\docs\\execution\\20261119-coordination\\n5-cdn-evidence\\run-QENDO6\\result.json",
+  "node": "v24.21.0",
+  "sourceSha256": "de2e8957ff6e73932b4439090e2e2e6e48ca1f80641ecf057847ed1ec5ae5891",
+  "adapterSha256": "07a9becf6b683df523968921fb1d6affda23457dd1a7aebfa8da4d78a28c30f8",
+  "fixtureSha256": "e7b6735f34169e2552c896df78a180692911e4c3ee69b338aba65cfd7a1221e1",
+  "electronCommand": {
+    "executable": "D:\\MC_start\\OUCL\\node_modules\\.pnpm\\electron@45.0.0\\node_modules\\electron\\dist\\electron.exe",
+    "args": [
+      "D:\\MC_start\\OUCL\\本地资料\\OUCL-download-main\\docs\\execution\\20261119-coordination\\n5-cdn-evidence\\electron-check.cjs",
+      "--disable-background-networking"
+    ]
+  },
+  "exitCode": 0
+}

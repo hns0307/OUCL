@@ -1,0 +1,12 @@
+﹣ linked staging files are refused when file symlink privilege is available (5.8943ms) # File symlink privilege unavailable; no system policy changed.
+﹣ real backing-path removal/replacement is refused while the cached handle exists when the OS permits rename (58.4008ms) # Windows refused rename of an open SQLite database; deterministic identity-adapter coverage remains active.
+﹣ real worker accepts fixed bytes and rejects a different archive (0.5459ms) # dedicated worker bundle not provided
+﹣ worker exit, duplicate messages, cancellation and deadlines are enforced (0.9668ms) # dedicated worker bundle not provided
+ℹ tests 1008
+ℹ suites 0
+ℹ pass 1004
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 4
+ℹ todo 0
+ℹ duration_ms 205085.5391

@@ -1,0 +1,9 @@
+{
+  "version": "0.3.0",
+  "output": "D:\\MC_start\\OUCL\\release\\OUCL-0.3.0-directory-fix.exe",
+  "bytes": 328704,
+  "sha256": "dcbe8f777685efdd456ddc914a9f4a04856639f18801e92c8511afd063167bee",
+  "electron": "45.0.0",
+  "runtimeChecksum": "ae53887a23bb640369c93dbd38c408a2af5c0deb86f2fa76c6c244cb444b7f47",
+  "appHash": "7ee7e153d1d8d6f54f6ed2ee390d9b020ee254ed85495c462eceef5ee2b1f28d"
+}

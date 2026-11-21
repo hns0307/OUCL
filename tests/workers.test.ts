@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, open, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, open, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -8,6 +10,7 @@ import { StorageClient } from '../src/services/workers/storage-client.js';
 import { HashPool } from '../src/services/workers/hash-pool.js';
 import { parseReply, parseStorageRequest } from '../src/services/workers/protocol.js';
 import { controlTask } from '../src/core/task/machine.js';
+import { OwnerGuard } from '../src/services/storage/owner-guard.js';
 
 const entry = new URL('../src/services/workers/entry.js', import.meta.url);
 const fakeEntry = new URL('./fixtures/worker.js', import.meta.url);
@@ -54,8 +57,9 @@ test('storage request queue is bounded and reserves a draining close slot', asyn
   await Promise.all([Promise.all(reads), client.close()]);
 }));
 
-test('storage caller timeout retains its queue slot and does not pretend mutation was cancelled', async () => {
-  const client = await StorageClient.open(fakeEntry, 'delay', 1000);
+test('storage caller timeout retains its queue slot and does not pretend mutation was cancelled', async () => fixture(async root => {
+  const directory = path.join(root, 'delay'); await mkdir(directory);
+  const client = await StorageClient.open(fakeEntry, directory, 1000);
   try {
     await assert.rejects(client.accept(ownerId, requestId, 'download', 'a'.repeat(64)), { code: 'TIMEOUT' });
     const reads = Array.from({ length: 31 }, () => client.get(ownerId, requestId));
@@ -63,13 +67,14 @@ test('storage caller timeout retains its queue slot and does not pretend mutatio
     await Promise.all(reads);
     assert.equal(await client.get(ownerId, requestId), undefined);
   } finally { await client.close(); }
-});
+}));
 
-test('worker crash becomes a fixed redacted failure and close waits for exit', async () => {
-  const client = await StorageClient.open(fakeEntry, 'crash');
-  await assert.rejects(client.get(ownerId, requestId), error => error instanceof Error && error.message === 'WORKER_FAILED');
-  await client.close();
-});
+test('worker crash keeps the owner lock until its process exits', async () => fixture(async root => {
+  const directory = path.join(root, 'crash'); await mkdir(directory);
+  const child = spawnSync(process.execPath, [fileURLToPath(new URL('./fixtures/worker-crash-child.js', import.meta.url)), directory], { encoding: 'utf8', windowsHide: true });
+  assert.equal(child.status, 0, child.stderr);
+  if (process.platform === 'win32') { const guard = await OwnerGuard.acquire(directory); await guard.close(); }
+}));
 
 test('real streamed hashes match known bytes and the parent event loop stays responsive', async () => fixture(async root => {
   const file = path.join(root, 'large.bin'); const block = Buffer.alloc(1024 * 1024, 123);

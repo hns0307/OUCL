@@ -1,0 +1,92 @@
+[
+  {
+    "path": "src/ipc/game-adapter.ts",
+    "baselineSha256": "95b61f8ec1fe37be30eb69bff27fa5bedba697eb9d5dff1923d76ff5b76875e2",
+    "candidateSha256": "a3fd46048fe5d39374ce6f767c3e49a5201680c66b5cf4f80648a9f952d6e9f7"
+  },
+  {
+    "path": "src/services/install/installer.ts",
+    "baselineSha256": "61cc82b9efd6ccf284fce40e6f90afeb44243762472eeb191721275f668578fe",
+    "candidateSha256": "210def46d85fce870c2e47ea3fc34fc882612a55fedb00bbc1b3f5af96301ac6"
+  },
+  {
+    "path": "src/services/objects/owner-lease.ts",
+    "baselineSha256": null,
+    "candidateSha256": "96ce29c44f86717dcebaf3f1da0019c9f376e790f689c671b06047e9060410b5"
+  },
+  {
+    "path": "src/services/objects/store.ts",
+    "baselineSha256": "d00a9c8f5fc41d7da5369e198cbe64ae22806518148cd0f6bc4ed454f8e9c43b",
+    "candidateSha256": "974c00c1fc27257da68c8aa29661a5dd0c26d104c742a35644500e9f88f1160c"
+  },
+  {
+    "path": "src/shared/locales/messages.ts",
+    "baselineSha256": "8ba6a21ad4da2754cb20406be0db2f62210b280cbfcdd4ead12de5709cc2884f",
+    "candidateSha256": "fe0f7da08e56c6101f476832bb11fca8e7a6598fe3fb094d6573b949580812e2"
+  },
+  {
+    "path": "src/ui/LaunchControls.tsx",
+    "baselineSha256": "404aabae835decb10084fef3dd35347cabc3f9ff6f5d60e748cee176cdd0bbf1",
+    "candidateSha256": "477fc5bbc5e276c889e559d61e92cfe859f9d6276649212ddae523bfe1c9cd56"
+  },
+  {
+    "path": "src/ui/MaintenancePreviewPanel.tsx",
+    "baselineSha256": "51d7ab709a553aa5ace77ac7033c13aa08f638b0cf2292f388544d5c88b7fd8b",
+    "candidateSha256": "1361ad25a2c1366147dd6e2d92cc989137710c468bb8c2db9d8bc7f979df2fcb"
+  },
+  {
+    "path": "tests/installer-runtime-retry.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "b26c6a00ee849c9461270bf701edaffa198c0ee102d322bc04a69bc3b6e78edb"
+  },
+  {
+    "path": "tests/object-owner-lease.test.ts",
+    "baselineSha256": null,
+    "candidateSha256": "2be74239fd36f08e2ba1386a017d994aa5b704a0671ecb7d060a4b81b746078c"
+  },
+  {
+    "path": "tests/components/launch-recovery/jsx-shim.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "29cddf664d8806e54408b2a886bd4c4e92fbe76957db249ca4c76bc7341af5dd"
+  },
+  {
+    "path": "tests/components/launch-recovery/probe.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "4813092bcff6dd9688650d5179f81a46d6018f5d1e4c48481d8e6a5c7d0e83ed"
+  },
+  {
+    "path": "tests/components/launch-recovery/react-shim.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "47ddbc92d5af7391c4bedb07a9b018e100b76a792556997ab0e356a74a4acd7f"
+  },
+  {
+    "path": "tests/components/launch-recovery/README.md",
+    "baselineSha256": null,
+    "candidateSha256": "1bd18715c24606a778184693ee07fdc6a98b914c443baf36bf012564135799d9"
+  },
+  {
+    "path": "tests/components/launch-recovery/run.mjs",
+    "baselineSha256": null,
+    "candidateSha256": "219bd24dc433ebf3734f8a9e730f62b29c5dd1fb5da5e828bd9c9708f2d8f39e"
+  },
+  {
+    "path": "tests/components/maintenance-preview/component-harness.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "f2e451d32f3ea319c98b9e71751c6e45b1bd99a11c2b8981a70c0ebf32425fcd"
+  },
+  {
+    "path": "tests/components/maintenance-preview/jsx-stub.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "91a2aa025e0f6b31dac6bf304cb98c9a22d5656b0670a3650dab38b39d7a9de5"
+  },
+  {
+    "path": "tests/components/maintenance-preview/react-stub.cjs",
+    "baselineSha256": null,
+    "candidateSha256": "415f27987527273fe12f52be3466fdd4d0766650ee480eeeba628e381dec96f2"
+  },
+  {
+    "path": "tests/fixtures/object-owner-child.ts",
+    "baselineSha256": null,
+    "candidateSha256": "db99fa6b9ad16b19a3249f8e2e378281e7a3156a769e7fa6feeddd13937373a7"
+  }
+]

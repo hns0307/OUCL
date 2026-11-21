@@ -1,0 +1,77 @@
+[
+  {
+    "bytes": 4012,
+    "path": "NATIVE-PLAN.md",
+    "sha256": "646b128913ce5fd0685064a6c9b83a0115c39488e82a0d318636bdb119bd8759"
+  },
+  {
+    "bytes": 8426,
+    "path": "NATIVE-RESULT.md",
+    "sha256": "daf4edf103cffebfa4ad31ef82f248c2040ee120571795c9603e444c6ab613a2"
+  },
+  {
+    "bytes": 11483,
+    "path": "native-window.cjs",
+    "sha256": "33773b5c29983948d4ca910df910bf7c78d7de6e83aac2d2ae1a8af14984411c"
+  },
+  {
+    "bytes": 3155,
+    "path": "snapshot-native.mjs",
+    "sha256": "7ac8705e22f0e2243dff88b83a2198c46e130702d0474c4f53b9546567f03a83"
+  },
+  {
+    "bytes": 98,
+    "path": "native-app/package.json",
+    "sha256": "186c625935a7274cc7b57cf23f244d649ac6f6c38af97344b1855618bec27ae8"
+  },
+  {
+    "bytes": 1572,
+    "path": "native-case.json",
+    "sha256": "ef0606941120a7e8d4dff7e1640c58e4829ae0b721dbc3058252a059ef347d27"
+  },
+  {
+    "bytes": 5247,
+    "path": "native-events.jsonl",
+    "sha256": "2cd1cc76aa0e0ea15f11acc6d68020e897ddf89b5ec3f396346fe34241884287"
+  },
+  {
+    "bytes": 15917,
+    "path": "native-verification.json",
+    "sha256": "6438ce20ac1db9b6ad0fba43b2e83b38df1f3be7d3b8dfb457fbf5020a182606"
+  },
+  {
+    "bytes": 857,
+    "path": "native-snapshot-before.json",
+    "sha256": "7835f6579069e4320119de493f527e636a5929a163b362ea43f4f9ce4a6ff2f3"
+  },
+  {
+    "bytes": 861,
+    "path": "native-snapshot-after-late.json",
+    "sha256": "25ce82ebcf531a7fc166915a062cae58f70acd72f01b30ba7807cd8f05f9b811"
+  },
+  {
+    "bytes": 864,
+    "path": "native-snapshot-after-preview.json",
+    "sha256": "c36f8ac144759d27226800fa22543a20985ffc4039d31a6bd798c0ec8e61b480"
+  },
+  {
+    "bytes": 858,
+    "path": "native-snapshot-closed.json",
+    "sha256": "6813f0ce36da4780d3e66ca26feb895fd938dcc4fee970ed2e57266da1592fac"
+  },
+  {
+    "bytes": 144053,
+    "path": "native-first-picker.png",
+    "sha256": "4495c60f47b5930c9887ea692efa4b71e9c27ef2ae1f4e1114e6f9d3a08fdb83"
+  },
+  {
+    "bytes": 260005,
+    "path": "native-new-preview.png",
+    "sha256": "b27d2b7ba9b8c02f0738072948df20927526d9dc4f20fd73e7c31f06c64f1f00"
+  },
+  {
+    "bytes": 288328,
+    "path": "native-preview-detail.png",
+    "sha256": "16f2599163238cf8270625f9d7ef2bfc4e1303b6f68f7fcfb2ed80655ef378ad"
+  }
+]

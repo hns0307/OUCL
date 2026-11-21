@@ -1,0 +1,250 @@
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\download-http.test.js (133.7536ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\download-parallel.test.js (124.8816ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\file-views.test.js (116.2319ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\instance-folders.test.js (107.7732ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\mod-preparation.test.js (97.8474ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\mod-transaction.test.js (81.6175ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\native-archive.test.js (70.8294ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\object-owner-lease.test.js (70.3914ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\roots.test.js (71.6629ms)
+node:internal/modules/esm/load:193
+    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);
+          ^
+
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'
+    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)
+    at defaultLoadSync (node:internal/modules/esm/load:146:3)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:806:12)
+    at #loadSync (node:internal/modules/esm/loader:838:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:787:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:498:31)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32 {
+  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'
+}
+
+Node.js v24.21.0
+✖ .test-build\tests\storage.test.js (62.533ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.8565
+
+✖ failing tests:
+
+test at .test-build\tests\download-http.test.js:1:1
+✖ .test-build\tests\download-http.test.js (133.7536ms)
+  'test failed'
+
+test at .test-build\tests\download-parallel.test.js:1:1
+✖ .test-build\tests\download-parallel.test.js (124.8816ms)
+  'test failed'
+
+test at .test-build\tests\file-views.test.js:1:1
+✖ .test-build\tests\file-views.test.js (116.2319ms)
+  'test failed'
+
+test at .test-build\tests\instance-folders.test.js:1:1
+✖ .test-build\tests\instance-folders.test.js (107.7732ms)
+  'test failed'
+
+test at .test-build\tests\mod-preparation.test.js:1:1
+✖ .test-build\tests\mod-preparation.test.js (97.8474ms)
+  'test failed'
+
+test at .test-build\tests\mod-transaction.test.js:1:1
+✖ .test-build\tests\mod-transaction.test.js (81.6175ms)
+  'test failed'
+
+test at .test-build\tests\native-archive.test.js:1:1
+✖ .test-build\tests\native-archive.test.js (70.8294ms)
+  'test failed'
+
+test at .test-build\tests\object-owner-lease.test.js:1:1
+✖ .test-build\tests\object-owner-lease.test.js (70.3914ms)
+  'test failed'
+
+test at .test-build\tests\roots.test.js:1:1
+✖ .test-build\tests\roots.test.js (71.6629ms)
+  'test failed'
+
+test at .test-build\tests\storage.test.js:1:1
+✖ .test-build\tests\storage.test.js (62.533ms)
+  'test failed'

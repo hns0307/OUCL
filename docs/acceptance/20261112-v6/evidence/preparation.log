@@ -1,0 +1,42 @@
+{
+  "status": "PREPARED",
+  "profile": "D:\\MC_start\\OUCL-acceptance-v3-20261112\\acceptance-results\\v5-global\\profile",
+  "instances": [
+    {
+      "instanceId": "528fb120-c25a-5362-a32a-bf7411524655",
+      "displayName": "GLOBAL-A Synthetic Installed Vanilla",
+      "installTaskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+      "modTaskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486"
+    },
+    {
+      "instanceId": "aea2680d-17c4-5c07-9837-8cd964a1b010",
+      "displayName": "GLOBAL-B Synthetic Installed Vanilla",
+      "installTaskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+      "modTaskId": "f236be40-ca29-4952-bb96-1b146f3af798"
+    }
+  ],
+  "globalBefore": [
+    {
+      "taskId": "1d5ca48b-de12-480a-b84a-e44b61a7f005",
+      "kind": "install",
+      "state": "completed"
+    },
+    {
+      "taskId": "c925a628-bea3-4e3a-98af-308648ee2689",
+      "kind": "install",
+      "state": "completed"
+    },
+    {
+      "taskId": "b1cd9fd4-93ef-41f4-aa2c-c1dec4f76486",
+      "kind": "mod-check",
+      "state": "completed"
+    },
+    {
+      "taskId": "f236be40-ca29-4952-bb96-1b146f3af798",
+      "kind": "mod-check",
+      "state": "completed"
+    }
+  ],
+  "reopen": "PASS",
+  "productHashes": "7 MATCH"
+}

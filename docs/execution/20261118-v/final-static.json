@@ -1,0 +1,21 @@
+{
+  "typecheck": {
+    "args": [
+      "node",
+      "../../node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "exitCode": 0
+  },
+  "lint": {
+    "args": [
+      "node",
+      "../../node_modules/eslint/bin/eslint.js",
+      "src",
+      "tests",
+      "scripts",
+      "vite.config.ts"
+    ],
+    "exitCode": 0
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "fixture": "real GameAdapter plus real LaunchControls with hook/bridge doubles; no Electron or storage",
+  "rows": [
+    {
+      "state": "needsRecovery",
+      "reason": "REVISION_CONFLICT",
+      "code": "NEEDS_RECOVERY",
+      "retryable": false,
+      "messageKey": "unavailable",
+      "ui": {
+        "text": "需要恢复，请保留文件并检查目录状态。",
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "needsRecovery",
+      "reason": "LAUNCH_FAILED",
+      "code": "NEEDS_RECOVERY",
+      "retryable": false,
+      "messageKey": "unavailable",
+      "ui": {
+        "text": "需要恢复，请保留文件并检查目录状态。",
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "needsRecovery",
+      "reason": "NEEDS_RECOVERY",
+      "code": "NEEDS_RECOVERY",
+      "retryable": false,
+      "messageKey": "unavailable",
+      "ui": {
+        "text": "需要恢复，请保留文件并检查目录状态。",
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "queued",
+      "reason": null,
+      "code": null,
+      "retryable": null,
+      "messageKey": null,
+      "ui": {
+        "text": null,
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "running",
+      "reason": null,
+      "code": null,
+      "retryable": null,
+      "messageKey": null,
+      "ui": {
+        "text": null,
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "failed",
+      "reason": "REVISION_CONFLICT",
+      "code": "REVISION_CONFLICT",
+      "retryable": true,
+      "messageKey": "instanceChanged",
+      "ui": {
+        "text": "实例信息已改变，请刷新后重试。",
+        "buttonDisabled": false,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "failed",
+      "reason": "LAUNCH_FAILED",
+      "code": "LAUNCH_FAILED",
+      "retryable": true,
+      "messageKey": "launchFailed",
+      "ui": {
+        "text": "游戏未能正常启动，请检查 Java 和实例文件。",
+        "buttonDisabled": false,
+        "launchCalls": 1
+      }
+    },
+    {
+      "state": "needsRecovery-rejected-read",
+      "reason": "REVISION_CONFLICT",
+      "ui": {
+        "text": "需要恢复，请保留文件并检查目录状态。",
+        "buttonDisabled": true,
+        "launchCalls": 1
+      }
+    }
+  ],
+  "failedRecoveryCases": []
+}

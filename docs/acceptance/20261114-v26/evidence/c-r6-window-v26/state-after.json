@@ -1,0 +1,60 @@
+{
+  "hashes": [
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\libraries\\net\\fabricmc\\fabric-loader\\0.16.14\\fabric-loader-0.16.14.jar",
+      "bytes": 31,
+      "sha256": "174b76d230e22c18930973ec9754ae2d58b272c91faba9b0a083dc195cf53c28"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\44ba3306-fa96-52be-bff2-f3ad43e96e75\\mods\\dependent.jar",
+      "bytes": 211,
+      "sha256": "8c64740998613ccedd480a7a7a20fdff8a2cab51ddfd9ebc7c47e534b2850525"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\44ba3306-fa96-52be-bff2-f3ad43e96e75\\mods\\provider.jar",
+      "bytes": 694,
+      "sha256": "6c6e911f6c8e2a586c41161be17dc76c59f5e9fa18307dd129b9d9c866aafd11"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\4b3c676a-ca84-5767-afa5-e5a402819b0a\\mods\\dependent.jar",
+      "bytes": 204,
+      "sha256": "70f815f1fa4cf50db9c1ca336bfc66f3326c008c15f5b0b511bbdf696cc00859"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\4b3c676a-ca84-5767-afa5-e5a402819b0a\\mods\\provider.jar",
+      "bytes": 388,
+      "sha256": "19914530a236c06f6846f59e9ad3aa294ce08936b3180bc2b5f05eca80429991"
+    },
+    {
+      "relative": "roots\\50000000-0000-4000-8000-000000000001\\.minecraft\\versions\\dep-e66acfc933f7cb4b01466d843e5255c23bfac36b\\dep-e66acfc933f7cb4b01466d843e5255c23bfac36b.jar",
+      "bytes": 61,
+      "sha256": "ceea9aba92c382f0dc748ddc742a1db09c7b320a1a4cf14a0d10953320646549"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "18947942-d074-4fc5-abe0-d73310bd6cee",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "install",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":5,\"revision\":7,\"bytesDone\":106,\"bytesTotal\":106}"
+    },
+    {
+      "id": "580f521a-054b-466d-aea2-6b3470dfa5ce",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "install",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":106,\"bytesTotal\":106}"
+    },
+    {
+      "id": "b3fa2c23-423a-4a45-853c-aeeb2f004818",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    },
+    {
+      "id": "eff85aaf-d03d-4c2c-8a9f-0359fff275d7",
+      "owner_id": "50000000-0000-4000-8000-000000000001",
+      "kind": "mod-check",
+      "execution": "{\"state\":\"completed\",\"attempt\":1,\"lastSequence\":6,\"revision\":8,\"bytesDone\":0}"
+    }
+  ]
+}

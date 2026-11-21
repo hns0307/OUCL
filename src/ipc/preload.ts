@@ -1,3 +1,5 @@
+import { createResourcesBridge } from './preload-resources.js';
+import { createDesktopBridge } from './preload-desktop.js';
 import { contextBridge, ipcRenderer } from 'electron';
 import { CONTRACT_VERSION, HANDSHAKE_CHANNEL, HANDSHAKE_TIMEOUT_MS, isHandshakeResult } from '../shared/contracts/handshake.js';
 import type { LauncherBridge, HandshakeResult } from '../shared/contracts/handshake.js';
@@ -7,6 +9,23 @@ import type { RootsData, RootsResult, RootSelection, RootSummary } from '../shar
 import { UUID_PATTERN } from '../shared/contracts/handshake.js';
 import { CATALOG_CHANNEL, catalogFailure, isCatalogQuery, isCatalogResult } from '../shared/contracts/catalog.js';
 import type { CatalogQuery, CatalogResult } from '../shared/contracts/catalog.js';
+import { createInstanceBridge } from './preload-instances.js';
+import { createTargetBridge } from './preload-task-targets.js';
+import { createPacksBridge } from './preload-packs.js';
+import { createOnlineToolsBridge } from './preload-online-tools.js';
+import { createDistributionBridge } from './preload-distribution.js';
+import { createDistributionExecutionBridge } from './preload-distribution-execution.js';
+import { createProfilesBridge } from './preload-profiles.js';
+import { createOnlineAccountsBridge } from './preload-online-accounts.js';
+import { createSkinBridge } from './preload-skin.js';
+import { createWebExtensionsBridge } from './preload-web-extensions.js';
+import { createMultiplayerBridge } from './preload-multiplayer.js';
+import { createGameBridge } from './preload-game.js';
+import { createLoadersBridge } from './preload-loaders.js';
+import { createInstancesV2Bridge } from './preload-instances-v2.js';
+import { createModsBridge } from './preload-mods.js';
+import { createMaintenancePreviewBridge } from './preload-maintenance-preview.js';
+import { createInstanceFoldersBridge } from './preload-instance-folders.js';
 
 async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 'choose', requestId: string, timeoutMs: number): Promise<RootsResult<T>> {
   if (!UUID_PATTERN.test(requestId)) return rootsFailure(globalThis.crypto.randomUUID(), 'INVALID_ARGUMENT', globalThis.crypto.randomUUID());
@@ -20,6 +39,25 @@ async function rootRequest<T extends RootsData>(channel: string, kind: 'list' | 
 }
 
 const bridge: LauncherBridge = Object.freeze({
+  ...createOnlineToolsBridge(ipcRenderer),
+  ...createDistributionBridge(ipcRenderer),
+  ...createDistributionExecutionBridge(ipcRenderer),
+  ...createPacksBridge(),
+  ...createInstanceBridge(),
+  ...createTargetBridge(),
+  ...createProfilesBridge(),
+  ...createOnlineAccountsBridge(),
+  ...createSkinBridge(),
+  ...createWebExtensionsBridge(ipcRenderer),
+  ...createMultiplayerBridge(),
+  ...createGameBridge(),
+  ...createResourcesBridge(),
+  ...createDesktopBridge(),
+  ...createLoadersBridge(),
+  ...createInstancesV2Bridge(),
+  ...createInstanceFoldersBridge(ipcRenderer),
+  ...createModsBridge(),
+  ...createMaintenancePreviewBridge(),
   async catalog(query: CatalogQuery): Promise<CatalogResult> {
     const requestId = globalThis.crypto.randomUUID();
     if (!isCatalogQuery(query)) return catalogFailure(requestId, 'INVALID_ARGUMENT', requestId);

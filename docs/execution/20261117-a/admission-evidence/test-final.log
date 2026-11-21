@@ -1,0 +1,21 @@
+✔ admission keeps one task/outbox across exact retries and confirmation aliases (78.0038ms)
+✔ immutable binding rejects same request/proposal with changed snapshot, inode, plan or identity (45.4544ms)
+✔ new admissions require current archived release but old exact receipts survive high-water advance (52.4939ms)
+✔ lost acceptance and projection acknowledgements reopen as exact original task, without execution (81.1141ms)
+✔ schema v1 migrates atomically while preserving legacy release, journal and receipt bytes (56.9211ms)
+✔ unknown versions/schema and corrupt admission/outbox records fail closed without repair (168.5059ms)
+✔ admission reads reject invalid bounds and stop on live corruption without leaking native SQL (23.3015ms)
+✔ identity bounds preserve old receipts and reject new aliases/admissions without eviction (451.7288ms)
+✔ private SQLite ledger persists monotonic publisher state and exact CAS across owner restarts (64.4201ms)
+✔ ledger journals and receipt commits are CAS records; recovery never adopts a live transaction (66.6342ms)
+✔ a second metadata owner and unknown directory contents cannot become ledger authority (25.0722ms)
+✔ executor archives must match already-authenticated canonical release high-water state (37.4655ms)
+✔ SQL schema failures and concurrent close reads remain controlled without leaking native errors (48.6117ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1053.522

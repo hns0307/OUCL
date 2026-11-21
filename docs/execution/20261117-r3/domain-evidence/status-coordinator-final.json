@@ -1,0 +1,14 @@
+{
+  "exitCode": 0,
+  "testRoot": "D:\\MC_start\\OUCL\\tmp\\domain-tests-coordinator-final-20261117-r3",
+  "helper": {
+    "formatVersion": 1,
+    "file": "distribution-files.exe",
+    "sha256": "44c795a4c1bf6d4a9c2be12c24247405b1918b75b1dff9275699f0864bc45092",
+    "bytes": 21504
+  },
+  "testSourceSha256": "c97e4cdc2dd77e54dd2878f28c09843d744539673f5140ab92ac2a7635684f7a",
+  "fixtureSourceSha256": "aabab1135adc08d28497298b7d582433116e44303a18accafc80539f2ad02242",
+  "domainSourceSha256": "2f850757db0afe8c041b5a111f4dd74549f690df9b39740b3291dab2681bd8d7",
+  "executionSourceSha256": "72fac0fbc911bbc3e6f020b21f9493582eaf261e8f749b159436956dc09e11e1"
+}

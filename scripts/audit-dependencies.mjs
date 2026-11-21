@@ -43,7 +43,8 @@ const reviewedBuildOnly = new Set(['lightningcss@1.33.0', 'lightningcss-win32-x6
 const unknown = all.filter(item => typeof item.license !== 'string'
   || (!allowed.has(item.license) && !(item.license === 'MPL-2.0' && reviewedBuildOnly.has(`${item.name}@${item.version}`))));
 if (all.length === 0) throw new Error('NO_INSTALLED_PACKAGE_EVIDENCE');
-await mkdir('docs/validation/P0-08', { recursive: true });
-await writeFile('docs/validation/P0-08/licenses.json', JSON.stringify({ timestamp: new Date().toISOString(), installedBytes, packages: all, reviewedBuildOnly: [...reviewedBuildOnly], reviewRequired: unknown }, null, 2));
+const evidence = process.env.OUCL_DEPENDENCY_EVIDENCE ?? 'docs/validation/P0-08';
+await mkdir(evidence, { recursive: true });
+await writeFile(path.join(evidence, 'licenses.json'), JSON.stringify({ timestamp: new Date().toISOString(), installedBytes, packages: all, reviewedBuildOnly: [...reviewedBuildOnly], reviewRequired: unknown }, null, 2));
 console.log(JSON.stringify({ packageCount: all.length, installedBytes, reviewRequired: unknown }));
 if (unknown.length > 0) process.exitCode = 1;

@@ -1,0 +1,68 @@
+{
+  "status": 200,
+  "body": {
+    "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2": {
+      "id": "ProvVr01",
+      "project_id": "ProvPr01",
+      "name": "Synthetic fixture",
+      "version_number": "1.0.0",
+      "date_published": "2026-11-13T00:00:00Z",
+      "version_type": "release",
+      "loaders": [
+        "fabric"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "environment": "client_and_server",
+      "dependencies": [],
+      "files": [
+        {
+          "filename": "provider.jar",
+          "size": 388,
+          "hashes": {
+            "sha1": "5b982dd1085c346f882c48127fdc11edca0ebeb2",
+            "sha512": "cf47ab8e128eef42c35a3dfd97dc9c2869680f971740cf629ba6e81753414da80db87842d90716a8cdd7f93a751f2e4220cf64c845f58580050100c124fd3bf2"
+          },
+          "primary": true,
+          "url": "https://cdn.modrinth.com/data/ProvPr01/versions/ProvVr01/provider.jar"
+        }
+      ]
+    },
+    "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd": {
+      "id": "DepeVr01",
+      "project_id": "DepePr01",
+      "name": "Synthetic fixture",
+      "version_number": "1.0.0",
+      "date_published": "2026-11-13T00:00:00Z",
+      "version_type": "release",
+      "loaders": [
+        "fabric"
+      ],
+      "game_versions": [
+        "1.20.1"
+      ],
+      "environment": "client_and_server",
+      "dependencies": [
+        {
+          "project_id": "ProvPr01",
+          "version_id": "ProvVr02",
+          "file_name": null,
+          "dependency_type": "required"
+        }
+      ],
+      "files": [
+        {
+          "filename": "dependent.jar",
+          "size": 204,
+          "hashes": {
+            "sha1": "ea32cfe756aee2ed6bd73a48da8032f55574effc",
+            "sha512": "66de4635eb6b02e69332378c98d990c7aa083b7222aedf5b0c13628a65da90a80d70d98347044d09df6f1cfe9905e41f071d499e8120c138da9bdacf027709bd"
+          },
+          "primary": true,
+          "url": "https://cdn.modrinth.com/data/DepePr01/versions/DepeVr01/dependent.jar"
+        }
+      ]
+    }
+  }
+}

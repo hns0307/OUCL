@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-28T13:52:35.724Z",
+  "executable": "D:\\MC_start\\OUCL\\release\\OUCL-0.3.0-final.exe",
+  "isolatedFixture": "D:\\MC_start\\OUCL\\.test-build\\portable-roots-gYoEEj",
+  "cases": [
+    {
+      "name": "中文 自动目录",
+      "blocked": false,
+      "portableProfile": true,
+      "gamesCreated": true,
+      "rootId": "e2e08f56-3e1a-4a5d-8112-f50ce6e2a579",
+      "revision": 1,
+      "retryWithoutNativePicker": true,
+      "ownerReleased": true
+    },
+    {
+      "name": "中文 自动目录",
+      "blocked": false,
+      "portableProfile": true,
+      "gamesCreated": true,
+      "rootId": "e2e08f56-3e1a-4a5d-8112-f50ce6e2a579",
+      "revision": 1,
+      "retryWithoutNativePicker": true,
+      "ownerReleased": true
+    },
+    {
+      "name": "目录失败重试",
+      "blocked": true,
+      "portableProfile": true,
+      "gamesCreated": true,
+      "rootId": "b20291da-582a-45fc-886b-c9865f991e98",
+      "revision": 1,
+      "retryWithoutNativePicker": true,
+      "ownerReleased": true
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "candidate": "fixed v3 bc01f07487ca7e8d76f17115ea148efcafd748c2",
+  "checks": [
+    {
+      "name": "Exactly two starts and two completed statuses",
+      "status": "PASS"
+    },
+    {
+      "name": "Case A correlated start/admission/running/completed",
+      "status": "PASS"
+    },
+    {
+      "name": "Case B correlated start/admission/running/completed",
+      "status": "PASS"
+    },
+    {
+      "name": "Two exact approved body hashes matched inside respective preview intervals",
+      "status": "PASS"
+    },
+    {
+      "name": "A one physical provider contains parent alias and nested depth; three correct relations",
+      "status": "PASS"
+    },
+    {
+      "name": "B preserves before exact pin mismatch and has no false platform relation",
+      "status": "PASS"
+    },
+    {
+      "name": "Case A actual sampled DOM content",
+      "status": "PASS"
+    },
+    {
+      "name": "Case B actual sampled DOM content",
+      "status": "PASS"
+    },
+    {
+      "name": "Renderer samples have no Node globals",
+      "status": "PASS"
+    },
+    {
+      "name": "Seven fixed v3 product bytes unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "Six JAR hashes and four task records unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "Normal window closed / will-quit / exit zero order",
+      "status": "PASS"
+    },
+    {
+      "name": "Four coordinator screenshots preserved",
+      "status": "PASS"
+    }
+  ],
+  "evidenceSHA256": {
+    "seed.json": "02a97a2425e1f6e37b693ea1fb9546c2991e37a724ce37b5750698dbdbba6ce3",
+    "product-manifest.json": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e",
+    "verified-product.json": "b37789d881c9cf99a14d3bd73c2aef3fa64e802f3d8a502648779fe30408325e",
+    "whitelist.json": "3ce2733795c20f87604e7a92dd98818a8959cb5ecfe3a80608164c6e597ed68e",
+    "window.jsonl": "b36d1bcf3472b25c28d82c82c5859af8dccf6c3e091be0cc95c38a138db2de89",
+    "state-before.json": "0651a25a14ad385206bda0838e6dae00b38182fada07fcc34afb8b40b613fccd",
+    "state-after.json": "0651a25a14ad385206bda0838e6dae00b38182fada07fcc34afb8b40b613fccd",
+    "prepare.mjs": "aedcccbd5dd476e392eb292631a9d3cf85246d41dcad8fa5e3ad23756abec6c5",
+    "prepare-generated.mjs": "3214e8ae8006dacdb107efa82f8e713df889fc1202ac76ac491fd9a5685e8801",
+    "fixtures.cjs": "5f0ea41eef8585709b70a12f569d62360dbfe651b7b4df3990c6ba270a2d0b43",
+    "transport.cjs": "0e6deed953c113b2b5fdb7e886c1f53503d95053fd9d95bffb449287d2d96fe7",
+    "window.cjs": "c976e70ada99f6b5bb83d49d64cbe463957c8a4149b87494adfccc3643f1c44d",
+    "inspect-state.mjs": "04a9144e0a577cf48fdf6ba2e2eb78fe688893c3a3265894143ac9a0d3ea702e",
+    "local-check.cjs": "8036a22ce5ec33377a87edb09596002d28fb9a5ef678beb65797430643ea32de",
+    "local-check.json": "b08a7c8eb146342cf47ff90f0872d9f0d2a9318c34aac49f17b23a114544c350",
+    "preparation.log": "2b56110b5c9a90cf0f40eaafde65b50cdd22f6cbb446388c1b18e82cc5de6de1",
+    "a-completed.png": "3791dc4e3060c6b488a64ccabac4de3de8089f04e10d10b715817fe516642e9b",
+    "a-relations.png": "008c122ba2ea83c41e5f9e8d282eea456a6ac4e6427748cfed99ad3c74ffe1aa",
+    "b-completed.png": "af0f7fd4b3b6c38ffc998554367934bb66eb82f2ec51c6e7240761f00aaa47c2",
+    "b-relations.png": "f5749fca9dc73e437f0e4b65e7e95a0db646564096d17001b3f6cf274eb30433"
+  },
+  "limits": [
+    "Approved synthetic EventEmitter/Readable transport; production parsing/worker/IPC/React. Not real HTTP or public-network evidence.",
+    "Provider embeddedDepth=1 is verified in payload only; UI has no dedicated provider-depth display. DOM textContent is not proof of visibility; coordinator separately reviewed four screenshots.",
+    "UI displays project relationship but not exact version ID in relation label; exact versions verified in payload.",
+    "No source-input count asserted. No game launch or general compatibility claim."
+  ],
+  "archiveRecommendation": "Keep preparation scripts, source/provenance fingerprints, legal response fixtures/manifests, logs, audit, screenshots, seed and before/after states. Exclude product bundles, services.cjs, player profile and synthetic-games; do not delete live evidence."
+}

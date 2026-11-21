@@ -1,0 +1,186 @@
+{
+  "synthetic": true,
+  "source": "unchanged v3 production worker; real StorageClient/SQLite/JSON APIs",
+  "reads": [
+    {
+      "label": "before-reopen",
+      "kinds": [
+        "mod-check",
+        "mod-install"
+      ],
+      "ok": true,
+      "count": 2000,
+      "bytes": 576076,
+      "ms": 1604.4534999999996
+    },
+    {
+      "label": "after-reopen",
+      "kinds": [
+        "mod-check",
+        "mod-install"
+      ],
+      "ok": true,
+      "count": 2000,
+      "bytes": 576076,
+      "ms": 1482.5938000000024
+    },
+    {
+      "label": "after-rejected-install-1001",
+      "kinds": [
+        "mod-check",
+        "mod-install"
+      ],
+      "ok": true,
+      "count": 2000,
+      "bytes": 576076,
+      "ms": 1656.8508000000002
+    },
+    {
+      "label": "after-check-1001",
+      "kinds": [
+        "mod-check",
+        "mod-install"
+      ],
+      "ok": false,
+      "code": "NEEDS_RECOVERY",
+      "ms": 9.766800000004878
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "ok": true,
+      "count": 100,
+      "ms": 1398.2523
+    },
+    {
+      "page": 2,
+      "ok": true,
+      "count": 100,
+      "ms": 2.0702999999994063
+    },
+    {
+      "page": 3,
+      "ok": true,
+      "count": 100,
+      "ms": 2.261099999996077
+    },
+    {
+      "page": 4,
+      "ok": true,
+      "count": 100,
+      "ms": 2.490399999995134
+    },
+    {
+      "page": 5,
+      "ok": true,
+      "count": 100,
+      "ms": 2.222200000003795
+    },
+    {
+      "page": 6,
+      "ok": true,
+      "count": 100,
+      "ms": 2.3254000000015367
+    },
+    {
+      "page": 7,
+      "ok": true,
+      "count": 100,
+      "ms": 2.1819000000032247
+    },
+    {
+      "page": 8,
+      "ok": true,
+      "count": 100,
+      "ms": 2.2181999999957043
+    },
+    {
+      "page": 9,
+      "ok": true,
+      "count": 100,
+      "ms": 2.649600000004284
+    },
+    {
+      "page": 10,
+      "ok": true,
+      "count": 100,
+      "ms": 1.937099999995553
+    },
+    {
+      "page": 11,
+      "ok": true,
+      "count": 100,
+      "ms": 2.0526000000027125
+    },
+    {
+      "page": 12,
+      "ok": true,
+      "count": 100,
+      "ms": 2.5270999999993364
+    },
+    {
+      "page": 13,
+      "ok": true,
+      "count": 100,
+      "ms": 2.473599999997532
+    },
+    {
+      "page": 14,
+      "ok": true,
+      "count": 100,
+      "ms": 2.4847000000008848
+    },
+    {
+      "page": 15,
+      "ok": true,
+      "count": 100,
+      "ms": 2.2851000000009662
+    },
+    {
+      "page": 16,
+      "ok": true,
+      "count": 100,
+      "ms": 2.3234000000011292
+    },
+    {
+      "page": 17,
+      "ok": true,
+      "count": 100,
+      "ms": 1.9988000000012107
+    },
+    {
+      "page": 18,
+      "ok": true,
+      "count": 100,
+      "ms": 1.9742000000042026
+    },
+    {
+      "page": 19,
+      "ok": true,
+      "count": 100,
+      "ms": 2.7093999999997322
+    },
+    {
+      "page": 20,
+      "ok": true,
+      "count": 100,
+      "ms": 1.8681000000069616
+    }
+  ],
+  "admissionCounts": {
+    "checks": 1000,
+    "installs": 1000
+  },
+  "pagination": {
+    "complete": true,
+    "count": 2000,
+    "kindCounts": {
+      "mod-check": 1000,
+      "mod-install": 1000
+    }
+  },
+  "confirmation1001": "QUEUE_FULL; formal API rejected before admission",
+  "check1001": "Real generic admission API adds 1001st check; inventory refuses before index proof, no 1001-entry index fabricated",
+  "status": "PASS"
+}

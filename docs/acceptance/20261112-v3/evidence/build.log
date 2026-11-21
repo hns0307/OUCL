@@ -1,0 +1,26 @@
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 56 modules transformed.
+rendering chunks...
+computing gzip size...
+acceptance-results/product/renderer/index.html                   0.61 kB │ gzip:   0.36 kB
+acceptance-results/product/renderer/assets/index-AuOkr_BU.css   28.77 kB │ gzip:   7.07 kB
+acceptance-results/product/renderer/assets/index-CMBKe6pc.js   344.33 kB │ gzip: 105.30 kB
+
+✓ built in 153ms
+
+  acceptance-results\product\main\index.cjs  774.0kb
+
+Done in 75ms
+
+  acceptance-results\product\preload\index.cjs  128.8kb
+
+Done in 21ms
+
+  acceptance-results\product\workers\entry.cjs  248.3kb
+
+Done in 34ms
+
+  acceptance-results\product\workers\fixed-pack.cjs  17.0kb
+
+Done in 9ms

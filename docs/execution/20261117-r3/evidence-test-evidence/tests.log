@@ -1,0 +1,14 @@
+✔ local evidence reads a real synthetic JAR through the worker and binds measured runtime and root inode (115.6107ms)
+✔ missing permission and a foreign operation binding refuse local bytes before any scanner starts (5.4363ms)
+✔ wrong signed content hash, invalid JAR and multiply linked local sources never become verified artifacts (236.8631ms)
+✔ unknown runtime facts and replacement game directories cannot borrow the old root identity (6.3054ms)
+✔ source namespace replacement after a successful worker scan is detected before returning its path (105.0962ms)
+✔ a late successful worker result after cancellation cannot return an artifact or leak its path (112.1442ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 895.9081

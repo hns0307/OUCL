@@ -1,0 +1,66 @@
+{
+  "status": "PREPARED_NOT_RUN",
+  "electronStarted": false,
+  "syntax": [
+    {
+      "file": "harness.cjs",
+      "status": 0,
+      "output": ""
+    },
+    {
+      "file": "test-preload.cjs",
+      "status": 0,
+      "output": ""
+    },
+    {
+      "file": "prepare.mjs",
+      "status": 0,
+      "output": ""
+    }
+  ],
+  "productFilesChecked": 7,
+  "frozenInputsChecked": 597,
+  "products": [
+    {
+      "path": "main/index.cjs",
+      "sha256": "4a5419f3b81b9ce11dd95966a56f70ea60c656f585d6e8d8463f9b290686ffe5"
+    },
+    {
+      "path": "preload/index.cjs",
+      "sha256": "d7027253ad7594c553ff39c5f90b02add83e0019c6d2bedb7697773be466efd0"
+    },
+    {
+      "path": "renderer/assets/index-AuOkr_BU.css",
+      "sha256": "54cdd16ee42d56227b9d9087a1eac7814a8a7944ce03259fae71fbdead780d1b"
+    },
+    {
+      "path": "renderer/assets/index-CMBKe6pc.js",
+      "sha256": "691d48329e1b2a0b40e62f4798f5e4f6e45a94e6072301648f88bedc230cf517"
+    },
+    {
+      "path": "renderer/index.html",
+      "sha256": "a512ce3d38acb821a87c22f0aa6798562a85c0eb1296ca468625f53d66ddf826"
+    },
+    {
+      "path": "workers/entry.cjs",
+      "sha256": "459b3413e776ac21fc23151da24004db1b44fdc33b6ed8b800a528a507d4ebbb"
+    },
+    {
+      "path": "workers/fixed-pack.cjs",
+      "sha256": "5fdd08cdf414cf1d48876436569e61c461a0b87787600456a787d991619cd2f8"
+    }
+  ],
+  "harnessInputs": {
+    "harness.cjs": "a7b807209c050f4cd4512a08920f43afe56e1e57067e3069527dad6dc17db8f4",
+    "test-preload.cjs": "c487ecd752c49f10ec00f9c701a6f64111e8facc3bfa64c264b41d5a80cff328",
+    "prepare.mjs": "12f5634209652b993b1696e913650485c5fc14c0ce03aa9036941ced93abc8ae",
+    "untrusted.html": "d04db03017e65bbf5a49c89a4b5cb706e637a90ab02493aa771f70b2571c4c2c",
+    "harness-app/package.json": "a0805eaea5f55b2e50b52a754be196252f9bba494d7eba4091c1b36859000c0a"
+  },
+  "pending": [
+    "All real Electron execution/results",
+    "Subframe IPC under unchanged production preferences",
+    "Direct inventory scan invocation counter",
+    "Wrong previewId or path/URL response mutation"
+  ]
+}

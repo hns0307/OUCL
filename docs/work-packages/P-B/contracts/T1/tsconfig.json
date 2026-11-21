@@ -1,0 +1,4 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "include": ["./contract-candidate.ts", "./binding-candidate.ts", "./replay-probe.ts", "./candidate.test.ts"]
+}

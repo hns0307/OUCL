@@ -1,0 +1,133 @@
+{
+  "status": "PASS",
+  "handshake": {
+    "contractVersion": 1,
+    "requestId": "0c3f3208-7ff5-40be-b073-7d318dc333ab",
+    "ok": true,
+    "data": {
+      "selectedVersion": 1,
+      "capabilities": [
+        "roots.v1",
+        "catalog.v1",
+        "instances.v1",
+        "instances.v2",
+        "tasks.v1",
+        "downloads.v1",
+        "java.v1",
+        "accounts.v1",
+        "settings.v1",
+        "game.v1",
+        "sessions.v1",
+        "resources.v1",
+        "loaders.v1",
+        "mods.v1"
+      ],
+      "sessionId": "fd455413-e085-478f-83b8-4b7103e9486b"
+    }
+  },
+  "before": {
+    "contractVersion": 1,
+    "requestId": "2e9a65ee-f7d2-46e7-bf73-f7cd44a2c5e5",
+    "ok": true,
+    "data": {
+      "revision": 0,
+      "formatVersion": 1,
+      "source": "official",
+      "fileConcurrency": 4,
+      "connectionsPerFile": 4
+    }
+  },
+  "actual": {
+    "contractVersion": 1,
+    "requestId": "0148e2cc-31c1-45f6-b285-778700b54a5e",
+    "ok": true,
+    "data": {
+      "revision": 2,
+      "formatVersion": 1,
+      "source": "bmclapi",
+      "fileConcurrency": 6,
+      "connectionsPerFile": 3
+    }
+  },
+  "legacy": {
+    "contractVersion": 1,
+    "requestId": "6cc9a909-67d6-45db-bab7-76c9b480fc36",
+    "ok": true,
+    "data": {
+      "revision": 1,
+      "memoryMiB": 2048,
+      "isolationDefault": true,
+      "theme": "system"
+    }
+  },
+  "invalid": {
+    "contractVersion": 1,
+    "requestId": "13d6ac43-d1a0-4138-ab93-ddd4f573fa22",
+    "ok": false,
+    "error": {
+      "category": "validation",
+      "code": "INVALID_ARGUMENT",
+      "messageKey": "invalidArgument",
+      "retryable": false,
+      "traceId": "b61bd3d5-cda7-49e4-8ddd-f2da080b0ded"
+    }
+  },
+  "stale": {
+    "contractVersion": 1,
+    "requestId": "77999a80-6a5f-47dd-9bed-b60f6a873366",
+    "ok": false,
+    "error": {
+      "category": "biz",
+      "code": "REVISION_CONFLICT",
+      "messageKey": "settingsConflict",
+      "retryable": true,
+      "traceId": "1a108230-0bdb-49a3-94a3-e664dbc9f76c"
+    }
+  },
+  "memory": {
+    "contractVersion": 1,
+    "requestId": "1b803485-861f-40ce-8411-5c9ece0c53e4",
+    "ok": true,
+    "data": {
+      "revision": 2,
+      "memoryMiB": 1024,
+      "isolationDefault": true,
+      "theme": "system"
+    }
+  },
+  "noNode": true,
+  "methods": [
+    "listInstances",
+    "createInstance",
+    "listTasks",
+    "getTask",
+    "controlTask",
+    "subscribeTask",
+    "getDownloadSettings",
+    "updateDownloadSettings",
+    "updateSettings",
+    "chooseJava",
+    "listAccounts",
+    "createOfflineAccount",
+    "getSettings",
+    "launchGame",
+    "stopGame",
+    "listSessions",
+    "getSession",
+    "searchResources",
+    "resourceVersions",
+    "downloadResource",
+    "resourceLibrary",
+    "openResourceLibrary",
+    "loaderVersions",
+    "createLoaderInstance",
+    "listInstancesV2",
+    "listMods",
+    "checkMods",
+    "modReport",
+    "catalog",
+    "listRoots",
+    "chooseRoot",
+    "handshake"
+  ]
+}

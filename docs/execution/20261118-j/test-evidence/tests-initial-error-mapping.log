@@ -1,0 +1,42 @@
+✔ durable admission/projected task freshly claims once and commits through native; repeat reads terminal evidence only (2033.2642ms)
+✔ real claim commit with lost acknowledgement leaves running and no journal/files; retry never regrants effects (585.4315ms)
+✔ original preview file snapshot changes reject before any task claim and preserve unknown content (424.27ms)
+✔ same-path replacement root cannot inherit admitted original directory identity (408.0058ms)
+✖ current synthetic trust revocation or signed release expiry blocks a fresh claim (803.2289ms)
+✔ cancel and close drain held real domain validation and exclude legacy confirmation before publication (832.5905ms)
+✔ legacy-created terminal journal with pristine queued task is not admitted execution evidence (1287.8745ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6526.3777
+
+✖ failing tests:
+
+test at ..\..\tmp\admitted-execution-20261118-j\build\tests\distribution-admitted-execution.test.js:79:1
+✖ current synthetic trust revocation or signed release expiry blocks a fresh claim (803.2289ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'RELEASE_EXPIRED'
+  -   code: 'NEEDS_RECOVERY'
+    }
+  
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/admitted-execution-20261118-j/build/tests/distribution-admitted-execution.test.js:85:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReleaseError: RELEASE_EXPIRED
+        at checkDistributionReleaseTime (file:///D:/MC_start/OUCL/tmp/admitted-execution-20261118-j/build/src/core/distribution/release.js:48:39)
+        at DistributionExecutionCoordinator.authorize (file:///D:/MC_start/OUCL/tmp/admitted-execution-20261118-j/build/src/services/distribution/execution.js:184:5)
+        at async Object.authorize (file:///D:/MC_start/OUCL/tmp/admitted-execution-20261118-j/build/src/services/distribution/execution.js:77:9)
+        at async AdmittedExecution.work (file:///D:/MC_start/OUCL/tmp/admitted-execution-20261118-j/build/src/services/distribution/admitted-execution.js:123:7),
+    expected: { code: 'NEEDS_RECOVERY' },
+    operator: 'rejects',
+    diff: 'simple'
+  }

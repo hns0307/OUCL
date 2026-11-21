@@ -16,3 +16,6 @@ HashPool默认并发2、最多4，最多32个等待任务；worker堆上限64MiB
 存储worker堆上限128MiB，SQLite同步能力始终留在线程内。Node/Electron具体兼容及响应证据见A1-04c报告；主事件循环心跳不是UI FPS测试。后续受控解压、对象仓库、实例物化、任务调度和实际IPC装配完成前，不标A1-04整体或简易启动器完成。
 
 A1-04b补充：私有存储消息现包含object:lookup/sourceKey、object:remember/sourceKey/object(digest,size)、object:clear。成功响应可带object或task之一，严格拒绝两者同时出现。索引单独保存在objects-index.sqlite，规则见[OBJECT_STORE](OBJECT_STORE.md)，不是任意SQL/路径接口。test:workers-runtime目前将新增对象证据写入A1-04b，A1-04c旧报告保留历史。
+# 2026-10-27 接受凭据只读查询
+
+固定私有指令find-accepted与accept使用相同ownerId/requestId/taskKind/payloadDigest严格schema，但只查既有requests/tasks，不插入、恢复或更新任务；返回原StoredTask或缺失，参数/类型不符为REVISION_CONFLICT，不接受SQL/路径/额外字段。RecordStore持有原lease并串行派发，复用现有SQLite表/事务格式。用于加载器接受结果丢失后的本地恢复；renderer没有该原始指令权限。

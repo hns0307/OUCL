@@ -1,0 +1,254 @@
+{
+  "inputs": {
+    "src/shared/contracts/handshake.ts": {
+      "bytes": 5753,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/shared/contracts/resources.ts": {
+      "bytes": 9883,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "./handshake.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/path/layout.ts": {
+      "bytes": 6867,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "../../shared/contracts/handshake.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/core/version/validation.ts": {
+      "bytes": 8494,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/core/install/assets.ts": {
+      "bytes": 2884,
+      "imports": [
+        {
+          "path": "src/core/path/layout.ts",
+          "kind": "import-statement",
+          "original": "../path/layout.js"
+        },
+        {
+          "path": "src/core/version/validation.ts",
+          "kind": "import-statement",
+          "original": "../version/validation.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/shared/contracts/mods-report.ts": {
+      "bytes": 7126,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "./handshake.js"
+        },
+        {
+          "path": "src/shared/contracts/resources.ts",
+          "kind": "import-statement",
+          "original": "./resources.js"
+        },
+        {
+          "path": "src/core/path/layout.ts",
+          "kind": "import-statement",
+          "original": "../../core/path/layout.js"
+        },
+        {
+          "path": "src/core/install/assets.ts",
+          "kind": "import-statement",
+          "original": "../../core/install/assets.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/shared/contracts/instances.ts": {
+      "bytes": 17616,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "./handshake.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/shared/contracts/mods.ts": {
+      "bytes": 13987,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "./handshake.js"
+        },
+        {
+          "path": "src/shared/contracts/mods-report.ts",
+          "kind": "import-statement",
+          "original": "./mods-report.js"
+        },
+        {
+          "path": "src/shared/contracts/resources.ts",
+          "kind": "import-statement",
+          "original": "./resources.js"
+        },
+        {
+          "path": "src/shared/contracts/instances.ts",
+          "kind": "import-statement",
+          "original": "./instances.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/shared/contracts/mod-maintenance-preview.ts": {
+      "bytes": 11391,
+      "imports": [
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "./handshake.js"
+        },
+        {
+          "path": "src/shared/contracts/resources.ts",
+          "kind": "import-statement",
+          "original": "./resources.js"
+        },
+        {
+          "path": "src/core/path/layout.ts",
+          "kind": "import-statement",
+          "original": "../../core/path/layout.js"
+        },
+        {
+          "path": "src/shared/contracts/mods.ts",
+          "kind": "import-statement",
+          "original": "./mods.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/services/mods/maintenance-presentation.ts": {
+      "bytes": 9108,
+      "imports": [
+        {
+          "path": "src/core/path/layout.ts",
+          "kind": "import-statement",
+          "original": "../../core/path/layout.js"
+        },
+        {
+          "path": "src/shared/contracts/resources.ts",
+          "kind": "import-statement",
+          "original": "../../shared/contracts/resources.js"
+        },
+        {
+          "path": "src/shared/contracts/handshake.ts",
+          "kind": "import-statement",
+          "original": "../../shared/contracts/handshake.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/services/mods/maintenance-jobs.ts": {
+      "bytes": 5919,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "src/shared/contracts/mods.ts",
+          "kind": "import-statement",
+          "original": "../../shared/contracts/mods.js"
+        },
+        {
+          "path": "src/shared/contracts/mod-maintenance-preview.ts",
+          "kind": "import-statement",
+          "original": "../../shared/contracts/mod-maintenance-preview.js"
+        },
+        {
+          "path": "src/services/mods/maintenance-presentation.ts",
+          "kind": "import-statement",
+          "original": "./maintenance-presentation.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "<stdin>": {
+      "bytes": 332,
+      "imports": [
+        {
+          "path": "src/services/mods/maintenance-jobs.ts",
+          "kind": "import-statement",
+          "original": "./src/services/mods/maintenance-jobs.ts"
+        },
+        {
+          "path": "src/services/mods/maintenance-presentation.ts",
+          "kind": "import-statement",
+          "original": "./src/services/mods/maintenance-presentation.ts"
+        },
+        {
+          "path": "src/shared/contracts/mod-maintenance-preview.ts",
+          "kind": "import-statement",
+          "original": "./src/shared/contracts/mod-maintenance-preview.ts"
+        },
+        {
+          "path": "src/shared/contracts/mods.ts",
+          "kind": "import-statement",
+          "original": "./src/shared/contracts/mods.ts"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "acceptance-results/c-boundaries-v13/modules.cjs": {
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "exports": [],
+      "entryPoint": "<stdin>",
+      "inputs": {
+        "<stdin>": {
+          "bytesInOutput": 313
+        },
+        "src/services/mods/maintenance-jobs.ts": {
+          "bytesInOutput": 4935
+        },
+        "src/shared/contracts/handshake.ts": {
+          "bytesInOutput": 309
+        },
+        "src/shared/contracts/resources.ts": {
+          "bytesInOutput": 77
+        },
+        "src/core/path/layout.ts": {
+          "bytesInOutput": 534
+        },
+        "src/shared/contracts/mods.ts": {
+          "bytesInOutput": 753
+        },
+        "src/shared/contracts/mod-maintenance-preview.ts": {
+          "bytesInOutput": 4523
+        },
+        "src/services/mods/maintenance-presentation.ts": {
+          "bytesInOutput": 7289
+        }
+      },
+      "bytes": 20042
+    }
+  }
+}

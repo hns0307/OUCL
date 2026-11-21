@@ -1,0 +1,22 @@
+[
+  {
+    "path": "src/ipc/distribution-execution.ts",
+    "sha256": "b8743aa759231146491f1e6410491b1921da27d1092311a731743459c178fd5b",
+    "bytes": 6518
+  },
+  {
+    "path": "src/ipc/distribution-execution-owners.ts",
+    "sha256": "d54e914f4148e174a9373a6a7eb4860ced3a3502e51fa6c4a7d76cf4afd49f89",
+    "bytes": 2430
+  },
+  {
+    "path": "tests/distribution-execution-adapter.test.ts",
+    "sha256": "46049eb0cd1961c830ab6c74bdf3e53f8d5f3bfb98f3686a69ca3de9005bfa31",
+    "bytes": 13673
+  },
+  {
+    "path": "tests/distribution-execution-owners.test.ts",
+    "sha256": "7a18d420be63c0530a949186224cd47c7b1e0f443a3faed9e99716ad2395464a",
+    "bytes": 5005
+  }
+]

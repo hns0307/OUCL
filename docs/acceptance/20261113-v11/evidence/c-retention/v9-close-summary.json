@@ -1,0 +1,24 @@
+{
+  "status": "PASS_NORMAL_CLOSE",
+  "close": [
+    {
+      "time": "2026-11-13T05:01:11.362Z",
+      "monoMs": 50811266.9548,
+      "kind": "window-closed"
+    },
+    {
+      "time": "2026-11-13T05:01:11.406Z",
+      "monoMs": 50811311.2194,
+      "kind": "will-quit"
+    },
+    {
+      "time": "2026-11-13T05:01:11.406Z",
+      "monoMs": 50811311.619,
+      "kind": "exit",
+      "code": 0
+    }
+  ],
+  "protectedSnapshotUnchanged": true,
+  "jars": 6,
+  "tasks": 5
+}

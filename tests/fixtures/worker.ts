@@ -1,8 +1,9 @@
 import { parentPort, workerData } from 'node:worker_threads';
 import { createExecution } from '../../src/core/task/machine.js';
+import path from 'node:path';
 
 const port = parentPort!;
-const mode = (workerData as { directory: string }).directory;
+const mode = path.basename((workerData as { directory: string }).directory);
 let released = false;
 const waiting: string[] = [];
 port.on('message', (request: { id: string; command: { kind: string; ownerId: string } }) => {

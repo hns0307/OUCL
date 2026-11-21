@@ -1,0 +1,32 @@
+{"event":"test-started","kind":"quilt","minecraftVersion":"1.20.1","loaderVersion":"0.29.2","workspace":"D:\\MC_start\\OUCL\\.test-build\\official-loader-qt5HtQ"}
+{"event":"test-progress","stage":"metadata","state":"queued","bytesDone":0}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":42525714,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":78701120,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":103193537,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":135339497,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":168285219,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":201413736,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":237366009,"bytesTotal":742454177}
+{"event":"test-progress","stage":"downloading","state":"running","bytesDone":268623103,"bytesTotal":742454177}
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(!this.paused)
+
+    at Parser.finish (node:internal/deps/undici/undici:7388:9)
+    at TLSSocket.onHttpSocketEnd (node:internal/deps/undici/undici:7827:34)
+    at TLSSocket.emit (node:events:526:24)
+    at endReadableNT (node:internal/streams/readable:1783:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.0

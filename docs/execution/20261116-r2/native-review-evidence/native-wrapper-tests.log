@@ -1,0 +1,128 @@
+✖ Node wrapper executes real C# identity-bound link, delete, rename and lease release (424.2871ms)
+✖ existing destination is preserved for both native no-replace rename and hardlink (75.9547ms)
+✔ wrong file inode, volume, hash and size cannot mutate the real source (282.5159ms)
+✔ wrong root identity or lease token fail before native publication and preserve the lease (121.3771ms)
+✔ renamed original root and replacement same-path namespace do not satisfy persisted directory identity (67.2121ms)
+✔ binary digest mismatch rejects a valid operation before launching the helper (5.7227ms)
+✔ wrapper rejects path escape, protected regions, wrong transaction staging, ADS and unknown DTO fields (12.7338ms)
+✖ transaction file factory really uses the native helper for publication, rollback moves and lease release (86.5558ms)
+✖ real transaction published crash recovery uses the native factory and persisted root identity (168.1145ms)
+✖ real transaction receipt-committed crash recovery uses the native factory and persisted root identity (167.1324ms)
+✖ packaged metadata loader returns a working real native factory from freshly built protected payload entries (100.8387ms)
+✔ packaged metadata loader rejects schema/path/hash/size tampering and changed executable bytes without granting a factory (406.6271ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 6
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2008.8203
+
+✖ failing tests:
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:960:1
+✖ Node wrapper executes real C# identity-bound link, delete, rename and lease release (424.2871ms)
+  Error [DistributionTransactionError]: NEEDS_RECOVERY
+      at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+      at ChildProcess.wrapper (node:events:639:12)
+      at ChildProcess.emit (node:events:514:28)
+      at maybeClose (node:internal/child_process:1141:16)
+      at ChildProcess._handle.onexit (node:internal/child_process:306:5) {
+    code: 'NEEDS_RECOVERY'
+  }
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:978:1
+✖ existing destination is preserved for both native no-replace rename and hardlink (75.9547ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'NEEDS_RECOVERY'
+  -   code: 'FILES_CHANGED'
+    }
+  
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:983:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DistributionTransactionError: NEEDS_RECOVERY
+        at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+        at ChildProcess.wrapper (node:events:639:12)
+        at ChildProcess.emit (node:events:514:28)
+        at maybeClose (node:internal/child_process:1141:16)
+        at ChildProcess._handle.onexit (node:internal/child_process:306:5),
+    expected: { code: 'FILES_CHANGED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:1051:1
+✖ transaction file factory really uses the native helper for publication, rollback moves and lease release (86.5558ms)
+  Error [DistributionTransactionError]: NEEDS_RECOVERY
+      at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+      at ChildProcess.wrapper (node:events:639:12)
+      at ChildProcess.emit (node:events:514:28)
+      at maybeClose (node:internal/child_process:1141:16)
+      at ChildProcess._handle.onexit (node:internal/child_process:306:5) {
+    code: 'NEEDS_RECOVERY'
+  }
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:1079:64
+✖ real transaction published crash recovery uses the native factory and persisted root identity (168.1145ms)
+  AssertionError [ERR_ASSERTION]: The error is expected to be an instance of "SimulatedDistributionCrash". Received "DistributionTransactionError"
+  
+  Error message:
+  
+  NEEDS_RECOVERY
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:1153:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DistributionTransactionError: NEEDS_RECOVERY
+        at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+        at ChildProcess.wrapper (node:events:639:12)
+        at ChildProcess.emit (node:events:514:28)
+        at maybeClose (node:internal/child_process:1141:16)
+        at ChildProcess._handle.onexit (node:internal/child_process:306:5),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:1079:64
+✖ real transaction receipt-committed crash recovery uses the native factory and persisted root identity (167.1324ms)
+  AssertionError [ERR_ASSERTION]: The error is expected to be an instance of "SimulatedDistributionCrash". Received "DistributionTransactionError"
+  
+  Error message:
+  
+  NEEDS_RECOVERY
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:1153:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: DistributionTransactionError: NEEDS_RECOVERY
+        at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+        at ChildProcess.wrapper (node:events:639:12)
+        at ChildProcess.emit (node:events:514:28)
+        at maybeClose (node:internal/child_process:1141:16)
+        at ChildProcess._handle.onexit (node:internal/child_process:306:5),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at ..\..\tmp\native-adapter-review-r2\distribution-native-files.test.mjs:1175:1
+✖ packaged metadata loader returns a working real native factory from freshly built protected payload entries (100.8387ms)
+  Error [DistributionTransactionError]: NEEDS_RECOVERY
+      at ChildProcess.<anonymous> (file:///D:/MC_start/OUCL/tmp/native-adapter-review-r2/distribution-native-files.test.mjs:626:18)
+      at ChildProcess.wrapper (node:events:639:12)
+      at ChildProcess.emit (node:events:514:28)
+      at maybeClose (node:internal/child_process:1141:16)
+      at ChildProcess._handle.onexit (node:internal/child_process:306:5) {
+    code: 'NEEDS_RECOVERY'
+  }
